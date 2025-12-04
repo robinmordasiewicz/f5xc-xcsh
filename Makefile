@@ -1,7 +1,7 @@
-# F5XC CLI Makefile
+# vesctl CLI Makefile
 #
 # Usage:
-#   make build        - Build the f5xc binary for current platform
+#   make build        - Build the vesctl binary for current platform
 #   make build-all    - Build binaries for all platforms (linux/darwin/windows)
 #   make test         - Run all tests
 #   make test-unit    - Run unit tests only
@@ -12,7 +12,7 @@
 #   make install      - Install binary to GOPATH/bin
 #   make release-dry  - Test GoReleaser without publishing
 
-BINARY_NAME=f5xc
+BINARY_NAME=vesctl
 MODULE=github.com/robinmordasiewicz/f5xc
 VERSION?=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 GIT_COMMIT?=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
@@ -90,16 +90,16 @@ test-unit:
 # Run integration tests only (requires environment variables)
 test-int: build
 	@echo "Running integration tests..."
-	@if [ -z "$(F5XC_API_URL)" ]; then \
-		echo "Error: F5XC_API_URL not set"; \
+	@if [ -z "$(VES_API_URL)" ]; then \
+		echo "Error: VES_API_URL not set"; \
 		echo ""; \
 		echo "Set these environment variables:"; \
-		echo "  export F5XC_API_URL=\"https://tenant.staging.volterra.us\""; \
-		echo "  export F5XC_API_P12_FILE=\"/path/to/cert.p12\""; \
-		echo "  export F5XC_P12_PASSWORD=\"password\""; \
+		echo "  export VES_API_URL=\"https://tenant.staging.volterra.us\""; \
+		echo "  export VES_API_P12_FILE=\"/path/to/cert.p12\""; \
+		echo "  export VES_P12_PASSWORD=\"password\""; \
 		exit 1; \
 	fi
-	VES_P12_PASSWORD="$(F5XC_P12_PASSWORD)" go test -v ./tests/integration/...
+	VES_P12_PASSWORD="$(VES_P12_PASSWORD)" go test -v ./tests/integration/...
 
 # Run tests with coverage
 test-coverage: build
@@ -196,7 +196,7 @@ version:
 
 # Show help
 help:
-	@echo "F5XC CLI Makefile"
+	@echo "vesctl CLI Makefile"
 	@echo ""
 	@echo "Build Commands:"
 	@echo "  make build          - Build binary for current platform"
@@ -225,9 +225,9 @@ help:
 	@echo "  make watch          - Rebuild on file changes"
 	@echo ""
 	@echo "Environment Variables (for integration tests):"
-	@echo "  F5XC_API_URL        - API URL"
-	@echo "  F5XC_API_P12_FILE   - Path to P12 certificate bundle"
-	@echo "  F5XC_P12_PASSWORD   - Password for P12 bundle"
+	@echo "  VES_API_URL        - API URL"
+	@echo "  VES_API_P12_FILE   - Path to P12 certificate bundle"
+	@echo "  VES_P12_PASSWORD   - Password for P12 bundle"
 	@echo ""
 	@echo "Creating a Release:"
 	@echo "  1. Update version: git tag v1.0.0"

@@ -1,9 +1,9 @@
-# GoReleaser configuration for f5xc CLI
+# GoReleaser configuration for vesctl CLI
 # Documentation: https://goreleaser.com
 
 version: 2
 
-project_name: f5xc
+project_name: vesctl
 
 before:
   hooks:
@@ -11,8 +11,8 @@ before:
     - go generate ./...
 
 builds:
-  - id: f5xc
-    binary: f5xc
+  - id: vesctl
+    binary: vesctl
     main: .
     env:
       - CGO_ENABLED=0
@@ -87,46 +87,46 @@ release:
   prerelease: auto
   mode: replace
   header: |
-    ## F5XC CLI {{ .Version }}
+    ## vesctl {{ .Version }}
 
     ### Installation
 
     **macOS (Apple Silicon)**
     ```bash
-    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/f5xc_{{ .Version }}_darwin_arm64.tar.gz
-    tar -xzf f5xc_{{ .Version }}_darwin_arm64.tar.gz
-    sudo mv f5xc /usr/local/bin/
+    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/vesctl_{{ .Version }}_darwin_arm64.tar.gz
+    tar -xzf vesctl_{{ .Version }}_darwin_arm64.tar.gz
+    sudo mv vesctl /usr/local/bin/
     ```
 
     **macOS (Intel)**
     ```bash
-    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/f5xc_{{ .Version }}_darwin_amd64.tar.gz
-    tar -xzf f5xc_{{ .Version }}_darwin_amd64.tar.gz
-    sudo mv f5xc /usr/local/bin/
+    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/vesctl_{{ .Version }}_darwin_amd64.tar.gz
+    tar -xzf vesctl_{{ .Version }}_darwin_amd64.tar.gz
+    sudo mv vesctl /usr/local/bin/
     ```
 
     **Linux (amd64)**
     ```bash
-    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/f5xc_{{ .Version }}_linux_amd64.tar.gz
-    tar -xzf f5xc_{{ .Version }}_linux_amd64.tar.gz
-    sudo mv f5xc /usr/local/bin/
+    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/vesctl_{{ .Version }}_linux_amd64.tar.gz
+    tar -xzf vesctl_{{ .Version }}_linux_amd64.tar.gz
+    sudo mv vesctl /usr/local/bin/
     ```
 
     **Linux (arm64)**
     ```bash
-    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/f5xc_{{ .Version }}_linux_arm64.tar.gz
-    tar -xzf f5xc_{{ .Version }}_linux_arm64.tar.gz
-    sudo mv f5xc /usr/local/bin/
+    curl -LO https://github.com/robinmordasiewicz/vesctl/releases/download/{{ .Tag }}/vesctl_{{ .Version }}_linux_arm64.tar.gz
+    tar -xzf vesctl_{{ .Version }}_linux_arm64.tar.gz
+    sudo mv vesctl /usr/local/bin/
     ```
 
     **Windows**
-    Download `f5xc_{{ .Version }}_windows_amd64.zip` and extract to your PATH.
+    Download `vesctl_{{ .Version }}_windows_amd64.zip` and extract to your PATH.
   footer: |
     **Full Changelog**: https://github.com/robinmordasiewicz/vesctl/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 # Homebrew tap (optional - uncomment to enable)
 # brews:
-#   - name: f5xc
+#   - name: vesctl
 #     repository:
 #       owner: robinmordasiewicz
 #       name: homebrew-tap
@@ -134,6 +134,6 @@ release:
 #     description: F5 Distributed Cloud CLI
 #     license: Apache-2.0
 #     install: |
-#       bin.install "f5xc"
+#       bin.install "vesctl"
 #     test: |
-#       system "#{bin}/f5xc", "version"
+#       system "#{bin}/vesctl", "version"

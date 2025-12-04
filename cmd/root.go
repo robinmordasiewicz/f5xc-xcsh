@@ -40,20 +40,20 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "f5xc",
+	Use:   "vesctl",
 	Short: "F5 Distributed Cloud CLI",
-	Long: `F5 Distributed Cloud CLI (f5xc) is a command-line tool for managing
+	Long: `F5 Distributed Cloud CLI (vesctl) is a command-line tool for managing
 F5 Distributed Cloud (formerly Volterra) resources.
 
 Getting Started:
-  f5xc login                    Log in to F5 Distributed Cloud
-  f5xc configure                Configure CLI settings
-  f5xc --help                   Show help for any command
+  vesctl login                    Log in to F5 Distributed Cloud
+  vesctl configure                Configure CLI settings
+  vesctl --help                   Show help for any command
 
 Common Commands:
-  f5xc http-loadbalancer list   List HTTP load balancers
-  f5xc origin-pool create       Create an origin pool
-  f5xc namespace show           Show namespace details
+  vesctl http-loadbalancer list   List HTTP load balancers
+  vesctl origin-pool create       Create an origin pool
+  vesctl namespace show           Show namespace details
 
 Configuration:
   Default config file: ~/.vesconfig (YAML format)
@@ -158,7 +158,7 @@ func initConfig() {
 		viper.SetConfigName(".vesconfig")
 	}
 
-	viper.SetEnvPrefix("F5XC")
+	viper.SetEnvPrefix("VES")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
