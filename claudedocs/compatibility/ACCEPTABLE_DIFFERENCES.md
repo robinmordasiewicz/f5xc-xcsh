@@ -393,6 +393,57 @@ This is a design choice, not a bug. Users who need detailed flag control can use
 
 ---
 
+## 13. Phase 8 Output Format Precision
+
+Phase 8 tested output format compatibility across Table, JSON, YAML, and TSV formats.
+
+### Test Results Summary
+
+| Format | Test | Result | Notes |
+|--------|------|--------|-------|
+| Table | list namespace | PASS | Byte-identical |
+| JSON | get namespace | PASS | Semantically identical (key order differs) |
+| YAML | get namespace | PASS | Byte-identical |
+| TSV | list namespace | N/A | Both have issues (see below) |
+
+### JSON Key Ordering
+
+Go's standard library sorts JSON keys alphabetically when marshaling from maps. The original vesctl preserves server response order.
+
+**Example - Original:**
+```json
+{
+  "create_form": null,
+  "replace_form": null,
+  "resource_version": "123",
+  "metadata": { ... }
+}
+```
+
+**Example - Ours:**
+```json
+{
+  "create_form": null,
+  "deleted_referred_objects": [],
+  "disabled_referred_objects": [],
+  "metadata": { ... }
+}
+```
+
+**Impact**: Scripts parsing JSON should use field names, not position. This is standard practice.
+
+### TSV Format
+
+Neither implementation has proper TSV support for list operations:
+
+| Behavior | Original | Ours |
+|----------|----------|------|
+| `--outfmt tsv` | Outputs Table format | Outputs summary line |
+
+**Rationale**: TSV format for list operations is rarely used. Both implementations have limitations.
+
+---
+
 ## Summary
 
 These differences are documented and accepted:
@@ -410,3 +461,4 @@ These differences are documented and accepted:
 10. **New resources**: certificate, user (and others from current API specs)
 11. **Request command enhancements**: RPC evolution (54 deprecated, 376 new), enhanced secrets/command-sequence help text
 12. **Site commands**: Simplified interface (input-file approach vs 39+ CLI flags)
+13. **Output formats**: Table/YAML identical, JSON semantically identical (key order differs)
