@@ -505,3 +505,55 @@ These differences are documented and accepted:
 12. **Site commands**: Simplified interface (input-file approach vs 39+ CLI flags)
 13. **Output formats**: Table/YAML identical, JSON semantically identical (key order differs)
 14. **Error handling**: Missing argument exit codes improved (we return 1, original returns 0)
+
+---
+
+## 15. Phase 10 Integration & Regression Suite
+
+Phase 10 provides comprehensive CI/CD integration for all compatibility tests.
+
+### Test Runner (`run-all-tests.sh`)
+
+The master test runner supports all 9 test phases:
+
+```bash
+# Run all offline tests
+./run-all-tests.sh
+
+# Run all tests with API credentials
+./run-all-tests.sh --with-api
+
+# Run specific phase
+./run-all-tests.sh --phase 5
+
+# Run with verbose output
+./run-all-tests.sh -v
+```
+
+### GitHub Actions Integration
+
+The `compatibility-tests.yml` workflow provides:
+
+- **Automatic testing** on pushes to main and PRs
+- **Offline tests** for all PRs (no API credentials needed)
+- **Full API tests** via manual workflow dispatch
+- **Test results** uploaded as artifacts
+- **Summary reports** in GitHub Actions UI
+
+### Available Phases
+
+| Phase | Name | API Required | Description |
+|-------|------|--------------|-------------|
+| 1 | Configure/Auth | No | Behavioral compatibility |
+| 2 | Simple Commands | No | version, completion |
+| 3 | Config CRUD | No | Help text comparison |
+| 4 | Namespace CRUD | Yes | Live API operations |
+| 5 | Multi-Resource | No | Help text for all resources |
+| 6 | Request Commands | No | rpc, secrets, command-sequence |
+| 7 | Site Management | No | aws_vpc, azure_vnet |
+| 8 | Output Formats | Yes | Table, JSON, YAML, TSV |
+| 9 | Error Handling | Yes | Edge cases and errors |
+
+### Release Checklist
+
+See `RELEASE_CHECKLIST.md` for pre-release validation steps
