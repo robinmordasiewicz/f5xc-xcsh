@@ -196,12 +196,20 @@ func GetClient() *client.Client {
 	return apiClient
 }
 
-// GetOutputFormat returns the current output format
+// GetOutputFormat returns the current output format (defaults to table for list operations)
 func GetOutputFormat() string {
 	if outfmt != "" {
 		return outfmt
 	}
-	return "table" // Default to table for compatibility with original vesctl
+	return "table" // Default to table for list operations
+}
+
+// GetOutputFormatWithDefault returns the current output format with a custom default
+func GetOutputFormatWithDefault(defaultFmt string) string {
+	if outfmt != "" {
+		return outfmt
+	}
+	return defaultFmt
 }
 
 // GetOutputDir returns the output directory

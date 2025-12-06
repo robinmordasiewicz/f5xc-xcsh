@@ -179,8 +179,10 @@ spec: {}
 EOF
 
     # Test: create namespace from file
+    # Note: Use --ours-first so our version creates the namespace first,
+    # and original gets 409 conflict (same as if original ran first but reversed)
     log_info "Creating test namespace 1: ${TEST_NAMESPACE_1}"
-    run_api_test "create-from-file" configuration create namespace -i "${fixtures_dir}/namespace-create-1.yaml"
+    run_api_test --ours-first "create-from-file" configuration create namespace -i "${fixtures_dir}/namespace-create-1.yaml"
     track_resource "namespace" "${TEST_NAMESPACE_1}" ""
 
     # Wait for namespace to be ready
@@ -188,7 +190,7 @@ EOF
 
     # Test: create second namespace (for testing list with multiple items)
     log_info "Creating test namespace 2: ${TEST_NAMESPACE_2}"
-    run_api_test "create-second-namespace" configuration create namespace -i "${fixtures_dir}/namespace-create-2.yaml"
+    run_api_test --ours-first "create-second-namespace" configuration create namespace -i "${fixtures_dir}/namespace-create-2.yaml"
     track_resource "namespace" "${TEST_NAMESPACE_2}" ""
 
     # Wait for namespace to be ready

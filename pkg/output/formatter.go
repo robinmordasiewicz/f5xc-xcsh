@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	yamlv2 "gopkg.in/yaml.v2"
 )
 
 // Format represents the output format type
@@ -85,11 +85,21 @@ func (f *Formatter) formatJSON(data interface{}) error {
 	return encoder.Encode(data)
 }
 
-// formatYAML outputs data as YAML
+// formatYAML outputs data as YAML (matching original vesctl format)
 func (f *Formatter) formatYAML(data interface{}) error {
-	encoder := yaml.NewEncoder(f.writer)
-	encoder.SetIndent(2)
-	return encoder.Encode(data)
+	// Use yaml.v2 Marshal for compatibility with original vesctl output format
+	// yaml.v2 uses 2-space indent and doesn't indent array items under parent keys
+	out, err := yamlv2.Marshal(data)
+	if err != nil {
+		return err
+	}
+	_, err = f.writer.Write(out)
+	if err != nil {
+		return err
+	}
+	// Add trailing newline to match original vesctl format
+	_, err = f.writer.Write([]byte("\n"))
+	return err
 }
 
 // formatTable outputs data as an ASCII box table matching original vesctl format
@@ -104,14 +114,22 @@ func (f *Formatter) formatTable(data interface{}) error {
 	// Original format: NAMESPACE | NAME | LABELS
 	headers := []string{"NAMESPACE", "NAME", "LABELS"}
 
-	// Calculate column widths
+	// Fixed column widths matching original vesctl output
+	// Original vesctl uses fixed widths: NAMESPACE=9, NAME=27, LABELS=30
+	fixedWidths := []int{9, 27, 30}
+
+	// Calculate actual column widths (max of fixed width and header/content width)
 	widths := make([]int, len(headers))
 	for i, h := range headers {
-		widths[i] = len(h)
+		if len(h) > fixedWidths[i] {
+			widths[i] = len(h)
+		} else {
+			widths[i] = fixedWidths[i]
+		}
 	}
 
-	// Build rows and track max widths
-	var rows [][]string
+	// Build rows - each item may produce multiple display rows if content wraps
+	var displayRows [][][]string // each item can have multiple lines
 	for _, item := range items {
 		row := make([]string, len(headers))
 
@@ -137,26 +155,89 @@ func (f *Formatter) formatTable(data interface{}) error {
 			row[2] = labels
 		}
 
-		rows = append(rows, row)
-
-		// Update widths
-		for i, cell := range row {
-			if len(cell) > widths[i] {
-				widths[i] = len(cell)
-			}
-		}
+		// Wrap row into multiple lines if needed
+		wrappedRows := wrapRow(row, widths)
+		displayRows = append(displayRows, wrappedRows)
 	}
 
 	// Print ASCII box table
 	printBoxLine(f.writer, widths)
 	printBoxRowCentered(f.writer, headers, widths) // Headers centered
 	printBoxLine(f.writer, widths)
-	for _, row := range rows {
-		printBoxRowLeft(f.writer, row, widths) // Data left-aligned
+	for _, wrappedRows := range displayRows {
+		for _, row := range wrappedRows {
+			printBoxRowLeft(f.writer, row, widths) // Data left-aligned
+		}
 		printBoxLine(f.writer, widths)
 	}
 
 	return nil
+}
+
+// wrapRow wraps a row into multiple lines based on column widths
+func wrapRow(row []string, widths []int) [][]string {
+	var result [][]string
+
+	// Split each cell into lines based on max width
+	cellLines := make([][]string, len(row))
+	maxLines := 1
+
+	for i, cell := range row {
+		cellLines[i] = wrapText(cell, widths[i])
+		if len(cellLines[i]) > maxLines {
+			maxLines = len(cellLines[i])
+		}
+	}
+
+	// Create rows for each line
+	for lineNum := 0; lineNum < maxLines; lineNum++ {
+		newRow := make([]string, len(row))
+		for colNum := 0; colNum < len(row); colNum++ {
+			if lineNum < len(cellLines[colNum]) {
+				newRow[colNum] = cellLines[colNum][lineNum]
+			} else {
+				newRow[colNum] = "" // Empty for continuation lines
+			}
+		}
+		result = append(result, newRow)
+	}
+
+	return result
+}
+
+// wrapText wraps text to fit within maxWidth characters
+func wrapText(text string, maxWidth int) []string {
+	if len(text) <= maxWidth {
+		return []string{text}
+	}
+
+	var lines []string
+	remaining := text
+
+	for len(remaining) > 0 {
+		if len(remaining) <= maxWidth {
+			lines = append(lines, remaining)
+			break
+		}
+
+		// Find a good break point (preferring space)
+		breakPoint := maxWidth
+		for i := maxWidth - 1; i > 0; i-- {
+			if remaining[i] == ' ' {
+				breakPoint = i
+				break
+			}
+		}
+
+		lines = append(lines, remaining[:breakPoint])
+		remaining = remaining[breakPoint:]
+		// Trim leading space from next line
+		for len(remaining) > 0 && remaining[0] == ' ' {
+			remaining = remaining[1:]
+		}
+	}
+
+	return lines
 }
 
 // extractItems extracts the items array from a list response
@@ -203,7 +284,7 @@ func getStringField(m map[string]interface{}, key string) string {
 	return ""
 }
 
-// getLabelsString formats labels as key=value pairs
+// getLabelsString formats labels as map[key:value key:value] (matching original vesctl format)
 func getLabelsString(m map[string]interface{}) string {
 	labels, ok := m["labels"]
 	if !ok {
@@ -217,10 +298,10 @@ func getLabelsString(m map[string]interface{}) string {
 
 	var parts []string
 	for k, v := range labelMap {
-		parts = append(parts, fmt.Sprintf("%s=%v", k, v))
+		parts = append(parts, fmt.Sprintf("%s:%v", k, v))
 	}
 	sort.Strings(parts)
-	return strings.Join(parts, ", ")
+	return "map[" + strings.Join(parts, " ") + "]"
 }
 
 // printBoxLine prints a horizontal line: +-----+-----+

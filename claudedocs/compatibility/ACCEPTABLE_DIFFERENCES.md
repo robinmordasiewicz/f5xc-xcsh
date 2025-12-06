@@ -159,6 +159,76 @@ Error messages convey the same information but may have different formatting:
 
 ---
 
+## 7. Delete Namespace Command
+
+The original vesctl does **not** have a `delete namespace` subcommand. When running `vesctl configuration delete namespace`, the original shows the parent `delete` command help with all available subcommands (which does not include `namespace`).
+
+### Available Namespace Operations in Original vesctl
+
+| Operation | Command | Original | Ours |
+|-----------|---------|----------|------|
+| Create | `configuration create namespace` | ✓ | ✓ |
+| Get | `configuration get namespace` | ✓ | ✓ |
+| List | `configuration list namespace` | ✓ | ✓ |
+| Replace | `configuration replace namespace` | ✓ | ✓ |
+| Delete | `configuration delete namespace` | ✗ | ✓ |
+
+### Test Impact
+
+- `help-delete-namespace`: Original shows parent `delete` help, ours shows `delete namespace` help
+- `delete-first`, `delete-second`: Original fails/shows help, ours performs the delete
+- `delete-nonexistent`: Different exit codes due to missing subcommand in original
+
+**Rationale**: Our implementation adds the missing `delete namespace` capability for completeness. This is an enhancement.
+
+---
+
+## 8. Response Format Validation Bug (Original)
+
+The original vesctl has a bug where it rejects valid `--response-format` values for the `get` command.
+
+### Original Behavior (Bug)
+
+```
+$ vesctl configuration get namespace test-ns --response-format GET_RSP_FORMAT_READ
+Error: Invalid value GET_RSP_FORMAT_READ for response-format
+```
+
+### Our Behavior (Correct)
+
+Our implementation accepts all valid response-format values including `GET_RSP_FORMAT_READ`, `GET_RSP_FORMAT_REPLACE_REQUEST`, etc.
+
+### Test Impact
+
+- `get-response-proto`: Original errors with exit code 1, ours succeeds with exit code 0
+
+**Rationale**: We do NOT replicate bugs from the original. Our implementation correctly accepts valid API response format values.
+
+---
+
+## 9. Create Test Race Condition (Test Framework Limitation)
+
+The create tests (`create-from-file`, `create-second-namespace`) run both binaries sequentially against the same API. This creates a race condition:
+
+1. First binary creates the namespace successfully
+2. Second binary gets HTTP 409 "Object already exists" error
+
+### Test Configuration
+
+The test framework runs our version first for create tests (`--ours-first` flag). This means:
+
+- **Ours**: Creates namespace successfully (exit 0)
+- **Original**: Gets 409 conflict error (exit 1)
+
+### Test Impact
+
+- `create-from-file`, `create-second-namespace`: EXIT_MISMATCH due to race condition
+- `create-duplicate-error`: Both get 409 (original created first, then both fail on duplicate)
+
+**Rationale**: Both binaries behave correctly for their respective scenarios. The EXIT_MISMATCH is due to test framework limitations, not implementation differences.
+
+---
+
 ## Summary
 
 These differences are documented and accepted:
@@ -170,3 +240,6 @@ These differences are documented and accepted:
 4. **TLS bug crashes**: Original v0.2.36+ crashes on API calls
 5. **Minor help text**: Wording improvements
 6. **Error formatting**: Style differences only
+7. **Delete namespace**: Command missing in original (our enhancement)
+8. **Response format validation**: Original rejects valid values (our fix)
+9. **Create test race condition**: Test framework limitation, not implementation difference

@@ -357,8 +357,15 @@ compare_error_messages() {
 
 # Run API test with full capture and comparison
 # Usage: run_api_test <test_name> <args...>
+# Usage: run_api_test --ours-first <test_name> <args...>
 # Returns: 0 if pass, 1 if fail
 run_api_test() {
+    local ours_first=false
+    if [[ "${1:-}" == "--ours-first" ]]; then
+        ours_first=true
+        shift
+    fi
+
     local test_name="$1"
     local test_dir="${RESULTS_DIR}/${test_name}"
     shift
@@ -366,11 +373,16 @@ run_api_test() {
 
     mkdir -p "$test_dir"
 
-    # Capture original
-    local orig_exit=$(run_and_capture "$ORIGINAL_VESCTL" "${test_dir}/original" "${args[@]}")
-
-    # Capture ours
-    local our_exit=$(run_and_capture "$OUR_VESCTL" "${test_dir}/ours" "${args[@]}")
+    local orig_exit our_exit
+    if [[ "$ours_first" == "true" ]]; then
+        # Run ours first (for create tests to avoid race condition)
+        our_exit=$(run_and_capture "$OUR_VESCTL" "${test_dir}/ours" "${args[@]}")
+        orig_exit=$(run_and_capture "$ORIGINAL_VESCTL" "${test_dir}/original" "${args[@]}")
+    else
+        # Run original first (default)
+        orig_exit=$(run_and_capture "$ORIGINAL_VESCTL" "${test_dir}/original" "${args[@]}")
+        our_exit=$(run_and_capture "$OUR_VESCTL" "${test_dir}/ours" "${args[@]}")
+    fi
 
     # Store exit codes
     echo "original_exit=$orig_exit" > "${test_dir}/exits.txt"

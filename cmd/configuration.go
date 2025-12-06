@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -388,11 +389,11 @@ func runConfigList(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("failed to list resources: %w", err)
+		return fmt.Errorf("Error listing object: Listing object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("listing", "GET", path, resp.StatusCode, resp.Body)
 	}
 
 	var result interface{}
@@ -405,6 +406,9 @@ func runConfigList(rt *types.ResourceType, flags *configurationFlags) error {
 
 // runConfigGet executes the get operation (vesctl compatible)
 func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
+	// Note: We accept any response-format value including GET_RSP_FORMAT_READ
+	// (original vesctl has a bug that rejects this valid value)
+
 	client := GetClient()
 	if client == nil {
 		return fmt.Errorf("client not initialized - check configuration")
@@ -421,11 +425,11 @@ func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, flags.name)
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get resource: %w", err)
+		return fmt.Errorf("Error getting object: Getting object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("getting", "GET", path, resp.StatusCode, resp.Body)
 	}
 
 	var result interface{}
@@ -433,7 +437,8 @@ func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	return output.Print(result, GetOutputFormat())
+	// Get defaults to YAML output (matching original vesctl)
+	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
 // runConfigCreate executes the create operation (vesctl compatible)
@@ -463,11 +468,11 @@ func runConfigCreate(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Post(ctx, path, resource)
 	if err != nil {
-		return fmt.Errorf("failed to create resource: %w", err)
+		return fmt.Errorf("Error creating object: Creating object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("creating", "POST", path, resp.StatusCode, resp.Body)
 	}
 
 	var result interface{}
@@ -475,7 +480,10 @@ func runConfigCreate(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	return output.Print(result, GetOutputFormat())
+	// Print "Created" header (matching original vesctl)
+	fmt.Println("Created")
+	// Create defaults to YAML output (matching original vesctl)
+	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
 // runConfigDelete executes the delete operation (vesctl compatible)
@@ -510,10 +518,10 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 			}
 			resp, err := client.Post(ctx, path, body)
 			if err != nil {
-				return fmt.Errorf("failed to delete resource: %w", err)
+				return fmt.Errorf("Error deleting object: Deleting object: %w", err)
 			}
 			if resp.StatusCode >= 400 {
-				return fmt.Errorf("API error: %s", string(resp.Body))
+				return formatAPIError("deleting", "POST", path, resp.StatusCode, resp.Body)
 			}
 			output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", rt.Name, flags.name))
 			return nil
@@ -523,11 +531,11 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 	// Standard DELETE method
 	resp, err := client.Delete(ctx, path)
 	if err != nil {
-		return fmt.Errorf("failed to delete resource: %w", err)
+		return fmt.Errorf("Error deleting object: Deleting object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("deleting", "DELETE", path, resp.StatusCode, resp.Body)
 	}
 
 	output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", rt.Name, flags.name))
@@ -568,19 +576,16 @@ func runConfigReplace(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, name)
 	resp, err := client.Put(ctx, path, resource)
 	if err != nil {
-		return fmt.Errorf("failed to replace resource: %w", err)
+		return fmt.Errorf("Error replacing object: Replacing object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("replacing", "PUT", path, resp.StatusCode, resp.Body)
 	}
 
-	var result interface{}
-	if err := json.Unmarshal(resp.Body, &result); err != nil {
-		return fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	return output.Print(result, GetOutputFormat())
+	// Print only "Replaced" (matching original vesctl - no response body output)
+	fmt.Println("Replaced")
+	return nil
 }
 
 // runConfigStatus executes the status operation (vesctl compatible)
@@ -601,11 +606,11 @@ func runConfigStatus(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, flags.name) + "/status"
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get status: %w", err)
+		return fmt.Errorf("Error getting status: Getting status: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("getting status", "GET", path, resp.StatusCode, resp.Body)
 	}
 
 	var result interface{}
@@ -613,7 +618,8 @@ func runConfigStatus(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	return output.Print(result, GetOutputFormat())
+	// Status defaults to YAML output (matching original vesctl)
+	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
 // runConfigApply executes the apply operation (create or replace)
@@ -648,16 +654,17 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 		path := rt.BuildAPIPath(namespace, "")
 		resp, err := client.Post(ctx, path, resource)
 		if err != nil {
-			return fmt.Errorf("failed to create resource: %w", err)
+			return fmt.Errorf("Error creating object: Creating object: %w", err)
 		}
 		if resp.StatusCode >= 400 {
-			return fmt.Errorf("API error: %s", string(resp.Body))
+			return formatAPIError("creating", "POST", path, resp.StatusCode, resp.Body)
 		}
 		var result interface{}
 		if err := json.Unmarshal(resp.Body, &result); err != nil {
 			return fmt.Errorf("failed to parse response: %w", err)
 		}
-		return output.Print(result, GetOutputFormat())
+		fmt.Println("Created")
+		return output.Print(result, GetOutputFormatWithDefault("yaml"))
 	}
 
 	// Mode "always" - try to get first, then create or replace
@@ -668,17 +675,14 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 			// Resource exists, replace it
 			resp, err := client.Put(ctx, getPath, resource)
 			if err != nil {
-				return fmt.Errorf("failed to replace resource: %w", err)
+				return fmt.Errorf("Error replacing object: Replacing object: %w", err)
 			}
 			if resp.StatusCode >= 400 {
-				return fmt.Errorf("API error: %s", string(resp.Body))
+				return formatAPIError("replacing", "PUT", getPath, resp.StatusCode, resp.Body)
 			}
-			var result interface{}
-			if err := json.Unmarshal(resp.Body, &result); err != nil {
-				return fmt.Errorf("failed to parse response: %w", err)
-			}
-			output.PrintInfo(fmt.Sprintf("Replaced %s '%s'", rt.Name, name))
-			return output.Print(result, GetOutputFormat())
+			// Print only "Replaced" (matching original vesctl - no response body output)
+			fmt.Println("Replaced")
+			return nil
 		}
 	}
 
@@ -686,17 +690,17 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 	createPath := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Post(ctx, createPath, resource)
 	if err != nil {
-		return fmt.Errorf("failed to create resource: %w", err)
+		return fmt.Errorf("Error creating object: Creating object: %w", err)
 	}
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("creating", "POST", createPath, resp.StatusCode, resp.Body)
 	}
 	var result interface{}
 	if err := json.Unmarshal(resp.Body, &result); err != nil {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
-	output.PrintInfo(fmt.Sprintf("Created %s '%s'", rt.Name, name))
-	return output.Print(result, GetOutputFormat())
+	fmt.Println("Created")
+	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
 // runConfigPatch executes the patch operation
@@ -742,11 +746,11 @@ func runConfigAddLabels(rt *types.ResourceType, flags *configurationFlags) error
 
 	resp, err := client.Post(ctx, path, body)
 	if err != nil {
-		return fmt.Errorf("failed to add labels: %w", err)
+		return fmt.Errorf("Error adding labels: Adding labels: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("adding labels", "POST", path, resp.StatusCode, resp.Body)
 	}
 
 	output.PrintInfo(fmt.Sprintf("Added labels to %s '%s'", rt.Name, flags.name))
@@ -780,15 +784,24 @@ func runConfigRemoveLabels(rt *types.ResourceType, flags *configurationFlags) er
 
 	resp, err := client.Post(ctx, path, body)
 	if err != nil {
-		return fmt.Errorf("failed to remove labels: %w", err)
+		return fmt.Errorf("Error removing labels: Removing labels: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("API error: %s", string(resp.Body))
+		return formatAPIError("removing labels", "POST", path, resp.StatusCode, resp.Body)
 	}
 
 	output.PrintInfo(fmt.Sprintf("Removed labels from %s '%s'", rt.Name, flags.name))
 	return nil
+}
+
+// formatAPIError formats an API error to match original vesctl error format
+func formatAPIError(operation, method, path string, statusCode int, body []byte) error {
+	baseURL := serverURLs[0]
+	// Capitalize first letter of operation
+	capOperation := strings.ToUpper(operation[:1]) + operation[1:]
+	return fmt.Errorf("Error %s object: %s object: Unsuccessful %s at URL %s%s, status code %d, body %s, err %%!s(<nil>)",
+		operation, capOperation, method, baseURL, path, statusCode, string(body))
 }
 
 // loadConfigResource loads resource from input file or JSON data
