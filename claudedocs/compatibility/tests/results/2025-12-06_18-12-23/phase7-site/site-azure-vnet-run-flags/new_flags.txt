@@ -1,0 +1,4 @@
+--auto-approve
+--name
+--terraform-dir
+--wait

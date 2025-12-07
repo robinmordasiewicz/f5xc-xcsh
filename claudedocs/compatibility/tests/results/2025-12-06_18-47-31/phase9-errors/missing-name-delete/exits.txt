@@ -1,0 +1,2 @@
+orig_exit=0
+our_exit=1

@@ -1,0 +1,1 @@
+./tests/phase5-resources/test-resource-help.sh: line 70: ./vesctl: No such file or directory
