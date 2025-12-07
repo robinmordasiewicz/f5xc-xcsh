@@ -1,0 +1,18 @@
+# go-semantic-release configuration
+# Documentation: https://go-semantic-release.xyz/
+
+branches:
+  - main
+
+ci: true
+provider: github
+
+changelog:
+  generator: conventionalcommits
+
+hooks:
+  goreleaser:
+    config: .goreleaser.yaml
+    args:
+      - "--clean"
+      - "--timeout=30m"
