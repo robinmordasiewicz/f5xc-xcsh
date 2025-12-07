@@ -4,11 +4,5 @@
   "provider": "github",
   "changelog": {
     "generator": "conventionalcommits"
-  },
-  "hooks": {
-    "goreleaser": {
-      "config": ".goreleaser.yaml",
-      "args": ["--clean", "--timeout=30m"]
-    }
   }
 }
