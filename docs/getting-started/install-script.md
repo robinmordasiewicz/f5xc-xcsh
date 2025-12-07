@@ -9,13 +9,13 @@ Install the latest version with a single command:
 === "curl"
 
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
     ```
 
 === "wget"
 
     ```bash
-    wget -qO- https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+    wget -qO- https://robinmordasiewicz.github.io/vesctl/install.sh | sh
     ```
 
 ## Features
@@ -56,19 +56,19 @@ Configure the installer behavior with these environment variables:
 **Install a specific version:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_VERSION=1.1.0 sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_VERSION=1.1.0 sh
 ```
 
 **Install to a custom directory (no sudo required):**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
 ```
 
 **Skip checksum verification (not recommended):**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_NO_VERIFY=1 sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_NO_VERIFY=1 sh
 ```
 
 ## Command Line Options
@@ -83,7 +83,7 @@ curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/insta
 Remove vesctl and all shell completions:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh -s -- --uninstall
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh -s -- --uninstall
 ```
 
 ## How It Works
@@ -207,7 +207,7 @@ If the specified version doesn't exist:
 curl -s https://api.github.com/repos/robinmordasiewicz/vesctl/releases | grep tag_name
 
 # Install latest instead
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 ```
 
 ### Binary Not in PATH

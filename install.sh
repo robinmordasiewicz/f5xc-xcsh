@@ -1,6 +1,6 @@
 #!/bin/sh
 # vesctl install script
-# Usage: curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+# Usage: curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 #
 # Environment variables:
 #   VESCTL_VERSION      - Specific version to install (default: latest)
@@ -580,8 +580,8 @@ Automatically detects your platform and installs the appropriate binary
 from GitHub releases.
 
 USAGE
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
-    wget -qO- https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
+    wget -qO- https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 
 OPTIONS
     --uninstall     Remove vesctl and shell completions
@@ -600,19 +600,19 @@ SUPPORTED PLATFORMS
 
 EXAMPLES
     # Install latest version
-    curl -fsSL https://...install.sh | sh
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 
     # Install specific version
-    curl -fsSL https://...install.sh | VESCTL_VERSION=1.1.0 sh
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_VERSION=1.1.0 sh
 
     # Install to custom directory (no sudo required)
-    curl -fsSL https://...install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
 
     # Install using wget instead of curl
-    wget -qO- https://...install.sh | sh
+    wget -qO- https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 
     # Uninstall
-    curl -fsSL https://...install.sh | sh -s -- --uninstall
+    curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh -s -- --uninstall
 
 WINDOWS INSTALLATION
     Download the appropriate zip file from GitHub releases:

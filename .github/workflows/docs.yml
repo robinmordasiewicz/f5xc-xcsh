@@ -91,6 +91,9 @@ jobs:
       - name: Build site
         run: mkdocs build --strict
 
+      - name: Copy install script to site
+        run: cp install.sh site/install.sh
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -28,7 +28,7 @@ brew uninstall vesctl
 The easiest way to install vesctl is with the install script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh
 ```
 
 This will:
@@ -44,19 +44,19 @@ This will:
 **Install a specific version:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_VERSION=0.1.0 sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_VERSION=1.1.0 sh
 ```
 
 **Install to a custom directory:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
 ```
 
 **Uninstall:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh -s -- --uninstall
+curl -fsSL https://robinmordasiewicz.github.io/vesctl/install.sh | sh -s -- --uninstall
 ```
 
 ## Manual Installation
