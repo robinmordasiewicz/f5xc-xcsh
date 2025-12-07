@@ -23,12 +23,14 @@ if [ -t 1 ] && [ -n "$(tput colors 2>/dev/null)" ] && [ "$(tput colors)" -ge 8 ]
     GREEN='\033[0;32m'
     YELLOW='\033[0;33m'
     BLUE='\033[0;34m'
+    CYAN='\033[0;36m'
     NC='\033[0m' # No Color
 else
     RED=''
     GREEN=''
     YELLOW=''
     BLUE=''
+    CYAN=''
     NC=''
 fi
 
@@ -56,6 +58,10 @@ error() {
     exit 1
 }
 
+info() {
+    printf "${CYAN}   ${NC} %s\n" "$1"
+}
+
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
@@ -70,29 +76,147 @@ cleanup() {
 trap cleanup EXIT
 
 # ============================================
+# HTTP Client Abstraction
+# ============================================
+
+# Determine available HTTP client
+detect_http_client() {
+    if command_exists curl; then
+        echo "curl"
+    elif command_exists wget; then
+        echo "wget"
+    else
+        echo "none"
+    fi
+}
+
+# Download a file using available HTTP client
+# Usage: http_download <url> <output_file>
+http_download() {
+    URL="$1"
+    OUTPUT="$2"
+    HTTP_CLIENT=$(detect_http_client)
+
+    case "$HTTP_CLIENT" in
+        curl)
+            curl -fsSL --retry 3 --retry-delay 2 -o "$OUTPUT" "$URL"
+            ;;
+        wget)
+            wget -q --tries=3 --waitretry=2 -O "$OUTPUT" "$URL"
+            ;;
+        *)
+            error "Neither curl nor wget found. Please install one of them and try again."
+            ;;
+    esac
+}
+
+# Fetch content from URL
+# Usage: http_get <url>
+http_get() {
+    URL="$1"
+    HTTP_CLIENT=$(detect_http_client)
+
+    case "$HTTP_CLIENT" in
+        curl)
+            curl -fsSL --retry 3 --retry-delay 2 "$URL" 2>/dev/null
+            ;;
+        wget)
+            wget -q --tries=3 --waitretry=2 -O - "$URL" 2>/dev/null
+            ;;
+        *)
+            error "Neither curl nor wget found. Please install one of them and try again."
+            ;;
+    esac
+}
+
+# ============================================
 # Platform Detection
 # ============================================
 
 detect_os() {
     OS="$(uname -s)"
     case "$OS" in
-        Linux*)  echo "linux" ;;
-        Darwin*) echo "darwin" ;;
-        MINGW*|MSYS*|CYGWIN*)
-            error "Windows detected. Please use PowerShell or download manually from GitHub releases."
+        Linux*)
+            echo "linux"
             ;;
-        *)       error "Unsupported operating system: $OS" ;;
+        Darwin*)
+            echo "darwin"
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            error "Windows detected via shell. Please use PowerShell or download manually:
+  https://github.com/${GITHUB_REPO}/releases/latest
+
+For Windows (amd64):
+  Download vesctl_VERSION_windows_amd64.zip
+
+For Windows (arm64):
+  Download vesctl_VERSION_windows_arm64.zip"
+            ;;
+        FreeBSD*)
+            error "FreeBSD is not currently supported. Pre-built binaries are available for:
+  - Linux (amd64, arm64)
+  - macOS (amd64, arm64)
+  - Windows (amd64, arm64)"
+            ;;
+        *)
+            error "Unsupported operating system: $OS
+
+Pre-built binaries are available for:
+  - Linux (amd64, arm64)
+  - macOS (amd64, arm64)
+  - Windows (amd64, arm64)"
+            ;;
     esac
 }
 
 detect_arch() {
     ARCH="$(uname -m)"
     case "$ARCH" in
-        x86_64|amd64)  echo "amd64" ;;
-        aarch64|arm64) echo "arm64" ;;
-        armv7l)        error "32-bit ARM is not supported. Please use a 64-bit system." ;;
-        i386|i686)     error "32-bit x86 is not supported. Please use a 64-bit system." ;;
-        *)             error "Unsupported architecture: $ARCH" ;;
+        x86_64|amd64)
+            echo "amd64"
+            ;;
+        aarch64|arm64)
+            echo "arm64"
+            ;;
+        armv7l|armv6l)
+            error "32-bit ARM is not supported. Please use a 64-bit system.
+
+Supported architectures:
+  - amd64 (x86_64)
+  - arm64 (aarch64)"
+            ;;
+        i386|i686)
+            error "32-bit x86 is not supported. Please use a 64-bit system.
+
+Supported architectures:
+  - amd64 (x86_64)
+  - arm64 (aarch64)"
+            ;;
+        *)
+            error "Unsupported architecture: $ARCH
+
+Supported architectures:
+  - amd64 (x86_64)
+  - arm64 (aarch64)"
+            ;;
+    esac
+}
+
+get_os_display_name() {
+    OS="$1"
+    case "$OS" in
+        linux)  echo "Linux" ;;
+        darwin) echo "macOS" ;;
+        *)      echo "$OS" ;;
+    esac
+}
+
+get_arch_display_name() {
+    ARCH="$1"
+    case "$ARCH" in
+        amd64) echo "x86_64 (Intel/AMD)" ;;
+        arm64) echo "ARM64 (Apple Silicon/ARM)" ;;
+        *)     echo "$ARCH" ;;
     esac
 }
 
@@ -117,11 +241,24 @@ need_sudo() {
 
     # Check if sudo is available
     if [ -n "$VESCTL_NO_SUDO" ]; then
-        error "Cannot write to $INSTALL_DIR and VESCTL_NO_SUDO is set. Try setting VESCTL_INSTALL_DIR to a writable location."
+        error "Cannot write to $INSTALL_DIR and VESCTL_NO_SUDO is set.
+
+Try one of:
+  - Set VESCTL_INSTALL_DIR to a writable location:
+    VESCTL_INSTALL_DIR=\$HOME/.local/bin sh install.sh
+
+  - Run as root:
+    sudo sh install.sh"
     fi
 
     if ! command_exists sudo; then
-        error "Cannot write to $INSTALL_DIR and sudo is not available. Try running as root or set VESCTL_INSTALL_DIR to a writable location."
+        error "Cannot write to $INSTALL_DIR and sudo is not available.
+
+Try one of:
+  - Set VESCTL_INSTALL_DIR to a writable location:
+    VESCTL_INSTALL_DIR=\$HOME/.local/bin sh install.sh
+
+  - Run as root"
     fi
 
     echo "sudo"
@@ -132,14 +269,35 @@ need_sudo() {
 # ============================================
 
 get_latest_version() {
-    if ! command_exists curl; then
-        error "curl is required but not installed. Please install curl and try again."
+    status "Fetching latest version from GitHub..."
+
+    RESPONSE=$(http_get "$GITHUB_API")
+
+    if [ -z "$RESPONSE" ]; then
+        error "Failed to fetch latest version from GitHub.
+
+Please check your internet connection or specify a version:
+  VESCTL_VERSION=1.1.0 sh install.sh
+
+Or download manually from:
+  https://github.com/${GITHUB_REPO}/releases/latest"
     fi
 
-    VERSION=$(curl -fsSL "$GITHUB_API" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/^v//')
+    # Try to parse with jq if available, otherwise use sed
+    if command_exists jq; then
+        VERSION=$(echo "$RESPONSE" | jq -r '.tag_name' 2>/dev/null | sed 's/^v//')
+    else
+        VERSION=$(echo "$RESPONSE" | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    fi
 
-    if [ -z "$VERSION" ]; then
-        error "Failed to fetch latest version from GitHub. Please check your internet connection or specify VESCTL_VERSION."
+    if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+        error "Failed to parse version from GitHub API response.
+
+Please specify a version manually:
+  VESCTL_VERSION=1.1.0 sh install.sh
+
+Or download manually from:
+  https://github.com/${GITHUB_REPO}/releases/latest"
     fi
 
     echo "$VERSION"
@@ -171,24 +329,28 @@ verify_checksum() {
         return 0
     fi
 
-    status "Verifying checksum..."
+    status "Verifying SHA256 checksum..."
 
     if command_exists sha256sum; then
         ACTUAL=$(sha256sum "$ARCHIVE" | awk '{print $1}')
     elif command_exists shasum; then
         ACTUAL=$(shasum -a 256 "$ARCHIVE" | awk '{print $1}')
+    elif command_exists openssl; then
+        ACTUAL=$(openssl dgst -sha256 "$ARCHIVE" | awk '{print $NF}')
     else
-        warning "Neither sha256sum nor shasum found, skipping verification"
+        warning "No SHA256 tool found (sha256sum, shasum, or openssl), skipping verification"
         return 0
     fi
 
     if [ "$EXPECTED" != "$ACTUAL" ]; then
         error "Checksum verification failed!
+
 Expected: $EXPECTED
 Actual:   $ACTUAL
 
 This could indicate a corrupted download or a security issue.
-Please try again or download manually from GitHub."
+Please try again or download manually from:
+  https://github.com/${GITHUB_REPO}/releases"
     fi
 
     success "Checksum verified"
@@ -212,31 +374,44 @@ download_and_install() {
     # Create temporary directory
     TEMP_DIR=$(mktemp -d)
 
-    status "Downloading vesctl v${VERSION} for ${OS}/${ARCH}..."
+    OS_DISPLAY=$(get_os_display_name "$OS")
+    ARCH_DISPLAY=$(get_arch_display_name "$ARCH")
+
+    status "Downloading vesctl v${VERSION}..."
+    info "Platform: ${OS_DISPLAY} ${ARCH_DISPLAY}"
+    info "URL: ${DOWNLOAD_URL}"
 
     # Download archive
-    if ! curl -fsSL -o "${TEMP_DIR}/${ARCHIVE_NAME}" "$DOWNLOAD_URL"; then
-        error "Failed to download vesctl. Please check your internet connection or try again later.
-URL: $DOWNLOAD_URL"
+    if ! http_download "$DOWNLOAD_URL" "${TEMP_DIR}/${ARCHIVE_NAME}"; then
+        error "Failed to download vesctl.
+
+URL: $DOWNLOAD_URL
+
+Please check:
+  - Your internet connection
+  - The version exists: https://github.com/${GITHUB_REPO}/releases
+  - Your platform is supported (${OS}/${ARCH})"
     fi
 
     # Download checksums
-    if curl -fsSL -o "${TEMP_DIR}/checksums.txt" "$CHECKSUMS_URL" 2>/dev/null; then
+    if http_download "$CHECKSUMS_URL" "${TEMP_DIR}/checksums.txt" 2>/dev/null; then
         verify_checksum "${TEMP_DIR}/${ARCHIVE_NAME}" "${TEMP_DIR}/checksums.txt" "$ARCHIVE_NAME"
     else
         warning "Could not download checksums file, skipping verification"
     fi
 
-    status "Extracting..."
+    status "Extracting archive..."
 
     # Extract archive
     if ! tar -xzf "${TEMP_DIR}/${ARCHIVE_NAME}" -C "$TEMP_DIR"; then
-        error "Failed to extract archive"
+        error "Failed to extract archive. The download may be corrupted.
+Please try again or download manually."
     fi
 
     # Find the binary
     if [ ! -f "${TEMP_DIR}/${BINARY_NAME}" ]; then
-        error "Binary not found in archive"
+        error "Binary not found in archive. This may indicate a packaging issue.
+Please report this at: https://github.com/${GITHUB_REPO}/issues"
     fi
 
     status "Installing to ${INSTALL_DIR}..."
@@ -282,7 +457,7 @@ setup_completion() {
             setup_fish_completion "$VESCTL_BIN" "$SUDO_CMD"
             ;;
         *)
-            status "Shell completion is available. Run 'vesctl completion --help' for instructions."
+            info "Shell completion available: vesctl completion --help"
             ;;
     esac
 }
@@ -398,33 +573,53 @@ uninstall() {
 # ============================================
 
 show_help() {
-    cat << EOF
+    cat << 'EOF'
 vesctl installer
 
-Usage: $0 [OPTIONS]
+Automatically detects your platform and installs the appropriate binary
+from GitHub releases.
 
-Options:
+USAGE
+    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+    wget -qO- https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+
+OPTIONS
     --uninstall     Remove vesctl and shell completions
     --help, -h      Show this help message
 
-Environment Variables:
+ENVIRONMENT VARIABLES
     VESCTL_VERSION      Specific version to install (default: latest)
     VESCTL_INSTALL_DIR  Installation directory (default: /usr/local/bin)
     VESCTL_NO_SUDO      Skip sudo even if needed (for custom install dirs)
     VESCTL_NO_VERIFY    Skip checksum verification
 
-Examples:
+SUPPORTED PLATFORMS
+    Linux       amd64 (x86_64), arm64 (aarch64)
+    macOS       amd64 (Intel), arm64 (Apple Silicon)
+    Windows     amd64, arm64 (manual download required)
+
+EXAMPLES
     # Install latest version
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh
+    curl -fsSL https://...install.sh | sh
 
     # Install specific version
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_VERSION=0.1.0 sh
+    curl -fsSL https://...install.sh | VESCTL_VERSION=1.1.0 sh
 
-    # Install to custom directory
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | VESCTL_INSTALL_DIR=\$HOME/.local/bin sh
+    # Install to custom directory (no sudo required)
+    curl -fsSL https://...install.sh | VESCTL_INSTALL_DIR=$HOME/.local/bin sh
+
+    # Install using wget instead of curl
+    wget -qO- https://...install.sh | sh
 
     # Uninstall
-    curl -fsSL https://raw.githubusercontent.com/robinmordasiewicz/vesctl/main/install.sh | sh -s -- --uninstall
+    curl -fsSL https://...install.sh | sh -s -- --uninstall
+
+WINDOWS INSTALLATION
+    Download the appropriate zip file from GitHub releases:
+    https://github.com/robinmordasiewicz/vesctl/releases/latest
+
+    - Windows (Intel/AMD): vesctl_VERSION_windows_amd64.zip
+    - Windows (ARM):       vesctl_VERSION_windows_arm64.zip
 
 EOF
 }
@@ -446,19 +641,29 @@ main() {
                 exit 0
                 ;;
             *)
-                error "Unknown option: $1. Use --help for usage."
+                error "Unknown option: $1
+
+Use --help for usage information."
                 ;;
         esac
         shift
     done
 
-    # Check dependencies
-    if ! command_exists curl; then
-        error "curl is required but not installed. Please install curl and try again.
+    # Print banner
+    printf "\n"
+    printf "${CYAN}vesctl installer${NC}\n"
+    printf "${CYAN}=================${NC}\n"
+    printf "\n"
+
+    # Check for HTTP client
+    HTTP_CLIENT=$(detect_http_client)
+    if [ "$HTTP_CLIENT" = "none" ]; then
+        error "Neither curl nor wget found. Please install one of them:
 
 On Debian/Ubuntu: sudo apt-get install curl
 On RHEL/CentOS:   sudo yum install curl
-On macOS:         curl should be pre-installed"
+On macOS:         curl should be pre-installed
+On Alpine:        apk add curl"
     fi
 
     if ! command_exists tar; then
@@ -469,14 +674,16 @@ On macOS:         curl should be pre-installed"
     OS=$(detect_os)
     ARCH=$(detect_arch)
 
-    status "Detected platform: ${OS}/${ARCH}"
+    OS_DISPLAY=$(get_os_display_name "$OS")
+    ARCH_DISPLAY=$(get_arch_display_name "$ARCH")
+
+    status "Detected platform: ${OS_DISPLAY} ${ARCH_DISPLAY}"
 
     # Get version
     if [ -n "$VESCTL_VERSION" ]; then
         VERSION="$VESCTL_VERSION"
         status "Using specified version: v${VERSION}"
     else
-        status "Fetching latest version..."
         VERSION=$(get_latest_version)
         status "Latest version: v${VERSION}"
     fi
@@ -487,9 +694,10 @@ On macOS:         curl should be pre-installed"
         EXISTING_VERSION=$("${INSTALL_DIR}/${BINARY_NAME}" version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
         if [ "$EXISTING_VERSION" = "$VERSION" ]; then
             success "vesctl v${VERSION} is already installed"
+            printf "\n"
             exit 0
         fi
-        warning "Existing installation found (v${EXISTING_VERSION}). Will upgrade to v${VERSION}."
+        warning "Upgrading from v${EXISTING_VERSION} to v${VERSION}"
     fi
 
     # Determine if sudo is needed
@@ -511,9 +719,9 @@ On macOS:         curl should be pre-installed"
     success "vesctl v${VERSION} installed successfully!"
     printf "\n"
     printf "%s\n" "Get started:"
-    printf "  %s\n" "vesctl --help              # Show help"
-    printf "  %s\n" "vesctl configure           # Configure credentials"
-    printf "  %s\n" "vesctl version             # Show version info"
+    printf "  ${CYAN}vesctl --help${NC}              # Show help\n"
+    printf "  ${CYAN}vesctl configure${NC}           # Configure credentials\n"
+    printf "  ${CYAN}vesctl version${NC}             # Show version info\n"
     printf "\n"
     printf "%s\n" "Documentation: https://github.com/${GITHUB_REPO}"
     printf "\n"
