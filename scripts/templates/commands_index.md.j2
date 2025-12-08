@@ -1,0 +1,86 @@
+---
+title: "{{ title }}"
+description: "{{ description }}"
+keywords:
+  - vesctl
+  - CLI
+  - F5 XC
+  - F5 Distributed Cloud
+  - command reference
+---
+
+# Command Reference
+
+All vesctl commands follow a consistent pattern:
+
+```bash
+vesctl <command-group> <action> [resource-type] [name] [flags]
+```
+
+## Command Groups
+
+vesctl organizes commands into logical groups:
+
+| Command | Description |
+|---------|-------------|
+{% for cmd in commands %}
+| [{{ cmd.name }}]({{ cmd.name }}/index.md) | {{ cmd.short }} |
+{% endfor %}
+
+## Global Flags
+
+These flags are available for all commands:
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+{% for flag in global_flags %}
+| `--{{ flag.name }}` | {% if flag.shorthand %}`-{{ flag.shorthand }}`{% endif %} | {{ flag.type }} | {% if flag.default %}{{ flag.default }}{% endif %} | {{ flag.description }} |
+{% endfor %}
+
+## Quick Start
+
+### List resources
+
+```bash
+vesctl configuration list namespace
+```
+
+### Get a specific resource
+
+```bash
+vesctl configuration get namespace example-namespace
+```
+
+### Create from file
+
+```bash
+vesctl configuration create http_loadbalancer -i lb.yaml
+```
+
+### Delete a resource
+
+```bash
+vesctl configuration delete http_loadbalancer example-lb -n example-namespace
+```
+
+## Output Formats
+
+vesctl supports multiple output formats:
+
+| Format | Flag | Description |
+|--------|------|-------------|
+| Text | `--output-format text` | Human-readable text output (default) |
+| JSON | `--output-format json` | JSON format for scripting |
+| YAML | `--output-format yaml` | YAML format for configuration |
+| Table | `--output-format table` | Tabular format for lists |
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `VES_API_TOKEN` | API token for authentication (use with `--api-token` flag) |
+| `VES_P12_PASSWORD` | Password for P12 bundle file |
+
+## Version
+
+Built from version: `{{ version }}`

@@ -20,8 +20,7 @@ The recommended authentication method uses a P12 certificate bundle.
 **Using configuration file (~/.vesconfig):**
 
 ```yaml
-server-urls:
-  - https://your-tenant.console.ves.volterra.io/api
+server-url: https://your-tenant.console.ves.volterra.io/api
 p12-bundle: /path/to/api-creds.p12
 ```
 
@@ -52,8 +51,7 @@ openssl pkcs12 -in api-creds.p12 -nodes -nocerts -out key.pem
 **Using configuration file (~/.vesconfig):**
 
 ```yaml
-server-urls:
-  - https://your-tenant.console.ves.volterra.io/api
+server-url: https://your-tenant.console.ves.volterra.io/api
 cert: /path/to/cert.pem
 key: /path/to/key.pem
 ```
@@ -90,8 +88,7 @@ vesctl configuration list namespace
 **Using configuration file (~/.vesconfig):**
 
 ```yaml
-server-urls:
-  - https://your-tenant.console.ves.volterra.io/api
+server-url: https://your-tenant.console.ves.volterra.io/api
 api-token: true  # Token value from VES_API_TOKEN environment variable
 ```
 
@@ -123,8 +120,7 @@ The default configuration file location is `~/.vesconfig`.
 
 ```yaml
 # API server URL
-server-urls:
-  - https://your-tenant.console.ves.volterra.io/api
+server-url: https://your-tenant.console.ves.volterra.io/api
 
 # P12 bundle authentication
 p12-bundle: /path/to/api-creds.p12
@@ -155,7 +151,7 @@ Override configuration with environment variables:
 | Variable | Description |
 |----------|-------------|
 | `VES_API_TOKEN` | API token for authentication |
-| `VES_API_URL` | API server URL (overrides server-urls in config) |
+| `VES_API_URL` | API server URL (overrides server-url in config) |
 | `VES_P12_PASSWORD` | Password for P12 bundle |
 | `VES_API_URL` | API server URL(s) |
 | `VES_P12_FILE` | Path to P12 bundle |

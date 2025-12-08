@@ -17,7 +17,7 @@ var (
 	cfgFile string
 
 	// Connection settings (vesctl compatible)
-	serverURLs  []string
+	serverURL string
 	cert        string
 	key         string
 	cacert      string
@@ -26,12 +26,13 @@ var (
 	useAPIToken bool // Use API token from VES_API_TOKEN environment variable
 
 	// Output control (vesctl compatible)
-	outfmt    string // Output format for command
-	outputDir string // Output dir for command
+	outputFormat string // Output format for command (canonical: --output-format)
+	outputDir    string // Output dir for command
 
 	// Behavior flags (vesctl compatible)
-	showCurl bool // Emit requests from program in CURL format
-	timeout  int  // Timeout (in seconds) for command to finish
+	showCurl       bool // Emit requests from program in CURL format
+	timeout        int  // Timeout (in seconds) for command to finish
+	nonInteractive bool // Fail on missing arguments instead of prompting
 
 	// Internal flags (not exposed to CLI)
 	debug bool
@@ -43,14 +44,25 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "vesctl",
-	Short: "A command line utility to interact with ves service.",
-	Long:  `A command line utility to interact with ves service.`,
+	Short: "Command-line interface for F5 Distributed Cloud services.",
+	Long:  `Command-line interface for F5 Distributed Cloud services.`,
+	// Run handles the root command when no subcommand is specified
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// Handle --spec flag for root command
+		if CheckSpecFlag() {
+			format := GetOutputFormatWithDefault("json")
+			return OutputSpec(cmd, format)
+		}
+		// If no --spec flag, show help
+		return cmd.Help()
+	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Skip client initialization for non-API commands
 		skipCommands := map[string]bool{
 			"version":    true,
 			"completion": true,
 			"help":       true,
+			"vesctl":     true, // Root command itself
 		}
 		if skipCommands[cmd.Name()] {
 			return nil
@@ -58,13 +70,13 @@ var rootCmd = &cobra.Command{
 
 		// Initialize the API client
 		cfg := &client.Config{
-			ServerURLs: serverURLs,
-			Cert:       cert,
-			Key:        key,
-			CACert:     cacert,
-			P12Bundle:  p12Bundle,
-			Debug:      debug,
-			Timeout:    timeout,
+			ServerURL: serverURL,
+			Cert:      cert,
+			Key:       key,
+			CACert:    cacert,
+			P12Bundle: p12Bundle,
+			Debug:     debug,
+			Timeout:   timeout,
 		}
 
 		// Handle API token authentication
@@ -98,30 +110,39 @@ func init() {
 	pf := rootCmd.PersistentFlags()
 
 	// Connection settings (vesctl compatible)
-	pf.StringVarP(&cacert, "cacert", "a", "", "Server CA cert file path")
-	pf.StringVarP(&cert, "cert", "c", "", "Client cert file path")
+	pf.StringVarP(&cacert, "cacert", "a", "", "Path to the server CA certificate file for TLS verification.")
+	pf.StringVarP(&cert, "cert", "c", "", "Path to the client certificate file for mTLS authentication.")
 	// Get default config path for help text (matches original vesctl behavior)
 	defaultConfigPath := "$HOME/.vesconfig"
 	if home, err := os.UserHomeDir(); err == nil {
 		defaultConfigPath = filepath.Join(home, ".vesconfig")
 	}
-	pf.StringVar(&cfgFile, "config", "", fmt.Sprintf("A configuration file to use for API gateway URL and credentials (default %q)", defaultConfigPath))
-	pf.BoolVar(&hardwareKey, "hardwareKey", false, "Use yubikey for TLS connection")
-	pf.StringVarP(&key, "key", "k", "", "Client key file path")
-	pf.StringVar(&outfmt, "outfmt", "", "Output format for command")
-	pf.StringVarP(&outputDir, "output", "o", "./", "Output dir for command")
-	pf.StringVar(&p12Bundle, "p12-bundle", "", "Client P12 bundle (key+cert) file path. Any password for this file should be in environment variable VES_P12_PASSWORD")
-	pf.StringSliceVarP(&serverURLs, "server-urls", "u", nil, "API endpoint URL (default [http://localhost:8001])")
-	pf.BoolVar(&showCurl, "show-curl", false, "Emit requests from program in CURL format")
-	pf.IntVar(&timeout, "timeout", 5, "Timeout (in seconds) for command to finish")
-	pf.BoolVar(&useAPIToken, "api-token", false, "Use API token from VES_API_TOKEN environment variable")
+	pf.StringVar(&cfgFile, "config", "", fmt.Sprintf("Path to the configuration file containing API URL and credentials (default %q).", defaultConfigPath))
+	pf.BoolVar(&hardwareKey, "hardwareKey", false, "Use a YubiKey hardware security module for TLS authentication.")
+	pf.StringVarP(&key, "key", "k", "", "Path to the client private key file for mTLS authentication.")
+
+	// Output format: --output-format is canonical, --outfmt is hidden alias for backward compatibility
+	pf.StringVar(&outputFormat, "output-format", "", "Set the output format to text, json, yaml, or table.")
+	pf.StringVar(&outputFormat, "outfmt", "", "Output format for command (deprecated: use --output-format).")
+	_ = pf.MarkHidden("outfmt") // Hide deprecated alias
+
+	pf.StringVarP(&outputDir, "output", "o", "./", "Directory path for command output files.")
+	pf.StringVar(&p12Bundle, "p12-bundle", "", "Path to PKCS#12 bundle file containing client certificate and key. Set password in VES_P12_PASSWORD.")
+	pf.StringVarP(&serverURL, "server-url", "u", "", "F5 Distributed Cloud API endpoint URL.")
+	pf.BoolVar(&showCurl, "show-curl", false, "Output equivalent curl commands for each API request.")
+	pf.IntVar(&timeout, "timeout", 5, "Maximum time in seconds to wait for command completion.")
+	pf.BoolVar(&useAPIToken, "api-token", false, "Authenticate using the API token from VES_API_TOKEN environment variable.")
+	pf.BoolVar(&nonInteractive, "non-interactive", false, "Disable interactive prompts and fail if required arguments are missing.")
 
 	// Bind flags to viper (errors are ignored as flags are guaranteed to exist)
-	_ = viper.BindPFlag("server-urls", pf.Lookup("server-urls"))
+	_ = viper.BindPFlag("server-url", pf.Lookup("server-url"))
 	_ = viper.BindPFlag("cert", pf.Lookup("cert"))
 	_ = viper.BindPFlag("key", pf.Lookup("key"))
 	_ = viper.BindPFlag("cacert", pf.Lookup("cacert"))
 	_ = viper.BindPFlag("p12-bundle", pf.Lookup("p12-bundle"))
+
+	// Register --spec flag for machine-readable CLI specification
+	RegisterSpecFlag(rootCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -153,8 +174,8 @@ func initConfig() {
 		applyConfigToFlags()
 	} else {
 		// No config file found, apply default
-		if len(serverURLs) == 0 {
-			serverURLs = []string{"http://localhost:8001"}
+		if serverURL == "" {
+			serverURL = "http://localhost:8001"
 		}
 	}
 }
@@ -164,18 +185,18 @@ func applyConfigToFlags() {
 	cfg, err := config.Load(viper.ConfigFileUsed())
 	if err != nil {
 		// If config file couldn't be loaded, apply default
-		if len(serverURLs) == 0 {
-			serverURLs = []string{"http://localhost:8001"}
+		if serverURL == "" {
+			serverURL = "http://localhost:8001"
 		}
 		return
 	}
 
-	// VES_API_URL environment variable overrides server-urls from config
+	// VES_API_URL environment variable overrides server-url from config
 	if envURL := os.Getenv("VES_API_URL"); envURL != "" {
-		serverURLs = []string{envURL}
-	} else if len(serverURLs) == 0 && len(cfg.ServerURLs) > 0 {
+		serverURL = envURL
+	} else if serverURL == "" && cfg.ServerURL != "" {
 		// Apply config values if CLI flags not set
-		serverURLs = cfg.ServerURLs
+		serverURL = cfg.ServerURL
 	}
 
 	if cert == "" && cfg.Cert != "" {
@@ -194,8 +215,8 @@ func applyConfigToFlags() {
 	}
 
 	// Apply fallback default if still not set
-	if len(serverURLs) == 0 {
-		serverURLs = []string{"http://localhost:8001"}
+	if serverURL == "" {
+		serverURL = "http://localhost:8001"
 	}
 }
 
@@ -218,18 +239,23 @@ func GetClient() *client.Client {
 
 // GetOutputFormat returns the current output format (defaults to table for list operations)
 func GetOutputFormat() string {
-	if outfmt != "" {
-		return outfmt
+	if outputFormat != "" {
+		return outputFormat
 	}
 	return "table" // Default to table for list operations
 }
 
 // GetOutputFormatWithDefault returns the current output format with a custom default
 func GetOutputFormatWithDefault(defaultFmt string) string {
-	if outfmt != "" {
-		return outfmt
+	if outputFormat != "" {
+		return outputFormat
 	}
 	return defaultFmt
+}
+
+// IsNonInteractive returns whether non-interactive mode is enabled
+func IsNonInteractive() bool {
+	return nonInteractive
 }
 
 // GetOutputDir returns the output directory

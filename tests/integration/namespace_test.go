@@ -27,7 +27,7 @@ func getTestClient(t *testing.T) *client.Client {
 	_ = os.Setenv("VES_P12_PASSWORD", p12Password)
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          p12File,
 		Timeout:            60,
 		Debug:              testing.Verbose(),

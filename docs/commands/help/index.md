@@ -1,15 +1,35 @@
-# Getting Help
+---
+title: "vesctl help"
+description: "Help about any command"
+keywords:
+  - F5 Distributed Cloud
+  - help
+  - F5 XC
+  - vesctl
+command: "vesctl help"
+command_group: "help"
+---
 
-Every command supports the `--help` flag:
+# vesctl help
+
+> Help about any command
+
+## Synopsis
 
 ```bash
-# Top-level help
-vesctl --help
-
-# Command group help
-vesctl configuration --help
-
-# Specific action help
-vesctl configuration list --help
-vesctl configuration get --help
+vesctl help <command> [flags]
 ```
+
+## Description
+
+Help provides help for any command in the application.
+Simply type vesctl help [path to command] for full details.
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+
+## See Also
+
+- [Command Reference](../index.md)

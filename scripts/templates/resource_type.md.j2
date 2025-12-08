@@ -1,0 +1,161 @@
+---
+title: "{{ front_matter.title }}"
+description: "{{ front_matter.description }}"
+keywords:
+{% for kw in front_matter.keywords %}
+  - {{ kw }}
+{% endfor %}
+command: "{{ front_matter.command }}"
+command_group: "{{ front_matter.command_group }}"
+action: "{{ front_matter.action }}"
+resource_type: "{{ front_matter.resource_type }}"
+{% if front_matter.related_commands %}
+related_commands:
+{% for rc in front_matter.related_commands %}
+  - "{{ rc }}"
+{% endfor %}
+{% endif %}
+---
+
+# vesctl {{ group }} {{ action }} {{ resource }}
+
+> {{ command.short }}
+
+## Synopsis
+
+```bash
+{{ command.full_command }}{% if command.use and '<' in command.use %} {{ command.use.split()[1:] | join(' ') }}{% endif %} [flags]
+```
+
+{% if command.long and command.long != command.short %}
+## Description
+
+{{ command.long }}
+
+{% endif %}
+{% if command.flags %}
+## Flags
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+{% for flag in command.flags %}
+| `--{{ flag.name }}` | {% if flag.shorthand %}`-{{ flag.shorthand }}`{% endif %} | {{ flag.type }} | {% if flag.default %}{{ flag.default }}{% endif %} | {{ flag.description }} |
+{% endfor %}
+
+{% endif %}
+{% if command.example %}
+## Examples
+
+```bash
+{{ command.example }}
+```
+
+{% else %}
+## Examples
+
+{% if action == 'list' %}
+### List all {{ resource | underscore_to_space }} resources
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }}
+```
+
+### List in specific namespace
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} -n example-namespace
+```
+
+### List with JSON output
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} --output-format json
+```
+{% elif action == 'get' %}
+### Get {{ resource | underscore_to_space }} details
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }}
+```
+
+### Get with YAML output
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }} --output-format yaml
+```
+{% elif action == 'create' %}
+### Create {{ resource | underscore_to_space }} from file
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} -i {{ resource }}.yaml
+```
+{% elif action == 'delete' %}
+### Delete {{ resource | underscore_to_space }}
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }}
+```
+
+### Delete with confirmation bypass
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }} --yes
+```
+{% elif action == 'replace' %}
+### Replace {{ resource | underscore_to_space }} from file
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} -i {{ resource }}.yaml
+```
+{% elif action == 'apply' %}
+### Apply {{ resource | underscore_to_space }} from file
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} -i {{ resource }}.yaml
+```
+{% elif action == 'status' %}
+### Get {{ resource | underscore_to_space }} status
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }}
+```
+{% elif action == 'patch' %}
+### Patch {{ resource | underscore_to_space }}
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }} -i patch.yaml
+```
+{% elif action == 'add-labels' %}
+### Add labels to {{ resource | underscore_to_space }}
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }} --label-key app --label-value web
+```
+{% elif action == 'remove-labels' %}
+### Remove labels from {{ resource | underscore_to_space }}
+
+```bash
+vesctl {{ group }} {{ action }} {{ resource }} example-{{ resource | replace('_', '-') }} --label-key app
+```
+{% else %}
+```bash
+{{ command.full_command }}
+```
+{% endif %}
+
+{% endif %}
+{% if related_commands and related_commands | length > 1 %}
+## Related Commands
+
+{% for rel in related_commands %}
+{% if rel != command %}
+- [vesctl {{ group }} {{ rel.path[1] }} {{ resource }}](../{{ rel.path[1] }}/{{ resource }}.md) - {{ rel.short }}
+{% endif %}
+{% endfor %}
+
+{% endif %}
+## See Also
+
+- [vesctl {{ group }} {{ action }}](index.md) - {{ action | title_case }} commands
+- [vesctl {{ group }}](../index.md) - {{ group | title_case }} commands
+- [Command Reference](../../index.md)

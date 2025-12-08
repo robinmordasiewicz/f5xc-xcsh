@@ -94,8 +94,7 @@ func runLogin(cmd *cobra.Command, args []string) error {
 
 	// Update from flags
 	if loginFlags.tenant != "" {
-		serverURL := fmt.Sprintf("https://%s.console.ves.volterra.io/api", loginFlags.tenant)
-		config.ServerURLs = []string{serverURL}
+		config.ServerURL = fmt.Sprintf("https://%s.console.ves.volterra.io/api", loginFlags.tenant)
 	}
 
 	// Handle API token authentication
@@ -160,7 +159,7 @@ func runLogin(cmd *cobra.Command, args []string) error {
 	}
 
 	// Validate we have a server URL
-	if len(config.ServerURLs) == 0 {
+	if config.ServerURL == "" {
 		return fmt.Errorf("server URL required: provide --tenant flag")
 	}
 
@@ -199,8 +198,8 @@ func runLogin(cmd *cobra.Command, args []string) error {
 
 	// Extract tenant from URL
 	tenant := ""
-	if len(config.ServerURLs) > 0 {
-		parts := strings.Split(config.ServerURLs[0], ".")
+	if config.ServerURL != "" {
+		parts := strings.Split(config.ServerURL, ".")
 		if len(parts) > 0 {
 			tenant = strings.TrimPrefix(parts[0], "https://")
 		}
@@ -280,10 +279,10 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 
 	userInfo := map[string]interface{}{}
 
-	if len(config.ServerURLs) > 0 {
-		userInfo["server"] = config.ServerURLs[0]
+	if config.ServerURL != "" {
+		userInfo["server"] = config.ServerURL
 		// Extract tenant from URL
-		parts := strings.Split(config.ServerURLs[0], ".")
+		parts := strings.Split(config.ServerURL, ".")
 		if len(parts) > 0 {
 			userInfo["tenant"] = strings.TrimPrefix(parts[0], "https://")
 		}

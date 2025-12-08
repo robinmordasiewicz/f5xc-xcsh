@@ -18,8 +18,8 @@ var (
 
 var versionCmd = &cobra.Command{
 	Use:     "version",
-	Short:   "Print build version",
-	Long:    `Print build version`,
+	Short:   "Display the vesctl build version and commit information.",
+	Long:    `Display the vesctl build version and commit information.`,
 	Example: `vesctl version`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Match original vesctl format exactly:

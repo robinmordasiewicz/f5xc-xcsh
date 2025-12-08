@@ -9,8 +9,8 @@ import (
 
 // Config represents the vesctl configuration file structure
 type Config struct {
-	// ServerURLs are the API server endpoints
-	ServerURLs []string `yaml:"server-urls"`
+	// ServerURL is the API server endpoint
+	ServerURL string `yaml:"server-url"`
 
 	// P12Bundle is the path to the P12 certificate bundle
 	P12Bundle string `yaml:"p12-bundle,omitempty"`
@@ -25,13 +25,13 @@ type Config struct {
 	APIToken bool `yaml:"api-token,omitempty"`
 }
 
-// rawConfig is used for flexible YAML parsing (supports both single string and array)
+// rawConfig is used for YAML parsing
 type rawConfig struct {
-	ServerURLs interface{} `yaml:"server-urls"`
-	P12Bundle  string      `yaml:"p12-bundle"`
-	Cert       string      `yaml:"cert"`
-	Key        string      `yaml:"key"`
-	APIToken   bool        `yaml:"api-token"`
+	ServerURL string `yaml:"server-url"`
+	P12Bundle string `yaml:"p12-bundle"`
+	Cert      string `yaml:"cert"`
+	Key       string `yaml:"key"`
+	APIToken  bool   `yaml:"api-token"`
 }
 
 // Load reads and parses a vesctl config file
@@ -51,24 +51,11 @@ func Load(path string) (*Config, error) {
 	}
 
 	cfg := &Config{
+		ServerURL: raw.ServerURL,
 		P12Bundle: raw.P12Bundle,
 		Cert:      raw.Cert,
 		Key:       raw.Key,
 		APIToken:  raw.APIToken,
-	}
-
-	// Handle server-urls as either single string or array
-	switch v := raw.ServerURLs.(type) {
-	case string:
-		if v != "" {
-			cfg.ServerURLs = []string{v}
-		}
-	case []interface{}:
-		for _, item := range v {
-			if s, ok := item.(string); ok {
-				cfg.ServerURLs = append(cfg.ServerURLs, s)
-			}
-		}
 	}
 
 	return cfg, nil
@@ -90,8 +77,8 @@ func (c *Config) Save(path string) error {
 
 // Validate checks if the config has required fields
 func (c *Config) Validate() error {
-	if len(c.ServerURLs) == 0 {
-		return fmt.Errorf("server-urls is required")
+	if c.ServerURL == "" {
+		return fmt.Errorf("server-url is required")
 	}
 
 	// Must have either P12 bundle, cert/key pair, or API token

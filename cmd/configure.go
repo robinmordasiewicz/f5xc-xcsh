@@ -98,25 +98,25 @@ func init() {
 
 // ConfigFile represents the configuration file structure
 type ConfigFile struct {
-	ServerURLs []string `yaml:"server-urls,omitempty"`
-	P12Bundle  string   `yaml:"p12-bundle,omitempty"`
-	Cert       string   `yaml:"cert,omitempty"`
-	Key        string   `yaml:"key,omitempty"`
-	Output     string   `yaml:"output,omitempty"`
-	APIToken   bool     `yaml:"api-token,omitempty"`
+	ServerURL string `yaml:"server-url,omitempty"`
+	P12Bundle string `yaml:"p12-bundle,omitempty"`
+	Cert      string `yaml:"cert,omitempty"`
+	Key       string `yaml:"key,omitempty"`
+	Output    string `yaml:"output,omitempty"`
+	APIToken  bool   `yaml:"api-token,omitempty"`
 }
 
-// rawConfigFile is used for flexible YAML parsing (supports both single string and array for server-urls)
+// rawConfigFile is used for YAML parsing
 type rawConfigFile struct {
-	ServerURLs interface{} `yaml:"server-urls"`
-	P12Bundle  string      `yaml:"p12-bundle"`
-	Cert       string      `yaml:"cert"`
-	Key        string      `yaml:"key"`
-	Output     string      `yaml:"output"`
-	APIToken   bool        `yaml:"api-token"`
+	ServerURL string `yaml:"server-url"`
+	P12Bundle string `yaml:"p12-bundle"`
+	Cert      string `yaml:"cert"`
+	Key       string `yaml:"key"`
+	Output    string `yaml:"output"`
+	APIToken  bool   `yaml:"api-token"`
 }
 
-// parseConfigFile parses a config file with flexible server-urls format
+// parseConfigFile parses a config file
 func parseConfigFile(data []byte) (*ConfigFile, error) {
 	var raw rawConfigFile
 	if err := yaml.Unmarshal(data, &raw); err != nil {
@@ -124,25 +124,12 @@ func parseConfigFile(data []byte) (*ConfigFile, error) {
 	}
 
 	cfg := &ConfigFile{
+		ServerURL: raw.ServerURL,
 		P12Bundle: raw.P12Bundle,
 		Cert:      raw.Cert,
 		Key:       raw.Key,
 		Output:    raw.Output,
 		APIToken:  raw.APIToken,
-	}
-
-	// Handle server-urls as either single string or array
-	switch v := raw.ServerURLs.(type) {
-	case string:
-		if v != "" {
-			cfg.ServerURLs = []string{v}
-		}
-	case []interface{}:
-		for _, item := range v {
-			if s, ok := item.(string); ok {
-				cfg.ServerURLs = append(cfg.ServerURLs, s)
-			}
-		}
 	}
 
 	return cfg, nil
@@ -172,14 +159,10 @@ func runConfigure(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 
 	// Server URL
-	currentServer := ""
-	if len(config.ServerURLs) > 0 {
-		currentServer = config.ServerURLs[0]
-	}
-	serverURL := promptWithDefault(reader, "API Server URL", currentServer,
+	serverURL := promptWithDefault(reader, "API Server URL", config.ServerURL,
 		"e.g., https://my-tenant.console.ves.volterra.io/api")
 	if serverURL != "" {
-		config.ServerURLs = []string{serverURL}
+		config.ServerURL = serverURL
 	}
 
 	// Authentication method
@@ -280,7 +263,7 @@ func runConfigureShow(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Configuration file: %s\n\n", configPath)
 
 	displayConfig := map[string]interface{}{
-		"server_urls": config.ServerURLs,
+		"server_url": config.ServerURL,
 	}
 
 	if config.P12Bundle != "" {
@@ -318,8 +301,8 @@ func runConfigureSet(cmd *cobra.Command, args []string) error {
 
 	// Set the value
 	switch key {
-	case "server-url", "server-urls":
-		config.ServerURLs = []string{value}
+	case "server-url":
+		config.ServerURL = value
 	case "p12-bundle":
 		config.P12Bundle = expandPath(value)
 		config.APIToken = false // Clear API token when setting P12
@@ -355,7 +338,7 @@ func runConfigureSet(cmd *cobra.Command, args []string) error {
 
 func updateConfigFromFlags(config *ConfigFile, configPath string) error {
 	if configureFlags.serverURL != "" {
-		config.ServerURLs = []string{configureFlags.serverURL}
+		config.ServerURL = configureFlags.serverURL
 	}
 	if configureFlags.apiToken {
 		config.APIToken = true

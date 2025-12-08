@@ -18,7 +18,7 @@ import (
 
 // Config holds the client configuration
 type Config struct {
-	ServerURLs         []string
+	ServerURL          string
 	Cert               string
 	Key                string
 	CACert             string
@@ -32,7 +32,7 @@ type Config struct {
 // Client is the HTTP client for F5 XC API
 type Client struct {
 	httpClient *http.Client
-	serverURLs []string
+	serverURL  string
 	debug      bool
 	tlsConfig  *tls.Config
 	apiToken   string // API token for Authorization header
@@ -41,9 +41,9 @@ type Client struct {
 // New creates a new API client
 func New(cfg *Config) (*Client, error) {
 	client := &Client{
-		serverURLs: cfg.ServerURLs,
-		debug:      cfg.Debug,
-		apiToken:   cfg.APIToken,
+		serverURL: cfg.ServerURL,
+		debug:     cfg.Debug,
+		apiToken:  cfg.APIToken,
 	}
 
 	// Create TLS config if certificate credentials are provided (not for API token auth)
@@ -87,8 +87,7 @@ type Response struct {
 // Do executes an HTTP request
 func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 	// Build URL
-	baseURL := c.serverURLs[0] // Use first server URL
-	baseURL = strings.TrimRight(baseURL, "/")
+	baseURL := strings.TrimRight(c.serverURL, "/")
 
 	// Handle case where base URL ends with /api and path starts with /api
 	// This allows server URLs like "https://tenant.console.ves.volterra.io/api"

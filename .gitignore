@@ -48,3 +48,15 @@ dist/
 # Temporary files
 tmp/
 temp/
+
+# Generated documentation (regenerated in CI)
+docs/commands/
+!docs/commands/.gitkeep
+
+# MkDocs build output
+site/
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc

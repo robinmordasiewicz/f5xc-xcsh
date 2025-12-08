@@ -30,7 +30,8 @@ PLATFORMS=linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 
 .PHONY: all build build-all test test-unit test-int clean lint fmt install help \
         release-dry release-snapshot verify check watch \
-        build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64
+        build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 \
+        docs docs-nav docs-clean docs-serve docs-check
 
 # Default target
 all: build
@@ -191,6 +192,57 @@ watch:
 		echo "fswatch not installed. Install with: brew install fswatch"; \
 	fi
 
+# Documentation targets
+PYTHON ?= python3
+DOCS_OUTPUT = docs/commands
+DOCS_TEMPLATES = scripts/templates
+
+# Generate documentation from vesctl --spec
+docs: build
+	@echo "Generating documentation from CLI spec..."
+	@$(PYTHON) scripts/generate-docs.py \
+		--vesctl ./$(BINARY_NAME) \
+		--output $(DOCS_OUTPUT) \
+		--templates $(DOCS_TEMPLATES) \
+		--clean \
+		--update-mkdocs
+	@echo "Documentation generated successfully!"
+	@echo "  Output: $(DOCS_OUTPUT)"
+	@echo "  Files: $$(find $(DOCS_OUTPUT) -name '*.md' | wc -l) markdown files"
+
+# Generate navigation only (faster, for mkdocs.yml updates)
+docs-nav: build
+	@echo "Generating navigation structure..."
+	@$(PYTHON) scripts/generate-docs.py \
+		--vesctl ./$(BINARY_NAME) \
+		--nav-only \
+		--update-mkdocs
+	@echo "Navigation updated in mkdocs.yml"
+
+# Clean generated documentation
+docs-clean:
+	@echo "Cleaning generated documentation..."
+	@rm -rf $(DOCS_OUTPUT)/*
+	@echo "Generated docs cleaned"
+
+# Serve documentation locally with hot-reload
+docs-serve: docs
+	@echo "Starting documentation server..."
+	@if command -v mkdocs > /dev/null; then \
+		mkdocs serve; \
+	else \
+		echo "mkdocs not installed. Install with: pip install mkdocs mkdocs-material"; \
+	fi
+
+# Check current spec hash (useful for debugging idempotency)
+docs-check: build
+	@echo "Computing spec hash..."
+	@./$(BINARY_NAME) --spec | sha256sum | cut -d' ' -f1
+	@echo ""
+	@echo "Spec statistics:"
+	@echo "  Commands: $$(./$(BINARY_NAME) --spec | jq '.commands | length')"
+	@echo "  Size: $$(./$(BINARY_NAME) --spec | wc -c) bytes"
+
 # Show version info
 version:
 	@echo "Version: $(VERSION)"
@@ -226,6 +278,13 @@ help:
 	@echo "  make release-dry    - Test GoReleaser without publishing"
 	@echo "  make release-snapshot - Build snapshot release"
 	@echo "  make version        - Show version info"
+	@echo ""
+	@echo "Documentation Commands:"
+	@echo "  make docs           - Generate documentation from CLI spec"
+	@echo "  make docs-nav       - Update mkdocs.yml navigation only"
+	@echo "  make docs-clean     - Clean generated documentation"
+	@echo "  make docs-serve     - Generate docs and serve locally"
+	@echo "  make docs-check     - Show current spec hash"
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  make watch          - Rebuild on file changes"

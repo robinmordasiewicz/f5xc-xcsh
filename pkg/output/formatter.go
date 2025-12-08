@@ -19,6 +19,7 @@ const (
 	FormatJSON  Format = "json"
 	FormatYAML  Format = "yaml"
 	FormatTable Format = "table"
+	FormatText  Format = "text" // Alias for table (human-readable)
 	FormatTSV   Format = "tsv"
 	FormatNone  Format = "none"
 )
@@ -40,7 +41,7 @@ func New(format string) *Formatter {
 		f.format = FormatJSON
 	case "yaml":
 		f.format = FormatYAML
-	case "table", "":
+	case "table", "text", "":
 		f.format = FormatTable // Default to table for compatibility with original vesctl
 	case "tsv":
 		f.format = FormatTSV

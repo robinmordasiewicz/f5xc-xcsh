@@ -11,8 +11,8 @@ import (
 
 func TestNew_WithoutCredentials(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"http://localhost:8080"},
-		Timeout:    30,
+		ServerURL: "http://localhost:8080",
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -24,8 +24,8 @@ func TestNew_WithoutCredentials(t *testing.T) {
 		t.Fatal("Expected client to be created")
 	}
 
-	if len(client.serverURLs) != 1 {
-		t.Errorf("Expected 1 server URL, got %d", len(client.serverURLs))
+	if client.serverURL != "http://localhost:8080" {
+		t.Errorf("Expected server URL http://localhost:8080, got %s", client.serverURL)
 	}
 }
 
@@ -46,7 +46,7 @@ func TestClient_Get(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -108,7 +108,7 @@ func TestClient_Post(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -146,7 +146,7 @@ func TestClient_Put(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -177,7 +177,7 @@ func TestClient_Delete(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -209,7 +209,7 @@ func TestClient_Patch(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -245,7 +245,7 @@ func TestClient_QueryParameters(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -331,7 +331,7 @@ func TestClient_ErrorResponse(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 	}
 
@@ -362,7 +362,7 @@ func TestClient_ErrorResponse(t *testing.T) {
 
 func TestNew_WithAPIToken(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"http://localhost:8080"},
+		ServerURL: "http://localhost:8080",
 		APIToken:   "test-api-token",
 		Timeout:    30,
 	}
@@ -398,7 +398,7 @@ func TestClient_APITokenHeader(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		APIToken:   "test-api-token",
 		Timeout:    30,
 	}
@@ -437,7 +437,7 @@ func TestClient_NoAPITokenHeader_WhenNotConfigured(t *testing.T) {
 	defer server.Close()
 
 	cfg := &Config{
-		ServerURLs: []string{server.URL},
+		ServerURL: server.URL,
 		Timeout:    30,
 		// No APIToken set
 	}
@@ -480,7 +480,7 @@ func TestClient_APIToken_AllMethods(t *testing.T) {
 			defer server.Close()
 
 			cfg := &Config{
-				ServerURLs: []string{server.URL},
+				ServerURL: server.URL,
 				APIToken:   "test-token",
 				Timeout:    30,
 			}

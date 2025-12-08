@@ -1,80 +1,56 @@
-# Site Commands
+---
+title: "vesctl site"
+description: "Deploy and manage F5 XC sites on public cloud providers."
+keywords:
+  - F5 Distributed Cloud
+  - site
+  - F5 XC
+  - vesctl
+command: "vesctl site"
+command_group: "site"
+aliases:
+  - "s"
+---
 
-The `vesctl site` command group manages cloud and edge sites.
+# vesctl site
 
-## Overview
+> Deploy and manage F5 XC sites on public cloud providers.
 
-```text
-vesctl site --help
-```
-
-## Site Types
-
-vesctl supports managing various site types:
-
-| Site Type | Description |
-|-----------|-------------|
-| AWS VPC Site | Sites deployed in AWS VPCs |
-| Azure VNet Site | Sites deployed in Azure VNets |
-| GCP VPC Site | Sites deployed in Google Cloud VPCs |
-| Edge Sites | Physical or virtual edge deployments |
-
-## Common Operations
-
-### List Sites
+## Synopsis
 
 ```bash
-# List all sites
-vesctl site list
-
-# List sites in a namespace
-vesctl site list -n system
+vesctl site <command> [flags]
 ```
 
-### Get Site Details
+## Aliases
+
+This command can also be invoked as:
+
+- `vesctl s`
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| [aws_vpc](aws_vpc/index.md) | Manage AWS VPC site creation through view apis |
+| [azure_vnet](azure_vnet/index.md) | Manage Azure Vnet site creation through view apis |
+
+## Flags
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+| `--log-color` |  | bool | true | Enable colored log output. |
+| `--log-fabulous` |  | bool | true | Enable enhanced log formatting. |
+| `--log-level` |  | int | 3 | Set the logging verbosity level for site operations. |
+
+## Examples
 
 ```bash
-vesctl site get <site-name> -n <namespace>
+vesctl site aws_vpc create
 ```
 
-### Site Status
+## See Also
 
-Check the status and health of deployed sites:
-
-```bash
-vesctl site status <site-name> -n <namespace>
-```
-
-## Cloud Site Management
-
-### AWS VPC Sites
-
-```bash
-# Get AWS VPC site help
-vesctl site aws-vpc --help
-
-# List AWS VPC sites
-vesctl configuration list aws_vpc_site -n system
-```
-
-### Azure VNet Sites
-
-```bash
-# Get Azure VNet site help
-vesctl site azure-vnet --help
-
-# List Azure VNet sites
-vesctl configuration list azure_vnet_site -n system
-```
-
-## Related Commands
-
-For detailed site resource management, use the `configuration` commands:
-
-```bash
-# Create AWS VPC site
-vesctl configuration create aws_vpc_site -i aws-site.yaml -n system
-
-# Get site details
-vesctl configuration get aws_vpc_site example-aws-site -n system --outfmt yaml
-```
+- [Command Reference](../index.md)
+- [vesctl site aws_vpc](aws_vpc/index.md)
+- [vesctl site azure_vnet](azure_vnet/index.md)

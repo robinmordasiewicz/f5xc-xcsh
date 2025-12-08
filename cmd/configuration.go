@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -26,14 +27,15 @@ type configurationFlags struct {
 	labelKeys      []string
 	labelValues    []string
 	atSite         string
+	yes            bool // Skip confirmation for destructive operations
 }
 
 // configurationCmd represents the configuration command (vesctl compatibility)
 var configurationCmd = &cobra.Command{
 	Use:     "configuration",
 	Aliases: []string{"cfg", "c"},
-	Short:   "Configure object",
-	Long:    `Configure object`,
+	Short:   "Manage F5 XC configuration objects using CRUD operations.",
+	Long:    `Manage F5 XC configuration objects using CRUD operations.`,
 	Example: `vesctl configuration create virtual_host`,
 }
 
@@ -59,11 +61,11 @@ func buildConfigListCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "list",
-		Short:   "List configuration objects",
+		Short:   "List all configuration objects of a specified type.",
 		Example: "vesctl configuration list virtual_host",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace in which to list objects")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -87,12 +89,12 @@ func buildConfigGetCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "get",
-		Short:   "Get configuration object",
+		Short:   "Retrieve a specific configuration object by name.",
 		Example: "vesctl configuration get virtual_host <name>",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace in which to get object")
-	cmd.PersistentFlags().StringVar(&flags.responseFormat, "response-format", "read", "Format in get response (default 'read', others 'replace-request')")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
+	cmd.PersistentFlags().StringVar(&flags.responseFormat, "response-format", "read", "Response format: 'read' for display or 'replace-request' for editing.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -118,12 +120,12 @@ func buildConfigCreateCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "create",
-		Short:   "Create configuration object",
+		Short:   "Create a new configuration object from a YAML or JSON file.",
 		Example: "vesctl configuration create virtual_host -i <file>",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "File containing CreateRequest contents in yaml form")
-	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline CreateRequest contents in json form")
+	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "Path to YAML or JSON file containing the resource definition.")
+	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline JSON string containing the resource definition.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -150,11 +152,12 @@ func buildConfigDeleteCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "delete",
-		Short:   "Delete configuration object",
-		Example: "vesctl configuration delete virtual_host <name>",
+		Short:   "Delete a configuration object by name.",
+		Example: "vesctl configuration delete virtual_host <name> --yes",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace in which to delete object")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
+	cmd.PersistentFlags().BoolVarP(&flags.yes, "yes", "y", false, "Skip confirmation prompts for destructive operations.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -183,12 +186,13 @@ func buildConfigReplaceCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "replace",
-		Short:   "Replace configuration object",
-		Example: "vesctl configuration replace virtual_host -i <file>",
+		Short:   "Replace an existing configuration object with new content.",
+		Example: "vesctl configuration replace virtual_host -i <file> --yes",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "File containing ReplaceRequest content in yaml form")
-	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline ReplaceRequest contents in json form")
+	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "Path to YAML or JSON file containing the resource definition.")
+	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline JSON string containing the resource definition.")
+	cmd.PersistentFlags().BoolVarP(&flags.yes, "yes", "y", false, "Skip confirmation prompts for destructive operations.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -215,12 +219,12 @@ func buildConfigStatusCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "status",
-		Short:   "Status of configuration object",
+		Short:   "Display the current status of a configuration object.",
 		Example: "vesctl configuration status virtual_host <name>",
 	}
 
-	cmd.PersistentFlags().StringVar(&flags.atSite, "at-site", "", "Site name (e.g. ce01) at which to query configuration object status")
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace of configuration object")
+	cmd.PersistentFlags().StringVar(&flags.atSite, "at-site", "", "Site name to query for object status.")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -249,13 +253,13 @@ func buildConfigApplyCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "apply",
-		Short:   "Apply (create or replace) configuration object",
+		Short:   "Create or replace a configuration object using declarative input.",
 		Example: "vesctl configuration apply virtual_host -i <file>",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "File containing CreateRequest contents")
-	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline CreateRequest contents in json form")
-	cmd.PersistentFlags().StringVar(&flags.mode, "mode", "always", "Either new(create fails if object exists) or always(object replaced if it exists)")
+	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "Path to YAML or JSON file containing the resource definition.")
+	cmd.PersistentFlags().StringVar(&flags.jsonData, "json-data", "", "Inline JSON string containing the resource definition.")
+	cmd.PersistentFlags().StringVar(&flags.mode, "mode", "always", "Apply mode: 'new' to fail if exists, 'always' to create or replace.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -282,12 +286,12 @@ func buildConfigPatchCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "patch",
-		Short:   "Patch configuration object",
+		Short:   "Apply a partial update to a configuration object.",
 		Example: "vesctl configuration replace virtual_host add /metadata/description \"desc\"",
 	}
 
-	cmd.PersistentFlags().StringVar(&flags.name, "name", "", "Name of object")
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace of object")
+	cmd.PersistentFlags().StringVar(&flags.name, "name", "", "Name of the target configuration object.")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -314,13 +318,13 @@ func buildConfigAddLabelsCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "add-labels",
-		Short:   "Add Labels to a configuration object",
+		Short:   "Add metadata labels to a configuration object.",
 		Example: "vesctl configuration add-labels virtual_host <name> --label-key acmecorp.com/attr-1 --label-value val-1",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace of configuration object")
-	cmd.PersistentFlags().StringSliceVar(&flags.labelKeys, "label-key", nil, "Key part of label")
-	cmd.PersistentFlags().StringSliceVar(&flags.labelValues, "label-value", nil, "Value part of label")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
+	cmd.PersistentFlags().StringSliceVar(&flags.labelKeys, "label-key", nil, "Label key to add or remove.")
+	cmd.PersistentFlags().StringSliceVar(&flags.labelValues, "label-value", nil, "Label value to assign.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -346,12 +350,12 @@ func buildConfigRemoveLabelsCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "remove-labels",
-		Short:   "Remove Labels from a configuration object",
+		Short:   "Remove metadata labels from a configuration object.",
 		Example: "vesctl configuration remove-labels virtual_host <name> --label-key acmecorp.com/attr-1",
 	}
 
-	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Namespace of configuration object")
-	cmd.PersistentFlags().StringSliceVar(&flags.labelKeys, "label-key", nil, "Key part of label")
+	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
+	cmd.PersistentFlags().StringSliceVar(&flags.labelKeys, "label-key", nil, "Label key to add or remove.")
 
 	// Add resource type subcommands
 	for _, rt := range types.All() {
@@ -493,6 +497,25 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("client not initialized - check configuration")
 	}
 
+	// Require confirmation for destructive operations
+	if !flags.yes {
+		if IsNonInteractive() {
+			return fmt.Errorf("--yes flag is required for delete operations in non-interactive mode")
+		}
+		// Prompt for confirmation
+		fmt.Fprintf(os.Stderr, "Are you sure you want to delete %s '%s' in namespace '%s'? [y/N]: ", rt.Name, flags.name, flags.namespace)
+		reader := bufio.NewReader(os.Stdin)
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("failed to read confirmation: %w", err)
+		}
+		response = strings.TrimSpace(strings.ToLower(response))
+		if response != "y" && response != "yes" {
+			output.PrintInfo("Delete operation cancelled")
+			return nil
+		}
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
@@ -568,6 +591,29 @@ func runConfigReplace(rt *types.ResourceType, flags *configurationFlags) error {
 
 	if name == "" {
 		return fmt.Errorf("resource name is required in metadata")
+	}
+
+	// Require confirmation for destructive operations
+	if !flags.yes {
+		if IsNonInteractive() {
+			return fmt.Errorf("--yes flag is required for replace operations in non-interactive mode")
+		}
+		// Prompt for confirmation
+		nsDisplay := namespace
+		if nsDisplay == "" {
+			nsDisplay = "default"
+		}
+		fmt.Fprintf(os.Stderr, "Are you sure you want to replace %s '%s' in namespace '%s'? [y/N]: ", rt.Name, name, nsDisplay)
+		reader := bufio.NewReader(os.Stdin)
+		response, err := reader.ReadString('\n')
+		if err != nil {
+			return fmt.Errorf("failed to read confirmation: %w", err)
+		}
+		response = strings.TrimSpace(strings.ToLower(response))
+		if response != "y" && response != "yes" {
+			output.PrintInfo("Replace operation cancelled")
+			return nil
+		}
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -797,7 +843,7 @@ func runConfigRemoveLabels(rt *types.ResourceType, flags *configurationFlags) er
 
 // formatAPIError formats an API error to match original vesctl error format
 func formatAPIError(operation, method, path string, statusCode int, body []byte) error {
-	baseURL := serverURLs[0]
+	baseURL := serverURL
 	// Capitalize first letter of operation
 	capOperation := strings.ToUpper(operation[:1]) + operation[1:]
 	return fmt.Errorf("Error %s object: %s object: Unsuccessful %s at URL %s%s, status code %d, body %s, err %%!s(<nil>)",

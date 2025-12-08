@@ -8,7 +8,7 @@ import (
 
 var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh]",
-	Short: "Generate completion script",
+	Short: "Generate shell completion scripts for bash or zsh.",
 	Long: `To load completions:
 Bash:
 

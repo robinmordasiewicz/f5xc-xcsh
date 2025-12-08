@@ -1,165 +1,52 @@
-# Request Commands
+---
+title: "vesctl request"
+description: "Execute custom API requests to F5 Distributed Cloud."
+keywords:
+  - F5 Distributed Cloud
+  - request
+  - F5 XC
+  - vesctl
+command: "vesctl request"
+command_group: "request"
+aliases:
+  - "req"
+  - "r"
+---
 
-The `vesctl request` command group provides low-level API access for advanced operations.
+# vesctl request
 
-## Overview
+> Execute custom API requests to F5 Distributed Cloud.
 
-```text
-vesctl request --help
-```
-
-The request commands enable direct interaction with the F5 Distributed Cloud API,
-allowing you to execute custom RPC calls and manage secrets programmatically.
-
-## Subcommands
-
-### RPC Request
-
-Execute custom API RPC calls for operations not covered by standard commands:
-
-```bash
-vesctl request rpc <method> <path> [flags]
-```
-
-**Supported Methods:**
-
-| Method | Description |
-|--------|-------------|
-| `GET` | Retrieve resources or data |
-| `POST` | Create resources or execute actions |
-| `PUT` | Update existing resources |
-| `DELETE` | Remove resources |
-
-## Common Use Cases
-
-### Retrieve Tenant Information
+## Synopsis
 
 ```bash
-vesctl request rpc GET /api/web/tenant
+vesctl request <command> [flags]
 ```
 
-**Example Output:**
+## Aliases
 
-```json
-{
-  "name": "example-tenant",
-  "uid": "abc123-def456",
-  "tenant_type": "CUSTOMER"
-}
-```
+This command can also be invoked as:
 
-### List Available API Endpoints
+- `vesctl req`
+- `vesctl r`
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| [command-sequence](command-sequence/index.md) | Execute a command sequence |
+| [rpc](rpc/index.md) | RPC Invocation |
+| [secrets](secrets/index.md) | Execute commands for secret_management |
+
+## Examples
 
 ```bash
-vesctl request rpc GET /api
+vesctl request secrets encrypt --policy-doc temp_policy --public-key pub_key secret
 ```
 
-### Query Namespace Details
+## See Also
 
-```bash
-vesctl request rpc GET /api/web/namespaces/example-namespace
-```
-
-### Execute Custom Queries
-
-For complex queries, use a request body file:
-
-**query.json:**
-
-```json
-{
-  "namespace": "example-namespace",
-  "label_selector": "app=web"
-}
-```
-
-```bash
-vesctl request rpc POST /api/custom/query -i query.json
-```
-
-## Advanced Examples
-
-### GET with Output Formatting
-
-```bash
-# JSON output
-vesctl request rpc GET /api/web/namespaces --outfmt json
-
-# YAML output
-vesctl request rpc GET /api/web/namespaces --outfmt yaml
-```
-
-### POST with Request Body
-
-Create a custom resource using a JSON payload:
-
-**payload.json:**
-
-```json
-{
-  "metadata": {
-    "name": "example-resource",
-    "namespace": "example-namespace"
-  },
-  "spec": {
-    "description": "Created via RPC"
-  }
-}
-```
-
-```bash
-vesctl request rpc POST /api/config/namespaces/example-namespace/resources -i payload.json
-```
-
-### Debug API Calls
-
-Enable verbose output to troubleshoot API interactions:
-
-```bash
-vesctl --debug request rpc GET /api/web/tenant
-```
-
-This displays:
-
-- Request URL and headers
-- Response status code
-- Response body
-
-## Secrets Management
-
-Manage secrets through the request interface:
-
-```bash
-vesctl request secrets [subcommand] [flags]
-```
-
-### List Secrets
-
-```bash
-vesctl request secrets list -n example-namespace
-```
-
-### Get Secret Details
-
-```bash
-vesctl request secrets get example-secret -n example-namespace
-```
-
-## Flags
-
-| Flag | Short | Description |
-|------|-------|-------------|
-| `-i, --input-file` | `-i` | Request body from file (JSON or YAML) |
-| `--outfmt` | `-o` | Output format (json, yaml, table) |
-| `-n, --namespace` | `-n` | Target namespace |
-
-## Best Practices
-
-1. **Use standard commands first** - The `configuration` commands handle most operations
-2. **Test with GET** - Verify endpoints before making changes
-3. **Enable debug mode** - Use `--debug` when troubleshooting
-4. **Save responses** - Redirect output to files for complex operations
-
-```bash
-vesctl request rpc GET /api/web/namespaces --outfmt json > namespaces.json
-```
+- [Command Reference](../index.md)
+- [vesctl request command-sequence](command-sequence/index.md)
+- [vesctl request rpc](rpc/index.md)
+- [vesctl request secrets](secrets/index.md)

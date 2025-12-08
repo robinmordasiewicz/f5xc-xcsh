@@ -1,0 +1,87 @@
+---
+title: "{{ front_matter.title }}"
+description: "{{ front_matter.description }}"
+keywords:
+{% for kw in front_matter.keywords %}
+  - {{ kw }}
+{% endfor %}
+command: "{{ front_matter.command }}"
+command_group: "{{ front_matter.command_group }}"
+action: "{{ front_matter.action }}"
+rpc_service: "{{ front_matter.rpc_service }}"
+rpc_procedure: "{{ front_matter.rpc_procedure }}"
+{% if front_matter.related_procedures %}
+related_procedures:
+{% for rp in front_matter.related_procedures %}
+  - "{{ rp }}"
+{% endfor %}
+{% endif %}
+---
+
+# vesctl request rpc {{ full_procedure_name }}
+
+> {{ command.short }}
+
+## Synopsis
+
+```bash
+{{ command.full_command }}{% if command.use and '<' in command.use %} {{ command.use.split()[1:] | join(' ') }}{% endif %} [flags]
+```
+
+{% if command.long and command.long != command.short %}
+## Description
+
+{{ command.long }}
+
+{% endif %}
+{% if command.flags %}
+## Flags
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+{% for flag in command.flags %}
+| `--{{ flag.name }}` | {% if flag.shorthand %}`-{{ flag.shorthand }}`{% endif %} | {{ flag.type }} | {% if flag.default %}{{ flag.default }}{% endif %} | {{ flag.description }} |
+{% endfor %}
+
+{% endif %}
+{% if command.example %}
+## Examples
+
+```bash
+{{ command.example }}
+```
+
+{% else %}
+## Examples
+
+### Invoke with input file
+
+```bash
+vesctl request rpc {{ full_procedure_name }} -i request.yaml
+```
+
+### Invoke with inline JSON data
+
+```bash
+vesctl request rpc {{ full_procedure_name }} --json-data '{"key": "value"}'
+```
+
+{% endif %}
+{% if related_procedures and related_procedures | length > 1 %}
+## Related Procedures
+
+Other procedures in the {{ service }} service:
+
+{% for rel in related_procedures %}
+{% if rel.full_name != full_procedure_name %}
+- [{{ rel.procedure_name }}]({{ rel.procedure_name }}.md) - {{ rel.command.short }}
+{% endif %}
+{% endfor %}
+
+{% endif %}
+## See Also
+
+- [{{ service | underscore_to_space | title }} Service](index.md) - All {{ service }} procedures
+- [vesctl request rpc](../index.md) - All RPC commands
+- [vesctl request](../../index.md) - Request commands
+- [Command Reference](../../../index.md)

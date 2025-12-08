@@ -43,8 +43,9 @@ func TestCLI_Version(t *testing.T) {
 	}
 
 	output := stdout.String()
-	if !strings.Contains(output, "vesctl") && !strings.Contains(output, "version") {
-		t.Errorf("Expected version output, got: %s", output)
+	// Version output format: "branch: <branch> <br>commit-sha: <sha> <date> <author> <build> nil <br>"
+	if !strings.Contains(output, "branch:") || !strings.Contains(output, "commit-sha:") {
+		t.Errorf("Expected version output with branch and commit-sha, got: %s", output)
 	}
 
 	t.Logf("Version output: %s", output)
@@ -155,7 +156,7 @@ func TestCLI_ListNamespaces(t *testing.T) {
 	}
 
 	// Set environment for the command (include --insecure for staging environments)
-	cmd := exec.Command(binary, "namespace", "list", "--server-urls", apiURL, "--p12-bundle", p12File, "--insecure")
+	cmd := exec.Command(binary, "namespace", "list", "--server-url", apiURL, "--p12-bundle", p12File, "--insecure")
 	cmd.Env = append(os.Environ(), "VES_P12_PASSWORD="+p12Password)
 
 	var stdout, stderr bytes.Buffer
@@ -183,7 +184,7 @@ func TestCLI_HTTPLoadBalancerList(t *testing.T) {
 		t.Skip("Integration test environment not configured")
 	}
 
-	cmd := exec.Command(binary, "http-loadbalancer", "list", "-n", "shared", "--server-urls", apiURL, "--p12-bundle", p12File, "--insecure")
+	cmd := exec.Command(binary, "http-loadbalancer", "list", "-n", "shared", "--server-url", apiURL, "--p12-bundle", p12File, "--insecure")
 	cmd.Env = append(os.Environ(), "VES_P12_PASSWORD="+p12Password)
 
 	var stdout, stderr bytes.Buffer
@@ -210,7 +211,7 @@ func TestCLI_OutputFormatJSON(t *testing.T) {
 		t.Skip("Integration test environment not configured")
 	}
 
-	cmd := exec.Command(binary, "namespace", "list", "-o", "json", "--server-urls", apiURL, "--p12-bundle", p12File, "--insecure")
+	cmd := exec.Command(binary, "namespace", "list", "-o", "json", "--server-url", apiURL, "--p12-bundle", p12File, "--insecure")
 	cmd.Env = append(os.Environ(), "VES_P12_PASSWORD="+p12Password)
 
 	var stdout, stderr bytes.Buffer
@@ -244,7 +245,7 @@ func TestCLI_OutputFormatTable(t *testing.T) {
 		t.Skip("Integration test environment not configured")
 	}
 
-	cmd := exec.Command(binary, "namespace", "list", "-o", "table", "--server-urls", apiURL, "--p12-bundle", p12File, "--insecure")
+	cmd := exec.Command(binary, "namespace", "list", "-o", "table", "--server-url", apiURL, "--p12-bundle", p12File, "--insecure")
 	cmd.Env = append(os.Environ(), "VES_P12_PASSWORD="+p12Password)
 
 	var stdout, stderr bytes.Buffer

@@ -30,7 +30,7 @@ func TestAuthentication_P12Bundle(t *testing.T) {
 	defer func() { _ = os.Unsetenv("VES_P12_PASSWORD") }()
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          p12File,
 		Timeout:            30,
 		Debug:              testing.Verbose(),
@@ -84,7 +84,7 @@ func TestAuthentication_Whoami(t *testing.T) {
 	defer func() { _ = os.Unsetenv("VES_P12_PASSWORD") }()
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          p12File,
 		Timeout:            30,
 		Debug:              testing.Verbose(),
@@ -141,7 +141,7 @@ func TestAuthentication_InvalidP12(t *testing.T) {
 	defer func() { _ = os.Unsetenv("VES_P12_PASSWORD") }()
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          tmpFile.Name(),
 		Timeout:            30,
 		InsecureSkipVerify: true,
@@ -171,7 +171,7 @@ func TestAuthentication_WrongPassword(t *testing.T) {
 	defer func() { _ = os.Unsetenv("VES_P12_PASSWORD") }()
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          p12File,
 		Timeout:            30,
 		InsecureSkipVerify: true,
@@ -201,7 +201,7 @@ func TestAuthentication_MissingPassword(t *testing.T) {
 	_ = os.Unsetenv("VES_P12_PASSWORD")
 
 	cfg := &client.Config{
-		ServerURLs:         []string{apiURL},
+		ServerURL:          apiURL,
 		P12Bundle:          p12File,
 		Timeout:            30,
 		InsecureSkipVerify: true,

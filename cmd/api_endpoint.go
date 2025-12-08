@@ -35,18 +35,20 @@ var (
 
 var apiEndpointCmd = &cobra.Command{
 	Use:     "api-endpoint",
-	Short:   "Execute commands for API Endpoint Discovery and Control",
-	Long:    `Execute commands for API Endpoint Discovery and Control`,
+	Short:   "Discover and manage API endpoints within F5 XC service mesh.",
+	Long:    `Discover and manage API endpoints within F5 XC service mesh.`,
 	Example: `vesctl api-endpoint discover --namespace default`,
 }
 
 var apiEndpointDiscoverCmd = &cobra.Command{
 	Use:     "discover [<flags>]",
 	Aliases: []string{"discover"},
-	Short:   "Discover all API endpoints for each of the edge (client --> server), belonging to an App Type",
-	Long: `It will run three steps process
-1. Find all the nodes and edges in a service mesh graph of an App Type
-2. Find all the api endpoints discovered between an edge
+	Short:   "Discover API endpoints between services in a service mesh.",
+	Long: `Discover API endpoints between services in a service mesh.
+
+This command performs three steps:
+1. Find all nodes and edges in the service mesh graph for an App Type
+2. Find all API endpoints discovered between each edge
 3. Display the information in tabular format`,
 	Example: `vesctl api-endpoint discover --namespace default --app-type edge-checkoutcheckout`,
 	RunE:    runAPIEndpointDiscover,
@@ -55,14 +57,15 @@ var apiEndpointDiscoverCmd = &cobra.Command{
 var apiEndpointControlCmd = &cobra.Command{
 	Use:     "control [<flags>]",
 	Aliases: []string{"ctrl"},
-	Short:   "Find all the edges (client --> server) and create respective layer7 policies",
-	Long: `It will run three steps process
-1. Find all the nodes and edges in a service mesh graph of an App Type
-2. Find all the api endpoints discovered between an edge
-3. Create layer7 policies which will only allow communication between known edges(services) and
-which are communicating with known api endpoint (method, url combination)
+	Short:   "Create layer 7 policies based on discovered API endpoints.",
+	Long: `Create layer 7 policies based on discovered API endpoints.
 
-This command allows to discover the api's from one namespace and apply the policy in another namespace`,
+This command performs three steps:
+1. Find all nodes and edges in the service mesh graph for an App Type
+2. Find all API endpoints discovered between each edge
+3. Create layer 7 policies that allow only known service-to-service communication
+
+You can discover APIs from one namespace and apply policies in another namespace.`,
 	Example: `vesctl api-endpoint control --discover-ns default --app-type edge-checkoutcheckout`,
 	RunE:    runAPIEndpointControl,
 }
@@ -71,20 +74,20 @@ func init() {
 	rootCmd.AddCommand(apiEndpointCmd)
 
 	// API-endpoint flags matching original vesctl
-	apiEndpointCmd.PersistentFlags().StringVar(&apiEndpointAppType, "app-type", "", "App Type name labelled on vk8s service or http lb objects, defaults to the value of namespace/discover-ns")
-	apiEndpointCmd.PersistentFlags().BoolVar(&apiEndpointLogColor, "log-color", true, "enable color for your logs")
-	apiEndpointCmd.PersistentFlags().BoolVar(&apiEndpointLogFabulous, "log-fabulous", true, "enable fabulous writer for your logs")
-	apiEndpointCmd.PersistentFlags().IntVar(&apiEndpointLogLevel, "log-level", 3, "Log Level for Site Deployment")
-	apiEndpointCmd.PersistentFlags().StringVarP(&apiEndpointRange, "range", "r", "1h", "range for which the graph and edges will be queried")
+	apiEndpointCmd.PersistentFlags().StringVar(&apiEndpointAppType, "app-type", "", "App type name labeled on vK8s services or HTTP load balancer objects.")
+	apiEndpointCmd.PersistentFlags().BoolVar(&apiEndpointLogColor, "log-color", true, "Enable colored log output.")
+	apiEndpointCmd.PersistentFlags().BoolVar(&apiEndpointLogFabulous, "log-fabulous", true, "Enable enhanced log formatting.")
+	apiEndpointCmd.PersistentFlags().IntVar(&apiEndpointLogLevel, "log-level", 3, "Set the logging verbosity level (1-5).")
+	apiEndpointCmd.PersistentFlags().StringVarP(&apiEndpointRange, "range", "r", "1h", "Time range for querying service mesh data (e.g., '1h', '24h').")
 
 	// Discover command flags
-	apiEndpointDiscoverCmd.Flags().StringVar(&discoverNamespace, "namespace", "default", "namespace where the service-mesh graph exists")
+	apiEndpointDiscoverCmd.Flags().StringVar(&discoverNamespace, "namespace", "default", "Namespace containing the service mesh graph.")
 	apiEndpointCmd.AddCommand(apiEndpointDiscoverCmd)
 
 	// Control command flags
-	apiEndpointControlCmd.Flags().StringVar(&discoverNs, "discover-ns", "default", "Namespace where the service-mesh graph exists")
-	apiEndpointControlCmd.Flags().StringVar(&controlNs, "control-ns", "", "Namespace on which the service policy will be applied, defaults to the value of discover-ns")
-	apiEndpointControlCmd.Flags().BoolVarP(&deleteFlag, "delete", "d", false, "delete all managed policies")
+	apiEndpointControlCmd.Flags().StringVar(&discoverNs, "discover-ns", "default", "Namespace to discover API endpoints from.")
+	apiEndpointControlCmd.Flags().StringVar(&controlNs, "control-ns", "", "Namespace where service policies will be applied.")
+	apiEndpointControlCmd.Flags().BoolVarP(&deleteFlag, "delete", "d", false, "Delete all managed layer 7 policies.")
 	apiEndpointCmd.AddCommand(apiEndpointControlCmd)
 }
 

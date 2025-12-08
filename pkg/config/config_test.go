@@ -12,8 +12,7 @@ func TestLoad_ValidConfig(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
-	configContent := `server-urls:
-  - https://test.console.ves.volterra.io/api
+	configContent := `server-url: https://test.console.ves.volterra.io/api
 p12-bundle: /path/to/cert.p12
 `
 	if err := os.WriteFile(configPath, []byte(configContent), 0600); err != nil {
@@ -25,12 +24,8 @@ p12-bundle: /path/to/cert.p12
 		t.Fatalf("Load failed: %v", err)
 	}
 
-	if len(cfg.ServerURLs) != 1 {
-		t.Errorf("Expected 1 server URL, got %d", len(cfg.ServerURLs))
-	}
-
-	if cfg.ServerURLs[0] != "https://test.console.ves.volterra.io/api" {
-		t.Errorf("Expected URL https://test.console.ves.volterra.io/api, got %s", cfg.ServerURLs[0])
+	if cfg.ServerURL != "https://test.console.ves.volterra.io/api" {
+		t.Errorf("Expected URL https://test.console.ves.volterra.io/api, got %s", cfg.ServerURL)
 	}
 
 	if cfg.P12Bundle != "/path/to/cert.p12" {
@@ -42,8 +37,7 @@ func TestLoad_CertKeyConfig(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
-	configContent := `server-urls:
-  - https://test.console.ves.volterra.io/api
+	configContent := `server-url: https://test.console.ves.volterra.io/api
 cert: /path/to/cert.pem
 key: /path/to/key.pem
 `
@@ -98,8 +92,8 @@ func TestConfig_Save(t *testing.T) {
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		P12Bundle:  "/path/to/cert.p12",
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		P12Bundle: "/path/to/cert.p12",
 	}
 
 	if err := cfg.Save(configPath); err != nil {
@@ -128,15 +122,15 @@ func TestConfig_Save(t *testing.T) {
 		t.Fatalf("Failed to reload config: %v", err)
 	}
 
-	if len(loaded.ServerURLs) != 1 || loaded.ServerURLs[0] != cfg.ServerURLs[0] {
+	if loaded.ServerURL != cfg.ServerURL {
 		t.Error("Saved config doesn't match original")
 	}
 }
 
 func TestConfig_Validate_Valid_P12(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		P12Bundle:  "/path/to/cert.p12",
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		P12Bundle: "/path/to/cert.p12",
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -146,9 +140,9 @@ func TestConfig_Validate_Valid_P12(t *testing.T) {
 
 func TestConfig_Validate_Valid_CertKey(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		Cert:       "/path/to/cert.pem",
-		Key:        "/path/to/key.pem",
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		Cert:      "/path/to/cert.pem",
+		Key:       "/path/to/key.pem",
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -156,20 +150,20 @@ func TestConfig_Validate_Valid_CertKey(t *testing.T) {
 	}
 }
 
-func TestConfig_Validate_NoServerURLs(t *testing.T) {
+func TestConfig_Validate_NoServerURL(t *testing.T) {
 	cfg := &Config{
 		P12Bundle: "/path/to/cert.p12",
 	}
 
 	err := cfg.Validate()
 	if err == nil {
-		t.Error("Expected error for missing server-urls")
+		t.Error("Expected error for missing server-url")
 	}
 }
 
 func TestConfig_Validate_NoAuth(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
+		ServerURL: "https://test.console.ves.volterra.io/api",
 	}
 
 	err := cfg.Validate()
@@ -180,8 +174,8 @@ func TestConfig_Validate_NoAuth(t *testing.T) {
 
 func TestConfig_Validate_OnlyCert(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		Cert:       "/path/to/cert.pem",
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		Cert:      "/path/to/cert.pem",
 	}
 
 	err := cfg.Validate()
@@ -192,8 +186,8 @@ func TestConfig_Validate_OnlyCert(t *testing.T) {
 
 func TestConfig_Validate_OnlyKey(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		Key:        "/path/to/key.pem",
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		Key:       "/path/to/key.pem",
 	}
 
 	err := cfg.Validate()
@@ -202,13 +196,11 @@ func TestConfig_Validate_OnlyKey(t *testing.T) {
 	}
 }
 
-func TestConfig_MultipleServerURLs(t *testing.T) {
+func TestConfig_EmptyServerURL(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
-	configContent := `server-urls:
-  - https://primary.console.ves.volterra.io/api
-  - https://backup.console.ves.volterra.io/api
+	configContent := `server-url: ""
 p12-bundle: /path/to/cert.p12
 `
 	if err := os.WriteFile(configPath, []byte(configContent), 0600); err != nil {
@@ -220,8 +212,8 @@ p12-bundle: /path/to/cert.p12
 		t.Fatalf("Load failed: %v", err)
 	}
 
-	if len(cfg.ServerURLs) != 2 {
-		t.Errorf("Expected 2 server URLs, got %d", len(cfg.ServerURLs))
+	if cfg.ServerURL != "" {
+		t.Errorf("Expected empty server URL, got %s", cfg.ServerURL)
 	}
 }
 
@@ -229,8 +221,7 @@ func TestLoad_APITokenConfig(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
-	configContent := `server-urls:
-  - https://test.console.ves.volterra.io/api
+	configContent := `server-url: https://test.console.ves.volterra.io/api
 api-token: true
 `
 	if err := os.WriteFile(configPath, []byte(configContent), 0600); err != nil {
@@ -257,8 +248,8 @@ api-token: true
 
 func TestConfig_Validate_Valid_APIToken(t *testing.T) {
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		APIToken:   true,
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		APIToken:  true,
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -271,8 +262,8 @@ func TestConfig_Save_APIToken(t *testing.T) {
 	configPath := filepath.Join(tmpDir, ".vesconfig")
 
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		APIToken:   true,
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		APIToken:  true,
 	}
 
 	if err := cfg.Save(configPath); err != nil {
@@ -293,8 +284,8 @@ func TestConfig_Save_APIToken(t *testing.T) {
 func TestConfig_Validate_APIToken_NoOtherAuth(t *testing.T) {
 	// API token should be valid without P12 or cert/key
 	cfg := &Config{
-		ServerURLs: []string{"https://test.console.ves.volterra.io/api"},
-		APIToken:   true,
+		ServerURL: "https://test.console.ves.volterra.io/api",
+		APIToken:  true,
 	}
 
 	if err := cfg.Validate(); err != nil {
