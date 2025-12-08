@@ -8,6 +8,22 @@
 ORIGINAL_VESCTL="${ORIGINAL_VESCTL:-./vesctl-0.2.35}"
 OUR_VESCTL="${OUR_VESCTL:-./vesctl}"
 
+# Timeout for original vesctl commands (in seconds)
+# KNOWN ISSUE: vesctl-0.2.35 has bugs where certain commands hang at 100% CPU
+# See: KNOWN_BUGGY_COMMANDS below
+ORIGINAL_VESCTL_TIMEOUT=${ORIGINAL_VESCTL_TIMEOUT:-10}
+
+# Known buggy commands in vesctl-0.2.35 that hang on --help
+# These commands cause 100% CPU and never return
+KNOWN_BUGGY_COMMANDS=(
+    "configuration status"
+    "configuration patch"
+    "configuration replace"
+    "configuration add-labels"
+    "configuration remove-labels"
+    "configuration list"      # Any list subcommand can hang
+)
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -70,6 +86,28 @@ check_original_vesctl() {
         return 1
     fi
     return 0
+}
+
+# Check if a command is known to be buggy in vesctl-0.2.35
+# Usage: is_buggy_command "configuration" "list"
+# Returns: 0 if buggy, 1 if not buggy
+is_buggy_command() {
+    local cmd_prefix="$*"
+    for buggy in "${KNOWN_BUGGY_COMMANDS[@]}"; do
+        # Check if the command starts with the buggy prefix
+        if [[ "$cmd_prefix" == "$buggy"* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Run original vesctl with timeout protection
+# Usage: run_original_vesctl_safe <args...>
+# Returns: exit code (124 if timeout)
+run_original_vesctl_safe() {
+    timeout "${ORIGINAL_VESCTL_TIMEOUT}s" "$ORIGINAL_VESCTL" "$@"
+    return $?
 }
 
 # Check if our vesctl exists

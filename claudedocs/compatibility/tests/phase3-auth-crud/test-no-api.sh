@@ -2,19 +2,16 @@
 # test-no-api.sh - Comprehensive test of all commands that don't require API credentials
 # Tests help text, flags, and structure consistency
 #
-# KNOWN ISSUE: vesctl-0.2.35 has a bug where certain help commands hang at 100% CPU:
-#   - configuration status --help
-#   - configuration patch --help
-#   - configuration replace --help
+# KNOWN ISSUE: vesctl-0.2.35 has bugs where certain help commands hang at 100% CPU.
+# The full list of buggy commands is defined in lib/common.sh (KNOWN_BUGGY_COMMANDS).
 # These are skipped when testing against the original binary.
+#
+# Known buggy help commands in vesctl-0.2.35:
+#   - configuration status/patch/replace/add-labels/remove-labels --help
+#   - configuration list <any-resource> --help
+# These commands never return and consume 100% CPU.
 
 set +e
-
-# Timeout for original vesctl commands (in seconds)
-ORIGINAL_VESCTL_TIMEOUT=${ORIGINAL_VESCTL_TIMEOUT:-10}
-
-# Known buggy subcommands in vesctl-0.2.35 that hang on --help
-KNOWN_BUGGY_SUBCMDS=("patch" "replace" "status")
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../lib/common.sh"
@@ -168,22 +165,14 @@ echo ""
 echo "--- Configuration Subcommands ---"
 CONFIG_SUBCMDS=("add-labels" "apply" "create" "delete" "get" "list" "patch" "remove-labels" "replace" "status")
 
-# Helper function to check if a subcommand is known to be buggy
-is_buggy_subcmd() {
-    local subcmd="$1"
-    for buggy in "${KNOWN_BUGGY_SUBCMDS[@]}"; do
-        if [[ "$subcmd" == "$buggy" ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
 for subcmd in "${CONFIG_SUBCMDS[@]}"; do
-    if is_buggy_subcmd "$subcmd"; then
+    # Use the is_buggy_command function from common.sh
+    if is_buggy_command "configuration" "$subcmd"; then
         log_skip "config-${subcmd} (vesctl-0.2.35 hangs on this help command)"
         mkdir -p "${RESULTS_DIR}/config-${subcmd}"
         echo "SKIP" > "${RESULTS_DIR}/config-${subcmd}/result.txt"
+        mkdir -p "${RESULTS_DIR}/config-${subcmd}-flags"
+        echo "SKIP" > "${RESULTS_DIR}/config-${subcmd}-flags/result.txt"
         continue
     fi
     test_help_structure "config-${subcmd}" configuration "$subcmd" || true

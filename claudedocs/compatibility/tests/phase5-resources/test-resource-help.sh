@@ -1,6 +1,10 @@
 #!/bin/bash
 # test-resource-help.sh - Test help text compatibility for multiple resource types
 # Phase 5: Multi-Resource Validation
+#
+# NOTE: vesctl-0.2.35 has bugs where "configuration list <resource> --help" hangs.
+# All "list" tests are skipped for this reason.
+# The is_buggy_command() function from lib/common.sh handles this detection.
 
 set +e
 
@@ -194,9 +198,17 @@ echo ""
 for resource in "${RESOURCES[@]}"; do
     echo "Testing: $resource"
 
-    # Test list --help
-    test_help_structure "list-${resource}" configuration list "$resource" || true
-    test_flags_section "list-${resource}-flags" configuration list "$resource" || true
+    # Test list --help - SKIP due to vesctl-0.2.35 bug
+    if is_buggy_command "configuration" "list"; then
+        log_skip "list-${resource} (vesctl-0.2.35 hangs on configuration list --help)"
+        mkdir -p "${RESULTS_DIR}/list-${resource}"
+        echo "SKIP" > "${RESULTS_DIR}/list-${resource}/result.txt"
+        mkdir -p "${RESULTS_DIR}/list-${resource}-flags"
+        echo "SKIP" > "${RESULTS_DIR}/list-${resource}-flags/result.txt"
+    else
+        test_help_structure "list-${resource}" configuration list "$resource" || true
+        test_flags_section "list-${resource}-flags" configuration list "$resource" || true
+    fi
 
     # Test get --help
     test_help_structure "get-${resource}" configuration get "$resource" || true
@@ -217,8 +229,14 @@ echo ""
 for resource in "${ADDITIONAL_RESOURCES[@]}"; do
     echo "Testing: $resource"
 
-    # Test list --help only
-    test_help_structure "list-${resource}" configuration list "$resource" || true
+    # Test list --help only - SKIP due to vesctl-0.2.35 bug
+    if is_buggy_command "configuration" "list"; then
+        log_skip "list-${resource} (vesctl-0.2.35 hangs on configuration list --help)"
+        mkdir -p "${RESULTS_DIR}/list-${resource}"
+        echo "SKIP" > "${RESULTS_DIR}/list-${resource}/result.txt"
+    else
+        test_help_structure "list-${resource}" configuration list "$resource" || true
+    fi
 
     echo ""
 done

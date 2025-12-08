@@ -189,9 +189,16 @@ run_phase() {
         PHASE_TIME[$phase]="${duration}s"
 
         # Extract pass/fail/warn counts from log (strip ANSI codes first)
-        local pass_count=$(sed 's/\x1b\[[0-9;]*m//g' "${RESULTS_DIR}/phase${phase}.log" 2>/dev/null | grep -c '\[PASS\]' || echo 0)
-        local fail_count=$(sed 's/\x1b\[[0-9;]*m//g' "${RESULTS_DIR}/phase${phase}.log" 2>/dev/null | grep -c '\[FAIL\]' || echo 0)
-        local warn_count=$(sed 's/\x1b\[[0-9;]*m//g' "${RESULTS_DIR}/phase${phase}.log" 2>/dev/null | grep -c '\[WARN\]' || echo 0)
+        # Use sed with extended regex and tr to ensure clean output
+        local clean_log=$(sed 's/\x1b\[[0-9;]*m//g' "${RESULTS_DIR}/phase${phase}.log" 2>/dev/null | tr -d '\r')
+        local pass_count=$(echo "$clean_log" | grep -c '\[PASS\]' 2>/dev/null || echo 0)
+        local fail_count=$(echo "$clean_log" | grep -c '\[FAIL\]' 2>/dev/null || echo 0)
+        local warn_count=$(echo "$clean_log" | grep -c '\[WARN\]' 2>/dev/null || echo 0)
+
+        # Ensure counts are valid integers
+        pass_count=${pass_count:-0}
+        fail_count=${fail_count:-0}
+        warn_count=${warn_count:-0}
 
         PHASE_PASS[$phase]=$pass_count
         PHASE_FAIL[$phase]=$fail_count
