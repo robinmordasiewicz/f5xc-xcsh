@@ -10,6 +10,11 @@ on:
         required: false
         default: 'false'
         type: boolean
+      test_homebrew:
+        description: 'Test Homebrew installation and update docs'
+        required: false
+        default: 'false'
+        type: boolean
   push:
     branches: [main]
     paths:
@@ -17,6 +22,7 @@ on:
       - '!docs/commands/**'
       - 'mkdocs.yml'
       - 'scripts/generate-docs.py'
+      - 'scripts/generate-homebrew-docs.py'
       - 'scripts/templates/**'
       - '.github/workflows/docs.yml'
 
@@ -178,6 +184,60 @@ jobs:
           restore-keys: |
             vesctl-docs-
 
+      - name: Install Homebrew (Linux)
+        if: github.event_name == 'release' || github.event.inputs.test_homebrew == 'true'
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install vesctl via Homebrew
+        if: github.event_name == 'release' || github.event.inputs.test_homebrew == 'true'
+        id: homebrew-install
+        run: |
+          MAX_RETRIES=5
+          RETRY_DELAY=30
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i of $MAX_RETRIES..."
+
+            # Refresh tap
+            brew tap robinmordasiewicz/tap
+            brew update
+
+            # Try to install
+            if brew install vesctl 2>&1; then
+              echo "Successfully installed vesctl"
+              echo "homebrew_success=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            if [ $i -eq $MAX_RETRIES ]; then
+              echo "::warning::Failed to install vesctl via Homebrew after $MAX_RETRIES attempts"
+              echo "homebrew_success=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            echo "Waiting ${RETRY_DELAY}s before retry..."
+            sleep $RETRY_DELAY
+          done
+
+      - name: Capture vesctl version
+        if: steps.homebrew-install.outputs.homebrew_success == 'true'
+        id: vesctl-version
+        run: |
+          VERSION_OUTPUT=$(vesctl version)
+          echo "Full version output:"
+          echo "$VERSION_OUTPUT"
+
+          # Parse individual components
+          VERSION=$(echo "$VERSION_OUTPUT" | grep -oP 'version \K[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+          COMMIT=$(echo "$VERSION_OUTPUT" | grep -oP 'commit:\s+\K[a-f0-9]+' || echo "")
+          BUILT=$(echo "$VERSION_OUTPUT" | grep -oP 'built:\s+\K\S+' || echo "")
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+          echo "built=$BUILT" >> $GITHUB_OUTPUT
+
+          echo "Parsed - Version: $VERSION, Commit: $COMMIT, Built: $BUILT"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -185,6 +245,16 @@ jobs:
 
       - name: Install MkDocs dependencies
         run: pip install -r requirements-docs.txt
+
+      - name: Generate homebrew docs with real version
+        if: steps.homebrew-install.outputs.homebrew_success == 'true'
+        run: |
+          pip install jinja2
+          python scripts/generate-homebrew-docs.py \
+            --version "${{ steps.vesctl-version.outputs.version }}" \
+            --commit "${{ steps.vesctl-version.outputs.commit }}" \
+            --built "${{ steps.vesctl-version.outputs.built }}" \
+            --output docs/install/homebrew.md
 
       - name: Build site
         run: mkdocs build --strict

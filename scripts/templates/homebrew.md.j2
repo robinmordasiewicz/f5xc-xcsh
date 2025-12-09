@@ -27,4 +27,16 @@ After installation, verify vesctl is working:
 vesctl version
 ```
 
+{% if version and commit and built %}
+Expected output:
+
+```text
+vesctl version {{ version }}
+  commit: {{ commit }}
+  built:  {{ built }}
+```
+
+*Version information captured from Homebrew installation on {{ generation_date }}*
+{% else %}
 Expected output shows version, commit hash, and build timestamp.
+{% endif %}
