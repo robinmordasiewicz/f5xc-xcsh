@@ -13,14 +13,6 @@ procedure_count: {{ procedures | length }}
 
 > {{ service | underscore_to_space | title }} service RPC procedures
 
-## Quick Reference
-
-| Procedure | Description |
-|-----------|-------------|
-{% for proc in procedures %}
-| [{{ proc.procedure_name }}](#{{ proc.procedure_name | lower }}) | {{ proc.command.short }} |
-{% endfor %}
-
 ## Procedures
 
 {% for proc in procedures %}
@@ -71,29 +63,3 @@ vesctl request rpc {{ proc.full_name }} --output-format json
 </details>
 
 {% endfor %}
-
-## Common Workflows
-
-### Call an RPC procedure
-
-```bash
-# Basic call
-vesctl request rpc {{ service }}.CustomAPI.<ProcedureName>
-
-# With input data
-vesctl request rpc {{ service }}.CustomAPI.<ProcedureName> -i request.yaml
-
-# With namespace
-vesctl request rpc {{ service }}.CustomAPI.<ProcedureName> -n my-namespace
-```
-
-### Get procedure help
-
-```bash
-vesctl request rpc {{ service }}.CustomAPI.<ProcedureName> --help
-```
-
-## See Also
-
-- [vesctl request rpc](index.md) - RPC commands overview
-- [Command Reference](../../index.md)

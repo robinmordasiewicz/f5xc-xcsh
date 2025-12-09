@@ -3,9 +3,9 @@ title: "vesctl version"
 description: "Display the vesctl build version and commit information."
 keywords:
   - F5 Distributed Cloud
-  - vesctl
-  - F5 XC
   - version
+  - F5 XC
+  - vesctl
 command: "vesctl version"
 command_group: "version"
 ---

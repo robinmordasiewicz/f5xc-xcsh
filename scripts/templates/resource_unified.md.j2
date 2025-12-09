@@ -26,14 +26,6 @@ api_docs:
 
 > Manage {{ resource | underscore_to_space }} resources in F5 Distributed Cloud
 
-## Quick Reference
-
-| Action | Description |
-|--------|-------------|
-{% for action in actions %}
-| [{{ action.action_name }}](#{{ action.action_name }}) | {{ action.command.short }} |
-{% endfor %}
-
 ## Actions
 
 {% for action in actions %}
@@ -81,55 +73,3 @@ api_docs:
 </details>
 
 {% endfor %}
-
-## Common Workflows
-
-### Create and verify a {{ resource | underscore_to_space }}
-
-```bash
-# Create from file
-vesctl {{ group }} create {{ resource }} -i {{ resource }}.yaml
-
-# Verify creation
-vesctl {{ group }} list {{ resource }}
-
-# Get details
-vesctl {{ group }} get {{ resource }} <name>
-```
-
-### Update a {{ resource | underscore_to_space }}
-
-```bash
-# Replace entire resource
-vesctl {{ group }} replace {{ resource }} -i {{ resource }}.yaml
-
-# Or apply changes (create or update)
-vesctl {{ group }} apply {{ resource }} -i {{ resource }}.yaml
-
-# Patch specific fields
-vesctl {{ group }} patch {{ resource }} <name> -i patch.yaml
-```
-
-### Manage labels
-
-```bash
-# Add labels
-vesctl {{ group }} add-labels {{ resource }} <name> --label-key app --label-value web
-
-# Remove labels
-vesctl {{ group }} remove-labels {{ resource }} <name> --label-key app
-```
-
-### Delete a {{ resource | underscore_to_space }}
-
-```bash
-vesctl {{ group }} delete {{ resource }} <name>
-
-# With confirmation bypass
-vesctl {{ group }} delete {{ resource }} <name> --yes
-```
-
-## See Also
-
-- [vesctl {{ group }}](index.md) - {{ group | title_case }} commands
-- [Command Reference](../index.md)
