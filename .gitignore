@@ -60,3 +60,12 @@ site/
 .venv/
 __pycache__/
 *.pyc
+vesctl.darwin-arm64
+
+# Platform-specific binaries
+vesctl.darwin-*
+vesctl.linux-*
+vesctl.windows-*
+*.darwin-*
+*.linux-*
+*.windows-*

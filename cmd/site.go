@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +23,15 @@ var siteCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(siteCmd)
+
+	// Enable AI-agent-friendly error handling for invalid subcommands
+	siteCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if len(args) > 0 {
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: vesctl site <provider> <action> [flags]\n\nAvailable providers:\n  aws_vpc, azure_vnet\n\nRun 'vesctl site --help' for usage", args[0], cmd.CommandPath())
+		}
+		return cmd.Help()
+	}
+	siteCmd.SuggestionsMinimumDistance = 2
 
 	// Site-specific flags matching original vesctl
 	siteCmd.PersistentFlags().BoolVar(&siteLogColor, "log-color", true, "Enable colored log output.")

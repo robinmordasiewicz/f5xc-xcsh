@@ -73,6 +73,15 @@ You can discover APIs from one namespace and apply policies in another namespace
 func init() {
 	rootCmd.AddCommand(apiEndpointCmd)
 
+	// Enable AI-agent-friendly error handling for invalid subcommands
+	apiEndpointCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if len(args) > 0 {
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: vesctl api-endpoint <action> [flags]\n\nAvailable actions:\n  discover, control\n\nRun 'vesctl api-endpoint --help' for usage", args[0], cmd.CommandPath())
+		}
+		return cmd.Help()
+	}
+	apiEndpointCmd.SuggestionsMinimumDistance = 2
+
 	// API-endpoint flags matching original vesctl
 	apiEndpointCmd.PersistentFlags().StringVar(&apiEndpointAppType, "app-type", "", "App type name labeled on vK8s services or HTTP load balancer objects.")
 	apiEndpointCmd.PersistentFlags().BoolVar(&apiEndpointLogColor, "log-color", true, "Enable colored log output.")

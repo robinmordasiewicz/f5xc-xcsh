@@ -32,38 +32,101 @@ var awsVPCFlags struct {
 }
 
 var awsVPCCmd = &cobra.Command{
-	Use:     "aws_vpc",
-	Short:   "Manage AWS VPC site creation through view apis",
-	Long:    `Manage AWS VPC site creation through view apis`,
-	Example: `vesctl site aws_vpc create`,
+	Use:   "aws_vpc",
+	Short: "Manage AWS VPC site creation through view apis",
+	Long: `Manage AWS VPC sites in F5 Distributed Cloud.
+
+AWS VPC sites allow you to deploy F5 XC Customer Edge (CE) nodes in your
+AWS Virtual Private Cloud, enabling secure connectivity and edge services.`,
+	Example: `  # Create an AWS VPC site from a YAML file
+  vesctl site aws_vpc create -i aws-site.yaml
+
+  # Delete an AWS VPC site
+  vesctl site aws_vpc delete --name example-site
+
+  # Run Terraform to provision infrastructure
+  vesctl site aws_vpc run --name example-site --action apply --auto-approve`,
 }
 
 var awsVPCCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create AWS VPC volterra site",
-	Long:  `Create AWS VPC volterra site`,
-	RunE:  runAWSVPCCreate,
+	Long: `Create a new AWS VPC site in F5 Distributed Cloud.
+
+This command registers an AWS VPC site configuration. After creation,
+use 'vesctl site aws_vpc run --action apply' to provision the infrastructure.
+
+You can provide the site specification via:
+- YAML/JSON file using --input-file
+- Command line flags for common options`,
+	Example: `  # Create from YAML file
+  vesctl site aws_vpc create -i aws-site.yaml
+
+  # Create with command line flags
+  vesctl site aws_vpc create --name example-site --region us-west-2 \
+    --vpc-cidr 10.0.0.0/16 --cloud-creds example-aws-creds
+
+  # Create with availability zones
+  vesctl site aws_vpc create --name example-site --region us-west-2 \
+    --azs us-west-2a,us-west-2b --cloud-creds example-aws-creds`,
+	RunE: runAWSVPCCreate,
 }
 
 var awsVPCDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "delete AWS VPC volterra site",
-	Long:  `delete AWS VPC volterra site`,
-	RunE:  runAWSVPCDelete,
+	Short: "Delete AWS VPC volterra site",
+	Long: `Delete an AWS VPC site from F5 Distributed Cloud.
+
+Note: This only removes the site configuration from F5 XC. To fully clean up
+AWS resources, first run 'vesctl site aws_vpc run --action destroy' before
+deleting the site configuration.`,
+	Example: `  # Delete a site (after destroying infrastructure)
+  vesctl site aws_vpc delete --name example-site
+
+  # Delete from a specific namespace
+  vesctl site aws_vpc delete --name example-site -n system`,
+	RunE: runAWSVPCDelete,
 }
 
 var awsVPCReplaceCmd = &cobra.Command{
 	Use:   "replace",
 	Short: "Replace AWS VPC volterra site",
-	Long:  `Replace AWS VPC volterra site`,
-	RunE:  runAWSVPCReplace,
+	Long: `Replace an existing AWS VPC site configuration in F5 Distributed Cloud.
+
+This updates the site specification. After replacing, you may need to
+run 'vesctl site aws_vpc run --action apply' to apply infrastructure changes.`,
+	Example: `  # Replace site configuration from file
+  vesctl site aws_vpc replace -i updated-site.yaml
+
+  # Replace with specific name
+  vesctl site aws_vpc replace --name example-site -i updated-site.yaml`,
+	RunE: runAWSVPCReplace,
 }
 
 var awsVPCRunCmd = &cobra.Command{
 	Use:   "run",
-	Short: "run terraform action, valid actions are plan, apply and destroy",
-	Long:  `run terraform action, valid actions are plan, apply and destroy`,
-	RunE:  runAWSVPCTerraform,
+	Short: "Run terraform action, valid actions are plan, apply and destroy",
+	Long: `Run Terraform actions to provision or destroy AWS VPC site infrastructure.
+
+This command retrieves Terraform parameters from F5 XC and executes Terraform
+to manage the actual AWS resources (VPC, subnets, EC2 instances, etc.).
+
+Available actions:
+- plan: Preview changes without applying
+- apply: Create or update infrastructure
+- destroy: Remove all infrastructure`,
+	Example: `  # Preview infrastructure changes
+  vesctl site aws_vpc run --name example-site --action plan
+
+  # Apply infrastructure (with confirmation prompt)
+  vesctl site aws_vpc run --name example-site --action apply
+
+  # Apply infrastructure automatically (for CI/CD)
+  vesctl site aws_vpc run --name example-site --action apply --auto-approve
+
+  # Destroy infrastructure
+  vesctl site aws_vpc run --name example-site --action destroy --auto-approve`,
+	RunE: runAWSVPCTerraform,
 }
 
 func init() {

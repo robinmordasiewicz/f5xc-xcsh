@@ -39,11 +39,11 @@ The configuration is saved to ~/.vesconfig (or the path specified by --config).`
   vesctl configure
 
   # Non-interactive configuration
-  vesctl configure --server-url https://my-tenant.console.ves.volterra.io/api \
-    --p12-bundle ~/.vesctl/my-cert.p12
+  vesctl configure --server-url https://example-tenant.console.ves.volterra.io/api \
+    --p12-bundle ~/.vesctl/example-cert.p12
 
   # Configure with certificate and key
-  vesctl configure --server-url https://my-tenant.console.ves.volterra.io/api \
+  vesctl configure --server-url https://example-tenant.console.ves.volterra.io/api \
     --cert ~/.vesctl/cert.pem --key ~/.vesctl/key.pem`,
 	RunE: runConfigure,
 }
@@ -70,7 +70,7 @@ Available keys:
   - api-token: Enable API token auth (true/false)
   - output: Default output format (json, yaml, table)`,
 	Example: `  # Set the server URL
-  vesctl configure set server-url https://my-tenant.console.ves.volterra.io/api
+  vesctl configure set server-url https://example-tenant.console.ves.volterra.io/api
 
   # Enable API token authentication
   vesctl configure set api-token true
@@ -160,7 +160,7 @@ func runConfigure(cmd *cobra.Command, args []string) error {
 
 	// Server URL
 	serverURL := promptWithDefault(reader, "API Server URL", config.ServerURL,
-		"e.g., https://my-tenant.console.ves.volterra.io/api")
+		"e.g., https://example-tenant.console.ves.volterra.io/api")
 	if serverURL != "" {
 		config.ServerURL = serverURL
 	}

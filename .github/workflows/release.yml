@@ -39,10 +39,60 @@ jobs:
         if: steps.changes.outputs.code == 'true'
         run: go test -v -race ./pkg/...
 
+  docs-check:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for code changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            code:
+              - '**.go'
+              - 'go.mod'
+              - 'go.sum'
+
+      - name: Set up Go
+        if: steps.changes.outputs.code == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: true
+
+      - name: Set up Python
+        if: steps.changes.outputs.code == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install mkdocs
+        if: steps.changes.outputs.code == 'true'
+        run: pip install mkdocs mkdocs-material
+
+      - name: Generate docs
+        if: steps.changes.outputs.code == 'true'
+        run: make docs
+
+      - name: Check for uncommitted changes
+        if: steps.changes.outputs.code == 'true'
+        run: |
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            echo "::error::Documentation is out of date. Run 'make docs' and commit the changes."
+            git diff docs/
+            exit 1
+          fi
+
   semantic-release:
     name: Semantic Release
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, docs-check]
     outputs:
       version: ${{ steps.semantic.outputs.version }}
     steps:

@@ -2,10 +2,10 @@
 title: "vesctl request"
 description: "Execute custom API requests to F5 Distributed Cloud."
 keywords:
-  - F5 Distributed Cloud
-  - request
-  - F5 XC
   - vesctl
+  - F5 Distributed Cloud
+  - F5 XC
+  - request
 command: "vesctl request"
 command_group: "request"
 aliases:

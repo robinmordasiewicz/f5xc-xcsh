@@ -2,9 +2,9 @@
 title: "vesctl site"
 description: "Deploy and manage F5 XC sites on public cloud providers."
 keywords:
+  - vesctl
   - F5 Distributed Cloud
   - F5 XC
-  - vesctl
   - site
 command: "vesctl site"
 command_group: "site"
@@ -33,7 +33,7 @@ This command can also be invoked as:
 | Command | Description |
 |---------|-------------|
 | [aws_vpc](aws_vpc/index.md) | Manage AWS VPC site creation through view apis |
-| [azure_vnet](azure_vnet/index.md) | Manage Azure Vnet site creation through view apis |
+| [azure_vnet](azure_vnet/index.md) | Manage Azure VNet site creation through view apis |
 
 ## Flags
 

@@ -20,10 +20,21 @@ import (
 )
 
 var secretsCmd = &cobra.Command{
-	Use:     "secrets",
-	Short:   "Execute commands for secret_management",
-	Long:    `Execute commands for secret_management`,
-	Example: `vesctl request secrets encrypt --policy-doc temp_policy --public-key pub_key secret`,
+	Use:   "secrets",
+	Short: "Execute commands for secret_management",
+	Long: `Manage secrets in F5 Distributed Cloud using blindfold encryption.
+
+The secrets command provides tools for encrypting, decrypting, and managing
+secrets that can only be accessed by the F5 XC platform. This uses the
+blindfold encryption mechanism for secure secret storage.`,
+	Example: `  # Get the public key for encryption
+  vesctl request secrets get-public-key
+
+  # Encrypt a secret
+  vesctl request secrets encrypt --policy-doc policy.json --public-key key.pem secret.txt
+
+  # Build a Kubernetes secret bundle
+  vesctl request secrets build-blindfold-bundle --name example-secret --data secret.txt`,
 }
 
 // Encrypt command
@@ -112,15 +123,27 @@ var buildBlindfoldBundleCmd = &cobra.Command{
 This command creates a Kubernetes Secret resource with the encrypted
 secret data, ready to be applied to a cluster managed by F5 XC.`,
 	Example: `  # Build a secret bundle
-  vesctl request secrets build-blindfold-bundle --name my-secret --data secret.txt
+  vesctl request secrets build-blindfold-bundle --name example-secret --data secret.txt
 
   # Build with custom namespace
-  vesctl request secrets build-blindfold-bundle --name my-secret --namespace my-ns --data secret.txt`,
+  vesctl request secrets build-blindfold-bundle --name example-secret --namespace production --data secret.txt
+
+  # Build and save to file
+  vesctl request secrets build-blindfold-bundle --name example-secret --data secret.txt --outfile k8s-secret.yaml`,
 	RunE: runBuildBlindfoldBundle,
 }
 
 func init() {
 	requestCmd.AddCommand(secretsCmd)
+
+	// Enable AI-agent-friendly error handling for invalid subcommands
+	secretsCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if len(args) > 0 {
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: vesctl request secrets <action> [flags]\n\nAvailable actions:\n  encrypt, get-public-key, get-policy-document, secret-info, build-blindfold-bundle\n\nRun 'vesctl request secrets --help' for usage", args[0], cmd.CommandPath())
+		}
+		return cmd.Help()
+	}
+	secretsCmd.SuggestionsMinimumDistance = 2
 
 	// Encrypt command
 	encryptCmd.Flags().StringVar(&encryptFlags.policyDocument, "policy-document", "", "File containing policy document")

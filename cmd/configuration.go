@@ -42,6 +42,15 @@ var configurationCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(configurationCmd)
 
+	// Enable AI-agent-friendly error handling for invalid subcommands
+	configurationCmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if len(args) > 0 {
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: vesctl configuration <action> [resource-type] [name] [flags]\n\nAvailable actions:\n  list, get, create, replace, apply, delete, status, patch, add-labels, remove-labels\n\nRun 'vesctl configuration --help' for usage", args[0], cmd.CommandPath())
+		}
+		return cmd.Help()
+	}
+	configurationCmd.SuggestionsMinimumDistance = 2
+
 	// Add subcommands
 	configurationCmd.AddCommand(buildConfigListCmd())
 	configurationCmd.AddCommand(buildConfigGetCmd())
@@ -60,9 +69,20 @@ func buildConfigListCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "list",
-		Short:   "List all configuration objects of a specified type.",
-		Example: "vesctl configuration list virtual_host",
+		Use:   "list",
+		Short: "List all configuration objects of a specified type.",
+		Long: `List all configuration objects of a specified type in F5 Distributed Cloud.
+
+Returns a list of configurations with names, namespaces, and metadata.
+Use --namespace to filter by namespace, or --output-format to control output format.`,
+		Example: `  # List all http_loadbalancers in default namespace
+  vesctl configuration list http_loadbalancer
+
+  # List in a specific namespace
+  vesctl configuration list http_loadbalancer -n production
+
+  # List with JSON output
+  vesctl configuration list http_loadbalancer --output-format json`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
@@ -70,9 +90,29 @@ func buildConfigListCmd() *cobra.Command {
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("List all %s resources in the specified namespace.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Returns a list of configurations with names, namespaces, and metadata."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # List all %s in default namespace
+  vesctl configuration list %s
+
+  # List %s in a specific namespace
+  vesctl configuration list %s -n production
+
+  # List with JSON output
+  vesctl configuration list %s --output-format json`, rt.Name, rt.Name, rt.Name, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   rt.Name,
-			Short: fmt.Sprintf("List %s", rt.Name),
+			Use:     rt.Name,
+			Short:   fmt.Sprintf("List %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigList(rtCopy, &flags)
 			},
@@ -88,9 +128,20 @@ func buildConfigGetCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "get",
-		Short:   "Retrieve a specific configuration object by name.",
-		Example: "vesctl configuration get virtual_host <name>",
+		Use:   "get",
+		Short: "Retrieve a specific configuration object by name.",
+		Long: `Retrieve a specific configuration object by name from F5 Distributed Cloud.
+
+Returns the full configuration including metadata and spec.
+Use --response-format replace-request to get output suitable for editing and replacing.`,
+		Example: `  # Get a specific http_loadbalancer
+  vesctl configuration get http_loadbalancer example-lb
+
+  # Get with replace-request format for editing
+  vesctl configuration get http_loadbalancer example-lb --response-format replace-request
+
+  # Get from a specific namespace
+  vesctl configuration get http_loadbalancer example-lb -n production`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
@@ -99,10 +150,30 @@ func buildConfigGetCmd() *cobra.Command {
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Retrieve a specific %s configuration by name.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Returns the full configuration including metadata, spec, and system metadata."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # Get a specific %s
+  vesctl configuration get %s example-resource
+
+  # Get with replace-request format for editing
+  vesctl configuration get %s example-resource --response-format replace-request
+
+  # Get from a specific namespace
+  vesctl configuration get %s example-resource -n production`, rt.Name, rt.Name, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s <name>", rt.Name),
-			Short: fmt.Sprintf("Get %s", rt.Name),
-			Args:  cobra.ExactArgs(1),
+			Use:     fmt.Sprintf("%s <name>", rt.Name),
+			Short:   fmt.Sprintf("Get %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
+			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				flags.name = args[0]
 				return runConfigGet(rtCopy, &flags)
@@ -168,9 +239,20 @@ func buildConfigDeleteCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "delete",
-		Short:   "Delete a configuration object by name.",
-		Example: "vesctl configuration delete virtual_host <name> --yes",
+		Use:   "delete",
+		Short: "Delete a configuration object by name.",
+		Long: `Delete a configuration object by name from F5 Distributed Cloud.
+
+This is a destructive operation. Use --yes to skip confirmation prompts.
+In non-interactive mode (scripts, CI/CD), --yes is required.`,
+		Example: `  # Delete an http_loadbalancer (with confirmation prompt)
+  vesctl configuration delete http_loadbalancer example-lb
+
+  # Delete without confirmation
+  vesctl configuration delete http_loadbalancer example-lb --yes
+
+  # Delete from a specific namespace
+  vesctl configuration delete http_loadbalancer example-lb -n production --yes`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
@@ -182,10 +264,30 @@ func buildConfigDeleteCmd() *cobra.Command {
 			continue
 		}
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Delete a %s configuration by name.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "This is a destructive operation. Use --yes to skip confirmation prompts."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # Delete a %s (with confirmation prompt)
+  vesctl configuration delete %s example-resource
+
+  # Delete without confirmation (for scripts/CI)
+  vesctl configuration delete %s example-resource --yes
+
+  # Delete from a specific namespace
+  vesctl configuration delete %s example-resource -n production --yes`, rt.Name, rt.Name, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s <name>", rt.Name),
-			Short: fmt.Sprintf("Delete %s", rt.Name),
-			Args:  cobra.ExactArgs(1),
+			Use:     fmt.Sprintf("%s <name>", rt.Name),
+			Short:   fmt.Sprintf("Delete %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
+			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				flags.name = args[0]
 				return runConfigDelete(rtCopy, &flags)
@@ -202,9 +304,17 @@ func buildConfigReplaceCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "replace",
-		Short:   "Replace an existing configuration object with new content.",
-		Example: "vesctl configuration replace virtual_host -i <file> --yes",
+		Use:   "replace",
+		Short: "Replace an existing configuration object with new content.",
+		Long: `Replace an existing configuration object with new content in F5 Distributed Cloud.
+
+The resource must already exist. Use --input-file or --json-data to provide the new configuration.
+This is a destructive operation. Use --yes to skip confirmation prompts.`,
+		Example: `  # Replace from YAML file
+  vesctl configuration replace http_loadbalancer -i config.yaml --yes
+
+  # Replace with inline JSON
+  vesctl configuration replace http_loadbalancer --json-data '{"metadata":{"name":"example-lb"},...}' --yes`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "Path to YAML or JSON file containing the resource definition.")
@@ -218,16 +328,23 @@ func buildConfigReplaceCmd() *cobra.Command {
 		}
 		rtCopy := rt
 
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Replace an existing %s configuration with new content.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "The resource must already exist. This is a destructive operation."
+
 		// Build example text
-		exampleText := fmt.Sprintf(`# Replace from file
-vesctl configuration replace %s -i config.yaml --yes`, rt.Name)
+		exampleText := fmt.Sprintf(`  # Replace from file
+  vesctl configuration replace %s -i config.yaml --yes`, rt.Name)
 
 		// Add inline JSON example if available
 		if jsonExample := types.GetResourceExample(rt.Name); jsonExample != "" {
 			exampleText += fmt.Sprintf(`
 
-# Replace with inline JSON using heredoc
-vesctl configuration replace %s --json-data "$(cat <<'EOF'
+  # Replace with inline JSON using heredoc
+  vesctl configuration replace %s --json-data "$(cat <<'EOF'
 %s
 EOF
 )" --yes`, rt.Name, jsonExample)
@@ -236,6 +353,7 @@ EOF
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
 			Short:   fmt.Sprintf("Replace %s", rt.Name),
+			Long:    longDesc,
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigReplace(rtCopy, &flags)
@@ -252,9 +370,20 @@ func buildConfigStatusCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "status",
-		Short:   "Display the current status of a configuration object.",
-		Example: "vesctl configuration status virtual_host <name>",
+		Use:   "status",
+		Short: "Display the current status of a configuration object.",
+		Long: `Display the current status of a configuration object in F5 Distributed Cloud.
+
+Returns the runtime status including deployment state, validation status, and any errors.
+Use --at-site to query status at a specific site.`,
+		Example: `  # Get status of an http_loadbalancer
+  vesctl configuration status http_loadbalancer example-lb
+
+  # Get status at a specific site
+  vesctl configuration status http_loadbalancer example-lb --at-site example-site
+
+  # Get status from a specific namespace
+  vesctl configuration status http_loadbalancer example-lb -n production`,
 	}
 
 	cmd.PersistentFlags().StringVar(&flags.atSite, "at-site", "", "Site name to query for object status.")
@@ -266,10 +395,30 @@ func buildConfigStatusCmd() *cobra.Command {
 			continue
 		}
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Display the current status of a %s configuration.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Returns the runtime status including deployment state, validation status, and any errors."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # Get status of a %s
+  vesctl configuration status %s example-resource
+
+  # Get status at a specific site
+  vesctl configuration status %s example-resource --at-site example-site
+
+  # Get status from a specific namespace
+  vesctl configuration status %s example-resource -n production`, rt.Name, rt.Name, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s <name>", rt.Name),
-			Short: fmt.Sprintf("Status of %s", rt.Name),
-			Args:  cobra.ExactArgs(1),
+			Use:     fmt.Sprintf("%s <name>", rt.Name),
+			Short:   fmt.Sprintf("Status of %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
+			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				flags.name = args[0]
 				return runConfigStatus(rtCopy, &flags)
@@ -286,9 +435,17 @@ func buildConfigApplyCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "apply",
-		Short:   "Create or replace a configuration object using declarative input.",
-		Example: "vesctl configuration apply virtual_host -i <file>",
+		Use:   "apply",
+		Short: "Create or replace a configuration object using declarative input.",
+		Long: `Create or replace a configuration object using declarative input in F5 Distributed Cloud.
+
+Apply is idempotent - it creates the resource if it doesn't exist, or replaces it if it does.
+Use --mode new to fail if the resource already exists (strict create behavior).`,
+		Example: `  # Apply from YAML file (create or replace)
+  vesctl configuration apply http_loadbalancer -i config.yaml
+
+  # Apply with strict create mode (fail if exists)
+  vesctl configuration apply http_loadbalancer -i config.yaml --mode new`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.inputFile, "input-file", "i", "", "Path to YAML or JSON file containing the resource definition.")
@@ -302,16 +459,26 @@ func buildConfigApplyCmd() *cobra.Command {
 		}
 		rtCopy := rt
 
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Create or replace a %s configuration using declarative input.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Apply is idempotent - creates if not exists, replaces if it does."
+
 		// Build example text
-		exampleText := fmt.Sprintf(`# Apply from file
-vesctl configuration apply %s -i config.yaml`, rt.Name)
+		exampleText := fmt.Sprintf(`  # Apply from file (create or replace)
+  vesctl configuration apply %s -i config.yaml
+
+  # Apply with strict create mode
+  vesctl configuration apply %s -i config.yaml --mode new`, rt.Name, rt.Name)
 
 		// Add inline JSON example if available
 		if jsonExample := types.GetResourceExample(rt.Name); jsonExample != "" {
 			exampleText += fmt.Sprintf(`
 
-# Apply with inline JSON using heredoc
-vesctl configuration apply %s --json-data "$(cat <<'EOF'
+  # Apply with inline JSON using heredoc
+  vesctl configuration apply %s --json-data "$(cat <<'EOF'
 %s
 EOF
 )"`, rt.Name, jsonExample)
@@ -320,6 +487,7 @@ EOF
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
 			Short:   fmt.Sprintf("Apply %s", rt.Name),
+			Long:    longDesc,
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigApply(rtCopy, &flags)
@@ -336,9 +504,13 @@ func buildConfigPatchCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "patch",
-		Short:   "Apply a partial update to a configuration object.",
-		Example: "vesctl configuration replace virtual_host add /metadata/description \"desc\"",
+		Use:   "patch",
+		Short: "Apply a partial update to a configuration object.",
+		Long: `Apply a partial update to a configuration object in F5 Distributed Cloud.
+
+Note: Patch operation is not yet fully implemented. Use replace for complete updates.`,
+		Example: `  # Patch is not yet implemented - use replace instead
+  vesctl configuration replace http_loadbalancer -i updated-config.yaml`,
 	}
 
 	cmd.PersistentFlags().StringVar(&flags.name, "name", "", "Name of the target configuration object.")
@@ -350,9 +522,18 @@ func buildConfigPatchCmd() *cobra.Command {
 			continue
 		}
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Apply a partial update to a %s configuration.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Note: Patch operation is not yet fully implemented. Use replace for complete updates."
+
 		subCmd := &cobra.Command{
 			Use:   rt.Name,
 			Short: fmt.Sprintf("Patch %s", rt.Name),
+			Long:  longDesc,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigPatch(rtCopy, &flags)
 			},
@@ -368,9 +549,19 @@ func buildConfigAddLabelsCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "add-labels",
-		Short:   "Add metadata labels to a configuration object.",
-		Example: "vesctl configuration add-labels virtual_host <name> --label-key acmecorp.com/attr-1 --label-value val-1",
+		Use:   "add-labels",
+		Short: "Add metadata labels to a configuration object.",
+		Long: `Add metadata labels to a configuration object in F5 Distributed Cloud.
+
+Labels are key-value pairs used for organizing and selecting resources.
+Use --label-key and --label-value flags (can be repeated for multiple labels).`,
+		Example: `  # Add a single label
+  vesctl configuration add-labels http_loadbalancer example-lb --label-key env --label-value production
+
+  # Add multiple labels
+  vesctl configuration add-labels http_loadbalancer example-lb \
+    --label-key env --label-value production \
+    --label-key team --label-value platform`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
@@ -380,10 +571,29 @@ func buildConfigAddLabelsCmd() *cobra.Command {
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Add metadata labels to a %s configuration.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Labels are key-value pairs used for organizing and selecting resources."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # Add a single label
+  vesctl configuration add-labels %s example-resource --label-key env --label-value production
+
+  # Add multiple labels
+  vesctl configuration add-labels %s example-resource \
+    --label-key env --label-value production \
+    --label-key team --label-value platform`, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s <name>", rt.Name),
-			Short: fmt.Sprintf("Add Labels to %s", rt.Name),
-			Args:  cobra.ExactArgs(1),
+			Use:     fmt.Sprintf("%s <name>", rt.Name),
+			Short:   fmt.Sprintf("Add Labels to %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
+			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				flags.name = args[0]
 				return runConfigAddLabels(rtCopy, &flags)
@@ -400,9 +610,18 @@ func buildConfigRemoveLabelsCmd() *cobra.Command {
 	var flags configurationFlags
 
 	cmd := &cobra.Command{
-		Use:     "remove-labels",
-		Short:   "Remove metadata labels from a configuration object.",
-		Example: "vesctl configuration remove-labels virtual_host <name> --label-key acmecorp.com/attr-1",
+		Use:   "remove-labels",
+		Short: "Remove metadata labels from a configuration object.",
+		Long: `Remove metadata labels from a configuration object in F5 Distributed Cloud.
+
+Specify the label keys to remove using --label-key flags (can be repeated for multiple labels).`,
+		Example: `  # Remove a single label
+  vesctl configuration remove-labels http_loadbalancer example-lb --label-key env
+
+  # Remove multiple labels
+  vesctl configuration remove-labels http_loadbalancer example-lb \
+    --label-key env \
+    --label-key team`,
 	}
 
 	cmd.PersistentFlags().StringVarP(&flags.namespace, "namespace", "n", "default", "Target namespace for the operation.")
@@ -411,10 +630,29 @@ func buildConfigRemoveLabelsCmd() *cobra.Command {
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+
+		// Build resource-specific Long description
+		longDesc := fmt.Sprintf("Remove metadata labels from a %s configuration.\n\n", rt.Name)
+		if rt.Description != "" {
+			longDesc += rt.Description + "\n\n"
+		}
+		longDesc += "Specify the label keys to remove using --label-key flags."
+
+		// Build resource-specific examples
+		exampleText := fmt.Sprintf(`  # Remove a single label
+  vesctl configuration remove-labels %s example-resource --label-key env
+
+  # Remove multiple labels
+  vesctl configuration remove-labels %s example-resource \
+    --label-key env \
+    --label-key team`, rt.Name, rt.Name)
+
 		subCmd := &cobra.Command{
-			Use:   fmt.Sprintf("%s <name>", rt.Name),
-			Short: fmt.Sprintf("Remove Labels from %s", rt.Name),
-			Args:  cobra.ExactArgs(1),
+			Use:     fmt.Sprintf("%s <name>", rt.Name),
+			Short:   fmt.Sprintf("Remove Labels from %s", rt.Name),
+			Long:    longDesc,
+			Example: exampleText,
+			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				flags.name = args[0]
 				return runConfigRemoveLabels(rtCopy, &flags)

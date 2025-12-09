@@ -37,14 +37,14 @@ You can authenticate using:
 
 After successful login, you can use all vesctl commands to manage your resources.`,
 	Example: `  # Login with P12 bundle
-  vesctl login --tenant my-tenant --p12-bundle ~/.vesctl/my-cert.p12
+  vesctl login --tenant example-tenant --p12-bundle ~/.vesctl/example-cert.p12
 
   # Login with certificate and key
-  vesctl login --tenant my-tenant --cert ~/.vesctl/cert.pem --key ~/.vesctl/key.pem
+  vesctl login --tenant example-tenant --cert ~/.vesctl/cert.pem --key ~/.vesctl/key.pem
 
   # Login with API token
   export VES_API_TOKEN='your-api-token'
-  vesctl login --tenant my-tenant --api-token
+  vesctl login --tenant example-tenant --api-token
 
   # Login (using existing configuration)
   vesctl login`,
@@ -76,7 +76,7 @@ func init() {
 	rootCmd.AddCommand(logoutCmd)
 	rootCmd.AddCommand(whoamiCmd)
 
-	loginCmd.Flags().StringVar(&loginFlags.tenant, "tenant", "", "Tenant name (e.g., my-tenant from my-tenant.console.ves.volterra.io)")
+	loginCmd.Flags().StringVar(&loginFlags.tenant, "tenant", "", "Tenant name (e.g., example-tenant from example-tenant.console.ves.volterra.io)")
 	loginCmd.Flags().StringVar(&loginFlags.p12Bundle, "p12-bundle", "", "Path to P12 certificate bundle")
 	loginCmd.Flags().StringVar(&loginFlags.cert, "cert", "", "Path to client certificate")
 	loginCmd.Flags().StringVar(&loginFlags.key, "key", "", "Path to client key")

@@ -63,8 +63,8 @@ func buildListCommand(rt *types.ResourceType) *cobra.Command {
 		Short:   fmt.Sprintf("List %s resources", rt.CLIName),
 		Long:    fmt.Sprintf("List all %s resources in the specified namespace.", rt.Description),
 		Example: buildExample(rt, "list", []string{
-			fmt.Sprintf("vesctl %s list --namespace my-namespace", rt.CLIName),
-			fmt.Sprintf("vesctl %s list -n my-namespace -o table", rt.CLIName),
+			fmt.Sprintf("vesctl %s list --namespace example-namespace", rt.CLIName),
+			fmt.Sprintf("vesctl %s list -n example-namespace -o table", rt.CLIName),
 		}),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runList(rt, &flags)
@@ -90,8 +90,8 @@ func buildShowCommand(rt *types.ResourceType) *cobra.Command {
 		Long:    fmt.Sprintf("Display detailed information about a specific %s.", rt.Description),
 		Args:    cobra.ExactArgs(1),
 		Example: buildExample(rt, "show", []string{
-			fmt.Sprintf("vesctl %s show my-resource --namespace my-namespace", rt.CLIName),
-			fmt.Sprintf("vesctl %s show my-resource -n my-namespace -o json", rt.CLIName),
+			fmt.Sprintf("vesctl %s show example-resource --namespace example-namespace", rt.CLIName),
+			fmt.Sprintf("vesctl %s show example-resource -n example-namespace -o json", rt.CLIName),
 		}),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.name = args[0]
@@ -117,7 +117,7 @@ func buildCreateCommand(rt *types.ResourceType) *cobra.Command {
 		Long:  fmt.Sprintf("Create a new %s from a YAML or JSON file.", rt.Description),
 		Example: buildExample(rt, "create", []string{
 			fmt.Sprintf("vesctl %s create --file resource.yaml", rt.CLIName),
-			fmt.Sprintf("vesctl %s create -f resource.json --namespace my-namespace", rt.CLIName),
+			fmt.Sprintf("vesctl %s create -f resource.json --namespace example-namespace", rt.CLIName),
 		}),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runCreate(rt, &flags)
@@ -175,8 +175,8 @@ func buildDeleteCommand(rt *types.ResourceType) *cobra.Command {
 		Long:    fmt.Sprintf("Delete a %s resource.", rt.Description),
 		Args:    cobra.ExactArgs(1),
 		Example: buildExample(rt, "delete", []string{
-			fmt.Sprintf("vesctl %s delete my-resource --namespace my-namespace", rt.CLIName),
-			fmt.Sprintf("vesctl %s delete my-resource -n my-namespace --yes", rt.CLIName),
+			fmt.Sprintf("vesctl %s delete example-resource --namespace example-namespace", rt.CLIName),
+			fmt.Sprintf("vesctl %s delete example-resource -n example-namespace --yes", rt.CLIName),
 		}),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.name = args[0]
@@ -204,7 +204,7 @@ func buildStatusCommand(rt *types.ResourceType) *cobra.Command {
 		Long:  fmt.Sprintf("Display the operational status of a %s.", rt.Description),
 		Args:  cobra.ExactArgs(1),
 		Example: buildExample(rt, "status", []string{
-			fmt.Sprintf("vesctl %s status my-resource --namespace my-namespace", rt.CLIName),
+			fmt.Sprintf("vesctl %s status example-resource --namespace example-namespace", rt.CLIName),
 		}),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			flags.name = args[0]
