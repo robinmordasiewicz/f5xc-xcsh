@@ -3,9 +3,9 @@ title: "vesctl configuration"
 description: "Manage F5 XC configuration objects using CRUD operations."
 keywords:
   - F5 Distributed Cloud
-  - configuration
   - vesctl
   - F5 XC
+  - configuration
 command: "vesctl configuration"
 command_group: "configuration"
 aliases:

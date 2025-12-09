@@ -30,6 +30,210 @@ ACTION_ORDER = [
 ]
 
 
+class CategoryMapper:
+    """Self-contained category derivation from OpenAPI specs.
+
+    Derives categories from x-ves-proto-package metadata in OpenAPI specs.
+    Uses a three-tier approach:
+    1. Proto package prefix matching (most specific first)
+    2. Resource name pattern matching
+    3. Default to "General"
+    """
+
+    # Primary: Map proto package prefixes to categories
+    # Sorted from most specific to least specific when matching
+    PROTO_PREFIX_MAP = {
+        # Load Balancing & Traffic Management
+        "views.http_loadbalancer": "Load Balancing",
+        "views.tcp_loadbalancer": "Load Balancing",
+        "views.udp_loadbalancer": "Load Balancing",
+        "views.cdn_loadbalancer": "Load Balancing",
+        "views.origin_pool": "Load Balancing",
+        "cluster": "Load Balancing",
+        "endpoint": "Load Balancing",
+        "healthcheck": "Load Balancing",
+        "route": "Load Balancing",
+        "virtual_host": "Load Balancing",
+
+        # Sites & Infrastructure
+        "views.aws_vpc_site": "Sites",
+        "views.azure_vnet_site": "Sites",
+        "views.gcp_vpc_site": "Sites",
+        "views.voltstack_site": "Sites",
+        "views.securemesh_site": "Sites",
+        "views.securemesh_site_v2": "Sites",
+        "views.aws_tgw_site": "Sites",
+        "fleet": "Sites",
+
+        # Bot Defense & Shape Services
+        "shape.bot_defense": "Bot Defense",
+        "shape.client_side_defense": "Client-Side Defense",
+        "shape.brmalerts": "Shape Services",
+        "shape.data_delivery": "Shape Services",
+        "shape.device_id": "Shape Services",
+        "shape.mobile_app_shield": "Shape Services",
+        "shape.mobile_integrator": "Shape Services",
+        "shape.recognize": "Shape Services",
+        "shape.safe": "Shape Services",
+        "shape.safeap": "Shape Services",
+        "shape": "Shape Services",  # Catch-all for shape.*
+
+        # API Security
+        "api_sec": "API Security",
+        "views.api_definition": "API Security",
+        "views.app_api_group": "API Security",
+
+        # Infrastructure Protection
+        "infraprotect": "Infrastructure Protection",
+
+        # BIG-IP Integration
+        "bigip": "BIG-IP Integration",
+        "bigcne": "BIG-IP Integration",
+        "views.bigip_virtual_server": "BIG-IP Integration",
+
+        # Networking
+        "network": "Networking",
+        "virtual_network": "Networking",
+        "bgp": "Networking",
+        "tunnel": "Networking",
+        "segment": "Networking",
+        "views.network_policy_view": "Networking",
+        "views.forward_proxy_policy": "Networking",
+        "views.policy_based_routing": "Networking",
+
+        # DNS
+        "dns": "DNS",
+
+        # Certificates
+        "certificate": "Certificates",
+        "trusted_ca": "Certificates",
+        "crl": "Certificates",
+
+        # Monitoring & Observability
+        "alert": "Monitoring",
+        "log": "Monitoring",
+        "apm": "Monitoring",
+        "synthetic_monitor": "Monitoring",
+        "report": "Monitoring",
+
+        # Organization & Administration
+        "tenant": "Organization",
+        "namespace": "Organization",
+        "user": "Organization",
+        "role": "Organization",
+        "rbac": "Organization",
+        "contact": "Organization",
+
+        # Subscriptions & Billing
+        "subscription": "Subscriptions",
+        "billing": "Subscriptions",
+        "addon": "Subscriptions",
+
+        # Kubernetes
+        "k8s": "Kubernetes",
+        "virtual_k8s": "Kubernetes",
+        "views.workload": "Kubernetes",
+
+        # Authentication & Credentials
+        "token": "Authentication",
+        "credential": "Authentication",
+        "secret": "Authentication",
+        "discovery": "Authentication",
+
+        # Security Policies
+        "service_policy": "Security",
+        "malicious_user": "Security",
+        "rate_limiter": "Security",
+        "views.rate_limiter_policy": "Security",
+        "waf": "Security",
+        "app_firewall": "Security",
+
+        # Views (various)
+        "views.external_connector": "Integrations",
+        "views.proxy": "Networking",
+        "views.third_party_application": "Integrations",
+        "views.terraform_parameters": "Integrations",
+        "views.tenant_configuration": "Organization",
+        "views.ike_phase1_profile": "VPN",
+        "views.ike_phase2_profile": "VPN",
+
+        # AI/ML
+        "ai": "AI/ML",
+    }
+
+    # Fallback: Pattern matching for resources without clear proto package
+    RESOURCE_PATTERNS = [
+        ("loadbalancer", "Load Balancing"),
+        ("_site", "Sites"),
+        ("_policy", "Security"),
+        ("firewall", "Security"),
+        ("waf", "Security"),
+        ("credential", "Authentication"),
+        ("secret", "Authentication"),
+        ("k8s_", "Kubernetes"),
+        ("virtual_k8s", "Kubernetes"),
+        ("dns_", "DNS"),
+        ("certificate", "Certificates"),
+        ("alert", "Monitoring"),
+        ("log_", "Monitoring"),
+        ("tenant", "Organization"),
+        ("namespace", "Organization"),
+        ("user_", "Organization"),
+        ("role", "Organization"),
+        ("network", "Networking"),
+        ("bgp", "Networking"),
+        ("tunnel", "Networking"),
+        ("subscription", "Subscriptions"),
+        ("billing", "Subscriptions"),
+        ("shape", "Shape Services"),
+        ("bot_", "Bot Defense"),
+        ("api_sec", "API Security"),
+        ("infraprotect", "Infrastructure Protection"),
+        ("bigip", "BIG-IP Integration"),
+    ]
+
+    def get_category(self, resource_name: str, proto_package: str = None) -> str:
+        """Derive category from OpenAPI metadata.
+
+        Priority:
+        1. Proto package prefix matching (most specific first)
+        2. Resource name pattern matching
+        3. Default to "General"
+
+        Args:
+            resource_name: The resource name (e.g., "http_loadbalancer")
+            proto_package: The x-ves-proto-package value from OpenAPI spec
+
+        Returns:
+            Category name string
+        """
+        # 1. Try proto package (if available)
+        if proto_package:
+            # Strip common prefix: ves.io.schema.
+            path = proto_package.replace("ves.io.schema.", "")
+
+            # Check from most specific to least specific
+            for prefix, category in sorted(
+                self.PROTO_PREFIX_MAP.items(),
+                key=lambda x: -len(x[0])  # Longer prefixes first
+            ):
+                if path.startswith(prefix) or f".{prefix}" in path or path == prefix:
+                    return category
+
+        # 2. Fall back to resource name patterns
+        resource_lower = resource_name.lower()
+        for pattern, category in self.RESOURCE_PATTERNS:
+            if pattern in resource_lower:
+                return category
+
+        # 3. Default
+        return "General"
+
+
+# Singleton instance for category mapping
+category_mapper = CategoryMapper()
+
+
 def sort_actions(actions: list) -> list:
     """Sort actions by canonical order."""
     action_priority = {action: i for i, action in enumerate(ACTION_ORDER)}
@@ -156,13 +360,14 @@ class VesctlDocsGenerator:
         self.resource_api_map: dict[str, dict] = {}
 
     def load_api_specs(self) -> None:
-        """Load and index OpenAPI spec files for API documentation links."""
+        """Load and index OpenAPI spec files for API documentation links and categories."""
         if not self.api_specs_dir.exists():
             print(f"Warning: API specs directory not found: {self.api_specs_dir}")
             return
 
         print(f"Loading API specs from {self.api_specs_dir}...")
         spec_count = 0
+        category_counts: dict[str, int] = {}
 
         for spec_file in self.api_specs_dir.glob("*.json"):
             # Extract resource name from filename
@@ -178,18 +383,35 @@ class VesctlDocsGenerator:
                         with open(spec_file) as f:
                             spec_data = json.load(f)
 
+                        # Extract proto package from spec metadata
+                        proto_package = spec_data.get("x-ves-proto-package", "")
+
+                        # Derive category from proto package
+                        derived_category = category_mapper.get_category(resource_name, proto_package)
+
                         # Store spec with resource name as key
                         # If resource already exists, keep the first one (they should be the same)
                         if resource_name not in self.resource_api_map:
                             self.resource_api_map[resource_name] = {
                                 "spec": spec_data,
                                 "file": spec_file,
+                                "proto_package": proto_package,
+                                "category": derived_category,
                             }
                             spec_count += 1
+
+                            # Track category counts
+                            category_counts[derived_category] = category_counts.get(derived_category, 0) + 1
                     except (json.JSONDecodeError, IOError) as e:
                         print(f"  Warning: Failed to load {spec_file}: {e}")
 
         print(f"  Loaded {spec_count} API specs, {len(self.resource_api_map)} unique resources")
+
+        # Print category distribution
+        if category_counts:
+            print(f"  Category distribution:")
+            for cat in sorted(category_counts.keys()):
+                print(f"    {cat}: {category_counts[cat]}")
 
     def get_api_docs_url(self, resource: str, action: str) -> Optional[str]:
         """Get API documentation URL for a resource+action combination."""
@@ -656,6 +878,13 @@ vesctl {group} {action} {resource}
         for resource_name, actions in sorted(resources.items()):
             self.generate_resource_group(group, resource_name, actions)
 
+    def get_resource_category(self, resource: str) -> str:
+        """Get category for a resource from API specs or derive from name."""
+        if resource in self.resource_api_map:
+            return self.resource_api_map[resource].get("category", "General")
+        # Fall back to pattern matching if not in API map
+        return category_mapper.get_category(resource)
+
     def generate_resource_group(
         self, group: str, resource: str, actions: list[Command]
     ) -> None:
@@ -664,6 +893,9 @@ vesctl {group} {action} {resource}
 
         # Sort actions by canonical order
         sorted_actions = sort_actions(actions)
+
+        # Get resource category
+        resource_category = self.get_resource_category(resource)
 
         # Build action data with API URLs and generated examples
         action_data = []
@@ -688,6 +920,7 @@ vesctl {group} {action} {resource}
             description=f"Manage {resource.replace('_', ' ')} resources",
             command=sorted_actions[0] if sorted_actions else None,
             resource_type=resource,
+            subcategory=resource_category,
         )
 
         content = template.render(
@@ -697,6 +930,7 @@ vesctl {group} {action} {resource}
             actions=action_data,
             api_docs_urls=api_docs_urls,
             global_flags=self.global_flags,
+            subcategory=resource_category,
         )
 
         # Write single file (not in a directory)
@@ -871,18 +1105,44 @@ vesctl {group} {action} {resource}
     def build_resource_first_nav(
         self, group: str, node: CommandTree
     ) -> list[dict]:
-        """Build flat resource navigation for configuration command."""
-        nav_items = []
+        """Build categorized resource navigation for configuration command.
+
+        Groups resources by category derived from OpenAPI specs.
+        Categories are sorted alphabetically with 'General' last.
+        """
+        from collections import defaultdict
 
         # Collect all resources across all actions
         resources = self.collect_resources_across_actions(node)
 
-        # Build flat navigation - one entry per resource
-        for resource_name in sorted(resources.keys()):
-            resource_display = resource_name.replace("_", " ").replace("-", " ").title()
-            nav_items.append({
-                resource_display: f"commands/{group}/{resource_name}.md"
-            })
+        # Group resources by category
+        categorized: dict[str, list[str]] = defaultdict(list)
+        for resource_name in resources.keys():
+            category = self.get_resource_category(resource_name)
+            categorized[category].append(resource_name)
+
+        # Sort categories: alphabetically, but "General" last
+        sorted_categories = sorted(
+            categorized.keys(),
+            key=lambda c: (c == "General", c)  # General sorts last
+        )
+
+        # Build nested navigation
+        nav_items = []
+
+        for category in sorted_categories:
+            category_resources = sorted(categorized[category])
+
+            # Build items for this category
+            category_items = []
+            for resource_name in category_resources:
+                resource_display = resource_name.replace("_", " ").replace("-", " ").title()
+                category_items.append({
+                    resource_display: f"commands/{group}/{resource_name}.md"
+                })
+
+            # Add category with its resources
+            nav_items.append({category: category_items})
 
         return nav_items
 

@@ -7,6 +7,9 @@ keywords:
 {% endfor %}
 command_group: "{{ front_matter.command_group }}"
 resource_type: "{{ front_matter.resource_type }}"
+{% if front_matter.subcategory %}
+subcategory: "{{ front_matter.subcategory }}"
+{% endif %}
 available_actions:
 {% for action in actions %}
   - {{ action.action_name }}
