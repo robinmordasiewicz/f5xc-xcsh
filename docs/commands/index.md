@@ -40,7 +40,7 @@ These flags are available for all commands:
 | `--api-token` |  | bool | false | Authenticate using the API token from VES_API_TOKEN environment variable. |
 | `--cacert` | `-a` | string |  | Path to the server CA certificate file for TLS verification. |
 | `--cert` | `-c` | string |  | Path to the client certificate file for mTLS authentication. |
-| `--config` |  | string |  | Path to the configuration file containing API URL and credentials (default "/Users/r.mordasiewicz/.vesconfig"). |
+| `--config` |  | string |  | Path to the configuration file containing API URL and credentials (default "$HOME/.vesconfig"). |
 | `--hardwareKey` |  | bool | false | Use a YubiKey hardware security module for TLS authentication. |
 | `--key` | `-k` | string |  | Path to the client private key file for mTLS authentication. |
 | `--non-interactive` |  | bool | false | Disable interactive prompts and fail if required arguments are missing. |
@@ -98,4 +98,4 @@ vesctl supports multiple output formats:
 
 ## Version
 
-Built from version: `v4.15.2`
+Built from version: `v4.15.3`
