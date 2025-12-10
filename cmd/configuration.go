@@ -682,7 +682,7 @@ func runConfigList(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("Error listing object: Listing object: %w", err)
+		return fmt.Errorf("error listing object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -718,7 +718,7 @@ func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, flags.name)
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("Error getting object: Getting object: %w", err)
+		return fmt.Errorf("error getting object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -761,7 +761,7 @@ func runConfigCreate(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Post(ctx, path, resource)
 	if err != nil {
-		return fmt.Errorf("Error creating object: Creating object: %w", err)
+		return fmt.Errorf("error creating object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -830,7 +830,7 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 			}
 			resp, err := client.Post(ctx, path, body)
 			if err != nil {
-				return fmt.Errorf("Error deleting object: Deleting object: %w", err)
+				return fmt.Errorf("error deleting object: %w", err)
 			}
 			if resp.StatusCode >= 400 {
 				return formatAPIError("deleting", "POST", path, resp.StatusCode, resp.Body)
@@ -843,7 +843,7 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 	// Standard DELETE method
 	resp, err := client.Delete(ctx, path)
 	if err != nil {
-		return fmt.Errorf("Error deleting object: Deleting object: %w", err)
+		return fmt.Errorf("error deleting object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -911,7 +911,7 @@ func runConfigReplace(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, name)
 	resp, err := client.Put(ctx, path, resource)
 	if err != nil {
-		return fmt.Errorf("Error replacing object: Replacing object: %w", err)
+		return fmt.Errorf("error replacing object: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -941,7 +941,7 @@ func runConfigStatus(rt *types.ResourceType, flags *configurationFlags) error {
 	path := rt.BuildAPIPath(namespace, flags.name) + "/status"
 	resp, err := client.Get(ctx, path, nil)
 	if err != nil {
-		return fmt.Errorf("Error getting status: Getting status: %w", err)
+		return fmt.Errorf("error getting status: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -989,7 +989,7 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 		path := rt.BuildAPIPath(namespace, "")
 		resp, err := client.Post(ctx, path, resource)
 		if err != nil {
-			return fmt.Errorf("Error creating object: Creating object: %w", err)
+			return fmt.Errorf("error creating object: %w", err)
 		}
 		if resp.StatusCode >= 400 {
 			return formatAPIError("creating", "POST", path, resp.StatusCode, resp.Body)
@@ -1010,7 +1010,7 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 			// Resource exists, replace it
 			resp, err := client.Put(ctx, getPath, resource)
 			if err != nil {
-				return fmt.Errorf("Error replacing object: Replacing object: %w", err)
+				return fmt.Errorf("error replacing object: %w", err)
 			}
 			if resp.StatusCode >= 400 {
 				return formatAPIError("replacing", "PUT", getPath, resp.StatusCode, resp.Body)
@@ -1025,7 +1025,7 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 	createPath := rt.BuildAPIPath(namespace, "")
 	resp, err := client.Post(ctx, createPath, resource)
 	if err != nil {
-		return fmt.Errorf("Error creating object: Creating object: %w", err)
+		return fmt.Errorf("error creating object: %w", err)
 	}
 	if resp.StatusCode >= 400 {
 		return formatAPIError("creating", "POST", createPath, resp.StatusCode, resp.Body)
@@ -1081,7 +1081,7 @@ func runConfigAddLabels(rt *types.ResourceType, flags *configurationFlags) error
 
 	resp, err := client.Post(ctx, path, body)
 	if err != nil {
-		return fmt.Errorf("Error adding labels: Adding labels: %w", err)
+		return fmt.Errorf("error adding labels: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -1119,7 +1119,7 @@ func runConfigRemoveLabels(rt *types.ResourceType, flags *configurationFlags) er
 
 	resp, err := client.Post(ctx, path, body)
 	if err != nil {
-		return fmt.Errorf("Error removing labels: Removing labels: %w", err)
+		return fmt.Errorf("error removing labels: %w", err)
 	}
 
 	if resp.StatusCode >= 400 {
@@ -1135,7 +1135,7 @@ func formatAPIError(operation, method, path string, statusCode int, body []byte)
 	baseURL := serverURL
 	// Capitalize first letter of operation
 	capOperation := strings.ToUpper(operation[:1]) + operation[1:]
-	return fmt.Errorf("Error %s object: %s object: Unsuccessful %s at URL %s%s, status code %d, body %s, err %%!s(<nil>)",
+	return fmt.Errorf("error %s object: %s object: unsuccessful %s at URL %s%s, status code %d, body %s, err %%!s(<nil>)",
 		operation, capOperation, method, baseURL, path, statusCode, string(body))
 }
 
