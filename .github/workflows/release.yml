@@ -274,13 +274,14 @@ jobs:
           mkdir -p $RUNNER_TEMP/hash_check
           cd $RUNNER_TEMP/hash_check
 
-          declare -A HASHES
+          # Download and compute hash for each platform
           for PLATFORM in darwin_amd64 darwin_arm64 linux_amd64 linux_arm64; do
             ASSET="vesctl_${VERSION}_${PLATFORM}.tar.gz"
             echo "Downloading $ASSET..."
             gh release download "v${VERSION}" --pattern "$ASSET" --repo "${{ github.repository }}"
             HASH=$(shasum -a 256 "$ASSET" | cut -d' ' -f1)
-            HASHES[$PLATFORM]=$HASH
+            # Export hash as environment variable for later use
+            export "HASH_${PLATFORM}=${HASH}"
             echo "$PLATFORM: $HASH"
           done
 
@@ -307,22 +308,22 @@ jobs:
             on_macos do
               on_intel do
                 url "https://github.com/robinmordasiewicz/vesctl/releases/download/v#{version}/vesctl_#{version}_darwin_amd64.tar.gz"
-                sha256 "${HASHES[darwin_amd64]}"
+                sha256 "${HASH_darwin_amd64}"
               end
               on_arm do
                 url "https://github.com/robinmordasiewicz/vesctl/releases/download/v#{version}/vesctl_#{version}_darwin_arm64.tar.gz"
-                sha256 "${HASHES[darwin_arm64]}"
+                sha256 "${HASH_darwin_arm64}"
               end
             end
 
             on_linux do
               on_intel do
                 url "https://github.com/robinmordasiewicz/vesctl/releases/download/v#{version}/vesctl_#{version}_linux_amd64.tar.gz"
-                sha256 "${HASHES[linux_amd64]}"
+                sha256 "${HASH_linux_amd64}"
               end
               on_arm do
                 url "https://github.com/robinmordasiewicz/vesctl/releases/download/v#{version}/vesctl_#{version}_linux_arm64.tar.gz"
-                sha256 "${HASHES[linux_arm64]}"
+                sha256 "${HASH_linux_arm64}"
               end
             end
 
