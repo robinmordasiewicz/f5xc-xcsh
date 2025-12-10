@@ -12,7 +12,7 @@ Full documentation is available at **[robinmordasiewicz.github.io/vesctl](https:
 
 ```bash
 brew tap robinmordasiewicz/tap
-brew install vesctl
+brew install --cask vesctl
 ```
 
 ### Install Script
