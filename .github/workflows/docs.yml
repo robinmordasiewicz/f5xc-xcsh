@@ -3,6 +3,9 @@ name: Documentation
 on:
   release:
     types: [published]
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       force_regenerate:
@@ -44,24 +47,70 @@ jobs:
   check-spec:
     name: Check Spec Changes
     runs-on: ubuntu-latest
+    # Skip if workflow_run but Release workflow failed
+    if: |
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     outputs:
       needs_generation: ${{ steps.compare.outputs.needs_generation }}
       spec_hash: ${{ steps.spec-hash.outputs.hash }}
+      recent_release: ${{ steps.check-release.outputs.recent_release }}
     steps:
+      - name: Check for recent release
+        if: github.event_name == 'workflow_run'
+        id: check-release
+        run: |
+          # Get the most recent release
+          LATEST_RELEASE=$(gh api repos/${{ github.repository }}/releases/latest --jq '.published_at' 2>/dev/null || echo "")
+
+          if [ -n "$LATEST_RELEASE" ]; then
+            # Convert ISO 8601 to epoch using GNU date
+            RELEASE_TIME=$(date -d "$LATEST_RELEASE" +%s 2>/dev/null || echo "0")
+            NOW=$(date +%s)
+            DIFF=$((NOW - RELEASE_TIME))
+
+            echo "Latest release: $LATEST_RELEASE"
+            echo "Time since release: ${DIFF}s"
+
+            # Check if release was published in the last 10 minutes (600 seconds)
+            if [ $DIFF -lt 600 ]; then
+              echo "Recent release found (within 10 min), proceeding with docs generation"
+              echo "recent_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "No recent release (older than 10 min), skipping docs generation"
+              echo "recent_release=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No release found"
+            echo "recent_release=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Skip if no recent release from workflow_run
+        if: github.event_name == 'workflow_run' && steps.check-release.outputs.recent_release != 'true'
+        run: |
+          echo "::notice::Skipping documentation build - no recent release detected from Release workflow"
+          exit 0
+
       - name: Checkout
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Go
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Build vesctl
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         run: go build -o vesctl .
 
       - name: Generate spec and compute hash
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         id: spec-hash
         run: |
           ./vesctl --spec > spec.json
@@ -72,6 +121,7 @@ jobs:
           echo "Spec size: $(wc -c < spec.json) bytes"
 
       - name: Restore previous spec hash
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
@@ -79,6 +129,7 @@ jobs:
           key: vesctl-spec-hash-v1
 
       - name: Compare spec hashes
+        if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         id: compare
         run: |
           FORCE_REGEN="${{ github.event.inputs.force_regenerate }}"
@@ -162,7 +213,10 @@ jobs:
     name: Build Documentation
     runs-on: ubuntu-latest
     needs: [check-spec, generate]
-    if: always() && !failure() && !cancelled()
+    # Run unless: failed, cancelled, or workflow_run without recent release
+    if: |
+      always() && !failure() && !cancelled() &&
+      (github.event_name != 'workflow_run' || needs.check-spec.outputs.recent_release == 'true')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -186,11 +240,11 @@ jobs:
             vesctl-docs-
 
       - name: Install Homebrew (Linux)
-        if: github.event_name == 'release' || github.event.inputs.test_homebrew == 'true'
+        if: github.event_name == 'release' || github.event_name == 'workflow_run' || github.event.inputs.test_homebrew == 'true'
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install vesctl via Homebrew
-        if: github.event_name == 'release' || github.event.inputs.test_homebrew == 'true'
+        if: github.event_name == 'release' || github.event_name == 'workflow_run' || github.event.inputs.test_homebrew == 'true'
         id: homebrew-install
         run: |
           MAX_RETRIES=5
@@ -310,7 +364,7 @@ jobs:
             --output docs/install/homebrew.md
 
       - name: Test install script and capture output
-        if: github.event_name == 'release' || github.event.inputs.test_homebrew == 'true'
+        if: github.event_name == 'release' || github.event_name == 'workflow_run' || github.event.inputs.test_homebrew == 'true'
         id: script-install
         run: |
           # Uninstall homebrew version first if present
@@ -477,6 +531,7 @@ jobs:
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
       github.event_name == 'release' ||
+      github.event_name == 'workflow_run' ||
       github.event_name == 'workflow_dispatch'
     environment:
       name: github-pages
