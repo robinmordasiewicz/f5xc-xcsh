@@ -31,9 +31,9 @@ repos:
         name: Prevent commits to main/master
         args: ['--branch', 'main', '--branch', 'master']
 
-  # Go linting - matches CI/CD golangci-lint
+  # Go linting - matches CI/CD golangci-lint v2
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.64.8
+    rev: v2.1.6
     hooks:
       - id: golangci-lint
         name: Run golangci-lint

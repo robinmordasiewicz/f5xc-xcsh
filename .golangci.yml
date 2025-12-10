@@ -1,29 +1,28 @@
-# golangci-lint configuration
+# golangci-lint v2 configuration
 # Documentation: https://golangci-lint.run/usage/configuration/
+# Migration guide: https://golangci-lint.run/docs/product/migration-guide/
+
+version: "2"
 
 run:
   timeout: 5m
   modules-download-mode: readonly
 
 linters:
+  default: none
   enable:
     - errcheck      # Check for unchecked errors
-    - gosimple      # Simplify code suggestions
     - govet         # Report suspicious constructs
     - ineffassign   # Detect ineffective assignments
-    - staticcheck   # Static analysis checks
+    - staticcheck   # Static analysis checks (includes gosimple)
     - unused        # Check for unused code
-  disable:
-    - depguard      # Disable dependency guard
-
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: false
-
-issues:
-  exclude-rules:
-    # Exclude some linters from running on tests files
-    - path: _test\.go
-      linters:
-        - errcheck
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: false
+  exclusions:
+    rules:
+      # Exclude some linters from running on test files
+      - path: _test\.go
+        linters:
+          - errcheck
