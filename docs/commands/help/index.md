@@ -2,10 +2,10 @@
 title: "vesctl help"
 description: "Help about any command"
 keywords:
-  - vesctl
   - help
   - F5 Distributed Cloud
   - F5 XC
+  - vesctl
 command: "vesctl help"
 command_group: "help"
 ---

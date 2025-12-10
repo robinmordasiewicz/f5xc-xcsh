@@ -29,7 +29,7 @@ vesctl organizes commands into logical groups:
 | [help](help/index.md) | Help about any command |
 | [request](request/index.md) | Execute custom API requests to F5 Distributed Cloud. |
 | [site](site/index.md) | Deploy and manage F5 XC sites on public cloud providers. |
-| [version](version/index.md) | Display the vesctl build version and commit information. |
+| [version](version/index.md) | Display vesctl version and build information |
 
 ## Global Flags
 
@@ -98,4 +98,4 @@ vesctl supports multiple output formats:
 
 ## Version
 
-Built from version: `v4.3.1-dirty`
+Built from version: `v4.8.4-1-g9970a77-dirty`

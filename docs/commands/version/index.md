@@ -1,24 +1,28 @@
 ---
 title: "vesctl version"
-description: "Display the vesctl build version and commit information."
+description: "Display vesctl version and build information"
 keywords:
   - version
-  - vesctl
   - F5 Distributed Cloud
   - F5 XC
+  - vesctl
 command: "vesctl version"
 command_group: "version"
 ---
 
 # vesctl version
 
-> Display the vesctl build version and commit information.
+> Display vesctl version and build information
 
 ## Synopsis
 
 ```bash
 vesctl version <command> [flags]
 ```
+
+## Description
+
+Display vesctl version and build information.
 
 ## Available Commands
 
