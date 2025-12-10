@@ -294,8 +294,8 @@ jobs:
             brew tap robinmordasiewicz/tap
             brew update
 
-            # Try to install
-            if brew install vesctl 2>&1; then
+            # Try to install (using cask)
+            if brew install --cask vesctl 2>&1; then
               echo "Successfully installed vesctl"
               echo "homebrew_success=true" >> $GITHUB_OUTPUT
               exit 0
@@ -452,9 +452,9 @@ jobs:
         run: |
           set +e  # Disable errexit to capture exit codes properly
 
-          # Uninstall homebrew version first if present
+          # Uninstall homebrew version first if present (try both cask and formula)
           if command -v vesctl &>/dev/null; then
-            brew uninstall vesctl 2>/dev/null || true
+            brew uninstall --cask vesctl 2>/dev/null || brew uninstall vesctl 2>/dev/null || true
           fi
 
           # Run install script and capture output to file
