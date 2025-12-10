@@ -52,6 +52,9 @@ temp/
 # Generated documentation (regenerated in CI)
 docs/commands/
 !docs/commands/.gitkeep
+docs/install/homebrew.md
+docs/install/script.md
+docs/install/source.md
 
 # MkDocs build output
 site/
