@@ -232,7 +232,13 @@ determine_install_strategy() {
 
     # If user explicitly set install dir, respect it
     if [ -n "${VES_INSTALL_DIR:-}" ]; then
-        if [ -w "$REQUESTED_DIR" ] || [ -w "$(dirname "$REQUESTED_DIR")" ]; then
+        # Create directory if it doesn't exist and parent is writable
+        if [ ! -d "$REQUESTED_DIR" ]; then
+            if mkdir -p "$REQUESTED_DIR" 2>/dev/null; then
+                echo "custom:"
+                return
+            fi
+        elif [ -w "$REQUESTED_DIR" ]; then
             echo "custom:"
             return
         fi
