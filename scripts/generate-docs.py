@@ -244,6 +244,15 @@ def sort_actions(actions: list) -> list:
     )
 
 
+def sanitize_path(value: str) -> str:
+    """Replace user-specific home directory paths with a generic placeholder."""
+    if not value:
+        return value
+    # Replace any home directory path pattern with $HOME placeholder
+    # Handles /Users/username, /home/username, /root, C:\Users\username
+    return re.sub(r'(/Users/[^/]+|/home/[^/]+|/root|C:\\Users\\[^\\]+)', '$HOME', value)
+
+
 @dataclass
 class Flag:
     """Represents a CLI flag."""
@@ -258,9 +267,9 @@ class Flag:
         return cls(
             name=d.get("name", ""),
             type=d.get("type", ""),
-            description=d.get("description", ""),
+            description=sanitize_path(d.get("description", "")),
             shorthand=d.get("shorthand", ""),
-            default=d.get("default", ""),
+            default=sanitize_path(d.get("default", "")),
         )
 
 
