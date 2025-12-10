@@ -143,3 +143,9 @@ homebrew_casks:
     commit_msg_template: "chore: Update {{ .ProjectName }} cask to {{ .Tag }}"
     homepage: https://robinmordasiewicz.github.io/vesctl
     description: Command-line interface for F5 Distributed Cloud
+    caveats: |
+      vesctl is not signed with an Apple Developer ID.
+      If macOS shows "vesctl Not Opened" or blocks the app, run:
+        xattr -d com.apple.quarantine #{caskroom_path}/vesctl
+
+      Or go to System Settings > Privacy & Security and click "Open Anyway".
