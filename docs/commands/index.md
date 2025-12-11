@@ -24,7 +24,7 @@ vesctl organizes commands into logical groups:
 | Command | Description |
 |---------|-------------|
 | [api-endpoint](api-endpoint/index.md) | Discover and manage API endpoints within F5 XC service mesh. |
-| [completion](completion/index.md) | Generate shell completion scripts for bash or zsh. |
+| [completion](completion/index.md) | Generate shell completion scripts for bash, zsh, or fish. |
 | [configuration](configuration/index.md) | Manage F5 XC configuration objects using CRUD operations. |
 | [help](help/index.md) | Help about any command |
 | [request](request/index.md) | Execute custom API requests to F5 Distributed Cloud. |
