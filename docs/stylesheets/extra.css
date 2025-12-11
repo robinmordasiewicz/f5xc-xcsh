@@ -1215,18 +1215,31 @@ article.md-content__inner.md-typeset {
   }
 }
 
-/* GitHub repository header - single line layout with larger text */
+/* Header layout - give more space to GitHub source */
+.md-header__inner {
+  gap: 0.5rem;
+}
+
+/* Reduce search box width to give more space to source */
+.md-search {
+  max-width: 12rem;
+}
+
+/* GitHub repository header - single line layout */
 .md-source {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  min-width: max-content;
 }
 
 .md-source__repository {
   display: flex !important;
   align-items: center !important;
-  gap: 0.4rem;
-  font-size: 0.8rem !important;
+  gap: 0.25rem;
+  font-size: 0.75rem !important;
+  white-space: nowrap;
 }
 
 .md-source__facts {
@@ -1237,8 +1250,8 @@ article.md-content__inner.md-typeset {
 }
 
 .md-source__fact--version {
-  font-size: 0.8rem !important;
-  opacity: 0.8;
+  font-size: 0.75rem !important;
+  opacity: 0.85;
 }
 
 /* Hide GitHub stars and forks from header, keep version only */
