@@ -76,3 +76,6 @@ vesctl.windows-*
 
 # Generated shell completions (created during release build)
 completions/
+
+# MCP tool state directories
+.playwright-mcp/
