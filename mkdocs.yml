@@ -97,8 +97,8 @@ nav:
     - Authentication: install/authentication.md
   - Commands:
     - Overview: commands/index.md
-    - Api Endpoint:
-      - Api Endpoint Overview: commands/api-endpoint/index.md
+    - API Endpoint:
+      - API Endpoint Overview: commands/api-endpoint/index.md
       - Control: commands/api-endpoint/control/index.md
       - Discover: commands/api-endpoint/discover/index.md
     - Completion: commands/completion/index.md
@@ -107,15 +107,15 @@ nav:
       - AI/ML:
         - Ai Assistant: commands/configuration/ai_assistant.md
       - API Security:
-        - Api Definition: commands/configuration/api_definition.md
-        - Api Sec Api Crawler: commands/configuration/api_sec_api_crawler.md
-        - Api Sec Api Discovery: commands/configuration/api_sec_api_discovery.md
-        - Api Sec Api Testing: commands/configuration/api_sec_api_testing.md
-        - Api Sec Code Base Integration: commands/configuration/api_sec_code_base_integration.md
-        - Api Sec Rule Suggestion: commands/configuration/api_sec_rule_suggestion.md
-        - App Api Group: commands/configuration/app_api_group.md
+        - API Definition: commands/configuration/api_definition.md
+        - API SEC API Crawler: commands/configuration/api_sec_api_crawler.md
+        - API SEC API Discovery: commands/configuration/api_sec_api_discovery.md
+        - API SEC API Testing: commands/configuration/api_sec_api_testing.md
+        - API SEC Code Base Integration: commands/configuration/api_sec_code_base_integration.md
+        - API SEC Rule Suggestion: commands/configuration/api_sec_rule_suggestion.md
+        - App API Group: commands/configuration/app_api_group.md
       - Authentication:
-        - Api Credential: commands/configuration/api_credential.md
+        - API Credential: commands/configuration/api_credential.md
         - Cloud Credentials: commands/configuration/cloud_credentials.md
         - Discovery: commands/configuration/discovery.md
         - Secret Management: commands/configuration/secret_management.md
@@ -124,29 +124,29 @@ nav:
         - Secret Policy Rule: commands/configuration/secret_policy_rule.md
         - Token: commands/configuration/token.md
       - BIG-IP Integration:
-        - Bigip Apm: commands/configuration/bigip_apm.md
-        - Bigip Irule: commands/configuration/bigip_irule.md
-        - Bigip Virtual Server: commands/configuration/bigip_virtual_server.md
+        - BIG-IP APM: commands/configuration/bigip_apm.md
+        - BIG-IP iRule: commands/configuration/bigip_irule.md
+        - BIG-IP Virtual Server: commands/configuration/bigip_virtual_server.md
       - Bot Defense:
         - Bot Defense App Infrastructure: commands/configuration/bot_defense_app_infrastructure.md
       - Certificates:
         - Certificate: commands/configuration/certificate.md
         - Certificate Chain: commands/configuration/certificate_chain.md
-        - Crl: commands/configuration/crl.md
-        - Trusted Ca List: commands/configuration/trusted_ca_list.md
+        - CRL: commands/configuration/crl.md
+        - Trusted CA List: commands/configuration/trusted_ca_list.md
       - DNS:
-        - Dns Compliance Checks: commands/configuration/dns_compliance_checks.md
-        - Dns Domain: commands/configuration/dns_domain.md
-        - Dns Lb Health Check: commands/configuration/dns_lb_health_check.md
-        - Dns Lb Pool: commands/configuration/dns_lb_pool.md
-        - Dns Load Balancer: commands/configuration/dns_load_balancer.md
-        - Dns Zone: commands/configuration/dns_zone.md
-        - Dns Zone Rrset: commands/configuration/dns_zone_rrset.md
-        - Dns Zone Subscription: commands/configuration/dns_zone_subscription.md
+        - DNS Compliance Checks: commands/configuration/dns_compliance_checks.md
+        - DNS Domain: commands/configuration/dns_domain.md
+        - DNS LB Health Check: commands/configuration/dns_lb_health_check.md
+        - DNS LB Pool: commands/configuration/dns_lb_pool.md
+        - DNS Load Balancer: commands/configuration/dns_load_balancer.md
+        - DNS Zone: commands/configuration/dns_zone.md
+        - DNS Zone Rrset: commands/configuration/dns_zone_rrset.md
+        - DNS Zone Subscription: commands/configuration/dns_zone_subscription.md
       - Infrastructure Protection:
         - Infraprotect: commands/configuration/infraprotect.md
-        - Infraprotect Asn: commands/configuration/infraprotect_asn.md
-        - Infraprotect Asn Prefix: commands/configuration/infraprotect_asn_prefix.md
+        - Infraprotect ASN: commands/configuration/infraprotect_asn.md
+        - Infraprotect ASN Prefix: commands/configuration/infraprotect_asn_prefix.md
         - Infraprotect Deny List Rule: commands/configuration/infraprotect_deny_list_rule.md
         - Infraprotect Firewall Rule: commands/configuration/infraprotect_firewall_rule.md
         - Infraprotect Firewall Rule Group: commands/configuration/infraprotect_firewall_rule_group.md
@@ -166,15 +166,15 @@ nav:
         - Virtual K8S: commands/configuration/virtual_k8s.md
         - Workload: commands/configuration/workload.md
       - Load Balancing:
-        - Cdn Loadbalancer: commands/configuration/cdn_loadbalancer.md
+        - CDN Load Balancer: commands/configuration/cdn_loadbalancer.md
         - Cluster: commands/configuration/cluster.md
         - Endpoint: commands/configuration/endpoint.md
-        - Healthcheck: commands/configuration/healthcheck.md
-        - Http Loadbalancer: commands/configuration/http_loadbalancer.md
+        - Health Check: commands/configuration/healthcheck.md
+        - HTTP Load Balancer: commands/configuration/http_loadbalancer.md
         - Origin Pool: commands/configuration/origin_pool.md
         - Route: commands/configuration/route.md
-        - Tcp Loadbalancer: commands/configuration/tcp_loadbalancer.md
-        - Udp Loadbalancer: commands/configuration/udp_loadbalancer.md
+        - TCP Load Balancer: commands/configuration/tcp_loadbalancer.md
+        - UDP Load Balancer: commands/configuration/udp_loadbalancer.md
         - Virtual Host: commands/configuration/virtual_host.md
       - Monitoring:
         - Alert: commands/configuration/alert.md
@@ -188,9 +188,9 @@ nav:
         - Shape Brmalerts Alert Template: commands/configuration/shape_brmalerts_alert_template.md
         - Synthetic Monitor: commands/configuration/synthetic_monitor.md
       - Networking:
-        - Bgp: commands/configuration/bgp.md
-        - Bgp Asn Set: commands/configuration/bgp_asn_set.md
-        - Bgp Routing Policy: commands/configuration/bgp_routing_policy.md
+        - BGP: commands/configuration/bgp.md
+        - BGP ASN Set: commands/configuration/bgp_asn_set.md
+        - BGP Routing Policy: commands/configuration/bgp_routing_policy.md
         - Forward Proxy Policy: commands/configuration/forward_proxy_policy.md
         - Network Connector: commands/configuration/network_connector.md
         - Network Firewall: commands/configuration/network_firewall.md
@@ -199,7 +199,7 @@ nav:
         - Network Policy Rule: commands/configuration/network_policy_rule.md
         - Network Policy Set: commands/configuration/network_policy_set.md
         - Network Policy View: commands/configuration/network_policy_view.md
-        - Operate Bgp: commands/configuration/operate_bgp.md
+        - Operate BGP: commands/configuration/operate_bgp.md
         - Policy Based Routing: commands/configuration/policy_based_routing.md
         - Proxy: commands/configuration/proxy.md
         - Segment: commands/configuration/segment.md
@@ -211,7 +211,7 @@ nav:
         - Contact: commands/configuration/contact.md
         - Namespace: commands/configuration/namespace.md
         - Namespace Role: commands/configuration/namespace_role.md
-        - Rbac Policy: commands/configuration/rbac_policy.md
+        - RBAC Policy: commands/configuration/rbac_policy.md
         - Role: commands/configuration/role.md
         - Tenant: commands/configuration/tenant.md
         - Tenant Configuration: commands/configuration/tenant_configuration.md
@@ -231,7 +231,7 @@ nav:
         - App Firewall: commands/configuration/app_firewall.md
         - Enhanced Firewall Policy: commands/configuration/enhanced_firewall_policy.md
         - Malicious User Mitigation: commands/configuration/malicious_user_mitigation.md
-        - Nat Policy: commands/configuration/nat_policy.md
+        - NAT Policy: commands/configuration/nat_policy.md
         - Rate Limiter: commands/configuration/rate_limiter.md
         - Rate Limiter Policy: commands/configuration/rate_limiter_policy.md
         - Sensitive Data Policy: commands/configuration/sensitive_data_policy.md
@@ -244,9 +244,9 @@ nav:
         - Shape Brmalerts Alert Gen Policy: commands/configuration/shape_brmalerts_alert_gen_policy.md
         - Usb Policy: commands/configuration/usb_policy.md
         - Voltshare Admin Policy: commands/configuration/voltshare_admin_policy.md
-        - Waf: commands/configuration/waf.md
-        - Waf Exclusion Policy: commands/configuration/waf_exclusion_policy.md
-        - Waf Signatures Changelog: commands/configuration/waf_signatures_changelog.md
+        - WAF: commands/configuration/waf.md
+        - WAF Exclusion Policy: commands/configuration/waf_exclusion_policy.md
+        - WAF Signatures Changelog: commands/configuration/waf_signatures_changelog.md
       - Shape Services:
         - Shape Bot Defense Bot Infrastructure: commands/configuration/shape_bot_defense_bot_infrastructure.md
         - Shape Bot Defense Instance: commands/configuration/shape_bot_defense_instance.md
@@ -262,16 +262,16 @@ nav:
         - Shape Client Side Defense Protected Domain: commands/configuration/shape_client_side_defense_protected_domain.md
         - Shape Data Delivery: commands/configuration/shape_data_delivery.md
         - Shape Data Delivery Receiver: commands/configuration/shape_data_delivery_receiver.md
-        - Shape Device Id: commands/configuration/shape_device_id.md
+        - Shape Device ID: commands/configuration/shape_device_id.md
         - Shape Recognize: commands/configuration/shape_recognize.md
         - Shape Safe: commands/configuration/shape_safe.md
         - Shape Safeap: commands/configuration/shape_safeap.md
       - Sites:
-        - Aws Tgw Site: commands/configuration/aws_tgw_site.md
-        - Aws Vpc Site: commands/configuration/aws_vpc_site.md
-        - Azure Vnet Site: commands/configuration/azure_vnet_site.md
+        - AWS TGW Site: commands/configuration/aws_tgw_site.md
+        - AWS VPC Site: commands/configuration/aws_vpc_site.md
+        - Azure VNET Site: commands/configuration/azure_vnet_site.md
         - Fleet: commands/configuration/fleet.md
-        - Gcp Vpc Site: commands/configuration/gcp_vpc_site.md
+        - GCP VPC Site: commands/configuration/gcp_vpc_site.md
         - Graph Site: commands/configuration/graph_site.md
         - Securemesh Site: commands/configuration/securemesh_site.md
         - Securemesh Site V2: commands/configuration/securemesh_site_v2.md
@@ -293,23 +293,23 @@ nav:
         - Shape Mobile Integrator Subscription: commands/configuration/shape_mobile_integrator_subscription.md
         - Subscription: commands/configuration/subscription.md
       - VPN:
-        - Ike Phase1 Profile: commands/configuration/ike_phase1_profile.md
-        - Ike Phase2 Profile: commands/configuration/ike_phase2_profile.md
+        - IKE Phase1 Profile: commands/configuration/ike_phase1_profile.md
+        - IKE Phase2 Profile: commands/configuration/ike_phase2_profile.md
       - General:
         - Address Allocator: commands/configuration/address_allocator.md
         - Ai Data Bfdp: commands/configuration/ai_data_bfdp.md
-        - Api Group: commands/configuration/api_group.md
-        - Api Group Element: commands/configuration/api_group_element.md
+        - API Group: commands/configuration/api_group.md
+        - API Group Element: commands/configuration/api_group_element.md
         - App Security: commands/configuration/app_security.md
         - App Setting: commands/configuration/app_setting.md
         - App Type: commands/configuration/app_type.md
         - Authentication: commands/configuration/authentication.md
         - Bigcne Data Group: commands/configuration/bigcne_data_group.md
-        - Bigcne Irule: commands/configuration/bigcne_irule.md
-        - Cdn Cache Rule: commands/configuration/cdn_cache_rule.md
+        - Bigcne iRule: commands/configuration/bigcne_irule.md
+        - CDN Cache Rule: commands/configuration/cdn_cache_rule.md
         - Certified Hardware: commands/configuration/certified_hardware.md
         - Cloud Connect: commands/configuration/cloud_connect.md
-        - Cloud Elastic Ip: commands/configuration/cloud_elastic_ip.md
+        - Cloud Elastic IP: commands/configuration/cloud_elastic_ip.md
         - Cloud Link: commands/configuration/cloud_link.md
         - Cloud Region: commands/configuration/cloud_region.md
         - Cminstance: commands/configuration/cminstance.md
@@ -320,8 +320,8 @@ nav:
         - Data Type: commands/configuration/data_type.md
         - Dc Cluster Group: commands/configuration/dc_cluster_group.md
         - Discovered Service: commands/configuration/discovered_service.md
-        - Fast Acl: commands/configuration/fast_acl.md
-        - Fast Acl Rule: commands/configuration/fast_acl_rule.md
+        - Fast ACL: commands/configuration/fast_acl.md
+        - Fast ACL Rule: commands/configuration/fast_acl_rule.md
         - Filter Set: commands/configuration/filter_set.md
         - Flow: commands/configuration/flow.md
         - Flow Anomaly: commands/configuration/flow_anomaly.md
@@ -329,27 +329,27 @@ nav:
         - Geo Location Set: commands/configuration/geo_location_set.md
         - Gia: commands/configuration/gia.md
         - Graph Connectivity: commands/configuration/graph_connectivity.md
-        - Graph L3L4: commands/configuration/graph_l3l4.md
+        - Graph L3l4: commands/configuration/graph_l3l4.md
         - Graph Service: commands/configuration/graph_service.md
         - Ike1: commands/configuration/ike1.md
         - Ike2: commands/configuration/ike2.md
         - Implicit Label: commands/configuration/implicit_label.md
-        - Ip Prefix Set: commands/configuration/ip_prefix_set.md
+        - IP Prefix Set: commands/configuration/ip_prefix_set.md
         - Known Label: commands/configuration/known_label.md
         - Known Label Key: commands/configuration/known_label_key.md
         - Maintenance Status: commands/configuration/maintenance_status.md
-        - Marketplace Aws Account: commands/configuration/marketplace_aws_account.md
-        - Marketplace Xc Saas: commands/configuration/marketplace_xc_saas.md
+        - Marketplace AWS Account: commands/configuration/marketplace_aws_account.md
+        - Marketplace XC Saas: commands/configuration/marketplace_xc_saas.md
         - Module Management: commands/configuration/module_management.md
         - Nfv Service: commands/configuration/nfv_service.md
         - Nginx One Nginx Csg: commands/configuration/nginx_one_nginx_csg.md
         - Nginx One Nginx Instance: commands/configuration/nginx_one_nginx_instance.md
         - Nginx One Nginx Server: commands/configuration/nginx_one_nginx_server.md
         - Nginx One Nginx Service Discovery: commands/configuration/nginx_one_nginx_service_discovery.md
-        - Oidc Provider: commands/configuration/oidc_provider.md
-        - Operate Crl: commands/configuration/operate_crl.md
+        - OIDC Provider: commands/configuration/oidc_provider.md
+        - Operate CRL: commands/configuration/operate_crl.md
         - Operate Debug: commands/configuration/operate_debug.md
-        - Operate Dhcp: commands/configuration/operate_dhcp.md
+        - Operate DHCP: commands/configuration/operate_dhcp.md
         - Operate Flow: commands/configuration/operate_flow.md
         - Operate Lte: commands/configuration/operate_lte.md
         - Operate Ping: commands/configuration/operate_ping.md
@@ -365,7 +365,7 @@ nav:
         - Policer: commands/configuration/policer.md
         - Protocol Inspection: commands/configuration/protocol_inspection.md
         - Protocol Policer: commands/configuration/protocol_policer.md
-        - Public Ip: commands/configuration/public_ip.md
+        - Public IP: commands/configuration/public_ip.md
         - Quota: commands/configuration/quota.md
         - Registration: commands/configuration/registration.md
         - Scim: commands/configuration/scim.md
@@ -374,11 +374,11 @@ nav:
         - Site Mesh Group: commands/configuration/site_mesh_group.md
         - Stored Object: commands/configuration/stored_object.md
         - Subnet: commands/configuration/subnet.md
-        - Synthetic Monitor Dns: commands/configuration/synthetic_monitor_dns.md
-        - Synthetic Monitor Http: commands/configuration/synthetic_monitor_http.md
+        - Synthetic Monitor DNS: commands/configuration/synthetic_monitor_dns.md
+        - Synthetic Monitor HTTP: commands/configuration/synthetic_monitor_http.md
         - Ticket Management Ticket Tracking System: commands/configuration/ticket_management_ticket_tracking_system.md
         - Topology: commands/configuration/topology.md
-        - Tpm Api Key: commands/configuration/tpm_api_key.md
+        - Tpm API Key: commands/configuration/tpm_api_key.md
         - Tpm Category: commands/configuration/tpm_category.md
         - Tpm Manager: commands/configuration/tpm_manager.md
         - Tpm Provision: commands/configuration/tpm_provision.md
@@ -396,8 +396,8 @@ nav:
     - Request:
       - Request Overview: commands/request/index.md
       - Command Sequence: commands/request/command-sequence/index.md
-      - Rpc:
-        - Rpc Overview: commands/request/rpc/index.md
+      - RPC:
+        - RPC Overview: commands/request/rpc/index.md
         - Addon Service: commands/request/rpc/addon_service.md
         - Alert: commands/request/rpc/alert.md
         - Alert Gen Policy: commands/request/rpc/alert_gen_policy.md
@@ -405,21 +405,21 @@ nav:
         - Alert Receiver: commands/request/rpc/alert_receiver.md
         - Alert Template: commands/request/rpc/alert_template.md
         - Allowed Tenant: commands/request/rpc/allowed_tenant.md
-        - Api Credential: commands/request/rpc/api_credential.md
-        - Api Definition: commands/request/rpc/api_definition.md
-        - Apm: commands/request/rpc/apm.md
-        - App Api Group: commands/request/rpc/app_api_group.md
+        - API Credential: commands/request/rpc/api_credential.md
+        - API Definition: commands/request/rpc/api_definition.md
+        - APM: commands/request/rpc/apm.md
+        - App API Group: commands/request/rpc/app_api_group.md
         - App Firewall: commands/request/rpc/app_firewall.md
         - App Security: commands/request/rpc/app_security.md
         - App Setting: commands/request/rpc/app_setting.md
         - App Type: commands/request/rpc/app_type.md
-        - Aws Account: commands/request/rpc/aws_account.md
-        - Aws Tgw Site: commands/request/rpc/aws_tgw_site.md
-        - Aws Vpc Site: commands/request/rpc/aws_vpc_site.md
-        - Azure Vnet Site: commands/request/rpc/azure_vnet_site.md
+        - AWS Account: commands/request/rpc/aws_account.md
+        - AWS TGW Site: commands/request/rpc/aws_tgw_site.md
+        - AWS VPC Site: commands/request/rpc/aws_vpc_site.md
+        - Azure VNET Site: commands/request/rpc/azure_vnet_site.md
         - Bfdp: commands/request/rpc/bfdp.md
-        - Bgp: commands/request/rpc/bgp.md
-        - Bigip Virtual Server: commands/request/rpc/bigip_virtual_server.md
+        - BGP: commands/request/rpc/bgp.md
+        - BIG-IP Virtual Server: commands/request/rpc/bigip_virtual_server.md
         - Bot Allowlist Policy: commands/request/rpc/bot_allowlist_policy.md
         - Bot Detection Rule: commands/request/rpc/bot_detection_rule.md
         - Bot Detection Update: commands/request/rpc/bot_detection_update.md
@@ -427,45 +427,45 @@ nav:
         - Bot Infrastructure: commands/request/rpc/bot_infrastructure.md
         - Bot Network Policy: commands/request/rpc/bot_network_policy.md
         - Catalog: commands/request/rpc/catalog.md
-        - Cdn Loadbalancer: commands/request/rpc/cdn_loadbalancer.md
+        - CDN Load Balancer: commands/request/rpc/cdn_loadbalancer.md
         - Child Tenant: commands/request/rpc/child_tenant.md
         - Child Tenant Manager: commands/request/rpc/child_tenant_manager.md
         - Client Side Defense: commands/request/rpc/client_side_defense.md
         - Cloud Connect: commands/request/rpc/cloud_connect.md
-        - Cloud Elastic Ip: commands/request/rpc/cloud_elastic_ip.md
+        - Cloud Elastic IP: commands/request/rpc/cloud_elastic_ip.md
         - Cloud Link: commands/request/rpc/cloud_link.md
         - Connectivity: commands/request/rpc/connectivity.md
-        - Crl: commands/request/rpc/crl.md
+        - CRL: commands/request/rpc/crl.md
         - Customer Support: commands/request/rpc/customer_support.md
         - Data Delivery: commands/request/rpc/data_delivery.md
         - Dc Cluster Group: commands/request/rpc/dc_cluster_group.md
         - Debug: commands/request/rpc/debug.md
-        - Device Id: commands/request/rpc/device_id.md
-        - Dhcp: commands/request/rpc/dhcp.md
+        - Device ID: commands/request/rpc/device_id.md
+        - DHCP: commands/request/rpc/dhcp.md
         - Discovered Service: commands/request/rpc/discovered_service.md
         - Discovery: commands/request/rpc/discovery.md
-        - Dns Domain: commands/request/rpc/dns_domain.md
-        - Dns Load Balancer: commands/request/rpc/dns_load_balancer.md
-        - Dns Zone: commands/request/rpc/dns_zone.md
+        - DNS Domain: commands/request/rpc/dns_domain.md
+        - DNS Load Balancer: commands/request/rpc/dns_load_balancer.md
+        - DNS Zone: commands/request/rpc/dns_zone.md
         - Enhanced Firewall Policy: commands/request/rpc/enhanced_firewall_policy.md
-        - Fast Acl: commands/request/rpc/fast_acl.md
+        - Fast ACL: commands/request/rpc/fast_acl.md
         - Filter Set: commands/request/rpc/filter_set.md
         - Flow: commands/request/rpc/flow.md
         - Forward Proxy Policy: commands/request/rpc/forward_proxy_policy.md
-        - Gcp Vpc Site: commands/request/rpc/gcp_vpc_site.md
+        - GCP VPC Site: commands/request/rpc/gcp_vpc_site.md
         - Gia: commands/request/rpc/gia.md
         - Global Log Receiver: commands/request/rpc/global_log_receiver.md
-        - Http Loadbalancer: commands/request/rpc/http_loadbalancer.md
+        - HTTP Load Balancer: commands/request/rpc/http_loadbalancer.md
         - Implicit Label: commands/request/rpc/implicit_label.md
         - Infraprotect: commands/request/rpc/infraprotect.md
-        - Infraprotect Asn: commands/request/rpc/infraprotect_asn.md
-        - Infraprotect Asn Prefix: commands/request/rpc/infraprotect_asn_prefix.md
+        - Infraprotect ASN: commands/request/rpc/infraprotect_asn.md
+        - Infraprotect ASN Prefix: commands/request/rpc/infraprotect_asn_prefix.md
         - Infraprotect Internet Prefix Advertisement: commands/request/rpc/infraprotect_internet_prefix_advertisement.md
         - Infraprotect Tunnel: commands/request/rpc/infraprotect_tunnel.md
         - Invoice: commands/request/rpc/invoice.md
         - Known Label: commands/request/rpc/known_label.md
         - Known Label Key: commands/request/rpc/known_label_key.md
-        - L3L4: commands/request/rpc/l3l4.md
+        - L3l4: commands/request/rpc/l3l4.md
         - Log: commands/request/rpc/log.md
         - Log Receiver: commands/request/rpc/log_receiver.md
         - Lte: commands/request/rpc/lte.md
@@ -478,7 +478,7 @@ nav:
         - Network Policy View: commands/request/rpc/network_policy_view.md
         - Nfv Service: commands/request/rpc/nfv_service.md
         - Nginx Server: commands/request/rpc/nginx_server.md
-        - Oidc Provider: commands/request/rpc/oidc_provider.md
+        - OIDC Provider: commands/request/rpc/oidc_provider.md
         - Payment Method: commands/request/rpc/payment_method.md
         - Ping: commands/request/rpc/ping.md
         - Plan: commands/request/rpc/plan.md
@@ -510,7 +510,7 @@ nav:
         - Stored Object: commands/request/rpc/stored_object.md
         - Subscription: commands/request/rpc/subscription.md
         - Synthetic Monitor: commands/request/rpc/synthetic_monitor.md
-        - Tcp Loadbalancer: commands/request/rpc/tcp_loadbalancer.md
+        - TCP Load Balancer: commands/request/rpc/tcp_loadbalancer.md
         - Tcpdump: commands/request/rpc/tcpdump.md
         - Tenant: commands/request/rpc/tenant.md
         - Tenant Management: commands/request/rpc/tenant_management.md
@@ -521,25 +521,25 @@ nav:
         - Topology: commands/request/rpc/topology.md
         - Tpm Provision: commands/request/rpc/tpm_provision.md
         - Traceroute: commands/request/rpc/traceroute.md
-        - Udp Loadbalancer: commands/request/rpc/udp_loadbalancer.md
+        - UDP Load Balancer: commands/request/rpc/udp_loadbalancer.md
         - Usage: commands/request/rpc/usage.md
         - Usb: commands/request/rpc/usb.md
         - User: commands/request/rpc/user.md
         - User Group: commands/request/rpc/user_group.md
         - User Token: commands/request/rpc/user_token.md
-        - V1 Dns Monitor: commands/request/rpc/v1_dns_monitor.md
-        - V1 Http Monitor: commands/request/rpc/v1_http_monitor.md
+        - V1 DNS Monitor: commands/request/rpc/v1_dns_monitor.md
+        - V1 HTTP Monitor: commands/request/rpc/v1_http_monitor.md
         - View Internal: commands/request/rpc/view_internal.md
         - Virtual Host: commands/request/rpc/virtual_host.md
         - Virtual K8S: commands/request/rpc/virtual_k8s.md
         - Virtual Network: commands/request/rpc/virtual_network.md
         - Virtual Site: commands/request/rpc/virtual_site.md
         - Voltshare: commands/request/rpc/voltshare.md
-        - Waf: commands/request/rpc/waf.md
-        - Waf Signatures Changelog: commands/request/rpc/waf_signatures_changelog.md
+        - WAF: commands/request/rpc/waf.md
+        - WAF Signatures Changelog: commands/request/rpc/waf_signatures_changelog.md
         - Wifi: commands/request/rpc/wifi.md
         - Workload: commands/request/rpc/workload.md
-        - Xc Saas: commands/request/rpc/xc_saas.md
+        - XC Saas: commands/request/rpc/xc_saas.md
       - Secrets:
         - Secrets Overview: commands/request/secrets/index.md
         - Build Blindfold Bundle: commands/request/secrets/build-blindfold-bundle.md
@@ -549,14 +549,14 @@ nav:
         - Secret Info: commands/request/secrets/secret-info.md
     - Site:
       - Site Overview: commands/site/index.md
-      - Aws Vpc:
-        - Aws Vpc Overview: commands/site/aws_vpc/index.md
+      - AWS VPC:
+        - AWS VPC Overview: commands/site/aws_vpc/index.md
         - Create: commands/site/aws_vpc/create.md
         - Delete: commands/site/aws_vpc/delete.md
         - Replace: commands/site/aws_vpc/replace.md
         - Run: commands/site/aws_vpc/run.md
-      - Azure Vnet:
-        - Azure Vnet Overview: commands/site/azure_vnet/index.md
+      - Azure VNET:
+        - Azure VNET Overview: commands/site/azure_vnet/index.md
         - Create: commands/site/azure_vnet/create.md
         - Delete: commands/site/azure_vnet/delete.md
         - Replace: commands/site/azure_vnet/replace.md
