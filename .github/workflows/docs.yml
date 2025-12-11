@@ -323,9 +323,35 @@ jobs:
           # Capture installation output
           $output = @()
 
-          # Download
+          # Download with retry logic and exponential backoff
           $output += "Downloading vesctl_${version}_windows_amd64.zip..."
-          Invoke-WebRequest -Uri $url -OutFile vesctl.zip
+
+          $maxRetries = 5
+          $baseDelay = 5
+          $downloaded = $false
+
+          for ($i = 1; $i -le $maxRetries; $i++) {
+            Write-Host "Download attempt $i of $maxRetries..."
+            try {
+              Invoke-WebRequest -Uri $url -OutFile vesctl.zip -TimeoutSec 120
+              $downloaded = $true
+              Write-Host "Download successful on attempt $i"
+              break
+            } catch {
+              Write-Host "::warning::Download failed on attempt $i`: $_"
+              if ($i -lt $maxRetries) {
+                $delay = $baseDelay * [Math]::Pow(2, $i - 1)
+                Write-Host "Retrying in ${delay}s..."
+                Start-Sleep -Seconds $delay
+              }
+            }
+          }
+
+          if (-not $downloaded) {
+            Write-Host "::error::Failed to download vesctl after $maxRetries attempts"
+            exit 1
+          }
+
           $output += "Download complete."
 
           # Extract
