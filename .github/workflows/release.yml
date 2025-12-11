@@ -250,9 +250,10 @@ jobs:
               --team-id "$APPLE_TEAM_ID" \
               --wait
 
-            # Repackage as tar.gz (matching original format)
+            # Repackage as tar.gz (preserving all original files including completions)
             cd $RUNNER_TEMP/sign_${ARCH}
-            tar -czf $RUNNER_TEMP/${ASSET_NAME} vesctl
+            # Use * to get all files without ./ prefix, preserving original archive structure
+            tar -czf $RUNNER_TEMP/${ASSET_NAME} *
             cd -
 
             # Upload signed binary to release (replace unsigned)
@@ -330,6 +331,9 @@ jobs:
             end
 
             binary "vesctl"
+            bash_completion "completions/vesctl.bash"
+            zsh_completion "completions/vesctl.zsh"
+            fish_completion "completions/vesctl.fish"
 
             on_macos do
               on_intel do
