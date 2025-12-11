@@ -405,6 +405,11 @@ html {
   padding: 0;
 }
 
+/* Override Material theme's default right padding on sidebar inner */
+.md-sidebar--primary .md-sidebar__inner {
+  padding-right: 0.5rem !important;
+}
+
 /* Hide sidebar on home page only (at desktop breakpoint) */
 @media screen and (min-width: 76.25em) {
   html[data-md-page="home"] .md-sidebar--primary {
@@ -498,9 +503,9 @@ html {
   padding-left: 2.25rem !important;
 }
 
-/* Nested navigation - even more compact */
+/* Nested navigation - match primary nav font size */
 .md-nav--secondary .md-nav__link {
-  font-size: 0.6875rem; /* 11px for TOC links */
+  font-size: 0.75rem; /* 12px - match primary nav */
   padding: 0.1875rem 0.375rem;
   margin: 0;
 }
@@ -524,7 +529,7 @@ html {
 }
 
 .md-nav--secondary .md-nav__title {
-  font-size: 0.5625rem; /* 9px for TOC header */
+  font-size: 0.75rem; /* 12px - match primary nav */
   box-shadow: none;
   background: transparent;
   padding: 0.375rem 0.375rem 0.25rem;
@@ -532,7 +537,7 @@ html {
 
 /* Nested TOC items */
 .md-nav--secondary .md-nav .md-nav__link {
-  font-size: 0.625rem; /* 10px for nested TOC */
+  font-size: 0.75rem; /* 12px - match primary nav */
   padding: 0.125rem 0.375rem 0.125rem 0.75rem;
 }
 
