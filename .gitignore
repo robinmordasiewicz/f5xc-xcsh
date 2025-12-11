@@ -74,5 +74,5 @@ vesctl.windows-*
 *.linux-*
 *.windows-*
 
-# Generated shell completions (created during release)
-completions/
+# Generated shell completions are now bundled in releases
+# completions/ - NOT gitignored so GoReleaser can include them
