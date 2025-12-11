@@ -1215,6 +1215,32 @@ article.md-content__inner.md-typeset {
   }
 }
 
+/* GitHub repository header - single line layout with larger text */
+.md-source {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem;
+}
+
+.md-source__repository {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem;
+  font-size: 0.8rem !important;
+}
+
+.md-source__facts {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.md-source__fact--version {
+  font-size: 0.8rem !important;
+  opacity: 0.8;
+}
+
 /* Hide GitHub stars and forks from header, keep version only */
 .md-source__fact--stars,
 .md-source__fact--forks {
