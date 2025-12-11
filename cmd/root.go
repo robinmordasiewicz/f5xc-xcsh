@@ -59,10 +59,12 @@ var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Skip client initialization for non-API commands
 		skipCommands := map[string]bool{
-			"version":    true,
-			"completion": true,
-			"help":       true,
-			"vesctl":     true, // Root command itself
+			"version":          true,
+			"completion":       true,
+			"__complete":       true, // Cobra's shell completion handler
+			"__completeNoDesc": true, // Cobra's shell completion handler (no descriptions)
+			"help":             true,
+			"vesctl":           true, // Root command itself
 		}
 		if skipCommands[cmd.Name()] {
 			return nil
