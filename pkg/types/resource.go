@@ -1,5 +1,7 @@
 package types
 
+import "github.com/robinmordasiewicz/vesctl/pkg/naming"
+
 // ResourceType defines a F5 XC resource type
 type ResourceType struct {
 	// Name is the resource type name (e.g., "http_loadbalancer")
@@ -24,6 +26,12 @@ type ResourceType struct {
 	// DeleteConfig contains custom delete configuration
 	// If nil, standard DELETE method is used
 	DeleteConfig *DeleteConfig
+}
+
+// HumanReadableName returns the human-readable name of the resource type
+// with proper acronym casing (e.g., "http_loadbalancer" -> "HTTP Load Balancer")
+func (r *ResourceType) HumanReadableName() string {
+	return naming.ToHumanReadable(r.Name)
 }
 
 // DeleteConfig defines custom delete behavior for a resource type

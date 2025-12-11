@@ -11,7 +11,7 @@ resource_type: "{{ front_matter.resource_type }}"
 
 # vesctl {{ group }} {{ resource }}
 
-> Manage {{ resource | underscore_to_space }} resources in F5 Distributed Cloud
+> Manage {{ resource | to_human_readable }} resources in F5 Distributed Cloud
 
 ## Available Actions
 
@@ -23,7 +23,7 @@ resource_type: "{{ front_matter.resource_type }}"
 
 ## Common Workflows
 
-### Create and verify a {{ resource | underscore_to_space }}
+### Create and verify a {{ resource | to_human_readable }}
 
 ```bash
 # Create from file
@@ -36,7 +36,7 @@ vesctl {{ group }} list {{ resource }}
 vesctl {{ group }} get {{ resource }} <name>
 ```
 
-### Update a {{ resource | underscore_to_space }}
+### Update a {{ resource | to_human_readable }}
 
 ```bash
 # Replace entire resource
@@ -59,7 +59,7 @@ vesctl {{ group }} add-labels {{ resource }} <name> --label-key app --label-valu
 vesctl {{ group }} remove-labels {{ resource }} <name> --label-key app
 ```
 
-### Delete a {{ resource | underscore_to_space }}
+### Delete a {{ resource | to_human_readable }}
 
 ```bash
 vesctl {{ group }} delete {{ resource }} <name>
@@ -70,5 +70,5 @@ vesctl {{ group }} delete {{ resource }} <name> --yes
 
 ## See Also
 
-- [vesctl {{ group }}](../index.md) - {{ group | title_case }} commands
+- [vesctl {{ group }}](../index.md) - {{ group | to_human_readable }} commands
 - [Command Reference](../../index.md)

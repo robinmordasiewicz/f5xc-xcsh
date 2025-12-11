@@ -19,6 +19,8 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
+from naming import to_human_readable, normalize_acronyms, to_title_case
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -49,6 +51,11 @@ def main():
         trim_blocks=True,
         lstrip_blocks=True,
     )
+
+    # Register naming filters for consistency across all generators
+    env.filters["to_human_readable"] = to_human_readable
+    env.filters["normalize_acronyms"] = normalize_acronyms
+    env.filters["title_case"] = to_title_case
 
     template = env.get_template("windows.md.j2")
 

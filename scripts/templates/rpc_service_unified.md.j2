@@ -11,7 +11,7 @@ procedure_count: {{ procedures | length }}
 
 # vesctl request rpc {{ service }}
 
-> {{ service | underscore_to_space | title }} service RPC procedures
+> {{ service | to_human_readable }} service RPC procedures
 
 ## Procedures
 
