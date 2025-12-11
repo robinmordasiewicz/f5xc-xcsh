@@ -172,36 +172,52 @@ jobs:
         id: compare
         run: |
           FORCE_REGEN="${{ github.event.inputs.force_regenerate }}"
+          NEEDS_GEN="false"
 
           if [ "$FORCE_REGEN" = "true" ]; then
             echo "Force regeneration requested"
-            echo "needs_generation=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          if [ -f spec-hash-cached.txt ]; then
+            NEEDS_GEN="true"
+          elif [ -f spec-hash-cached.txt ]; then
             CACHED_HASH=$(cat spec-hash-cached.txt)
             CURRENT_HASH=${{ steps.spec-hash.outputs.hash }}
             if [ "$CACHED_HASH" = "$CURRENT_HASH" ]; then
               echo "Spec unchanged (hash: $CURRENT_HASH)"
-              echo "needs_generation=false" >> $GITHUB_OUTPUT
+              NEEDS_GEN="false"
             else
               echo "Spec changed!"
               echo "  Previous: $CACHED_HASH"
               echo "  Current:  $CURRENT_HASH"
-              echo "needs_generation=true" >> $GITHUB_OUTPUT
+              NEEDS_GEN="true"
             fi
           else
             echo "No cached hash found, will regenerate"
-            echo "needs_generation=true" >> $GITHUB_OUTPUT
+            NEEDS_GEN="true"
           fi
+
+          # Always output, even if false (ensures output is set)
+          echo "needs_generation=$NEEDS_GEN" >> $GITHUB_OUTPUT
+          echo "::notice::needs_generation=$NEEDS_GEN"
 
   generate:
     name: Generate Command Docs
     runs-on: ubuntu-latest
     needs: check-spec
-    if: needs.check-spec.outputs.needs_generation == 'true'
+    # Use always() to evaluate even when check-spec used always()
+    # Regenerate if: spec changed OR workflow_run with recent release (fallback for output propagation issues)
+    if: |
+      always() && !failure() && !cancelled() &&
+      (
+        needs.check-spec.outputs.needs_generation == 'true' ||
+        (github.event_name == 'workflow_run' && needs.check-spec.outputs.recent_release == 'true' && needs.check-spec.outputs.spec_hash != '')
+      )
     steps:
+      - name: Debug - Log trigger conditions
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "needs_generation: ${{ needs.check-spec.outputs.needs_generation }}"
+          echo "recent_release: ${{ needs.check-spec.outputs.recent_release }}"
+          echo "spec_hash: ${{ needs.check-spec.outputs.spec_hash }}"
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
