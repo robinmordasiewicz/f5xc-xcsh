@@ -1227,7 +1227,7 @@ article.md-content__inner.md-typeset {
 
 /* Give source container enough width to fit content */
 .md-header__source {
-  min-width: 15rem;
+  min-width: 17rem;
   flex-shrink: 0;
 }
 

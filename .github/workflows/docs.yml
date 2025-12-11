@@ -465,18 +465,35 @@ jobs:
         id: homebrew-install
         run: |
           MAX_RETRIES=5
-          RETRY_DELAY=30
+          BASE_DELAY=10
 
           for i in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $i of $MAX_RETRIES..."
 
-            # Refresh tap
-            brew tap robinmordasiewicz/tap
+            # Clean state before retry (except first attempt)
+            if [ $i -gt 1 ]; then
+              echo "Cleaning up before retry..."
+              brew uninstall --cask vesctl 2>/dev/null || true
+              brew untap robinmordasiewicz/tap 2>/dev/null || true
+            fi
+
+            # Refresh tap with retry
+            echo "Refreshing Homebrew tap..."
+            if ! brew tap robinmordasiewicz/tap; then
+              echo "::warning::Failed to tap, will retry..."
+              if [ $i -lt $MAX_RETRIES ]; then
+                DELAY=$((BASE_DELAY * (2 ** (i - 1))))
+                echo "Waiting ${DELAY}s before retry..."
+                sleep $DELAY
+                continue
+              fi
+            fi
+
             brew update
 
             # Try to install (using cask) and capture output
             if brew install --cask vesctl 2>&1 | tee homebrew-output.txt; then
-              echo "Successfully installed vesctl"
+              echo "Successfully installed vesctl on attempt $i"
               echo "homebrew_success=true" >> $GITHUB_OUTPUT
               exit 0
             fi
@@ -487,8 +504,10 @@ jobs:
               exit 0
             fi
 
-            echo "Waiting ${RETRY_DELAY}s before retry..."
-            sleep $RETRY_DELAY
+            # Exponential backoff: 10s, 20s, 40s, 80s
+            DELAY=$((BASE_DELAY * (2 ** (i - 1))))
+            echo "::warning::Install failed on attempt $i, retrying in ${DELAY}s..."
+            sleep $DELAY
           done
 
       - name: Capture vesctl version
