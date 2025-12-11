@@ -40,16 +40,16 @@ const (
 // Error code strings for machine-readable error messages
 const (
 	// Validation errors
-	ErrMissingFlag    = "ERR_MISSING_FLAG"
-	ErrInvalidValue   = "ERR_INVALID_VALUE"
-	ErrInvalidInput   = "ERR_INVALID_INPUT"
-	ErrMissingInput   = "ERR_MISSING_INPUT"
+	ErrMissingFlag  = "ERR_MISSING_FLAG"
+	ErrInvalidValue = "ERR_INVALID_VALUE"
+	ErrInvalidInput = "ERR_INVALID_INPUT"
+	ErrMissingInput = "ERR_MISSING_INPUT"
 
 	// Authentication errors
-	ErrAuthFailed     = "ERR_AUTH_FAILED"
-	ErrForbidden      = "ERR_FORBIDDEN"
-	ErrTokenExpired   = "ERR_TOKEN_EXPIRED"
-	ErrCredsMissing   = "ERR_CREDS_MISSING"
+	ErrAuthFailed   = "ERR_AUTH_FAILED"
+	ErrForbidden    = "ERR_FORBIDDEN"
+	ErrTokenExpired = "ERR_TOKEN_EXPIRED"
+	ErrCredsMissing = "ERR_CREDS_MISSING"
 
 	// Connection errors
 	ErrConnectionFailed = "ERR_CONNECTION_FAILED"
@@ -62,7 +62,7 @@ const (
 	ErrRateLimit = "ERR_RATE_LIMIT"
 
 	// Operation errors
-	ErrOperationFailed   = "ERR_OPERATION_FAILED"
+	ErrOperationFailed    = "ERR_OPERATION_FAILED"
 	ErrOperationCancelled = "ERR_OPERATION_CANCELLED"
 )
 

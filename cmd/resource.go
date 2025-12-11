@@ -515,8 +515,8 @@ func loadResourceFromFile(path string) (map[string]interface{}, error) {
 // customResourceCommands lists resource types that have custom implementations
 // and should not be auto-registered
 var customResourceCommands = map[string]bool{
-	"site":           true, // Custom implementation in site.go
-	"aws-vpc-site":   true, // Custom implementation in site_aws_vpc.go
+	"site":            true, // Custom implementation in site.go
+	"aws-vpc-site":    true, // Custom implementation in site_aws_vpc.go
 	"azure-vnet-site": true, // Custom implementation in site_azure_vnet.go
 }
 

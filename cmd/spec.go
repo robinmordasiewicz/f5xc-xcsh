@@ -24,13 +24,14 @@ func RegisterSpecFlag(rootCmd *cobra.Command) {
 
 // CLISpec represents the complete CLI specification
 type CLISpec struct {
-	Name        string           `json:"name" yaml:"name"`
-	Version     string           `json:"version" yaml:"version"`
-	Description string           `json:"description" yaml:"description"`
-	Usage       string           `json:"usage" yaml:"usage"`
-	GlobalFlags []FlagSpec       `json:"global_flags" yaml:"global_flags"`
-	Commands    []CommandSpec    `json:"commands" yaml:"commands"`
-	ExitCodes   []ExitCodeSpec   `json:"exit_codes" yaml:"exit_codes"`
+	Name                 string         `json:"name" yaml:"name"`
+	Version              string         `json:"version" yaml:"version"`
+	Description          string         `json:"description" yaml:"description"`
+	Usage                string         `json:"usage" yaml:"usage"`
+	EnvironmentVariables []EnvVarSpec   `json:"environment_variables" yaml:"environment_variables"`
+	GlobalFlags          []FlagSpec     `json:"global_flags" yaml:"global_flags"`
+	Commands             []CommandSpec  `json:"commands" yaml:"commands"`
+	ExitCodes            []ExitCodeSpec `json:"exit_codes" yaml:"exit_codes"`
 }
 
 // CommandSpec represents a command's specification
@@ -66,13 +67,14 @@ type ExitCodeSpec struct {
 // GenerateSpec generates the CLI specification
 func GenerateSpec(cmd *cobra.Command) *CLISpec {
 	spec := &CLISpec{
-		Name:        "vesctl",
-		Version:     Version, // From version.go
-		Description: cmd.Long,
-		Usage:       cmd.Use,
-		GlobalFlags: extractFlags(cmd.PersistentFlags()),
-		Commands:    extractCommands(cmd, []string{}),
-		ExitCodes:   getExitCodes(),
+		Name:                 "vesctl",
+		Version:              Version, // From version.go
+		Description:          cmd.Long,
+		Usage:                cmd.Use,
+		EnvironmentVariables: EnvVarRegistry,
+		GlobalFlags:          extractFlags(cmd.PersistentFlags()),
+		Commands:             extractCommands(cmd, []string{}),
+		ExitCodes:            getExitCodes(),
 	}
 	return spec
 }

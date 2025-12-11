@@ -47,7 +47,7 @@ func TestClient_Get(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -109,7 +109,7 @@ func TestClient_Post(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -147,7 +147,7 @@ func TestClient_Put(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -178,7 +178,7 @@ func TestClient_Delete(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -210,7 +210,7 @@ func TestClient_Patch(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -246,7 +246,7 @@ func TestClient_QueryParameters(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -332,7 +332,7 @@ func TestClient_ErrorResponse(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -363,8 +363,8 @@ func TestClient_ErrorResponse(t *testing.T) {
 func TestNew_WithAPIToken(t *testing.T) {
 	cfg := &Config{
 		ServerURL: "http://localhost:8080",
-		APIToken:   "test-api-token",
-		Timeout:    30,
+		APIToken:  "test-api-token",
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -399,8 +399,8 @@ func TestClient_APITokenHeader(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		APIToken:   "test-api-token",
-		Timeout:    30,
+		APIToken:  "test-api-token",
+		Timeout:   30,
 	}
 
 	client, err := New(cfg)
@@ -438,7 +438,7 @@ func TestClient_NoAPITokenHeader_WhenNotConfigured(t *testing.T) {
 
 	cfg := &Config{
 		ServerURL: server.URL,
-		Timeout:    30,
+		Timeout:   30,
 		// No APIToken set
 	}
 
@@ -481,8 +481,8 @@ func TestClient_APIToken_AllMethods(t *testing.T) {
 
 			cfg := &Config{
 				ServerURL: server.URL,
-				APIToken:   "test-token",
-				Timeout:    30,
+				APIToken:  "test-token",
+				Timeout:   30,
 			}
 
 			client, err := New(cfg)

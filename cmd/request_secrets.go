@@ -220,8 +220,8 @@ func runEncrypt(cmd *cobra.Command, args []string) error {
 
 	// Create the blindfold structure
 	blindfold := map[string]interface{}{
-		"type":       "blindfold",
-		"location":   "string:///",
+		"type":     "blindfold",
+		"location": "string:///",
 		"secret_info": map[string]interface{}{
 			"ciphertext":      base64.StdEncoding.EncodeToString(encrypted),
 			"policy_document": string(policyDoc),

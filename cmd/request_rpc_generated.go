@@ -906,9 +906,9 @@ func createRPCSubcommand(name, schemaType string) *cobra.Command {
 	var uri string
 
 	cmd := &cobra.Command{
-		Use:   name,
-		Short: "CustomAPI RPC invocation",
-		Long:  "CustomAPI RPC invocation",
+		Use:     name,
+		Short:   "CustomAPI RPC invocation",
+		Long:    "CustomAPI RPC invocation",
 		Example: "vesctl request rpc registration.CustomAPI.RegistrationApprove -i approval_req.yaml",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Set the RPC flags from local flags

@@ -166,8 +166,8 @@ func TestResource_CRUD_HealthCheck(t *testing.T) {
 				"http_health_check": map[string]interface{}{
 					"path": "/health",
 				},
-				"timeout":       5,
-				"interval":      30,
+				"timeout":             5,
+				"interval":            30,
 				"unhealthy_threshold": 2,
 				"healthy_threshold":   3,
 			},
@@ -236,8 +236,8 @@ func TestResource_CRUD_HealthCheck(t *testing.T) {
 				"http_health_check": map[string]interface{}{
 					"path": "/healthz",
 				},
-				"timeout":       10,
-				"interval":      60,
+				"timeout":             10,
+				"interval":            60,
 				"unhealthy_threshold": 3,
 				"healthy_threshold":   2,
 			},

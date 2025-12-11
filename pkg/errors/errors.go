@@ -8,11 +8,11 @@ import (
 // This allows the CLI to return specific exit codes for different error types,
 // enabling automation scripts and AI agents to handle errors appropriately.
 type ExitError struct {
-	Code     int    // Exit code to return
-	ErrCode  string // Machine-readable error code (e.g., "ERR_NOT_FOUND")
-	Message  string // Human-readable error message
-	Details  string // Additional details for troubleshooting
-	Hint     string // Helpful hint for resolving the error
+	Code    int    // Exit code to return
+	ErrCode string // Machine-readable error code (e.g., "ERR_NOT_FOUND")
+	Message string // Human-readable error message
+	Details string // Additional details for troubleshooting
+	Hint    string // Helpful hint for resolving the error
 }
 
 // Error implements the error interface

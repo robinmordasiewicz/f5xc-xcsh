@@ -43,9 +43,9 @@ func TestCLI_Version(t *testing.T) {
 	}
 
 	output := stdout.String()
-	// Version output format: "branch: <branch> <br>commit-sha: <sha> <date> <author> <build> nil <br>"
-	if !strings.Contains(output, "branch:") || !strings.Contains(output, "commit-sha:") {
-		t.Errorf("Expected version output with branch and commit-sha, got: %s", output)
+	// Version output format: "vesctl version <version>\n  commit: <sha>\n  built: <date>\n  go: <version>\n  platform: <os/arch>"
+	if !strings.Contains(output, "vesctl version") || !strings.Contains(output, "commit:") {
+		t.Errorf("Expected version output with vesctl version and commit, got: %s", output)
 	}
 
 	t.Logf("Version output: %s", output)

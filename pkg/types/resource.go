@@ -48,23 +48,23 @@ type DeleteConfig struct {
 
 // ResourceOperations defines which operations are supported
 type ResourceOperations struct {
-	Create  bool
-	Get     bool
-	List    bool
-	Update  bool
-	Delete  bool
-	Status  bool
+	Create bool
+	Get    bool
+	List   bool
+	Update bool
+	Delete bool
+	Status bool
 }
 
 // AllOperations returns ResourceOperations with all operations enabled
 func AllOperations() ResourceOperations {
 	return ResourceOperations{
-		Create:  true,
-		Get:     true,
-		List:    true,
-		Update:  true,
-		Delete:  true,
-		Status:  true,
+		Create: true,
+		Get:    true,
+		List:   true,
+		Update: true,
+		Delete: true,
+		Status: true,
 	}
 }
 

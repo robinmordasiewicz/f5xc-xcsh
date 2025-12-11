@@ -28,9 +28,9 @@ var (
 
 // Control-specific flags
 var (
-	controlNs   string
-	discoverNs  string
-	deleteFlag  bool
+	controlNs  string
+	discoverNs string
+	deleteFlag bool
 )
 
 var apiEndpointCmd = &cobra.Command{

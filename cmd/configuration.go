@@ -1178,4 +1178,3 @@ func loadConfigResource(inputFile, jsonData string) (map[string]interface{}, err
 
 	return resource, nil
 }
-

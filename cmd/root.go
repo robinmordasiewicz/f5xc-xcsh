@@ -17,7 +17,7 @@ var (
 	cfgFile string
 
 	// Connection settings (vesctl compatible)
-	serverURL string
+	serverURL   string
 	cert        string
 	key         string
 	cacert      string
@@ -142,13 +142,33 @@ func init() {
 	_ = viper.BindPFlag("key", pf.Lookup("key"))
 	_ = viper.BindPFlag("cacert", pf.Lookup("cacert"))
 	_ = viper.BindPFlag("p12-bundle", pf.Lookup("p12-bundle"))
+	_ = viper.BindPFlag("config", pf.Lookup("config"))
+	_ = viper.BindPFlag("output-format", pf.Lookup("output-format"))
+
+	// Bind environment variables to viper for flags without automatic binding
+	_ = viper.BindEnv("config", "VES_CONFIG")
+	_ = viper.BindEnv("cert", "VES_CERT")
+	_ = viper.BindEnv("key", "VES_KEY")
+	_ = viper.BindEnv("cacert", "VES_CACERT")
+	_ = viper.BindEnv("p12-bundle", "VES_P12_FILE")
+	_ = viper.BindEnv("output-format", "VES_OUTPUT")
 
 	// Register --spec flag for machine-readable CLI specification
 	RegisterSpecFlag(rootCmd)
+
+	// Set custom help template with Environment Variables section
+	rootCmd.SetHelpTemplate(helpTemplateWithEnvVars())
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// Check VES_CONFIG environment variable if cfgFile not set via CLI flag
+	if cfgFile == "" {
+		if envConfig := os.Getenv("VES_CONFIG"); envConfig != "" {
+			cfgFile = envConfig
+		}
+	}
+
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 		viper.SetConfigType("yaml") // .vesconfig files are YAML
@@ -183,24 +203,23 @@ func initConfig() {
 }
 
 // applyConfigToFlags applies viper config values to flags
+// Precedence order: CLI flags > Environment variables > Config file > Defaults
 func applyConfigToFlags() {
 	cfg, err := config.Load(viper.ConfigFileUsed())
 	if err != nil {
-		// If config file couldn't be loaded, apply default
+		// If config file couldn't be loaded, still check environment variables
+		applyEnvironmentVariables()
+		// Apply fallback default if still not set
 		if serverURL == "" {
 			serverURL = "http://localhost:8001"
 		}
 		return
 	}
 
-	// VES_API_URL environment variable overrides server-url from config
-	if envURL := os.Getenv("VES_API_URL"); envURL != "" {
-		serverURL = envURL
-	} else if serverURL == "" && cfg.ServerURL != "" {
-		// Apply config values if CLI flags not set
+	// Apply config file values first (lowest precedence after defaults)
+	if serverURL == "" && cfg.ServerURL != "" {
 		serverURL = cfg.ServerURL
 	}
-
 	if cert == "" && cfg.Cert != "" {
 		cert = expandPath(cfg.Cert)
 	}
@@ -210,15 +229,60 @@ func applyConfigToFlags() {
 	if p12Bundle == "" && cfg.P12Bundle != "" {
 		p12Bundle = expandPath(cfg.P12Bundle)
 	}
-
-	// Apply API token config if not already set via CLI flag
 	if !useAPIToken && cfg.APIToken {
 		useAPIToken = true
 	}
 
+	// Apply environment variables (higher precedence than config file)
+	applyEnvironmentVariables()
+
 	// Apply fallback default if still not set
 	if serverURL == "" {
 		serverURL = "http://localhost:8001"
+	}
+}
+
+// applyEnvironmentVariables applies VES_* environment variables to flags
+// This is called after config file values are applied, allowing env vars to override
+func applyEnvironmentVariables() {
+	// VES_API_URL overrides server-url
+	if envURL := os.Getenv("VES_API_URL"); envURL != "" {
+		serverURL = envURL
+	}
+
+	// VES_CERT overrides cert (only if CLI flag not set)
+	if cert == "" {
+		if envCert := os.Getenv("VES_CERT"); envCert != "" {
+			cert = expandPath(envCert)
+		}
+	}
+
+	// VES_KEY overrides key (only if CLI flag not set)
+	if key == "" {
+		if envKey := os.Getenv("VES_KEY"); envKey != "" {
+			key = expandPath(envKey)
+		}
+	}
+
+	// VES_CACERT overrides cacert (only if CLI flag not set)
+	if cacert == "" {
+		if envCACert := os.Getenv("VES_CACERT"); envCACert != "" {
+			cacert = expandPath(envCACert)
+		}
+	}
+
+	// VES_P12_FILE overrides p12-bundle (only if CLI flag not set)
+	if p12Bundle == "" {
+		if envP12 := os.Getenv("VES_P12_FILE"); envP12 != "" {
+			p12Bundle = expandPath(envP12)
+		}
+	}
+
+	// VES_OUTPUT overrides output-format (only if CLI flag not set)
+	if outputFormat == "" {
+		if envOutput := os.Getenv("VES_OUTPUT"); envOutput != "" {
+			outputFormat = envOutput
+		}
 	}
 }
 
@@ -278,4 +342,23 @@ func GetTimeout() int {
 // ShowCurl returns whether to emit CURL format
 func ShowCurl() bool {
 	return showCurl
+}
+
+// helpTemplateWithEnvVars returns a custom help template that includes environment variables
+func helpTemplateWithEnvVars() string {
+	// Build environment variables section
+	envVarsSection := "\nEnvironment Variables:\n"
+	for _, env := range EnvVarRegistry {
+		envVarsSection += fmt.Sprintf("  %s\n", env.Name)
+		if env.RelatedFlag != "" {
+			envVarsSection += fmt.Sprintf("        %s (%s)\n", env.Description, env.RelatedFlag)
+		} else {
+			envVarsSection += fmt.Sprintf("        %s\n", env.Description)
+		}
+	}
+
+	// Custom template based on Cobra's default, with Environment Variables section added
+	return `{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}
+
+{{end}}{{if or .Runnable .HasSubCommands}}{{.UsageString}}{{end}}` + envVarsSection
 }

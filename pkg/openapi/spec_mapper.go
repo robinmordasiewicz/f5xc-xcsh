@@ -7,8 +7,8 @@ import (
 
 // SpecMapper maps resource names to their corresponding OpenAPI spec files
 type SpecMapper struct {
-	specs        map[string]*Spec // filename -> spec
-	resourceMap  map[string]string // resourceName -> filename
+	specs       map[string]*Spec  // filename -> spec
+	resourceMap map[string]string // resourceName -> filename
 }
 
 // NewSpecMapper creates a new spec mapper from loaded specs

@@ -16,19 +16,19 @@ import (
 )
 
 var awsVPCFlags struct {
-	name           string
-	namespace      string
-	inputFile      string
-	region         string
-	azs            []string
-	vpcCIDR        string
-	instanceType   string
-	sshKey         string
-	cloudCreds     string
-	terraformDir   string
+	name            string
+	namespace       string
+	inputFile       string
+	region          string
+	azs             []string
+	vpcCIDR         string
+	instanceType    string
+	sshKey          string
+	cloudCreds      string
+	terraformDir    string
 	terraformAction string
-	autoApprove    bool
-	wait           bool
+	autoApprove     bool
+	wait            bool
 }
 
 var awsVPCCmd = &cobra.Command{

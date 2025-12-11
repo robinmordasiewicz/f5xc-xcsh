@@ -70,11 +70,11 @@ func New(cfg *Config) (*Client, error) {
 
 // Request represents an API request
 type Request struct {
-	Method   string
-	Path     string
-	Body     interface{}
-	Headers  map[string]string
-	Query    url.Values
+	Method  string
+	Path    string
+	Body    interface{}
+	Headers map[string]string
+	Query   url.Values
 }
 
 // Response represents an API response

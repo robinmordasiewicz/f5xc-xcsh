@@ -55,7 +55,7 @@ var logoutCmd = &cobra.Command{
 	Use:    "logout",
 	Short:  "Log out from F5 Distributed Cloud",
 	Hidden: true, // Hide from help to match original vesctl
-	Long:  `Clear saved credentials from the configuration file.`,
+	Long:   `Clear saved credentials from the configuration file.`,
 	Example: `  # Log out
   vesctl logout`,
 	RunE: runLogout,
@@ -65,7 +65,7 @@ var whoamiCmd = &cobra.Command{
 	Use:    "whoami",
 	Short:  "Show current user information",
 	Hidden: true, // Hide from help to match original vesctl
-	Long:  `Display information about the currently authenticated user.`,
+	Long:   `Display information about the currently authenticated user.`,
 	Example: `  # Show current user
   vesctl whoami`,
 	RunE: runWhoami,

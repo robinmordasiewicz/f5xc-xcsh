@@ -1,34 +1,35 @@
 # Environment Variables
 
-vesctl can be configured using environment variables.
+vesctl can be configured using environment variables. Run `vesctl --help` to see all available environment variables.
 
 ## Authentication Variables
 
-| Variable | Description |
-|----------|-------------|
-| `VES_P12_PASSWORD` | Password for P12 bundle |
-| `VES_P12_FILE` | Path to P12 bundle |
-| `VES_CERT` | Path to client certificate |
-| `VES_KEY` | Path to client key |
+| Variable | Description | Related Flag |
+|----------|-------------|--------------|
+| `VES_API_TOKEN` | API token for authenticating with F5 Distributed Cloud services. | `--api-token` |
+| `VES_CERT` | Path to the client certificate file for mTLS authentication. | `--cert` |
+| `VES_KEY` | Path to the client private key file for mTLS authentication. | `--key` |
+| `VES_P12_FILE` | Path to the PKCS#12 bundle file containing client certificate and key. | `--p12-bundle` |
+| `VES_P12_PASSWORD` | Password for decrypting the PKCS#12 bundle file. | - |
 
 ## Connection Variables
 
-| Variable | Description |
-|----------|-------------|
-| `VES_API_URL` | API server URL(s) |
-| `VES_CACERT` | Path to CA certificate |
+| Variable | Description | Related Flag |
+|----------|-------------|--------------|
+| `VES_API_URL` | F5 Distributed Cloud API endpoint URL override. | `--server-url` |
+| `VES_CACERT` | Path to the CA certificate file for TLS server verification. | `--cacert` |
 
 ## Output Variables
 
-| Variable | Description |
-|----------|-------------|
-| `VES_OUTPUT` | Default output format |
+| Variable | Description | Related Flag |
+|----------|-------------|--------------|
+| `VES_OUTPUT` | Default output format for command results (text, json, yaml, or table). | `--output-format` |
 
 ## Configuration Variables
 
-| Variable | Description |
-|----------|-------------|
-| `VES_CONFIG` | Path to config file |
+| Variable | Description | Related Flag |
+|----------|-------------|--------------|
+| `VES_CONFIG` | Path to the vesctl configuration file. | `--config` |
 
 ## Usage Examples
 
