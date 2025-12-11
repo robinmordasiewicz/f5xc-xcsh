@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
+	"github.com/robinmordasiewicz/vesctl/pkg/naming"
 	"github.com/robinmordasiewicz/vesctl/pkg/output"
 	"github.com/robinmordasiewicz/vesctl/pkg/types"
 )
@@ -24,10 +25,11 @@ type resourceFlags struct {
 
 // BuildResourceCommand creates a command group for a resource type
 func BuildResourceCommand(rt *types.ResourceType) *cobra.Command {
+	displayName := naming.ToHumanReadable(rt.Name)
 	cmd := &cobra.Command{
 		Use:   rt.CLIName,
-		Short: rt.Description,
-		Long:  fmt.Sprintf("Manage %s resources in F5 Distributed Cloud.", rt.Description),
+		Short: fmt.Sprintf("Manage %s resources", displayName),
+		Long:  fmt.Sprintf("Manage %s resources in F5 Distributed Cloud.", displayName),
 	}
 
 	// Add subcommands based on supported operations
@@ -56,12 +58,13 @@ func BuildResourceCommand(rt *types.ResourceType) *cobra.Command {
 // buildListCommand creates the list subcommand
 func buildListCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"ls"},
-		Short:   fmt.Sprintf("List %s resources", rt.CLIName),
-		Long:    fmt.Sprintf("List all %s resources in the specified namespace.", rt.Description),
+		Short:   fmt.Sprintf("List %s resources", displayName),
+		Long:    fmt.Sprintf("List all %s resources in the specified namespace.", displayName),
 		Example: buildExample(rt, "list", []string{
 			fmt.Sprintf("vesctl %s list --namespace example-namespace", rt.CLIName),
 			fmt.Sprintf("vesctl %s list -n example-namespace -o table", rt.CLIName),
@@ -82,12 +85,13 @@ func buildListCommand(rt *types.ResourceType) *cobra.Command {
 // buildShowCommand creates the show subcommand
 func buildShowCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:     "show [name]",
 		Aliases: []string{"get", "describe"},
-		Short:   fmt.Sprintf("Show details of a %s", rt.CLIName),
-		Long:    fmt.Sprintf("Display detailed information about a specific %s.", rt.Description),
+		Short:   fmt.Sprintf("Show details of a %s", displayName),
+		Long:    fmt.Sprintf("Display detailed information about a specific %s.", displayName),
 		Args:    cobra.ExactArgs(1),
 		Example: buildExample(rt, "show", []string{
 			fmt.Sprintf("vesctl %s show example-resource --namespace example-namespace", rt.CLIName),
@@ -110,11 +114,12 @@ func buildShowCommand(rt *types.ResourceType) *cobra.Command {
 // buildCreateCommand creates the create subcommand
 func buildCreateCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: fmt.Sprintf("Create a new %s", rt.CLIName),
-		Long:  fmt.Sprintf("Create a new %s from a YAML or JSON file.", rt.Description),
+		Short: fmt.Sprintf("Create a new %s", displayName),
+		Long:  fmt.Sprintf("Create a new %s from a YAML or JSON file.", displayName),
 		Example: buildExample(rt, "create", []string{
 			fmt.Sprintf("vesctl %s create --file resource.yaml", rt.CLIName),
 			fmt.Sprintf("vesctl %s create -f resource.json --namespace example-namespace", rt.CLIName),
@@ -138,12 +143,13 @@ func buildCreateCommand(rt *types.ResourceType) *cobra.Command {
 // buildUpdateCommand creates the update subcommand
 func buildUpdateCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"replace", "apply"},
-		Short:   fmt.Sprintf("Update an existing %s", rt.CLIName),
-		Long:    fmt.Sprintf("Update an existing %s from a YAML or JSON file.", rt.Description),
+		Short:   fmt.Sprintf("Update an existing %s", displayName),
+		Long:    fmt.Sprintf("Update an existing %s from a YAML or JSON file.", displayName),
 		Example: buildExample(rt, "update", []string{
 			fmt.Sprintf("vesctl %s update --file resource.yaml", rt.CLIName),
 			fmt.Sprintf("vesctl %s update -f resource.json", rt.CLIName),
@@ -167,12 +173,13 @@ func buildUpdateCommand(rt *types.ResourceType) *cobra.Command {
 // buildDeleteCommand creates the delete subcommand
 func buildDeleteCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:     "delete [name]",
 		Aliases: []string{"rm", "remove"},
-		Short:   fmt.Sprintf("Delete a %s", rt.CLIName),
-		Long:    fmt.Sprintf("Delete a %s resource.", rt.Description),
+		Short:   fmt.Sprintf("Delete a %s", displayName),
+		Long:    fmt.Sprintf("Delete a %s resource.", displayName),
 		Args:    cobra.ExactArgs(1),
 		Example: buildExample(rt, "delete", []string{
 			fmt.Sprintf("vesctl %s delete example-resource --namespace example-namespace", rt.CLIName),
@@ -197,11 +204,12 @@ func buildDeleteCommand(rt *types.ResourceType) *cobra.Command {
 // buildStatusCommand creates the status subcommand
 func buildStatusCommand(rt *types.ResourceType) *cobra.Command {
 	var flags resourceFlags
+	displayName := naming.ToHumanReadable(rt.Name)
 
 	cmd := &cobra.Command{
 		Use:   "status [name]",
-		Short: fmt.Sprintf("Show status of a %s", rt.CLIName),
-		Long:  fmt.Sprintf("Display the operational status of a %s.", rt.Description),
+		Short: fmt.Sprintf("Show status of a %s", displayName),
+		Long:  fmt.Sprintf("Display the operational status of a %s.", displayName),
 		Args:  cobra.ExactArgs(1),
 		Example: buildExample(rt, "status", []string{
 			fmt.Sprintf("vesctl %s status example-resource --namespace example-namespace", rt.CLIName),
@@ -329,7 +337,8 @@ func runCreate(rt *types.ResourceType, flags *resourceFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	output.PrintInfo(fmt.Sprintf("Created %s successfully", rt.CLIName))
+	displayName := naming.ToHumanReadable(rt.Name)
+	output.PrintInfo(fmt.Sprintf("Created %s successfully", displayName))
 	return output.Print(result, GetOutputFormat())
 }
 
@@ -383,7 +392,8 @@ func runUpdate(rt *types.ResourceType, flags *resourceFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	output.PrintInfo(fmt.Sprintf("Updated %s '%s' successfully", rt.CLIName, name))
+	displayName := naming.ToHumanReadable(rt.Name)
+	output.PrintInfo(fmt.Sprintf("Updated %s '%s' successfully", displayName, name))
 	return output.Print(result, GetOutputFormat())
 }
 
@@ -394,9 +404,11 @@ func runDelete(rt *types.ResourceType, flags *resourceFlags) error {
 		return fmt.Errorf("client not initialized - check configuration")
 	}
 
+	displayName := naming.ToHumanReadable(rt.Name)
+
 	// Confirm deletion unless --yes is specified
 	if !flags.yes {
-		fmt.Printf("Are you sure you want to delete %s '%s'? [y/N]: ", rt.CLIName, flags.name)
+		fmt.Printf("Are you sure you want to delete %s '%s'? [y/N]: ", displayName, flags.name)
 		var confirm string
 		_, _ = fmt.Scanln(&confirm)
 		if confirm != "y" && confirm != "Y" && confirm != "yes" {
@@ -432,7 +444,7 @@ func runDelete(rt *types.ResourceType, flags *resourceFlags) error {
 			if resp.StatusCode >= 400 {
 				return fmt.Errorf("API error: %s", string(resp.Body))
 			}
-			output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", rt.CLIName, flags.name))
+			output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", displayName, flags.name))
 			return nil
 		}
 	}
@@ -447,7 +459,7 @@ func runDelete(rt *types.ResourceType, flags *resourceFlags) error {
 		return fmt.Errorf("API error: %s", string(resp.Body))
 	}
 
-	output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", rt.CLIName, flags.name))
+	output.PrintInfo(fmt.Sprintf("Deleted %s '%s' successfully", displayName, flags.name))
 	return nil
 }
 

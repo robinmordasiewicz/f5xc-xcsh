@@ -23,6 +23,8 @@ from typing import Any, Optional
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from naming import to_human_readable, normalize_acronyms, to_title_case
+
 
 # Canonical action order for consistent display
 ACTION_ORDER = [
@@ -361,9 +363,11 @@ class VesctlDocsGenerator:
             lstrip_blocks=True,
         )
 
-        # Add custom filters
-        self.env.filters["underscore_to_space"] = lambda s: s.replace("_", " ")
-        self.env.filters["title_case"] = lambda s: s.replace("_", " ").title()
+        # Add custom filters with proper acronym handling
+        self.env.filters["underscore_to_space"] = lambda s: s.replace("_", " ") if s else ""
+        self.env.filters["title_case"] = to_title_case
+        self.env.filters["to_human_readable"] = to_human_readable
+        self.env.filters["normalize_acronyms"] = normalize_acronyms
 
         # API specs mapping
         self.api_specs_dir = Path("docs/specifications/api")
@@ -596,7 +600,7 @@ class VesctlDocsGenerator:
                     subcommands.append(Command(
                         path=[name, resource_name],
                         use=resource_name,
-                        short=f"Manage {resource_name.replace('_', ' ')} resources",
+                        short=f"Manage {to_human_readable(resource_name)} resources",
                     ))
         else:
             # Standard action-first listing
@@ -667,7 +671,7 @@ class VesctlDocsGenerator:
                     resources.append(Command(
                         path=[group, action, service_name],
                         use=service_name,
-                        short=f"{service_name.replace('_', ' ').title()} service ({len(procedures)} procedures)",
+                        short=f"{to_human_readable(service_name)} service ({len(procedures)} procedures)",
                     ))
 
             fm = self.generate_front_matter(
@@ -797,7 +801,7 @@ class VesctlDocsGenerator:
 
     def generate_action_examples(self, group: str, action: str, resource: str) -> str:
         """Generate example bash commands for an action."""
-        resource_display = resource.replace('_', ' ')
+        resource_display = to_human_readable(resource)
         resource_kebab = resource.replace('_', '-')
 
         examples = {
@@ -932,7 +936,7 @@ vesctl {group} {action} {resource}
 
         fm = self.generate_front_matter(
             title=f"vesctl {group} {resource}",
-            description=f"Manage {resource.replace('_', ' ')} resources",
+            description=f"Manage {to_human_readable(resource)} resources",
             command=sorted_actions[0] if sorted_actions else None,
             resource_type=resource,
             subcategory=resource_category,
@@ -1028,7 +1032,7 @@ vesctl {group} {action} {resource}
 
         fm = self.generate_front_matter(
             title=f"vesctl request rpc {service}",
-            description=f"{service.replace('_', ' ').title()} service RPC procedures",
+            description=f"{to_human_readable(service)} service RPC procedures",
             rpc_service=service,
         )
 
@@ -1053,7 +1057,7 @@ vesctl {group} {action} {resource}
 
         # Build flat navigation - one entry per service
         for service_name in sorted(services.keys()):
-            service_display = service_name.replace("_", " ").replace("-", " ").title()
+            service_display = to_human_readable(service_name)
             nav_items.append({
                 service_display: f"commands/{group}/{action}/{service_name}.md"
             })
@@ -1089,7 +1093,7 @@ vesctl {group} {action} {resource}
 
     def build_nav_tree(self, name: str, node: CommandTree) -> dict:
         """Build navigation tree for a command node."""
-        display_name = name.replace("_", " ").replace("-", " ").title()
+        display_name = to_human_readable(name)
 
         # Command groups always have index.md in a directory
         # Even if they have no children (like 'completion')
@@ -1151,7 +1155,7 @@ vesctl {group} {action} {resource}
             # Build items for this category
             category_items = []
             for resource_name in category_resources:
-                resource_display = resource_name.replace("_", " ").replace("-", " ").title()
+                resource_display = to_human_readable(resource_name)
                 category_items.append({
                     resource_display: f"commands/{group}/{resource_name}.md"
                 })
@@ -1165,7 +1169,7 @@ vesctl {group} {action} {resource}
         self, parent_path: str, name: str, node: CommandTree
     ) -> dict:
         """Build navigation for child nodes."""
-        display_name = name.replace("_", " ").replace("-", " ").title()
+        display_name = to_human_readable(name)
         path = f"{parent_path}/{name}"
 
         if not node.children:
@@ -1204,7 +1208,7 @@ vesctl {group} {action} {resource}
                     children.append(child_nav)
             else:
                 # Leaf node - check if it's an action or resource
-                child_display = child_name.replace("_", " ").replace("-", " ").title()
+                child_display = to_human_readable(child_name)
                 if child_node.command and len(child_node.command.path) <= 2:
                     # Action without resources
                     children.append({child_display: f"commands/{child_path}/index.md"})

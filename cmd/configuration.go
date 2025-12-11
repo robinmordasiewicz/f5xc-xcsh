@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
+	"github.com/robinmordasiewicz/vesctl/pkg/naming"
 	"github.com/robinmordasiewicz/vesctl/pkg/output"
 	"github.com/robinmordasiewicz/vesctl/pkg/types"
 )
@@ -92,7 +93,8 @@ Use --namespace to filter by namespace, or --output-format to control output for
 		rtCopy := rt
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("List all %s resources in the specified namespace.\n\n", rt.Name)
+		displayName := naming.ToHumanReadable(rt.Name)
+		longDesc := fmt.Sprintf("List all %s resources in the specified namespace.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -110,7 +112,7 @@ Use --namespace to filter by namespace, or --output-format to control output for
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
-			Short:   fmt.Sprintf("List %s", rt.Name),
+			Short:   fmt.Sprintf("List %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -152,7 +154,8 @@ Use --response-format replace-request to get output suitable for editing and rep
 		rtCopy := rt
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Retrieve a specific %s configuration by name.\n\n", rt.Name)
+		displayName := naming.ToHumanReadable(rt.Name)
+		longDesc := fmt.Sprintf("Retrieve a specific %s configuration by name.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -170,7 +173,7 @@ Use --response-format replace-request to get output suitable for editing and rep
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
-			Short:   fmt.Sprintf("Get %s", rt.Name),
+			Short:   fmt.Sprintf("Get %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			Args:    cobra.ExactArgs(1),
@@ -204,6 +207,7 @@ func buildConfigCreateCmd() *cobra.Command {
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build example text
 		exampleText := fmt.Sprintf(`# Create from file
@@ -222,7 +226,7 @@ EOF
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
-			Short:   fmt.Sprintf("Create %s", rt.Name),
+			Short:   fmt.Sprintf("Create %s", displayName),
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigCreate(rtCopy, &flags)
@@ -264,9 +268,10 @@ In non-interactive mode (scripts, CI/CD), --yes is required.`,
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Delete a %s configuration by name.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Delete a %s configuration by name.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -284,7 +289,7 @@ In non-interactive mode (scripts, CI/CD), --yes is required.`,
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
-			Short:   fmt.Sprintf("Delete %s", rt.Name),
+			Short:   fmt.Sprintf("Delete %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			Args:    cobra.ExactArgs(1),
@@ -327,9 +332,10 @@ This is a destructive operation. Use --yes to skip confirmation prompts.`,
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Replace an existing %s configuration with new content.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Replace an existing %s configuration with new content.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -352,7 +358,7 @@ EOF
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
-			Short:   fmt.Sprintf("Replace %s", rt.Name),
+			Short:   fmt.Sprintf("Replace %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -395,9 +401,10 @@ Use --at-site to query status at a specific site.`,
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Display the current status of a %s configuration.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Display the current status of a %s configuration.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -415,7 +422,7 @@ Use --at-site to query status at a specific site.`,
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
-			Short:   fmt.Sprintf("Status of %s", rt.Name),
+			Short:   fmt.Sprintf("Status of %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			Args:    cobra.ExactArgs(1),
@@ -458,9 +465,10 @@ Use --mode new to fail if the resource already exists (strict create behavior).`
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Create or replace a %s configuration using declarative input.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Create or replace a %s configuration using declarative input.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -486,7 +494,7 @@ EOF
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
-			Short:   fmt.Sprintf("Apply %s", rt.Name),
+			Short:   fmt.Sprintf("Apply %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -522,9 +530,10 @@ Note: Patch operation is not yet fully implemented. Use replace for complete upd
 			continue
 		}
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Apply a partial update to a %s configuration.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Apply a partial update to a %s configuration.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -532,7 +541,7 @@ Note: Patch operation is not yet fully implemented. Use replace for complete upd
 
 		subCmd := &cobra.Command{
 			Use:   rt.Name,
-			Short: fmt.Sprintf("Patch %s", rt.Name),
+			Short: fmt.Sprintf("Patch %s", displayName),
 			Long:  longDesc,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return runConfigPatch(rtCopy, &flags)
@@ -571,9 +580,10 @@ Use --label-key and --label-value flags (can be repeated for multiple labels).`,
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Add metadata labels to a %s configuration.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Add metadata labels to a %s configuration.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -590,7 +600,7 @@ Use --label-key and --label-value flags (can be repeated for multiple labels).`,
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
-			Short:   fmt.Sprintf("Add Labels to %s", rt.Name),
+			Short:   fmt.Sprintf("Add Labels to %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			Args:    cobra.ExactArgs(1),
@@ -630,9 +640,10 @@ Specify the label keys to remove using --label-key flags (can be repeated for mu
 	// Add resource type subcommands
 	for _, rt := range types.All() {
 		rtCopy := rt
+		displayName := naming.ToHumanReadable(rt.Name)
 
 		// Build resource-specific Long description
-		longDesc := fmt.Sprintf("Remove metadata labels from a %s configuration.\n\n", rt.Name)
+		longDesc := fmt.Sprintf("Remove metadata labels from a %s configuration.\n\n", displayName)
 		if rt.Description != "" {
 			longDesc += rt.Description + "\n\n"
 		}
@@ -649,7 +660,7 @@ Specify the label keys to remove using --label-key flags (can be repeated for mu
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
-			Short:   fmt.Sprintf("Remove Labels from %s", rt.Name),
+			Short:   fmt.Sprintf("Remove Labels from %s", displayName),
 			Long:    longDesc,
 			Example: exampleText,
 			Args:    cobra.ExactArgs(1),
