@@ -739,19 +739,93 @@ jobs:
             exit 1
           fi
 
-          # Run the install script and capture output
-          # Pass GITHUB_TOKEN to avoid API rate limits in CI
-          GITHUB_TOKEN=${{ github.token }} VES_NO_SUDO=1 VES_INSTALL_DIR=$HOME/.local/bin sh /tmp/install.sh > install-output.txt 2>&1
-          INSTALL_EXIT_CODE=$?
+          # Run install script with retry for checksum verification failures
+          # This handles the race condition where the Release workflow is still signing binaries
+          # and updating checksums.txt while we're trying to install
+          INSTALL_MAX_RETRIES=5
+          INSTALL_RETRY_COUNT=0
+          INSTALL_BASE_DELAY=30  # Longer delay for signing to complete
+          INSTALL_SUCCESS=false
 
-          echo "Install output captured:"
-          cat install-output.txt
+          echo ""
+          echo "=== Running install script with checksum retry logic ==="
+          echo "This handles race conditions with the Release signing workflow"
+          echo ""
 
-          # Fail if install script failed
-          if [ $INSTALL_EXIT_CODE -ne 0 ]; then
-            echo "::error::Install script failed with exit code $INSTALL_EXIT_CODE"
-            echo "::error::Install output:"
+          while [ $INSTALL_RETRY_COUNT -lt $INSTALL_MAX_RETRIES ]; do
+            INSTALL_RETRY_COUNT=$((INSTALL_RETRY_COUNT + 1))
+            echo "Install attempt $INSTALL_RETRY_COUNT of $INSTALL_MAX_RETRIES..."
+
+            # Clean up any partial installation from previous attempt
+            rm -rf $HOME/.local/bin/vesctl 2>/dev/null || true
+            rm -f install-output.txt 2>/dev/null || true
+
+            # Run the install script and capture output
+            # Pass GITHUB_TOKEN to avoid API rate limits in CI
+            GITHUB_TOKEN=${{ github.token }} VES_NO_SUDO=1 VES_INSTALL_DIR=$HOME/.local/bin sh /tmp/install.sh > install-output.txt 2>&1
+            INSTALL_EXIT_CODE=$?
+
+            echo "Install output:"
             cat install-output.txt
+
+            if [ $INSTALL_EXIT_CODE -eq 0 ]; then
+              echo "✅ Install script succeeded on attempt $INSTALL_RETRY_COUNT"
+              INSTALL_SUCCESS=true
+              break
+            fi
+
+            # Check if this is a checksum verification failure (race condition with signing)
+            if grep -q "Checksum verification failed" install-output.txt; then
+              echo ""
+              echo "::warning::Checksum verification failed - Release signing may still be in progress"
+              echo "This is a known race condition. The signed binary and checksums.txt may be out of sync."
+              echo ""
+
+              if [ $INSTALL_RETRY_COUNT -lt $INSTALL_MAX_RETRIES ]; then
+                # Exponential backoff: 30s, 60s, 120s, 240s
+                DELAY=$((INSTALL_BASE_DELAY * (2 ** (INSTALL_RETRY_COUNT - 1))))
+                echo "Waiting ${DELAY}s for Release signing workflow to complete checksums update..."
+                echo "Retry $((INSTALL_RETRY_COUNT + 1)) of $INSTALL_MAX_RETRIES will start after delay."
+                sleep $DELAY
+                continue
+              fi
+            fi
+
+            # For non-checksum failures, or if we've exhausted retries
+            if [ $INSTALL_RETRY_COUNT -eq $INSTALL_MAX_RETRIES ]; then
+              echo ""
+              echo "::error::Install script failed after $INSTALL_MAX_RETRIES attempts"
+              echo "::error::Final exit code: $INSTALL_EXIT_CODE"
+
+              # Output structured error for automation
+              if grep -q "Checksum verification failed" install-output.txt; then
+                echo ""
+                echo "ERROR_JSON<<EOF"
+                cat <<JSONEOF
+          {
+            "error_code": "CHECKSUM_VERIFICATION_FAILED",
+            "error_type": "race_condition",
+            "attempts": $INSTALL_MAX_RETRIES,
+            "cause": "Release signing workflow may not have completed checksums update",
+            "automation_hint": "gh workflow run docs.yml -f force_regenerate=true",
+            "manual_fix": "Wait for Release workflow to fully complete, then re-run Documentation workflow"
+          }
+          JSONEOF
+                echo "EOF"
+              fi
+
+              cat install-output.txt
+              exit 1
+            fi
+
+            # For other failures, don't retry
+            echo "::error::Install script failed with non-checksum error (exit code: $INSTALL_EXIT_CODE)"
+            cat install-output.txt
+            exit 1
+          done
+
+          if [ "$INSTALL_SUCCESS" != "true" ]; then
+            echo "::error::Install failed unexpectedly"
             exit 1
           fi
 
