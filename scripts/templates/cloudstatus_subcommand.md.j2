@@ -1,0 +1,75 @@
+---
+title: "{{ front_matter.title }}"
+description: "{{ front_matter.description }}"
+keywords:
+{% for kw in front_matter.keywords %}
+  - {{ kw }}
+{% endfor %}
+command: "{{ front_matter.command }}"
+command_group: "{{ front_matter.command_group }}"
+{% if front_matter.aliases %}
+aliases:
+{% for alias in front_matter.aliases %}
+  - "{{ alias }}"
+{% endfor %}
+{% endif %}
+---
+
+# vesctl cloudstatus {{ name }}
+
+> {{ command.short | normalize_acronyms }}
+
+## Synopsis
+
+```bash
+vesctl cloudstatus {{ name }} <command> [flags]
+```
+
+{% if command.long and command.long != command.short %}
+## Description
+
+{{ command.long | normalize_acronyms }}
+
+{% endif %}
+{% if command.aliases %}
+## Aliases
+
+This command can also be invoked as:
+
+{% for alias in command.aliases %}
+- `vesctl cloudstatus {{ alias }}`
+{% endfor %}
+
+{% endif %}
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+{% for sub in subcommands %}
+| [{{ sub.path[-1] }}]({{ sub.path[-1] }}.md) | {{ sub.short | normalize_acronyms }} |
+{% endfor %}
+
+{% if command.flags %}
+## Flags
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+{% for flag in command.flags %}
+| `--{{ flag.name }}` | {% if flag.shorthand %}`-{{ flag.shorthand }}`{% endif %} | {{ flag.type }} | {% if flag.default %}{{ flag.default }}{% endif %} | {{ flag.description | normalize_acronyms }} |
+{% endfor %}
+
+{% endif %}
+{% if command.example %}
+## Examples
+
+```bash
+{{ command.example }}
+```
+
+{% endif %}
+## See Also
+
+- [Cloud Status Overview](../index.md)
+{% for sub in subcommands[:5] %}
+- [vesctl cloudstatus {{ name }} {{ sub.path[-1] }}]({{ sub.path[-1] }}.md)
+{% endfor %}
