@@ -31,7 +31,8 @@ PLATFORMS=linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 .PHONY: all build build-all test test-unit test-int clean lint fmt install help \
         release-dry release-snapshot verify check watch \
         build-linux-amd64 build-linux-arm64 build-darwin-amd64 build-darwin-arm64 build-windows-amd64 \
-        docs docs-nav docs-clean docs-serve docs-check generate-examples
+        docs docs-nav docs-clean docs-serve docs-check generate-examples \
+        generate-schemas validate-schemas report-schemas generate-schemas-strict
 
 # Default target
 all: build
@@ -267,6 +268,28 @@ generate-examples:
 	@go run scripts/generate-examples.go -output pkg/types/examples_generated.go
 	@echo "Examples generated successfully!"
 
+# Generate resource schemas from OpenAPI specifications
+# This creates pkg/types/schemas_generated.go with AI-friendly schema intelligence
+generate-schemas:
+	@echo "Generating resource schemas from OpenAPI specifications..."
+	@go run scripts/generate-schemas.go -v
+	@echo "Schema generation complete!"
+
+# Validate schemas without regenerating (useful for CI)
+validate-schemas:
+	@echo "Validating schema generation..."
+	@go run scripts/generate-schemas.go -validate -v
+
+# Report missing specs (useful for debugging)
+report-schemas:
+	@echo "Generating schema coverage report..."
+	@go run scripts/generate-schemas.go -report -v
+
+# Strict schema generation (fails on missing critical resources)
+generate-schemas-strict:
+	@echo "Generating schemas (strict mode)..."
+	@go run scripts/generate-schemas.go -v -strict
+
 # Show version info
 version:
 	@echo "Version: $(VERSION)"
@@ -309,6 +332,13 @@ help:
 	@echo "  make docs-clean     - Clean generated documentation"
 	@echo "  make docs-serve     - Generate docs and serve locally"
 	@echo "  make docs-check     - Show current spec hash"
+	@echo ""
+	@echo "Code Generation Commands:"
+	@echo "  make generate-examples - Generate CLI examples from OpenAPI specs"
+	@echo "  make generate-schemas  - Generate resource schemas from OpenAPI specs"
+	@echo "  make validate-schemas  - Validate schemas without regenerating"
+	@echo "  make report-schemas    - Report missing specs and coverage"
+	@echo "  make generate-schemas-strict - Generate schemas, fail on missing critical"
 	@echo ""
 	@echo "Development Commands:"
 	@echo "  make watch          - Rebuild on file changes"

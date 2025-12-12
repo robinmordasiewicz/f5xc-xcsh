@@ -19,10 +19,33 @@ import (
 )
 
 var (
-	outputFile = flag.String("output", "pkg/types/schemas_generated.go", "Output file path")
-	specsDir   = flag.String("specs", "docs/specifications/api", "Directory containing OpenAPI specs")
-	verbose    = flag.Bool("v", false, "Verbose output")
+	outputFile    = flag.String("output", "pkg/types/schemas_generated.go", "Output file path")
+	specsDir      = flag.String("specs", "docs/specifications/api", "Directory containing OpenAPI specs")
+	verbose       = flag.Bool("v", false, "Verbose output")
+	strict        = flag.Bool("strict", false, "Fail on critical resource missing specs")
+	validateOnly  = flag.Bool("validate", false, "Validate only, don't write output")
+	reportMissing = flag.Bool("report", false, "Report all missing specs and exit")
 )
+
+// criticalResources are resources that MUST have schemas generated
+// These are core F5 XC resources that AI assistants commonly work with
+var criticalResources = []string{
+	"http_loadbalancer",
+	"tcp_loadbalancer",
+	"origin_pool",
+	"healthcheck",
+	"app_firewall",
+	"service_policy",
+	"dns_zone",
+	"dns_load_balancer",
+	"certificate",
+	"namespace",
+	"virtual_site",
+	"network_policy",
+	"aws_vpc_site",
+	"azure_vnet_site",
+	"gcp_vpc_site",
+}
 
 // exclusiveWithRegex matches "Exclusive with [field1 field2 ...]" in descriptions
 var exclusiveWithRegex = regexp.MustCompile(`[Ee]xclusive with \[([^\]]+)\]`)
@@ -54,15 +77,20 @@ func main() {
 		fmt.Printf("Found %d registered resource types\n", len(allResources))
 	}
 
+	// Track missing specs for reporting
+	var missingSpecs []string
+	var missingCritical []string
+
 	// Generate schemas for each resource
 	schemas := make(map[string]types.ResourceSchemaInfo)
 	generated := 0
 	skipped := 0
+	noCreate := 0
 
 	for _, rt := range allResources {
 		// Only process resources that support create (they have meaningful schemas)
 		if !rt.Operations.Create {
-			skipped++
+			noCreate++
 			continue
 		}
 
@@ -70,6 +98,10 @@ func main() {
 		if spec == nil {
 			if *verbose {
 				fmt.Printf("  Skipped %s (no spec found)\n", rt.Name)
+			}
+			missingSpecs = append(missingSpecs, rt.Name)
+			if isCriticalResource(rt.Name) {
+				missingCritical = append(missingCritical, rt.Name)
 			}
 			skipped++
 			continue
@@ -84,12 +116,49 @@ func main() {
 					rt.Name, len(schemaInfo.Fields), len(schemaInfo.OneOfGroups))
 			}
 		} else {
+			if *verbose {
+				fmt.Printf("  Skipped %s (no schema extracted)\n", rt.Name)
+			}
+			missingSpecs = append(missingSpecs, rt.Name)
+			if isCriticalResource(rt.Name) {
+				missingCritical = append(missingCritical, rt.Name)
+			}
 			skipped++
 		}
 	}
 
-	if *verbose {
-		fmt.Printf("\nGenerated %d schemas, skipped %d\n", generated, skipped)
+	// Print summary
+	fmt.Printf("\nGenerated %d schemas, skipped %d (no create: %d)\n", generated, skipped, noCreate)
+
+	// Report mode: just report and exit
+	if *reportMissing {
+		printMissingReport(missingSpecs, missingCritical)
+		if len(missingCritical) > 0 {
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	// Check for critical missing resources
+	if len(missingCritical) > 0 {
+		fmt.Fprintf(os.Stderr, "\n⚠️  WARNING: %d critical resources missing schemas:\n", len(missingCritical))
+		for _, name := range missingCritical {
+			fmt.Fprintf(os.Stderr, "   - %s\n", name)
+		}
+
+		if *strict {
+			fmt.Fprintf(os.Stderr, "\nFailed: --strict mode requires all critical resources to have schemas\n")
+			os.Exit(1)
+		}
+	}
+
+	// Validate mode: don't write output
+	if *validateOnly {
+		fmt.Println("\nValidation complete (--validate mode, no output written)")
+		if len(missingCritical) > 0 {
+			os.Exit(1)
+		}
+		os.Exit(0)
 	}
 
 	// Generate the output file
@@ -99,6 +168,69 @@ func main() {
 	}
 
 	fmt.Printf("Generated %s with %d resource schemas\n", *outputFile, generated)
+
+	// Final validation
+	validateGeneratedSchemas(schemas)
+}
+
+// isCriticalResource checks if a resource is in the critical list
+func isCriticalResource(name string) bool {
+	for _, critical := range criticalResources {
+		if critical == name {
+			return true
+		}
+	}
+	return false
+}
+
+// printMissingReport prints a detailed report of missing specs
+func printMissingReport(missing, critical []string) {
+	fmt.Println("\n=== Schema Generation Report ===")
+
+	if len(critical) > 0 {
+		fmt.Println("\n❌ CRITICAL RESOURCES MISSING SCHEMAS:")
+		for _, name := range critical {
+			fmt.Printf("   - %s\n", name)
+		}
+	} else {
+		fmt.Println("\n✅ All critical resources have schemas")
+	}
+
+	if len(missing) > 0 {
+		fmt.Printf("\n📋 All resources missing specs (%d total):\n", len(missing))
+		sort.Strings(missing)
+		for _, name := range missing {
+			marker := "  "
+			if isCriticalResource(name) {
+				marker = "❌"
+			}
+			fmt.Printf("   %s %s\n", marker, name)
+		}
+	}
+}
+
+// validateGeneratedSchemas performs post-generation validation
+func validateGeneratedSchemas(schemas map[string]types.ResourceSchemaInfo) {
+	var issues []string
+
+	for name, schema := range schemas {
+		// Check for empty schemas
+		if len(schema.Fields) == 0 && len(schema.OneOfGroups) == 0 {
+			issues = append(issues, fmt.Sprintf("%s: empty schema (no fields or oneOf groups)", name))
+		}
+
+		// Check for missing descriptions on critical resources
+		if isCriticalResource(name) && schema.Description == "" {
+			issues = append(issues, fmt.Sprintf("%s: missing description", name))
+		}
+	}
+
+	if len(issues) > 0 {
+		fmt.Println("\n⚠️  Schema quality warnings:")
+		for _, issue := range issues {
+			fmt.Printf("   - %s\n", issue)
+		}
+	}
 }
 
 // extractSchemaInfo extracts schema intelligence from an OpenAPI spec

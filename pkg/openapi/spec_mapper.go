@@ -24,6 +24,13 @@ func NewSpecMapper(specs map[string]*Spec) *SpecMapper {
 // buildResourceMap builds the mapping from resource names to spec files
 func (m *SpecMapper) buildResourceMap() {
 	for filename, spec := range m.specs {
+		// Skip sub-resource spec files (subscription, rrset, etc.)
+		// These should not override the main resource mapping
+		baseName := filepath.Base(filename)
+		if isSubResourceSpec(baseName) {
+			continue
+		}
+
 		// Extract resource names from schema names
 		for schemaName := range spec.Components.Schemas {
 			// Look for CreateRequest schemas
@@ -31,14 +38,16 @@ func (m *SpecMapper) buildResourceMap() {
 				// Extract resource name by removing "CreateRequest" suffix
 				resourceName := strings.TrimSuffix(schemaName, "CreateRequest")
 
-				// Store the mapping (lowercase for case-insensitive lookup)
-				m.resourceMap[strings.ToLower(resourceName)] = filename
+				// Only store if not already mapped (prefer first/exact match)
+				lowerName := strings.ToLower(resourceName)
+				if _, exists := m.resourceMap[lowerName]; !exists {
+					m.resourceMap[lowerName] = filename
+				}
 			}
 		}
 
 		// Also try to extract from filename
 		// Format: docs-cloud-f5-com.XXXX.public.ves.io.schema.views.RESOURCE_NAME.ves-swagger.json
-		baseName := filepath.Base(filename)
 		parts := strings.Split(baseName, ".")
 		if len(parts) >= 3 {
 			// Try to find "views" or "schema" followed by resource name
@@ -48,13 +57,34 @@ func (m *SpecMapper) buildResourceMap() {
 						resourceName := parts[i+1]
 						// Skip generic parts
 						if resourceName != "ves-swagger" && resourceName != "json" {
-							m.resourceMap[strings.ToLower(resourceName)] = filename
+							// Only store if not already mapped
+							lowerName := strings.ToLower(resourceName)
+							if _, exists := m.resourceMap[lowerName]; !exists {
+								m.resourceMap[lowerName] = filename
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+}
+
+// isSubResourceSpec returns true if the spec file is a sub-resource (e.g., subscription, rrset)
+func isSubResourceSpec(filename string) bool {
+	// Common sub-resource patterns that should not override main resources
+	subResourcePatterns := []string{
+		".subscription.",
+		".rrset.",
+		".v1_dns_monitor.",
+	}
+	lowerFilename := strings.ToLower(filename)
+	for _, pattern := range subResourcePatterns {
+		if strings.Contains(lowerFilename, pattern) {
+			return true
+		}
+	}
+	return false
 }
 
 // FindSpec finds the OpenAPI spec for a given resource name
@@ -74,9 +104,38 @@ func (m *SpecMapper) FindSpec(resourceName string) *Spec {
 	}
 
 	// Try partial match (resource name contained in spec filename)
+	// Prefer exact resource name boundaries (e.g., dns_zone.ves-swagger over dns_zone.subscription)
+	lowerResource := strings.ToLower(resourceName)
+	resourceWithUnderscore := lowerResource + "."
+	resourceWithoutUnderscore := strings.ReplaceAll(lowerResource, "_", "") + "."
+
+	// First pass: look for exact boundary match (resource name followed by .ves-swagger)
 	for filename, spec := range m.specs {
 		lowerFilename := strings.ToLower(filename)
-		lowerResource := strings.ToLower(resourceName)
+		baseName := filepath.Base(lowerFilename)
+
+		// Skip sub-resource specs
+		if isSubResourceSpec(baseName) {
+			continue
+		}
+
+		// Check for exact resource name followed by .ves-swagger
+		if strings.Contains(baseName, resourceWithUnderscore+"ves-swagger") ||
+			strings.Contains(baseName, resourceWithoutUnderscore+"ves-swagger") {
+			return spec
+		}
+	}
+
+	// Second pass: any partial match (excluding sub-resources)
+	for filename, spec := range m.specs {
+		lowerFilename := strings.ToLower(filename)
+		baseName := filepath.Base(lowerFilename)
+
+		// Skip sub-resource specs
+		if isSubResourceSpec(baseName) {
+			continue
+		}
+
 		if strings.Contains(lowerFilename, lowerResource) ||
 			strings.Contains(lowerFilename, strings.ReplaceAll(lowerResource, "_", "")) {
 			return spec
@@ -93,10 +152,37 @@ func (m *SpecMapper) FindSpecFile(resourceName string) string {
 		return filename
 	}
 
-	// Try partial match
+	// Try partial match with exact boundary preference
+	lowerResource := strings.ToLower(resourceName)
+	resourceWithUnderscore := lowerResource + "."
+	resourceWithoutUnderscore := strings.ReplaceAll(lowerResource, "_", "") + "."
+
+	// First pass: look for exact boundary match
 	for filename := range m.specs {
 		lowerFilename := strings.ToLower(filename)
-		lowerResource := strings.ToLower(resourceName)
+		baseName := filepath.Base(lowerFilename)
+
+		// Skip sub-resource specs
+		if isSubResourceSpec(baseName) {
+			continue
+		}
+
+		if strings.Contains(baseName, resourceWithUnderscore+"ves-swagger") ||
+			strings.Contains(baseName, resourceWithoutUnderscore+"ves-swagger") {
+			return filename
+		}
+	}
+
+	// Second pass: any partial match (excluding sub-resources)
+	for filename := range m.specs {
+		lowerFilename := strings.ToLower(filename)
+		baseName := filepath.Base(lowerFilename)
+
+		// Skip sub-resource specs
+		if isSubResourceSpec(baseName) {
+			continue
+		}
+
 		if strings.Contains(lowerFilename, lowerResource) ||
 			strings.Contains(lowerFilename, strings.ReplaceAll(lowerResource, "_", "")) {
 			return filename

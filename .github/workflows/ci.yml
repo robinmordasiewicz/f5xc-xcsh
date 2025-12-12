@@ -72,10 +72,64 @@ jobs:
           files: ./coverage.out
           fail_ci_if_error: false
 
+  verify-schemas:
+    name: Verify Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Regenerate schemas
+        run: go run scripts/generate-schemas.go -v
+
+      - name: Check for uncommitted changes
+        run: |
+          if ! git diff --quiet pkg/types/schemas_generated.go; then
+            echo "::error::Schema file is out of sync with OpenAPI specs!"
+            echo "Run 'make generate-schemas' locally and commit the changes."
+            git diff pkg/types/schemas_generated.go
+            exit 1
+          fi
+          echo "✅ Schemas are up to date."
+
+      - name: Verify idempotency
+        run: |
+          echo "Running schema generation twice to verify idempotency..."
+          cp pkg/types/schemas_generated.go /tmp/schemas_first.go
+          go run scripts/generate-schemas.go 2>/dev/null
+          if ! diff -q pkg/types/schemas_generated.go /tmp/schemas_first.go > /dev/null; then
+            echo "::error::Schema generation is not idempotent!"
+            diff pkg/types/schemas_generated.go /tmp/schemas_first.go
+            exit 1
+          fi
+          echo "✅ Schema generation is idempotent"
+
+      - name: Validate critical resources
+        run: |
+          echo "Validating critical resources have schemas..."
+          CRITICAL_RESOURCES="http_loadbalancer tcp_loadbalancer origin_pool healthcheck app_firewall dns_zone"
+          MISSING=""
+          for resource in $CRITICAL_RESOURCES; do
+            if ! grep -q "\"$resource\":" pkg/types/schemas_generated.go; then
+              MISSING="$MISSING $resource"
+            fi
+          done
+          if [ -n "$MISSING" ]; then
+            echo "::error::Critical resources missing schemas:$MISSING"
+            exit 1
+          fi
+          echo "✅ All critical resources have schemas"
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint, test, verify-schemas]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
