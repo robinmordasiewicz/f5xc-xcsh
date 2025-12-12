@@ -111,6 +111,11 @@ func init() {
 
 	// Groups flags
 	cloudstatusComponentsGroupsCmd.Flags().BoolVar(&componentsWithComponents, "with-components", false, "Include component count per group.")
+
+	// Register completions
+	_ = cloudstatusComponentsListCmd.RegisterFlagCompletionFunc("status", completeComponentStatus)
+	_ = cloudstatusComponentsListCmd.RegisterFlagCompletionFunc("group", completeComponentGroup)
+	cloudstatusComponentsGetCmd.ValidArgsFunction = completeComponentID
 }
 
 func runComponentsList(cmd *cobra.Command, args []string) error {

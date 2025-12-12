@@ -105,6 +105,12 @@ func init() {
 	cloudstatusIncidentsListCmd.Flags().StringVar(&incidentsImpact, "impact", "", "Filter by impact level (none, minor, major, critical).")
 	cloudstatusIncidentsListCmd.Flags().StringVar(&incidentsSince, "since", "", "Time filter (1h, 1d, 7d, 30d).")
 	cloudstatusIncidentsListCmd.Flags().IntVar(&incidentsLimit, "limit", 0, "Limit number of results.")
+
+	// Register completions
+	_ = cloudstatusIncidentsListCmd.RegisterFlagCompletionFunc("status", completeIncidentStatus)
+	_ = cloudstatusIncidentsListCmd.RegisterFlagCompletionFunc("impact", completeIncidentImpact)
+	cloudstatusIncidentsGetCmd.ValidArgsFunction = completeIncidentID
+	cloudstatusIncidentsUpdatesCmd.ValidArgsFunction = completeIncidentID
 }
 
 func runIncidentsList(cmd *cobra.Command, args []string) error {

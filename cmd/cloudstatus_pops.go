@@ -77,6 +77,10 @@ func init() {
 
 	// Status flags
 	cloudstatusPopsStatusCmd.Flags().StringVar(&popsRegion, "region", "", "Filter by region (north-america, south-america, europe, asia, oceania, middle-east).")
+
+	// Register completions
+	_ = cloudstatusPopsListCmd.RegisterFlagCompletionFunc("region", completeRegion)
+	_ = cloudstatusPopsStatusCmd.RegisterFlagCompletionFunc("region", completeRegion)
 }
 
 func runPopsList(cmd *cobra.Command, args []string) error {

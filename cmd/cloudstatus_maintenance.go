@@ -87,6 +87,10 @@ func init() {
 
 	// List flags
 	cloudstatusMaintenanceListCmd.Flags().StringVar(&maintenanceStatus, "status", "", "Filter by status (scheduled, in_progress, verifying, completed).")
+
+	// Register completions
+	_ = cloudstatusMaintenanceListCmd.RegisterFlagCompletionFunc("status", completeMaintenanceStatus)
+	cloudstatusMaintenanceGetCmd.ValidArgsFunction = completeMaintenanceID
 }
 
 func runMaintenanceList(cmd *cobra.Command, args []string) error {

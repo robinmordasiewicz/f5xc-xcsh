@@ -56,6 +56,9 @@ func init() {
 	cloudstatusWatchCmd.Flags().StringVar(&watchComponents, "components", "", "Watch specific components (comma-separated names).")
 	cloudstatusWatchCmd.Flags().BoolVar(&watchExitOnChange, "exit-on-change", false, "Exit when status changes.")
 	cloudstatusWatchCmd.Flags().BoolVar(&watchNoClear, "no-clear", false, "Don't clear screen between updates.")
+
+	// Register completions
+	_ = cloudstatusWatchCmd.RegisterFlagCompletionFunc("components", completeWatchComponents)
 }
 
 type watchState struct {
