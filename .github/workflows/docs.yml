@@ -887,6 +887,78 @@ jobs:
             --ldflags-build-output "${{ steps.source-build.outputs.ldflags_build_output }}" \
             --output docs/install/source.md
 
+      - name: Validate required documentation files
+        id: validate-docs
+        run: |
+          # Define required generated documentation files
+          REQUIRED_FILES=(
+            "docs/install/script.md"
+            "docs/install/windows.md"
+            "docs/install/homebrew.md"
+            "docs/install/source.md"
+          )
+
+          MISSING_FILES=()
+          EXISTING_FILES=()
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              EXISTING_FILES+=("$file")
+            else
+              MISSING_FILES+=("$file")
+            fi
+          done
+
+          echo "=== Documentation Validation Report ==="
+          echo "Required files: ${#REQUIRED_FILES[@]}"
+          echo "Existing files: ${#EXISTING_FILES[@]}"
+          echo "Missing files:  ${#MISSING_FILES[@]}"
+          echo ""
+
+          if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+            # Output structured error for automation
+            echo "::error::DOCS_VALIDATION_FAILED: Missing required documentation files"
+
+            # JSON output for programmatic parsing
+            echo "ERROR_JSON<<EOF" >> $GITHUB_OUTPUT
+            cat <<JSONEOF
+          {
+            "error_code": "DOCS_MISSING_FILES",
+            "error_type": "validation",
+            "missing_files": [$(printf '"%s",' "${MISSING_FILES[@]}" | sed 's/,$//')],
+            "existing_files": [$(printf '"%s",' "${EXISTING_FILES[@]}" | sed 's/,$//')],
+            "total_required": ${#REQUIRED_FILES[@]},
+            "total_missing": ${#MISSING_FILES[@]},
+            "workflow_trigger": "${{ github.event_name }}",
+            "recent_release": "${{ needs.check-spec.outputs.recent_release }}",
+            "suggested_action": "Trigger a new release or run workflow_dispatch with force_regenerate=true",
+            "automation_hint": "gh workflow run docs.yml -f force_regenerate=true"
+          }
+          JSONEOF
+            echo "EOF" >> $GITHUB_OUTPUT
+
+            echo ""
+            echo "Missing files:"
+            for file in "${MISSING_FILES[@]}"; do
+              echo "  ❌ $file"
+            done
+            echo ""
+            echo "Root cause: Generated docs require release assets which may not be available."
+            echo "  - Workflow trigger: ${{ github.event_name }}"
+            echo "  - Recent release:   ${{ needs.check-spec.outputs.recent_release }}"
+            echo ""
+            echo "To fix this issue:"
+            echo "  1. Create a new release to generate fresh documentation, OR"
+            echo "  2. Run: gh workflow run docs.yml -f force_regenerate=true"
+            echo ""
+            exit 1
+          fi
+
+          echo "✅ All required documentation files present"
+          for file in "${EXISTING_FILES[@]}"; do
+            echo "  ✓ $file"
+          done
+
       - name: Build site
         run: mkdocs build --strict
 
