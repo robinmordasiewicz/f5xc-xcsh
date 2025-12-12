@@ -147,15 +147,15 @@ func printFullSummary(resp interface{}) error {
 	// Print components summary
 	fmt.Println("=== COMPONENTS ===")
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "NAME\tSTATUS")
+	_, _ = fmt.Fprintln(w, "NAME\tSTATUS")
 
 	// Print non-operational components first
 	for _, comp := range summary.Components {
 		if !comp.Group && comp.IsDegraded() {
-			fmt.Fprintf(w, "%s\t%s\n", comp.Name, comp.Status)
+			_, _ = fmt.Fprintf(w, "%s\t%s\n", comp.Name, comp.Status)
 		}
 	}
-	w.Flush()
+	_ = w.Flush()
 
 	// Count operational
 	operationalCount := 0

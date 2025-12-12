@@ -195,9 +195,9 @@ func outputMaintenances(maintenances []cloudstatus.ScheduledMaintenance) error {
 		return encoder.Encode(maintenances)
 	case "wide":
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "ID\tNAME\tSTATUS\tSCHEDULED FOR\tSCHEDULED UNTIL")
+		_, _ = fmt.Fprintln(w, "ID\tNAME\tSTATUS\tSCHEDULED FOR\tSCHEDULED UNTIL")
 		for _, maint := range maintenances {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 				maint.ID,
 				truncate(maint.Name, 40),
 				maint.Status,
@@ -211,12 +211,12 @@ func outputMaintenances(maintenances []cloudstatus.ScheduledMaintenance) error {
 			return nil
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tSTATUS\tSCHEDULED")
+		_, _ = fmt.Fprintln(w, "NAME\tSTATUS\tSCHEDULED")
 		for _, maint := range maintenances {
 			scheduled := fmt.Sprintf("%s - %s",
 				maint.ScheduledFor.Format("Jan 2 15:04"),
 				maint.ScheduledUntil.Format("Jan 2 15:04 MST"))
-			fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(maint.Name, 40), maint.Status, scheduled)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(maint.Name, 40), maint.Status, scheduled)
 		}
 		return w.Flush()
 	}

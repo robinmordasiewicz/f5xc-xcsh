@@ -207,20 +207,20 @@ func runComponentsList(cmd *cobra.Command, args []string) error {
 		return encoder.Encode(filtered)
 	case "wide":
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "ID\tNAME\tSTATUS\tDESCRIPTION")
+		_, _ = fmt.Fprintln(w, "ID\tNAME\tSTATUS\tDESCRIPTION")
 		for _, comp := range filtered {
 			desc := comp.Description
 			if len(desc) > 40 {
 				desc = desc[:37] + "..."
 			}
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", comp.ID, comp.Name, comp.Status, desc)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", comp.ID, comp.Name, comp.Status, desc)
 		}
 		return w.Flush()
 	default:
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tSTATUS")
+		_, _ = fmt.Fprintln(w, "NAME\tSTATUS")
 		for _, comp := range filtered {
-			fmt.Fprintf(w, "%s\t%s\n", comp.Name, comp.Status)
+			_, _ = fmt.Fprintf(w, "%s\t%s\n", comp.Name, comp.Status)
 		}
 		return w.Flush()
 	}
@@ -332,14 +332,14 @@ func runComponentsGroups(cmd *cobra.Command, args []string) error {
 	default:
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 		if componentsWithComponents {
-			fmt.Fprintln(w, "NAME\tID\tCOMPONENTS")
+			_, _ = fmt.Fprintln(w, "NAME\tID\tCOMPONENTS")
 			for _, group := range groups {
-				fmt.Fprintf(w, "%s\t%s\t%d\n", group.Name, group.ID, group.ComponentCount)
+				_, _ = fmt.Fprintf(w, "%s\t%s\t%d\n", group.Name, group.ID, group.ComponentCount)
 			}
 		} else {
-			fmt.Fprintln(w, "NAME\tID")
+			_, _ = fmt.Fprintln(w, "NAME\tID")
 			for _, group := range groups {
-				fmt.Fprintf(w, "%s\t%s\n", group.Name, group.ID)
+				_, _ = fmt.Fprintf(w, "%s\t%s\n", group.Name, group.ID)
 			}
 		}
 		return w.Flush()

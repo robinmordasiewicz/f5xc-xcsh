@@ -273,9 +273,9 @@ func outputIncidents(incidents []cloudstatus.Incident) error {
 		return encoder.Encode(incidents)
 	case "wide":
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "ID\tNAME\tSTATUS\tIMPACT\tSTARTED")
+		_, _ = fmt.Fprintln(w, "ID\tNAME\tSTATUS\tIMPACT\tSTARTED")
 		for _, inc := range incidents {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 				inc.ID,
 				truncate(inc.Name, 40),
 				inc.Status,
@@ -289,9 +289,9 @@ func outputIncidents(incidents []cloudstatus.Incident) error {
 			return nil
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tSTATUS\tIMPACT")
+		_, _ = fmt.Fprintln(w, "NAME\tSTATUS\tIMPACT")
 		for _, inc := range incidents {
-			fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(inc.Name, 50), inc.Status, inc.Impact)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(inc.Name, 50), inc.Status, inc.Impact)
 		}
 		return w.Flush()
 	}

@@ -120,14 +120,14 @@ func runPopsList(cmd *cobra.Command, args []string) error {
 		return encoder.Encode(pops)
 	case "wide":
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tSTATUS\tSITE CODE\tREGION")
+		_, _ = fmt.Fprintln(w, "NAME\tSTATUS\tSITE CODE\tREGION")
 		for _, pop := range pops {
 			siteCode := cloudstatus.ExtractSiteCode(pop.Name)
 			if siteCode == "" {
 				siteCode = cloudstatus.ExtractSiteCode(pop.Description)
 			}
 			region := cloudstatus.DetectRegion(pop, groups)
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", pop.Name, pop.Status, siteCode, region)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", pop.Name, pop.Status, siteCode, region)
 		}
 		return w.Flush()
 	default:
@@ -136,9 +136,9 @@ func runPopsList(cmd *cobra.Command, args []string) error {
 			return nil
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "NAME\tSTATUS")
+		_, _ = fmt.Fprintln(w, "NAME\tSTATUS")
 		for _, pop := range pops {
-			fmt.Fprintf(w, "%s\t%s\n", pop.Name, pop.Status)
+			_, _ = fmt.Fprintf(w, "%s\t%s\n", pop.Name, pop.Status)
 		}
 		return w.Flush()
 	}
@@ -183,12 +183,12 @@ func runPopsStatus(cmd *cobra.Command, args []string) error {
 			return nil
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "REGION\tSTATUS\tOPERATIONAL\tDEGRADED\tTOTAL")
+		_, _ = fmt.Fprintln(w, "REGION\tSTATUS\tOPERATIONAL\tDEGRADED\tTOTAL")
 		for _, status := range statuses {
 			if status.TotalCount == 0 {
 				continue // Skip regions with no PoPs detected
 			}
-			fmt.Fprintf(w, "%s\t%s\t%d\t%d\t%d\n",
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%d\t%d\t%d\n",
 				status.Region.DisplayName,
 				status.OverallStatus,
 				status.OperationalCount,

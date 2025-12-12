@@ -80,8 +80,8 @@ func runCloudstatusStatus(cmd *cobra.Command, args []string) error {
 	default:
 		// Table format
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "STATUS\tDESCRIPTION")
-		fmt.Fprintf(w, "%s\t%s\n", resp.Status.Indicator, resp.Status.Description)
+		_, _ = fmt.Fprintln(w, "STATUS\tDESCRIPTION")
+		_, _ = fmt.Fprintf(w, "%s\t%s\n", resp.Status.Indicator, resp.Status.Description)
 		return w.Flush()
 	}
 }
