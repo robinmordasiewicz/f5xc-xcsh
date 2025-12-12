@@ -231,6 +231,15 @@ jobs:
               --team-id "$APPLE_TEAM_ID" \
               --wait
 
+            # Staple the notarization ticket to the binary
+            # This embeds the ticket so Gatekeeper can verify locally without contacting Apple
+            echo "Stapling notarization ticket to binary..."
+            xcrun stapler staple "$BINARY_PATH"
+
+            # Verify stapling succeeded
+            xcrun stapler validate "$BINARY_PATH"
+            echo "Stapling complete for $ARCH"
+
             # Repackage as tar.gz (preserving all original files including completions)
             cd $RUNNER_TEMP/sign_${ARCH}
             # Use * to get all files without ./ prefix, preserving original archive structure
