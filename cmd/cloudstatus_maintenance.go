@@ -203,7 +203,7 @@ func outputMaintenances(maintenances []cloudstatus.ScheduledMaintenance) error {
 		for _, maint := range maintenances {
 			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 				maint.ID,
-				truncate(maint.Name, 40),
+				maint.Name,
 				maint.Status,
 				maint.ScheduledFor.Format("2006-01-02 15:04 MST"),
 				maint.ScheduledUntil.Format("2006-01-02 15:04 MST"))
@@ -220,7 +220,7 @@ func outputMaintenances(maintenances []cloudstatus.ScheduledMaintenance) error {
 			scheduled := fmt.Sprintf("%s - %s",
 				maint.ScheduledFor.Format("Jan 2 15:04"),
 				maint.ScheduledUntil.Format("Jan 2 15:04 MST"))
-			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(maint.Name, 40), maint.Status, scheduled)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", maint.Name, maint.Status, scheduled)
 		}
 		return w.Flush()
 	}

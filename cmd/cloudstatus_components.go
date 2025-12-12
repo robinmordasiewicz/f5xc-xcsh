@@ -214,11 +214,7 @@ func runComponentsList(cmd *cobra.Command, args []string) error {
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 		_, _ = fmt.Fprintln(w, "ID\tNAME\tSTATUS\tDESCRIPTION")
 		for _, comp := range filtered {
-			desc := comp.Description
-			if len(desc) > 40 {
-				desc = desc[:37] + "..."
-			}
-			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", comp.ID, comp.Name, comp.Status, desc)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", comp.ID, comp.Name, comp.Status, comp.Description)
 		}
 		return w.Flush()
 	default:

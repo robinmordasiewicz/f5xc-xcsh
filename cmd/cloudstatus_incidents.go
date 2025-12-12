@@ -283,7 +283,7 @@ func outputIncidents(incidents []cloudstatus.Incident) error {
 		for _, inc := range incidents {
 			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 				inc.ID,
-				truncate(inc.Name, 40),
+				inc.Name,
 				inc.Status,
 				inc.Impact,
 				inc.StartedAt.Format("2006-01-02 15:04"))
@@ -297,7 +297,7 @@ func outputIncidents(incidents []cloudstatus.Incident) error {
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 		_, _ = fmt.Fprintln(w, "NAME\tSTATUS\tIMPACT")
 		for _, inc := range incidents {
-			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", truncate(inc.Name, 50), inc.Status, inc.Impact)
+			_, _ = fmt.Fprintf(w, "%s\t%s\t%s\n", inc.Name, inc.Status, inc.Impact)
 		}
 		return w.Flush()
 	}
@@ -327,13 +327,6 @@ func printIncidentDetails(inc *cloudstatus.Incident) {
 		fmt.Printf("  [%s] %s\n", update.DisplayAt.Format("2006-01-02 15:04:05 MST"), update.Status)
 		fmt.Printf("  %s\n", update.Body)
 	}
-}
-
-func truncate(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen-3] + "..."
 }
 
 func parseDuration(s string) (time.Duration, error) {
