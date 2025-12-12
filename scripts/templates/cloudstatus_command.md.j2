@@ -1,0 +1,81 @@
+---
+title: "{{ front_matter.title }}"
+description: "{{ front_matter.description }}"
+keywords:
+{% for kw in front_matter.keywords %}
+  - {{ kw }}
+{% endfor %}
+command: "{{ front_matter.command }}"
+command_group: "{{ front_matter.command_group }}"
+{% if front_matter.aliases %}
+aliases:
+{% for alias in front_matter.aliases %}
+  - "{{ alias }}"
+{% endfor %}
+{% endif %}
+---
+
+# vesctl cloudstatus {{ path | join(' ') }}
+
+> {{ command.short | normalize_acronyms }}
+
+## Synopsis
+
+```bash
+vesctl cloudstatus {{ path | join(' ') }} [flags]
+```
+
+{% if command.long and command.long != command.short %}
+## Description
+
+{{ command.long | normalize_acronyms }}
+
+{% endif %}
+{% if command.aliases %}
+## Aliases
+
+This command can also be invoked as:
+
+{% for alias in command.aliases %}
+- `vesctl cloudstatus {{ alias }}`
+{% endfor %}
+
+{% endif %}
+{% if flags %}
+## Flags
+
+| Flag | Short | Type | Default | Description |
+|------|-------|------|---------|-------------|
+{% for flag in flags %}
+| `--{{ flag.name }}` | {% if flag.shorthand %}`-{{ flag.shorthand }}`{% endif %} | {{ flag.type }} | {% if flag.default %}{{ flag.default }}{% endif %} | {{ flag.description | normalize_acronyms }} |
+{% endfor %}
+
+{% endif %}
+{% if command.example %}
+## Examples
+
+```bash
+{{ command.example }}
+```
+
+{% endif %}
+{% if command.valid_values %}
+## Valid Values
+
+{% for field, values in command.valid_values.items() %}
+### {{ field | to_human_readable }}
+
+{% for value in values %}
+- `{{ value }}`
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+## See Also
+
+{% if path | length > 1 %}
+- [{{ path[0] | to_human_readable }} Overview](index.md)
+{% else %}
+- [Cloud Status Overview](index.md)
+{% endif %}
+- [Command Reference](../../index.md)

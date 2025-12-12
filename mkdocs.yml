@@ -102,6 +102,32 @@ nav:
       - Control: commands/api-endpoint/control/index.md
       - Discover: commands/api-endpoint/discover/index.md
     - Completion: commands/completion/index.md
+    - Cloud Status:
+      - Overview: commands/cloudstatus/index.md
+      - Status: commands/cloudstatus/status.md
+      - Summary: commands/cloudstatus/summary.md
+      - Watch: commands/cloudstatus/watch.md
+      - Components:
+        - Overview: commands/cloudstatus/components/index.md
+        - Get: commands/cloudstatus/components/get.md
+        - Groups: commands/cloudstatus/components/groups.md
+        - List: commands/cloudstatus/components/list.md
+      - Incidents:
+        - Overview: commands/cloudstatus/incidents/index.md
+        - Active: commands/cloudstatus/incidents/active.md
+        - Get: commands/cloudstatus/incidents/get.md
+        - List: commands/cloudstatus/incidents/list.md
+        - Updates: commands/cloudstatus/incidents/updates.md
+      - Maintenance:
+        - Overview: commands/cloudstatus/maintenance/index.md
+        - Active: commands/cloudstatus/maintenance/active.md
+        - Get: commands/cloudstatus/maintenance/get.md
+        - List: commands/cloudstatus/maintenance/list.md
+        - Upcoming: commands/cloudstatus/maintenance/upcoming.md
+      - PoPs:
+        - Overview: commands/cloudstatus/pops/index.md
+        - List: commands/cloudstatus/pops/list.md
+        - Status: commands/cloudstatus/pops/status.md
     - Configuration:
       - Configuration Overview: commands/configuration/index.md
       - AI/ML:

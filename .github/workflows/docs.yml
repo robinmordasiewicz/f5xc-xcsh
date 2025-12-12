@@ -246,6 +246,13 @@ jobs:
             --clean \
             --update-mkdocs
 
+      - name: Generate cloudstatus documentation
+        run: |
+          python scripts/generate-cloudstatus-docs.py \
+            --vesctl ./vesctl \
+            --output docs/commands/cloudstatus \
+            --clean
+
       - name: Save spec hash to cache
         run: |
           echo "${{ needs.check-spec.outputs.spec_hash }}" > spec-hash-cached.txt
