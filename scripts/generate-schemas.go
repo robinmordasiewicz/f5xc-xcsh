@@ -59,6 +59,59 @@ var metadataOnlyResources = []string{
 // exclusiveWithRegex matches "Exclusive with [field1 field2 ...]" in descriptions
 var exclusiveWithRegex = regexp.MustCompile(`[Ee]xclusive with \[([^\]]+)\]`)
 
+// computedFieldPatterns maps field names to reasons why they are API-computed
+// These fields should not be provided in create/update requests as the API sets them
+var computedFieldPatterns = map[string]string{
+	"tenant":                 "Set by API from authentication context",
+	"uid":                    "Generated unique identifier by API",
+	"kind":                   "Set by API based on object type",
+	"creation_timestamp":     "Set by server on object creation",
+	"modification_timestamp": "Updated by server on each modification",
+	"creator_id":             "Set by API from authentication context",
+	"creator_class":          "Set by API from authentication context",
+	"object_index":           "Internal index maintained by API",
+	"owner_view":             "Set by API based on permissions",
+}
+
+// immutableFieldPatterns maps field names to reasons why they cannot be changed after creation
+var immutableFieldPatterns = map[string]string{
+	"name":      "Resource identifier cannot be changed after creation",
+	"namespace": "Resource namespace is immutable - requires re-creation to change",
+}
+
+// objectRefComputedFields are fields in ObjectRef types that are API-computed
+var objectRefComputedFields = map[string]string{
+	"tenant": "Auto-populated for object references from context",
+	"uid":    "Auto-populated for object references by API",
+	"kind":   "Auto-populated for object references based on target type",
+}
+
+// isComputedField checks if a field is computed by the API
+func isComputedField(fieldName string, parentSchemaName string) (bool, string) {
+	// Check direct patterns
+	if reason, ok := computedFieldPatterns[fieldName]; ok {
+		return true, reason
+	}
+
+	// Check ObjectRef computed fields (common in F5 XC)
+	if strings.Contains(strings.ToLower(parentSchemaName), "objectref") ||
+		strings.Contains(strings.ToLower(parentSchemaName), "object_ref") {
+		if reason, ok := objectRefComputedFields[fieldName]; ok {
+			return true, reason
+		}
+	}
+
+	return false, ""
+}
+
+// isImmutableField checks if a field cannot be changed after resource creation
+func isImmutableField(fieldName string) (bool, string) {
+	if reason, ok := immutableFieldPatterns[fieldName]; ok {
+		return true, reason
+	}
+	return false, ""
+}
+
 func main() {
 	flag.Parse()
 
@@ -309,6 +362,16 @@ func extractSchemaInfo(resourceName string, spec *openapi.Spec) *types.ResourceS
 
 // extractFieldInfo extracts metadata for a single field
 func extractFieldInfo(name string, schema *openapi.Schema, spec *openapi.Spec) types.FieldInfo {
+	// Get the schema name for context (used in computed field detection)
+	schemaName := ""
+	if schema.Ref != "" {
+		// Extract schema name from reference
+		parts := strings.Split(schema.Ref, "/")
+		if len(parts) > 0 {
+			schemaName = parts[len(parts)-1]
+		}
+	}
+
 	// Resolve reference if needed
 	if schema.Ref != "" {
 		resolved := spec.ResolveRef(schema.Ref)
@@ -324,6 +387,22 @@ func extractFieldInfo(name string, schema *openapi.Schema, spec *openapi.Spec) t
 		Required:    schema.XVesRequired == "true",
 		Default:     schema.Default,
 	}
+
+	// Check if field is computed (API-populated)
+	if computed, reason := isComputedField(name, schemaName); computed {
+		info.Computed = true
+		info.ComputedReason = reason
+	}
+
+	// Check if field is immutable (cannot be changed after creation)
+	if immutable, reason := isImmutableField(name); immutable {
+		info.Immutable = true
+		info.ImmutableReason = reason
+	}
+
+	// Note: Deprecated field detection is available in FieldInfo but requires
+	// x-ves-deprecated extension support in OpenAPI Schema struct. Fields can be
+	// manually marked as deprecated when specific deprecation patterns are identified.
 
 	// Extract enum values
 	if len(schema.Enum) > 0 {

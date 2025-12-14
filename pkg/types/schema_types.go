@@ -43,6 +43,29 @@ type FieldInfo struct {
 	// Required indicates if this field must be set (context-independent)
 	Required bool `json:"required"`
 
+	// Computed indicates this field is set by the API and should not be provided in create requests.
+	// Examples: tenant in ObjectRef, uid, creation_timestamp
+	// AI assistants should omit these fields when generating configurations.
+	Computed bool `json:"computed,omitempty"`
+
+	// ComputedReason explains why the field is computed (for AI assistants)
+	// Examples: "Set by API from authentication context", "Generated unique identifier"
+	ComputedReason string `json:"computed_reason,omitempty"`
+
+	// Immutable indicates the field cannot be changed after resource creation.
+	// AI assistants should warn users when attempting to modify immutable fields.
+	Immutable bool `json:"immutable,omitempty"`
+
+	// ImmutableReason explains why the field is immutable
+	// Examples: "Resource identifier", "Requires re-creation to change"
+	ImmutableReason string `json:"immutable_reason,omitempty"`
+
+	// Deprecated indicates the field should not be used in new configurations
+	Deprecated bool `json:"deprecated,omitempty"`
+
+	// DeprecatedMessage provides guidance for deprecated fields
+	DeprecatedMessage string `json:"deprecated_message,omitempty"`
+
 	// Enum lists valid values for constrained string fields
 	// AI assistants should only use values from this list
 	Enum []string `json:"enum,omitempty"`

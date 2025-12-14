@@ -39,6 +39,7 @@ type CLISpec struct {
 	GlobalFlags           []FlagSpec                          `json:"global_flags" yaml:"global_flags"`
 	Commands              []CommandSpec                       `json:"commands" yaml:"commands"`
 	ExitCodes             []ExitCodeSpec                      `json:"exit_codes" yaml:"exit_codes"`
+	SystemLabels          SystemLabelsSpec                    `json:"system_labels" yaml:"system_labels"`
 	ResourceSchemas       map[string]types.ResourceSchemaInfo `json:"resource_schemas" yaml:"resource_schemas"`
 }
 
@@ -137,6 +138,23 @@ type ExitCodeSpec struct {
 	Description string `json:"description" yaml:"description"`
 }
 
+// SystemLabelsSpec documents system-managed label patterns for AI assistants.
+// F5 XC automatically injects labels with ves.io/* prefix that should not be
+// manually set by users or automation tools.
+type SystemLabelsSpec struct {
+	Description string               `json:"description" yaml:"description"`
+	Patterns    []SystemLabelPattern `json:"patterns" yaml:"patterns"`
+	Guidance    []string             `json:"guidance" yaml:"guidance"`
+}
+
+// SystemLabelPattern describes a system-managed label pattern
+type SystemLabelPattern struct {
+	Pattern        string `json:"pattern" yaml:"pattern"`
+	Description    string `json:"description" yaml:"description"`
+	ManagedBy      string `json:"managed_by" yaml:"managed_by"`
+	UserModifiable bool   `json:"user_modifiable" yaml:"user_modifiable"`
+}
+
 // GenerateSpec generates the CLI specification
 func GenerateSpec(cmd *cobra.Command) *CLISpec {
 	spec := &CLISpec{
@@ -154,9 +172,64 @@ func GenerateSpec(cmd *cobra.Command) *CLISpec {
 		GlobalFlags:           extractFlags(cmd.PersistentFlags()),
 		Commands:              extractCommands(cmd, []string{}),
 		ExitCodes:             getExitCodes(),
+		SystemLabels:          getSystemLabels(),
 		ResourceSchemas:       types.GetAllResourceSchemas(),
 	}
 	return spec
+}
+
+// getSystemLabels returns documentation about system-managed labels
+func getSystemLabels() SystemLabelsSpec {
+	return SystemLabelsSpec{
+		Description: "F5 Distributed Cloud automatically injects labels with ves.io/* prefix. " +
+			"These labels are system-managed and should NOT be manually set in configuration files. " +
+			"The API will overwrite or ignore user-provided ves.io/* labels.",
+		Patterns: []SystemLabelPattern{
+			{
+				Pattern:        "ves.io/app_type",
+				Description:    "Application type label auto-generated from resource name during creation",
+				ManagedBy:      "api-server",
+				UserModifiable: false,
+			},
+			{
+				Pattern:        "ves.io/soft-deleted",
+				Description:    "Marks resources pending garbage collection after deletion request",
+				ManagedBy:      "garbage-collector",
+				UserModifiable: false,
+			},
+			{
+				Pattern:        "ves.io/site-*",
+				Description:    "Site identification and topology labels for distributed resources",
+				ManagedBy:      "site-controller",
+				UserModifiable: false,
+			},
+			{
+				Pattern:        "ves.io/tenant",
+				Description:    "Tenant identification derived from authentication context",
+				ManagedBy:      "api-gateway",
+				UserModifiable: false,
+			},
+			{
+				Pattern:        "ves.io/managed-by-*",
+				Description:    "Indicates resources managed by specific controllers or automation",
+				ManagedBy:      "various-controllers",
+				UserModifiable: false,
+			},
+			{
+				Pattern:        "ves.io/fleet",
+				Description:    "Fleet membership label for grouped site management",
+				ManagedBy:      "fleet-controller",
+				UserModifiable: false,
+			},
+		},
+		Guidance: []string{
+			"Do NOT set labels with 'ves.io/' prefix in configuration files",
+			"System labels are automatically managed and will be overwritten",
+			"Use custom label prefixes (e.g., 'myorg.com/') for user-managed labels",
+			"When comparing configurations, ignore ves.io/* labels as they may differ between environments",
+			"Terraform and automation tools should use lifecycle.ignore_changes for system labels",
+		},
+	}
 }
 
 // getAIHints returns AI agent guidance
