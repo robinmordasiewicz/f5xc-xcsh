@@ -79,7 +79,7 @@ preflight_checks() {
         echo "  1. P12 credentials via environment variables:"
         echo "     F5XC_P12_PASSWORD - Password for the P12 certificate"
         echo "     F5XC_P12_FILE     - Path to the P12 certificate file"
-        echo "  2. Key/cert credentials in ~/.vesconfig:"
+        echo "  2. Key/cert credentials in ~/.f5xcconfig:"
         echo "     key: /path/to/key.key"
         echo "     cert: /path/to/cert.cert"
         exit 1

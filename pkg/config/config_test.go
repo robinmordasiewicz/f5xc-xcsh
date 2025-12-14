@@ -10,7 +10,7 @@ import (
 func TestLoad_ValidConfig(t *testing.T) {
 	// Create temp config file
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	configContent := `server-url: https://test.console.ves.volterra.io/api
 p12-bundle: /path/to/cert.p12
@@ -35,7 +35,7 @@ p12-bundle: /path/to/cert.p12
 
 func TestLoad_CertKeyConfig(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	configContent := `server-url: https://test.console.ves.volterra.io/api
 cert: /path/to/cert.pem
@@ -67,7 +67,7 @@ func TestLoad_EmptyPath(t *testing.T) {
 }
 
 func TestLoad_NonexistentFile(t *testing.T) {
-	_, err := Load("/nonexistent/path/.vesconfig")
+	_, err := Load("/nonexistent/path/.f5xcconfig")
 	if err == nil {
 		t.Error("Expected error for nonexistent file")
 	}
@@ -75,7 +75,7 @@ func TestLoad_NonexistentFile(t *testing.T) {
 
 func TestLoad_InvalidYAML(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	if err := os.WriteFile(configPath, []byte("invalid: yaml: content:"), 0600); err != nil {
 		t.Fatalf("Failed to create test config: %v", err)
@@ -89,7 +89,7 @@ func TestLoad_InvalidYAML(t *testing.T) {
 
 func TestConfig_Save(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	cfg := &Config{
 		ServerURL: "https://test.console.ves.volterra.io/api",
@@ -198,7 +198,7 @@ func TestConfig_Validate_OnlyKey(t *testing.T) {
 
 func TestConfig_EmptyServerURL(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	configContent := `server-url: ""
 p12-bundle: /path/to/cert.p12
@@ -219,7 +219,7 @@ p12-bundle: /path/to/cert.p12
 
 func TestLoad_APITokenConfig(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	configContent := `server-url: https://test.console.ves.volterra.io/api
 api-token: true
@@ -259,7 +259,7 @@ func TestConfig_Validate_Valid_APIToken(t *testing.T) {
 
 func TestConfig_Save_APIToken(t *testing.T) {
 	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, ".vesconfig")
+	configPath := filepath.Join(tmpDir, ".f5xcconfig")
 
 	cfg := &Config{
 		ServerURL: "https://test.console.ves.volterra.io/api",

@@ -118,11 +118,11 @@ has_api_credentials() {
         return 0
     fi
 
-    # Check for key/cert credentials from .vesconfig
-    local vesconfig="${HOME}/.vesconfig"
-    if [[ -f "$vesconfig" ]]; then
-        local key_file=$(grep -E "^key:" "$vesconfig" 2>/dev/null | awk '{print $2}')
-        local cert_file=$(grep -E "^cert:" "$vesconfig" 2>/dev/null | awk '{print $2}')
+    # Check for key/cert credentials from .f5xcconfig
+    local f5xcconfig="${HOME}/.f5xcconfig"
+    if [[ -f "$f5xcconfig" ]]; then
+        local key_file=$(grep -E "^key:" "$f5xcconfig" 2>/dev/null | awk '{print $2}')
+        local cert_file=$(grep -E "^cert:" "$f5xcconfig" 2>/dev/null | awk '{print $2}')
         if [[ -n "$key_file" && -f "$key_file" && -n "$cert_file" && -f "$cert_file" ]]; then
             return 0
         fi

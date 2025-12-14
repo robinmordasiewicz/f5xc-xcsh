@@ -34,7 +34,7 @@ This command helps you set up your CLI configuration including:
   - Authentication credentials (P12 bundle or cert/key pair)
   - Default output format
 
-The configuration is saved to ~/.vesconfig (or the path specified by --config).`,
+The configuration is saved to ~/.f5xcconfig (or the path specified by --config).`,
 	Example: `  # Interactive configuration
   f5xcctl configure
 
@@ -371,7 +371,7 @@ func getConfigPath() string {
 		return cfgFile
 	}
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".vesconfig")
+	return filepath.Join(home, ".f5xcconfig")
 }
 
 func saveConfig(config *ConfigFile, path string) error {

@@ -25,5 +25,5 @@ f5xcctl is an open-source command-line interface for managing F5 Distributed Clo
 3. **Environment Variables**: F5XC_P12_PASSWORD, F5XC_API_URL, F5XC_API_TOKEN, etc.
 
 ## Configuration
-- Default config file: `~/.vesconfig`
+- Default config file: `~/.f5xcconfig`
 - Supports YAML format with server-urls, cert, key, p12-bundle options
