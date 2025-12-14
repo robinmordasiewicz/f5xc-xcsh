@@ -85,8 +85,10 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Download dependencies
-        run: go mod download
+      - name: Build local packages
+        run: |
+          go mod tidy
+          go build ./pkg/...
 
       - name: Regenerate schemas
         run: go run scripts/generate-schemas.go -v
