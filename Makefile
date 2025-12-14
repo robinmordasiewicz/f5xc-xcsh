@@ -311,19 +311,35 @@ generate-schemas-with-llm: generate-llm-descriptions
 	@go run scripts/generate-schemas.go -v -update-resources -use-llm-descriptions
 	@echo "Schemas regenerated with LLM descriptions"
 
-# Attempt LLM description generation if Ollama is available (silent skip if not)
-# This is used by the build process to opportunistically regenerate descriptions
+# Attempt LLM description generation if Ollama is available
+# Fails with installation instructions if Ollama is not running
 maybe-llm-descriptions:
-	@if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then \
-		echo "Ollama detected, regenerating LLM descriptions..."; \
-		go run scripts/generate-llm-descriptions.go \
-			-specs docs/specifications/api \
-			-output pkg/types/descriptions_generated.json \
-			-v && \
-		go run scripts/generate-schemas.go -v -update-resources -use-llm-descriptions; \
-	else \
-		echo "Ollama not running, using existing descriptions"; \
+	@if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then \
+		echo ""; \
+		echo "Error: Ollama is not running"; \
+		echo ""; \
+		echo "To generate LLM-enhanced descriptions, install and start Ollama:"; \
+		echo ""; \
+		echo "  1. Install Ollama:"; \
+		echo "     brew install ollama"; \
+		echo ""; \
+		echo "  2. Start the Ollama server:"; \
+		echo "     ollama serve"; \
+		echo ""; \
+		echo "  3. Pull the required model (in another terminal):"; \
+		echo "     ollama pull deepseek-r1:1.5b"; \
+		echo ""; \
+		echo "  4. Re-run this command:"; \
+		echo "     make maybe-llm-descriptions"; \
+		echo ""; \
+		exit 1; \
 	fi
+	@echo "Ollama detected, regenerating LLM descriptions..."
+	@go run scripts/generate-llm-descriptions.go \
+		-specs docs/specifications/api \
+		-output pkg/types/descriptions_generated.json \
+		-v
+	@go run scripts/generate-schemas.go -v -update-resources -use-llm-descriptions
 
 # Show version info
 version:
