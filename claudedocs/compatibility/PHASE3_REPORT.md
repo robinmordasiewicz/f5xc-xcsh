@@ -12,7 +12,7 @@ Phase 3 testing revealed important bugs and differences between the original ves
 ## Bugs Fixed During Testing
 
 ### 1. Config File Loading Bug (CRITICAL)
-- **Issue**: When `--config` flag was used, viper couldn't parse `.vesconfig` files because the extension wasn't recognized as YAML
+- **Issue**: When `--config` flag was used, viper couldn't parse `.f5xcconfig` files because the extension wasn't recognized as YAML
 - **Root Cause**: `viper.SetConfigFile()` requires explicit `viper.SetConfigType("yaml")` for non-standard extensions
 - **Fix**: Added `viper.SetConfigType("yaml")` when custom config path is specified
 - **File**: `cmd/root.go:115`
@@ -199,4 +199,4 @@ The vesctl implementation is **94% compatible** with the original across all tes
 - `request rpc` architecture: Flag-based vs dynamic subcommands (functional behavior identical)
 
 ### Key Achievement
-**Config file interoperability is fully verified** - both binaries can share the same `.vesconfig` file regardless of format (string or array for server-urls).
+**Config file interoperability is fully verified** - both binaries can share the same `.f5xcconfig` file regardless of format (string or array for server-urls).

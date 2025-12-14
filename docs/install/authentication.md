@@ -17,7 +17,7 @@ The recommended authentication method uses a P12 certificate bundle.
 
 ### Configuration
 
-**Using configuration file (~/.vesconfig):**
+**Using configuration file (~/.f5xcconfig):**
 
 ```yaml
 server-url: https://your-tenant.console.ves.volterra.io/api
@@ -48,7 +48,7 @@ openssl pkcs12 -in api-creds.p12 -nodes -nocerts -out key.pem
 
 ### Configuration
 
-**Using configuration file (~/.vesconfig):**
+**Using configuration file (~/.f5xcconfig):**
 
 ```yaml
 server-url: https://your-tenant.console.ves.volterra.io/api
@@ -85,7 +85,7 @@ export F5XC_API_URL="https://your-tenant.console.ves.volterra.io"  # Optional, o
 f5xcctl configuration list namespace
 ```
 
-**Using configuration file (~/.vesconfig):**
+**Using configuration file (~/.f5xcconfig):**
 
 ```yaml
 server-url: https://your-tenant.console.ves.volterra.io/api
@@ -114,7 +114,7 @@ f5xcctl login --tenant my-tenant --api-token
 
 ## Configuration File
 
-The default configuration file location is `~/.vesconfig`.
+The default configuration file location is `~/.f5xcconfig`.
 
 ### Full Example
 

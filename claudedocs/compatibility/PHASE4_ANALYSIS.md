@@ -128,7 +128,7 @@ This bug affects ALL authentication methods (key/cert and P12) when connecting t
 ## Test Configuration Used
 
 ```yaml
-# ~/.vesconfig
+# ~/.f5xcconfig
 server-urls: https://nferreira.staging.volterra.us/api
 key: /Users/r.mordasiewicz/staging.key
 cert: /Users/r.mordasiewicz/staging.cert

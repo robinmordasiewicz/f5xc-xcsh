@@ -166,7 +166,7 @@ func initConfig() {
 
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
-		viper.SetConfigType("yaml") // .vesconfig files are YAML
+		viper.SetConfigType("yaml") // .f5xcconfig files are YAML
 	} else {
 		home, err := os.UserHomeDir()
 		if err != nil {
@@ -178,7 +178,7 @@ func initConfig() {
 
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".vesconfig")
+		viper.SetConfigName(".f5xcconfig")
 	}
 
 	viper.SetEnvPrefix("VES")
@@ -374,7 +374,7 @@ Examples:
 	// Add configuration precedence section
 	configSection := `
 Configuration:
-  Config file:  ~/.vesconfig
+  Config file:  ~/.f5xcconfig
   Priority:     CLI flags > environment variables > config file > defaults
 
 Learn more:    https://robinmordasiewicz.github.io/f5xcctl/
