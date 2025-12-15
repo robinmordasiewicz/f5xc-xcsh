@@ -457,7 +457,7 @@ func callOllama(prompt string) (string, error) {
 		Stream: false,
 		Options: map[string]interface{}{
 			"temperature": 0.1, // Low for consistency
-			"num_predict": 300, // Allow sufficient length for complete descriptions
+			"num_predict": 500, // Allow sufficient length for complete descriptions
 		},
 	}
 
