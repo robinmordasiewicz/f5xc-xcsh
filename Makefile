@@ -307,7 +307,7 @@ generate-llm-descriptions:
 	@echo "Generating LLM-enhanced descriptions ($(LLM_WORKERS) workers, timeout: $(LLM_TIMEOUT))..."
 	@if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then \
 		echo "Error: Ollama not running. Start with: ollama serve"; \
-		echo "Then pull the model: ollama pull deepseek-r1:1.5b"; \
+		echo "Then pull the model: ollama pull mistral:7b-instruct"; \
 		exit 1; \
 	fi
 	@go run scripts/generate-llm-descriptions.go \
@@ -341,7 +341,7 @@ maybe-llm-descriptions:
 		echo "     ollama serve"; \
 		echo ""; \
 		echo "  3. Pull the required model (in another terminal):"; \
-		echo "     ollama pull deepseek-r1:1.5b"; \
+		echo "     ollama pull mistral:7b-instruct"; \
 		echo ""; \
 		echo "  4. Re-run this command:"; \
 		echo "     make maybe-llm-descriptions"; \
