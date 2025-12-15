@@ -117,6 +117,13 @@ func main() {
 		}
 		fmt.Printf("Using Ollama at %s with model %s (%d workers, timeout: %v, max-retries: %d)\n",
 			*ollamaURL, *model, *workers, *timeout, *maxRetries)
+
+		// Warm up the model to ensure it's loaded into memory before workers start
+		if err := warmupModel(); err != nil {
+			logError("Failed to warm up model: %v", err)
+			logError("The model may not be fully downloaded or Ollama may be having issues.")
+			os.Exit(1)
+		}
 	}
 
 	// Find all OpenAPI specs
@@ -423,20 +430,53 @@ func callOllama(prompt string) (string, error) {
 			}
 			return "", lastErr
 		}
-		defer resp.Body.Close()
+
+		// Read response body (don't use defer in loop)
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("failed to read response body: %w", err)
+			if attempt < *maxRetries {
+				time.Sleep(time.Duration(1<<uint(attempt)) * time.Second)
+				continue
+			}
+			return "", lastErr
+		}
 
 		if resp.StatusCode != 200 {
-			body, _ := io.ReadAll(resp.Body)
 			return "", fmt.Errorf("ollama returned %d: %s", resp.StatusCode, string(body))
 		}
 
 		var result OllamaResponse
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		if err := json.Unmarshal(body, &result); err != nil {
 			return "", fmt.Errorf("failed to decode response: %w", err)
+		}
+
+		// Log raw response in verbose mode for debugging
+		if *verbose && len(result.Response) > 0 {
+			rawPreview := result.Response
+			if len(rawPreview) > 100 {
+				rawPreview = rawPreview[:100] + "..."
+			}
+			fmt.Printf("    Raw response (%d chars): %s\n", len(result.Response), strings.ReplaceAll(rawPreview, "\n", "\\n"))
 		}
 
 		// Clean up the response
 		cleaned := cleanResponse(result.Response)
+
+		// Treat empty cleaned responses as errors (retry)
+		if cleaned == "" || cleaned == "." {
+			lastErr = fmt.Errorf("ollama returned empty or invalid response (raw length: %d)", len(result.Response))
+			if attempt < *maxRetries {
+				if *verbose {
+					fmt.Printf("    Empty response on attempt %d/%d, retrying...\n", attempt, *maxRetries)
+				}
+				time.Sleep(time.Duration(1<<uint(attempt)) * time.Second)
+				continue
+			}
+			return "", lastErr
+		}
+
 		return cleaned, nil
 	}
 
@@ -446,6 +486,22 @@ func callOllama(prompt string) (string, error) {
 // cleanResponse removes common LLM artifacts from the response
 func cleanResponse(response string) string {
 	result := strings.TrimSpace(response)
+
+	// Remove deepseek-r1 <think>...</think> tags (reasoning models output these)
+	// The pattern can be <think>content</think> followed by the actual answer
+	thinkStart := strings.Index(result, "<think>")
+	thinkEnd := strings.Index(result, "</think>")
+	if thinkStart != -1 && thinkEnd != -1 && thinkEnd > thinkStart {
+		// Extract content after </think>
+		afterThink := strings.TrimSpace(result[thinkEnd+len("</think>"):])
+		if afterThink != "" {
+			result = afterThink
+		}
+		// If nothing after think tags, check if there's content before
+		if afterThink == "" && thinkStart > 0 {
+			result = strings.TrimSpace(result[:thinkStart])
+		}
+	}
 
 	// Remove common wrapping patterns
 	result = strings.Trim(result, "\"'`")
@@ -530,6 +586,49 @@ func checkModelAvailable(model string) bool {
 		}
 	}
 	return false
+}
+
+// warmupModel sends a simple request to ensure the model is loaded into memory
+func warmupModel() error {
+	fmt.Println("Warming up model (loading into memory)...")
+	start := time.Now()
+
+	reqBody := OllamaRequest{
+		Model:  *model,
+		Prompt: "Say 'ready' in one word.",
+		Stream: false,
+		Options: map[string]interface{}{
+			"temperature": 0.0,
+			"num_predict": 10,
+		},
+	}
+
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		return fmt.Errorf("failed to marshal warmup request: %w", err)
+	}
+
+	// Use longer timeout for warmup (model loading can take time)
+	client := &http.Client{Timeout: 5 * time.Minute}
+	resp, err := client.Post(*ollamaURL+"/api/generate", "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return fmt.Errorf("warmup request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("warmup returned %d: %s", resp.StatusCode, string(body))
+	}
+
+	// Read and discard response
+	_, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read warmup response: %w", err)
+	}
+
+	fmt.Printf("✅ Model warmed up in %v\n", time.Since(start).Round(time.Second))
+	return nil
 }
 
 // truncate truncates a string to maxLen characters
