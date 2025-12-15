@@ -138,9 +138,9 @@ jobs:
       - name: Pull Model
         if: steps.cache-descriptions.outputs.cache-hit != 'true'
         run: |
-          echo "Pulling model deepseek-r1:1.5b..."
-          if ! ollama pull "deepseek-r1:1.5b"; then
-            echo "::error::Failed to pull Ollama model deepseek-r1:1.5b"
+          echo "Pulling model mistral:7b-instruct..."
+          if ! ollama pull "mistral:7b-instruct"; then
+            echo "::error::Failed to pull Ollama model mistral:7b-instruct"
             exit 1
           fi
           echo "✅ Model pulled successfully"
@@ -150,14 +150,14 @@ jobs:
         run: |
           echo "Cache miss - generating LLM descriptions..."
           # Run with CI mode for GitHub Actions annotations
-          # Using 1 worker to diagnose concurrency issues with Ollama
           go run scripts/generate-llm-descriptions.go \
             -ci \
             -v \
-            -timeout 300s \
-            -max-retries 5 \
+            -timeout 120s \
+            -max-retries 3 \
             -fail-threshold 0.2 \
-            -workers 1 \
+            -workers 4 \
+            -model "mistral:7b-instruct" \
             -specs docs/specifications/api \
             -output pkg/types/descriptions_generated.json
 

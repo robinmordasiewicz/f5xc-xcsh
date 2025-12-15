@@ -2,7 +2,7 @@
 
 // generate-llm-descriptions.go generates grammatically correct descriptions using a local LLM.
 // Run with: go run scripts/generate-llm-descriptions.go
-// Requires: Ollama running with deepseek-r1:1.5b model
+// Requires: Ollama running with mistral:7b-instruct model
 package main
 
 import (
@@ -24,7 +24,7 @@ import (
 var (
 	specsDir        = flag.String("specs", "docs/specifications/api", "OpenAPI specs directory")
 	ollamaURL       = flag.String("ollama-url", "http://localhost:11434", "Ollama API URL")
-	model           = flag.String("model", "deepseek-r1:1.5b", "LLM model to use")
+	model           = flag.String("model", "mistral:7b-instruct", "LLM model to use")
 	outputFile      = flag.String("output", "pkg/types/descriptions_generated.json", "Output JSON file")
 	timeout         = flag.Duration("timeout", 120*time.Second, "Per-request timeout")
 	verbose         = flag.Bool("v", false, "Verbose output")
@@ -539,8 +539,8 @@ func callOllama(prompt string) (string, error) {
 func cleanResponse(response string) string {
 	result := strings.TrimSpace(response)
 
-	// Remove deepseek-r1 <think>...</think> tags (reasoning models output these)
-	// The pattern can be <think>content</think> followed by the actual answer
+	// Remove <think>...</think> tags (reasoning models like deepseek-r1 output these)
+	// Kept for backwards compatibility if someone uses a reasoning model
 	thinkStart := strings.Index(result, "<think>")
 	thinkEnd := strings.Index(result, "</think>")
 	if thinkStart != -1 && thinkEnd != -1 && thinkEnd > thinkStart {
@@ -653,7 +653,7 @@ func warmupModel() error {
 		Stream: false,
 		Options: map[string]interface{}{
 			"temperature": 0.0,
-			"num_predict": 50, // Allow enough tokens for thinking models
+			"num_predict": 20, // Short response for warmup validation
 		},
 	}
 
