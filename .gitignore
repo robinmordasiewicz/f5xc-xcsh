@@ -79,3 +79,6 @@ completions/
 
 # MCP tool state directories
 .playwright-mcp/
+
+# Claude Code local configuration
+.claude/
