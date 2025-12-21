@@ -37,7 +37,8 @@ LLM_WORKERS?=8
         docs docs-all docs-nav docs-clean docs-serve docs-check docs-build generate-examples \
         generate-schemas validate-schemas report-schemas generate-schemas-strict \
         generate-llm-descriptions generate-schemas-with-llm maybe-llm-descriptions \
-        ci pre-commit pre-push verify-schemas-ci verify-lint-config
+        ci pre-commit pre-push verify-schemas-ci verify-lint-config \
+        download-specs download-specs-force
 
 # Default target
 all: build
@@ -296,16 +297,28 @@ docs-check: build
 	@echo "  Commands: $$(./$(BINARY_NAME) --spec | jq '.commands | length')"
 	@echo "  Size: $$(./$(BINARY_NAME) --spec | wc -c) bytes"
 
+# Download enriched API specifications from GitHub releases
+# This fetches the latest enriched specs and caches them locally
+download-specs:
+	@echo "Downloading enriched API specifications..."
+	@./scripts/download-specs.sh
+
+# Force re-download enriched API specifications (bypasses cache)
+download-specs-force:
+	@echo "Force downloading enriched API specifications..."
+	@rm -rf .specs
+	@./scripts/download-specs.sh
+
 # Generate examples from OpenAPI specifications
 # This creates pkg/types/examples_generated.go with JSON examples for CLI help
-generate-examples:
+generate-examples: download-specs
 	@echo "Generating CLI examples from OpenAPI specifications..."
 	@go run scripts/generate-examples.go -output pkg/types/examples_generated.go
 	@echo "Examples generated successfully!"
 
 # Generate resource schemas from OpenAPI specifications
 # This creates pkg/types/schemas_generated.go with AI-friendly schema intelligence
-generate-schemas:
+generate-schemas: download-specs
 	@echo "Generating resource schemas from OpenAPI specifications..."
 	@go run scripts/generate-schemas.go -v -update-resources
 	@echo "Schema generation complete!"
@@ -473,6 +486,10 @@ help:
 	@echo "  make docs-clean     - Clean generated documentation"
 	@echo "  make docs-serve     - Generate docs and serve locally"
 	@echo "  make docs-check     - Show current spec hash"
+	@echo ""
+	@echo "=== API Specifications ==="
+	@echo "  make download-specs     - Download latest enriched API specs (auto-cached)"
+	@echo "  make download-specs-force - Force re-download specs (bypass cache)"
 	@echo ""
 	@echo "=== Code Generation Commands ==="
 	@echo "  make generate-examples - Generate CLI examples from OpenAPI specs"
