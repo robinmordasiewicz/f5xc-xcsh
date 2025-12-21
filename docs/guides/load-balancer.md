@@ -43,13 +43,13 @@ spec:
 
 ```bash
 # Create origin pool
-f5xcctl configuration create origin_pool -i origin-pool.yaml
+f5xcctl load_balancer create origin_pool -i origin-pool.yaml
 
 # Create load balancer
-f5xcctl configuration create http_loadbalancer -i http-lb.yaml
+f5xcctl load_balancer create http_loadbalancer -i http-lb.yaml
 
 # Verify
-f5xcctl configuration get http_loadbalancer example-http-lb -n example-namespace
+f5xcctl load_balancer get http_loadbalancer example-http-lb -n example-namespace
 ```
 
 ### HTTPS Load Balancer
@@ -119,7 +119,7 @@ spec:
 **Deploy:**
 
 ```bash
-f5xcctl configuration create tcp_loadbalancer -i tcp-lb.yaml
+f5xcctl <domain> create tcp_loadbalancer -i tcp-lb.yaml
 ```
 
 ## Health Checks
@@ -201,43 +201,43 @@ spec:
 
 ```bash
 # List all HTTP load balancers
-f5xcctl configuration list http_loadbalancer -n example-namespace
+f5xcctl load_balancer list http_loadbalancer -n example-namespace
 
 # List all TCP load balancers
-f5xcctl configuration list tcp_loadbalancer -n example-namespace
+f5xcctl <domain> list tcp_loadbalancer -n example-namespace
 ```
 
 ### Get Details
 
 ```bash
 # Get as table
-f5xcctl configuration get http_loadbalancer example-lb -n example-namespace
+f5xcctl load_balancer get http_loadbalancer example-lb -n example-namespace
 
 # Get as YAML
-f5xcctl configuration get http_loadbalancer example-lb -n example-namespace --outfmt yaml
+f5xcctl load_balancer get http_loadbalancer example-lb -n example-namespace --outfmt yaml
 
 # Get as JSON
-f5xcctl configuration get http_loadbalancer example-lb -n example-namespace --outfmt json
+f5xcctl load_balancer get http_loadbalancer example-lb -n example-namespace --outfmt json
 ```
 
 ### Update Load Balancer
 
 ```bash
 # Export current config
-f5xcctl configuration get http_loadbalancer example-lb -n example-namespace --outfmt yaml > lb.yaml
+f5xcctl load_balancer get http_loadbalancer example-lb -n example-namespace --outfmt yaml > lb.yaml
 
 # Edit lb.yaml...
 
 # Apply changes
-f5xcctl configuration replace http_loadbalancer -i lb.yaml
+f5xcctl load_balancer replace http_loadbalancer -i lb.yaml
 ```
 
 ### Delete Load Balancer
 
 ```bash
 # With confirmation
-f5xcctl configuration delete http_loadbalancer example-lb -n example-namespace
+f5xcctl load_balancer delete http_loadbalancer example-lb -n example-namespace
 
 # Skip confirmation
-f5xcctl configuration delete http_loadbalancer example-lb -n example-namespace --yes
+f5xcctl load_balancer delete http_loadbalancer example-lb -n example-namespace --yes
 ```

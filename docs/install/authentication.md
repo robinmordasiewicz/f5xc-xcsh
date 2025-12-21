@@ -82,7 +82,7 @@ Use an API token for authentication without managing certificate files. Ideal fo
 export F5XC_API_TOKEN="your-api-token"
 export F5XC_API_URL="https://your-tenant.console.ves.volterra.io"  # Optional, overrides config
 
-f5xcctl configuration list namespace
+f5xcctl identity list namespace
 ```
 
 **Using configuration file (~/.f5xcconfig):**
@@ -165,7 +165,7 @@ export F5XC_API_URL="https://your-tenant.console.ves.volterra.io/api"
 export F5XC_P12_FILE="/path/to/api-creds.p12"
 export F5XC_P12_PASSWORD="your-password"
 
-f5xcctl configuration list namespace
+f5xcctl identity list namespace
 ```
 
 ## Interactive Configuration
@@ -189,7 +189,7 @@ Test your configuration:
 
 ```bash
 # List namespaces to verify connection
-f5xcctl configuration list namespace
+f5xcctl identity list namespace
 
 # Check with verbose output for troubleshooting
 f5xcctl --verbose configuration list namespace
