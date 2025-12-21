@@ -78,3 +78,7 @@ completions/
 
 # Claude Code local configuration
 .claude/
+
+# Downloaded API specifications (enriched specs)
+.specs/
+!.specs/.gitkeep

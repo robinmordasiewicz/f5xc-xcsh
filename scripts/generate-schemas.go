@@ -21,7 +21,7 @@ import (
 var (
 	outputFile      = flag.String("output", "pkg/types/schemas_generated.go", "Output file path")
 	resourcesFile   = flag.String("resources-output", "pkg/types/resources_generated.go", "Resources output file path")
-	specsDir        = flag.String("specs", "docs/specifications/api", "Directory containing OpenAPI specs")
+	specsDir        = flag.String("specs", ".specs/domains", "Directory containing OpenAPI specs")
 	verbose         = flag.Bool("v", false, "Verbose output")
 	strict          = flag.Bool("strict", false, "Fail on critical resource missing specs")
 	validateOnly    = flag.Bool("validate", false, "Validate only, don't write output")
@@ -121,8 +121,8 @@ func main() {
 		fmt.Println("Loading OpenAPI specifications...")
 	}
 
-	// Load all specs with transformation to normalize legacy references
-	specs, err := openapi.LoadAllSpecsWithTransform(*specsDir, openapi.DefaultTransformConfig())
+	// Load all specs from enriched source (downloaded at build time)
+	specs, err := openapi.LoadAllSpecs(*specsDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading specs: %v\n", err)
 		os.Exit(1)

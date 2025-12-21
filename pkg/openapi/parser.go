@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Spec represents an OpenAPI 3.0 specification
@@ -198,6 +200,8 @@ func (s *Spec) GetSchemaNames() []string {
 }
 
 // LoadAllSpecs loads all OpenAPI specifications from a directory
+// Supports domain-organized enriched specs (load_balancer.json, networking.json, etc.)
+// Skips metadata files like index.json
 func LoadAllSpecs(dir string) (map[string]*Spec, error) {
 	specs := make(map[string]*Spec)
 
@@ -206,7 +210,17 @@ func LoadAllSpecs(dir string) (map[string]*Spec, error) {
 		return nil, fmt.Errorf("failed to glob spec files: %w", err)
 	}
 
+	if len(files) == 0 {
+		return nil, fmt.Errorf("no spec files found in %s", dir)
+	}
+
 	for _, file := range files {
+		// Skip metadata files
+		basename := filepath.Base(file)
+		if basename == "index.json" {
+			continue
+		}
+
 		spec, err := ParseSpec(file)
 		if err != nil {
 			// Log but continue with other files
@@ -216,5 +230,92 @@ func LoadAllSpecs(dir string) (map[string]*Spec, error) {
 		specs[file] = spec
 	}
 
+	if len(specs) == 0 {
+		return nil, fmt.Errorf("no valid spec files loaded from %s", dir)
+	}
+
 	return specs, nil
+}
+
+// FindAllResourceSchemas discovers all resources in a spec by scanning for CreateRequest schemas
+// Returns map of resource_name → CreateRequest schema
+func (s *Spec) FindAllResourceSchemas() map[string]*Schema {
+	resources := make(map[string]*Schema)
+
+	for schemaName, schema := range s.Components.Schemas {
+		if strings.HasSuffix(schemaName, "CreateRequest") {
+			resourceName := extractResourceName(schemaName)
+			if resourceName != "" {
+				resources[resourceName] = schema
+			}
+		}
+	}
+
+	return resources
+}
+
+// extractResourceName converts schema name to resource name
+// Example: "viewshttploadbalancerCreateRequest" → "http_loadbalancer"
+func extractResourceName(schemaName string) string {
+	// Remove "CreateRequest" suffix
+	name := strings.TrimSuffix(schemaName, "CreateRequest")
+
+	// Remove common prefixes
+	name = strings.TrimPrefix(name, "views")
+	name = strings.TrimPrefix(name, "public")
+
+	if name == "" {
+		return ""
+	}
+
+	// Convert camelCase to snake_case
+	name = camelToSnake(name)
+
+	return name
+}
+
+// camelToSnake converts camelCase to snake_case
+func camelToSnake(s string) string {
+	var result strings.Builder
+	for i, r := range s {
+		if unicode.IsUpper(r) && i > 0 {
+			result.WriteRune('_')
+		}
+		result.WriteRune(unicode.ToLower(r))
+	}
+	return result.String()
+}
+
+// ExtractDomainFromFile extracts the domain name from a spec file path
+// Example: "load_balancer.json" → "load_balancer"
+// Returns empty string for other filenames
+func ExtractDomainFromFile(filePath string) string {
+	basename := filepath.Base(filePath)
+
+	// Domain files: load_balancer.json, networking.json
+	if strings.HasSuffix(basename, ".json") && !strings.HasPrefix(basename, "docs-cloud-f5-com") {
+		return strings.TrimSuffix(basename, ".json")
+	}
+
+	return ""
+}
+
+// FuzzyMatchResourceName tries to match a resource name with alternative formats
+// Handles underscore variations: http_loadbalancer = httploadbalancer
+func FuzzyMatchResourceName(query, target string) bool {
+	// Exact match (case-insensitive)
+	if strings.EqualFold(query, target) {
+		return true
+	}
+
+	// Normalize underscores
+	normalized := regexp.MustCompile(`_+`).ReplaceAllString
+	queryNorm := normalized(query, "")
+	targetNorm := normalized(target, "")
+
+	if strings.EqualFold(queryNorm, targetNorm) {
+		return true
+	}
+
+	return false
 }

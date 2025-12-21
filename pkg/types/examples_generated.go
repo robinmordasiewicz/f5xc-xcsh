@@ -23,7 +23,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "10.1.2.3/2001::1",
+    "address": "10.1.2.3/2001::1.",
     "port": 80,
     "protocol": "TCP",
     "skip_xff_append": false
@@ -95,12 +95,12 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "123 Street, city, country, postal code",
-    "aws_region": "us-east-1",
+    "address": "123 Street, city, country, postal code.",
+    "aws_region": "Us-east-1",
     "disk_size": 80,
     "instance_type": "a1.xlarge",
     "nodes_per_az": 2,
-    "ssh_key": "ssh-rsa AAAAB..."
+    "ssh_key": "SSH-rsa AAAAB..."
   }
 }`,
 	"azure_vnet_site": `{
@@ -109,13 +109,13 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "123 Street, city, country, postal code",
-    "alternate_region": "northcentralus",
+    "address": "123 Street, city, country, postal code.",
+    "alternate_region": "Northcentralus.",
     "disk_size": 80,
-    "machine_type": "Standard_D4s_v4",
+    "machine_type": "Standard_D4s_v4.",
     "nodes_per_az": 2,
-    "resource_group": "my-resources",
-    "ssh_key": "ssh-rsa AAAAB..."
+    "resource_group": "Example-resources.",
+    "ssh_key": "SSH-rsa AAAAB..."
   }
 }`,
 	"bgp": `{
@@ -157,9 +157,9 @@ var resourceExamples = map[string]string{
   },
   "spec": {
     "app_firewall": {
-      "name": "contacts-route",
-      "namespace": "ns1",
-      "tenant": "acmecorp"
+      "name": "Contacts-route.",
+      "namespace": "Ns1",
+      "tenant": "Example-corp."
     },
     "domains": [
       "example-value"
@@ -178,7 +178,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "certificate_url": "value"
+    "certificate_url": "Value"
   }
 }`,
 	"certificate_chain": `{
@@ -187,7 +187,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "certificate_url": "value"
+    "certificate_url": "Value"
   }
 }`,
 	"cloud_credentials": `{
@@ -223,7 +223,7 @@ var resourceExamples = map[string]string{
   },
   "spec": {
     "port": 443,
-    "username": "admin"
+    "username": "Admin"
   }
 }`,
 	"contact": `{
@@ -232,13 +232,13 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address1": "1234 Main road",
-    "address2": "P.O BOX 56",
+    "address1": "1234 Main road.",
+    "address2": "P.O BOX 56.",
     "city": "Sunnyvale",
     "country": "US",
-    "county": "Santa Clara",
-    "phone_number": "+11234567890",
-    "state": "California",
+    "county": "Santa Clara.",
+    "phone_number": "+11234567890.",
+    "state": "California.",
     "state_code": "CA",
     "zip_code": "95054"
   }
@@ -249,9 +249,9 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "email": "joe@gmail.com",
-    "registry": "quay.io",
-    "user_name": "joe"
+    "email": "Joe@gmail.com.",
+    "registry": "Quay.I/O",
+    "user_name": "Joe"
   }
 }`,
 	"crl": `{
@@ -261,7 +261,7 @@ var resourceExamples = map[string]string{
   },
   "spec": {
     "refresh_interval": 24,
-    "server_address": "mycrl.it.com",
+    "server_address": "mycrl.it.com.",
     "server_port": 80,
     "timeout": 10
   }
@@ -373,11 +373,11 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "123 Street, city, country, postal code",
+    "address": "123 Street, city, country, postal code.",
     "disk_size": 80,
-    "gcp_region": "us-west1",
-    "instance_type": "n1-standard-4",
-    "ssh_key": "ssh-rsa AAAAB..."
+    "gcp_region": "Us-west1",
+    "instance_type": "N1-standard-4.",
+    "ssh_key": "SSH-rsa AAAAB..."
   }
 }`,
 	"geo_location_set": `{
@@ -415,9 +415,9 @@ var resourceExamples = map[string]string{
   "spec": {
     "add_location": false,
     "app_firewall": {
-      "name": "contacts-route",
-      "namespace": "ns1",
-      "tenant": "acmecorp"
+      "name": "Contacts-route.",
+      "namespace": "Ns1",
+      "tenant": "Example-corp."
     },
     "default_pool": {
       "port": 9080
@@ -479,7 +479,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "prefix": "10.10.10.0/24"
+    "prefix": "10.10.10.0/24."
   }
 }`,
 	"infraprotect_deny_list_rule": `{
@@ -488,7 +488,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "prefix": "12.13.14.0/24 or 12.13.14.15/32"
+    "prefix": "12.13.14.0/24 or 12.13.14.15/32."
   }
 }`,
 	"infraprotect_firewall_rule": `{
@@ -504,7 +504,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "firewall_rule_group_name": "Group Name"
+    "firewall_rule_group_name": "Group Name."
   }
 }`,
 	"infraprotect_internet_prefix_advertisement": `{
@@ -513,7 +513,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "prefix": "12.12.0.0/24"
+    "prefix": "12.12.0.0/24."
   }
 }`,
 	"infraprotect_tunnel": `{
@@ -616,7 +616,7 @@ var resourceExamples = map[string]string{
     "ports": [
       "example-value"
     ],
-    "protocol": "tcp"
+    "protocol": "TCP"
   }
 }`,
 	"network_policy_view": `{
@@ -632,7 +632,10 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "port": 9080
+    "port": 9080,
+    "use_tls": {
+      "max_session_keys": 25
+    }
   }
 }`,
 	"policer": `{
@@ -688,7 +691,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "server_name": "database.production.customer.volterra.us"
+    "server_name": "database.production.customer.F5 Distributed cloud.us."
   }
 }`,
 	"report_config": `{
@@ -711,7 +714,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "provider_name": "vault_backend"
+    "provider_name": "Vault_backend."
   }
 }`,
 	"securemesh_site": `{
@@ -720,8 +723,8 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "123 Street, city, country, postal code",
-    "volterra_certified_hw": "isv-8000-series-voltmesh",
+    "address": "123 Street, city, country, postal code.",
+    "volterra_certified_hw": "Isv-8000-series-voltmesh.",
     "worker_nodes": [
       "example-value"
     ]
@@ -796,7 +799,7 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "trusted_ca_url": "cert"
+    "trusted_ca_url": "Cert"
   }
 }`,
 	"udp_loadbalancer": `{
@@ -846,8 +849,8 @@ var resourceExamples = map[string]string{
     "namespace": "example-namespace"
   },
   "spec": {
-    "address": "123 Street, city, country, postal code",
-    "volterra_certified_hw": "isv-8000-series-voltstack-combo",
+    "address": "123 Street, city, country, postal code.",
+    "volterra_certified_hw": "Isv-8000-series-voltstack-combo.",
     "worker_nodes": [
       "example-value"
     ]
