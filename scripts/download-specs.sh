@@ -4,6 +4,11 @@
 #
 # This script downloads the latest enriched API specs and extracts them
 # to .specs/domains/ for use during the build process.
+#
+# Features:
+# - Exponential backoff retry logic for transient network errors
+# - Automatic fallback on permanent errors
+# - Detailed logging for debugging
 
 set -e
 
@@ -11,10 +16,16 @@ SPECS_DIR=".specs"
 ENRICHED_REPO="robinmordasiewicz/f5xc-api-enriched"
 API_URL="https://api.github.com/repos/${ENRICHED_REPO}/releases/latest"
 
+# Retry configuration
+MAX_RETRIES=5
+INITIAL_BACKOFF=2
+MAX_BACKOFF=60
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 log_info() {
@@ -33,9 +44,88 @@ log_success() {
     echo -e "${GREEN}✓${NC} $1"
 }
 
+log_debug() {
+    echo -e "${BLUE}⋯${NC} $1"
+}
+
+# Determine if an error is transient (worth retrying)
+is_transient_error() {
+    local error="$1"
+    # Network timeouts, connection errors, temporary DNS issues
+    if echo "$error" | grep -qiE "(timeout|connection|refused|temporarily|unavailable|timed out|resolving|name or service)"; then
+        return 0
+    fi
+    # curl exit codes for transient errors
+    # 7: connection failed, 28: operation timeout, 35: SSL connect error
+    return 1
+}
+
+# Retry function with exponential backoff
+retry_with_backoff() {
+    local name="$1"
+    shift
+    local attempt=1
+    local backoff=$INITIAL_BACKOFF
+
+    while [ $attempt -le $MAX_RETRIES ]; do
+        log_debug "[$name] Attempt $attempt/$MAX_RETRIES"
+
+        # Execute the command and capture output and exit code
+        if output=$("$@" 2>&1); then
+            echo "$output"
+            return 0
+        fi
+
+        local exit_code=$?
+        local error="$output"
+
+        if [ $attempt -eq $MAX_RETRIES ]; then
+            # Last attempt - show full error
+            log_error "[$name] Failed after $MAX_RETRIES attempts"
+            log_error "Exit code: $exit_code"
+            log_error "Error: $error"
+            return $exit_code
+        fi
+
+        # Check if error is transient
+        if is_transient_error "$error"; then
+            log_warn "[$name] Transient error (attempt $attempt/$MAX_RETRIES): $error"
+            log_warn "[$name] Retrying in ${backoff}s..."
+            sleep "$backoff"
+
+            # Exponential backoff: double the wait time, cap at MAX_BACKOFF
+            backoff=$((backoff * 2))
+            if [ $backoff -gt $MAX_BACKOFF ]; then
+                backoff=$MAX_BACKOFF
+            fi
+        else
+            # Permanent error - don't retry
+            log_error "[$name] Permanent error (not retrying): $error"
+            return $exit_code
+        fi
+
+        attempt=$((attempt + 1))
+    done
+
+    return 1
+}
+
+# Helper function to fetch with retry
+fetch_with_retry() {
+    local name="$1"
+    local url="$2"
+    local output_file="$3"
+
+    if [ -n "$output_file" ]; then
+        retry_with_backoff "$name" curl -f -L --max-time 30 --connect-timeout 10 "$url" -o "$output_file"
+    else
+        retry_with_backoff "$name" curl -f -sL --max-time 30 --connect-timeout 10 "$url"
+    fi
+}
+
 # Fetch latest release information
 log_info "Fetching latest enriched spec release..."
-RELEASE_JSON=$(curl -sL "$API_URL")
+RELEASE_JSON=$(fetch_with_retry "GitHub API" "$API_URL")
 
 if [ -z "$RELEASE_JSON" ]; then
     log_error "Failed to fetch release information from GitHub API"
@@ -44,7 +134,8 @@ fi
 
 VERSION=$(echo "$RELEASE_JSON" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | cut -d'"' -f4)
 if [ -z "$VERSION" ]; then
-    log_error "Could not determine latest version"
+    log_error "Could not determine latest version from API response"
+    log_debug "API Response: $RELEASE_JSON"
     exit 1
 fi
 
@@ -72,19 +163,18 @@ fi
 # Create specs directory
 mkdir -p "$SPECS_DIR"
 
-# Download ZIP file
+# Download ZIP file with retry logic
 log_info "Downloading specs from: $ZIP_URL"
-if ! curl -sL "$ZIP_URL" -o "$SPECS_DIR/specs.zip"; then
-    log_error "Failed to download specs ZIP file"
-    exit 1
-fi
+fetch_with_retry "ZIP Download" "$ZIP_URL" "$SPECS_DIR/specs.zip"
 
 # Verify ZIP file is valid
+log_debug "Verifying ZIP file integrity..."
 if ! unzip -t "$SPECS_DIR/specs.zip" > /dev/null 2>&1; then
     log_error "Downloaded ZIP file is corrupted"
     rm -f "$SPECS_DIR/specs.zip"
     exit 1
 fi
+log_success "ZIP file verified"
 
 # Extract domain specs
 log_info "Extracting domain specifications..."
@@ -94,7 +184,7 @@ rm -f "$SPECS_DIR/specs.zip"
 # Download index if available
 if [ -n "$INDEX_URL" ]; then
     log_info "Downloading index metadata..."
-    curl -sL "$INDEX_URL" -o "$SPECS_DIR/index.json"
+    fetch_with_retry "Index Download" "$INDEX_URL" "$SPECS_DIR/index.json"
 fi
 
 # Record version
