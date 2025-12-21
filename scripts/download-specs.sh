@@ -5,10 +5,16 @@
 # This script downloads the latest enriched API specs and extracts them
 # to .specs/domains/ for use during the build process.
 #
+# The downloaded specs include all domain resources with:
+# - Complete OpenAPI 3.0 specifications
+# - Example values using 'example-' prefix (standard naming convention)
+# - Consolidated openapi.json/yaml for reference
+#
 # Features:
 # - Exponential backoff retry logic for transient network errors
 # - Automatic fallback on permanent errors
 # - Detailed logging for debugging
+# - Version caching in .specs/.version to track upstream releases
 
 set -e
 
