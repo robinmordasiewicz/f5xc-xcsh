@@ -313,9 +313,5 @@ func FuzzyMatchResourceName(query, target string) bool {
 	queryNorm := normalized(query, "")
 	targetNorm := normalized(target, "")
 
-	if strings.EqualFold(queryNorm, targetNorm) {
-		return true
-	}
-
-	return false
+	return strings.EqualFold(queryNorm, targetNorm)
 }

@@ -39,23 +39,6 @@ func (m *SpecMapper) buildResourceMap() {
 	}
 }
 
-// isSubResourceSpec returns true if the spec file is a sub-resource (e.g., subscription, rrset)
-func isSubResourceSpec(filename string) bool {
-	// Common sub-resource patterns that should not override main resources
-	subResourcePatterns := []string{
-		".subscription.",
-		".rrset.",
-		".v1_dns_monitor.",
-	}
-	lowerFilename := strings.ToLower(filename)
-	for _, pattern := range subResourcePatterns {
-		if strings.Contains(lowerFilename, pattern) {
-			return true
-		}
-	}
-	return false
-}
-
 // FindSpec finds the OpenAPI spec for a given resource name
 func (m *SpecMapper) FindSpec(resourceName string) *Spec {
 	// Try exact match first (most common case)
