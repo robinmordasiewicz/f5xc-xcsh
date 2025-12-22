@@ -1338,9 +1338,6 @@ def main():
     )
     parser.add_argument(
         "--cli-binary",
-        "--f5xcctl",  # Keep as alias for backward compatibility
-        "--xcsh",     # New alias
-        dest="cli_binary",
         default="./xcsh",
         help="Path to CLI binary (default: ./xcsh)",
     )

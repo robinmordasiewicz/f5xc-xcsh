@@ -241,7 +241,7 @@ jobs:
       - name: Generate command documentation
         run: |
           python scripts/generate-docs.py \
-            --xcsh ./xcsh \
+            --cli-binary ./xcsh \
             --output docs/commands \
             --clean \
             --update-mkdocs
