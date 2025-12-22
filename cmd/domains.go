@@ -42,13 +42,13 @@ OPERATIONS:
   add-labels     Add labels to a resource
   remove-labels  Remove labels from a resource
 
-Run 'f5xcctl %s --help' for more information.`, info.DisplayName, info.Description, domain),
+Run 'xcsh %s --help' for more information.`, info.DisplayName, info.Description, domain),
 	}
 
 	// Enable error handling for invalid subcommands
 	cmd.RunE = func(c *cobra.Command, args []string) error {
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl %s <action> [resource-type] [name] [flags]\n\nAvailable actions:\n  list, get, create, replace, apply, delete, status, patch, add-labels, remove-labels\n\nRun 'f5xcctl %s --help' for usage", args[0], c.CommandPath(), domain, domain)
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh %s <action> [resource-type] [name] [flags]\n\nAvailable actions:\n  list, get, create, replace, apply, delete, status, patch, add-labels, remove-labels\n\nRun 'xcsh %s --help' for usage", args[0], c.CommandPath(), domain, domain)
 		}
 		return c.Help()
 	}
@@ -107,13 +107,13 @@ Use --namespace to filter by namespace, or --output-format to control output for
 		longDesc += "Returns a list of configurations with names, namespaces, and metadata."
 
 		exampleText := fmt.Sprintf(`  # List all %s in default namespace
-  f5xcctl %s list %s
+  xcsh %s list %s
 
   # List %s in a specific namespace
-  f5xcctl %s list %s -n production
+  xcsh %s list %s -n production
 
   # List with JSON output
-  f5xcctl %s list %s --output-format json`, rt.Name, domain, rt.Name, rt.Name, domain, rt.Name, domain, rt.Name)
+  xcsh %s list %s --output-format json`, rt.Name, domain, rt.Name, rt.Name, domain, rt.Name, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
@@ -169,13 +169,13 @@ Use --response-format replace-request to get output suitable for editing and rep
 		longDesc += "Returns the full configuration including metadata, spec, and system metadata."
 
 		exampleText := fmt.Sprintf(`  # Get a specific %s
-  f5xcctl %s get %s example-resource
+  xcsh %s get %s example-resource
 
   # Get with replace-request format for editing
-  f5xcctl %s get %s example-resource --response-format replace-request
+  xcsh %s get %s example-resource --response-format replace-request
 
   # Get from a specific namespace
-  f5xcctl %s get %s example-resource -n production`, rt.Name, domain, rt.Name, domain, rt.Name, domain, rt.Name)
+  xcsh %s get %s example-resource -n production`, rt.Name, domain, rt.Name, domain, rt.Name, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),
@@ -239,10 +239,10 @@ Provide a YAML or JSON file with the resource configuration using --input-file.`
 		longDesc += "Provide a YAML or JSON file with the resource configuration."
 
 		exampleText := fmt.Sprintf(`  # Create from file
-  f5xcctl %s create %s -n example-namespace -i config.yaml
+  xcsh %s create %s -n example-namespace -i config.yaml
 
   # Create with JSON input
-  f5xcctl %s create %s -n example-namespace -i config.json`, domain, rt.Name, domain, rt.Name)
+  xcsh %s create %s -n example-namespace -i config.json`, domain, rt.Name, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
@@ -302,10 +302,10 @@ Requires confirmation unless --yes is specified.`, domainInfo.DisplayName, domai
 		longDesc += "Requires confirmation unless --yes is specified."
 
 		exampleText := fmt.Sprintf(`  # Delete a resource (with confirmation)
-  f5xcctl %s delete %s -n example-namespace example-resource
+  xcsh %s delete %s -n example-namespace example-resource
 
   # Delete without confirmation
-  f5xcctl %s delete %s -n example-namespace example-resource --yes`, domain, rt.Name, domain, rt.Name)
+  xcsh %s delete %s -n example-namespace example-resource --yes`, domain, rt.Name, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),
@@ -369,7 +369,7 @@ Use apply for create-or-update semantics.`, domainInfo.DisplayName, domainInfo.D
 		longDesc += "This performs a complete replacement of the resource."
 
 		exampleText := fmt.Sprintf(`  # Replace from file
-  f5xcctl %s replace %s -n example-namespace example-resource -i updated-config.yaml`, domain, rt.Name)
+  xcsh %s replace %s -n example-namespace example-resource -i updated-config.yaml`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s <name>", rt.Name),
@@ -429,7 +429,7 @@ Returns the current operational state and any relevant status information.`, dom
 		}
 
 		exampleText := fmt.Sprintf(`  # Check status
-  f5xcctl %s status %s -n example-namespace example-resource`, domain, rt.Name)
+  xcsh %s status %s -n example-namespace example-resource`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),
@@ -492,7 +492,7 @@ If the resource exists, it will be updated. If it doesn't exist, it will be crea
 		longDesc += "If the resource exists, it will be updated. If it doesn't exist, it will be created."
 
 		exampleText := fmt.Sprintf(`  # Apply from file
-  f5xcctl %s apply %s -n example-namespace -i config.yaml`, domain, rt.Name)
+  xcsh %s apply %s -n example-namespace -i config.yaml`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:     rt.Name,
@@ -552,7 +552,7 @@ Only specified fields will be updated. Other fields remain unchanged.`, domainIn
 		longDesc += "Only specified fields will be updated."
 
 		exampleText := fmt.Sprintf(`  # Patch from file
-  f5xcctl %s patch %s -n example-namespace example-resource -i patch.yaml`, domain, rt.Name)
+  xcsh %s patch %s -n example-namespace example-resource -i patch.yaml`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),
@@ -612,7 +612,7 @@ Specify label key-value pairs using --label-key and --label-value flags.`, domai
 		}
 
 		exampleText := fmt.Sprintf(`  # Add labels
-  f5xcctl %s add-labels %s -n example-namespace example-resource --label-key env --label-value prod`, domain, rt.Name)
+  xcsh %s add-labels %s -n example-namespace example-resource --label-key env --label-value prod`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),
@@ -672,7 +672,7 @@ Specify the label keys to remove using --label-key flags.`, domainInfo.DisplayNa
 		}
 
 		exampleText := fmt.Sprintf(`  # Remove labels
-  f5xcctl %s remove-labels %s -n example-namespace example-resource --label-key env`, domain, rt.Name)
+  xcsh %s remove-labels %s -n example-namespace example-resource --label-key env`, domain, rt.Name)
 
 		subCmd := &cobra.Command{
 			Use:               fmt.Sprintf("%s <name>", rt.Name),

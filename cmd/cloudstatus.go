@@ -32,37 +32,37 @@ health, view active incidents, and track scheduled maintenance windows.
 
 No authentication is required - the status API is publicly accessible.
 
-Use 'f5xcctl cloudstatus status' for a quick check, or 'f5xcctl cloudstatus summary'
+Use 'xcsh cloudstatus status' for a quick check, or 'xcsh cloudstatus summary'
 for a comprehensive overview of all services.`,
 	Example: `  # Quick overall status check
-  f5xcctl cloudstatus status
+  xcsh cloudstatus status
 
   # Quick status check with exit code for scripting
-  f5xcctl cloudstatus status --quiet
+  xcsh cloudstatus status --quiet
 
   # Complete status summary
-  f5xcctl cloudstatus summary
+  xcsh cloudstatus summary
 
   # List all components
-  f5xcctl cloudstatus components list
+  xcsh cloudstatus components list
 
   # Show only degraded components
-  f5xcctl cloudstatus components list --degraded-only
+  xcsh cloudstatus components list --degraded-only
 
   # List active incidents
-  f5xcctl cloudstatus incidents active
+  xcsh cloudstatus incidents active
 
   # List upcoming maintenance windows
-  f5xcctl cloudstatus maintenance upcoming
+  xcsh cloudstatus maintenance upcoming
 
   # Check PoP status by region
-  f5xcctl cloudstatus pops status --region north-america
+  xcsh cloudstatus pops status --region north-america
 
   # Real-time monitoring
-  f5xcctl cloudstatus watch --interval 30
+  xcsh cloudstatus watch --interval 30
 
   # Output machine-readable spec for AI agents
-  f5xcctl cloudstatus --spec --output-format json`,
+  xcsh cloudstatus --spec --output-format json`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Handle --spec flag for cloudstatus command
 		if CheckSpecFlag() {
@@ -96,7 +96,7 @@ func init() {
 		}
 
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl cloudstatus <command> [flags]\n\nAvailable Commands:\n  status, summary, components, incidents, maintenance, pops, watch\n\nRun 'f5xcctl cloudstatus --help' for usage", args[0], cmd.CommandPath())
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh cloudstatus <command> [flags]\n\nAvailable Commands:\n  status, summary, components, incidents, maintenance, pops, watch\n\nRun 'xcsh cloudstatus --help' for usage", args[0], cmd.CommandPath())
 		}
 		return cmd.Help()
 	}

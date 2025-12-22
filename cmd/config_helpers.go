@@ -56,7 +56,7 @@ func formatShortWithTier(action, displayName, resourceType string) string {
 	return fmt.Sprintf("%s %s", action, displayName)
 }
 
-// runConfigList executes the list operation (f5xcctl compatible)
+// runConfigList executes the list operation (xcsh compatible)
 func runConfigList(rt *types.ResourceType, flags *configurationFlags) error {
 	client := GetClient()
 	if client == nil {
@@ -89,10 +89,10 @@ func runConfigList(rt *types.ResourceType, flags *configurationFlags) error {
 	return output.Print(result, GetOutputFormat())
 }
 
-// runConfigGet executes the get operation (f5xcctl compatible)
+// runConfigGet executes the get operation (xcsh compatible)
 func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
 	// Note: We accept any response-format value including GET_RSP_FORMAT_READ
-	// (original f5xcctl has a bug that rejects this valid value)
+	// (original xcsh has a bug that rejects this valid value)
 
 	client := GetClient()
 	if client == nil {
@@ -122,7 +122,7 @@ func runConfigGet(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	// Get defaults to YAML output (matching original f5xcctl)
+	// Get defaults to YAML output (matching original xcsh)
 	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
@@ -194,7 +194,7 @@ func ensureNamespaceExists(ctx context.Context, namespace string) error {
 	return fmt.Errorf("failed to check namespace '%s': status %d", namespace, resp.StatusCode)
 }
 
-// runConfigCreate executes the create operation (f5xcctl compatible)
+// runConfigCreate executes the create operation (xcsh compatible)
 func runConfigCreate(rt *types.ResourceType, flags *configurationFlags) error {
 	client := GetClient()
 	if client == nil {
@@ -240,13 +240,13 @@ func runConfigCreate(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	// Print "Created" header (matching original f5xcctl)
+	// Print "Created" header (matching original xcsh)
 	fmt.Println("Created")
-	// Create defaults to YAML output (matching original f5xcctl)
+	// Create defaults to YAML output (matching original xcsh)
 	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
-// runConfigDelete executes the delete operation (f5xcctl compatible)
+// runConfigDelete executes the delete operation (xcsh compatible)
 func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 	client := GetClient()
 	if client == nil {
@@ -321,7 +321,7 @@ func runConfigDelete(rt *types.ResourceType, flags *configurationFlags) error {
 	return nil
 }
 
-// runConfigReplace executes the replace operation (f5xcctl compatible)
+// runConfigReplace executes the replace operation (xcsh compatible)
 func runConfigReplace(rt *types.ResourceType, flags *configurationFlags) error {
 	client := GetClient()
 	if client == nil {
@@ -392,12 +392,12 @@ func runConfigReplace(rt *types.ResourceType, flags *configurationFlags) error {
 		return formatAPIError("replacing", "PUT", path, resp.StatusCode, resp.Body)
 	}
 
-	// Print only "Replaced" (matching original f5xcctl - no response body output)
+	// Print only "Replaced" (matching original xcsh - no response body output)
 	fmt.Println("Replaced")
 	return nil
 }
 
-// runConfigStatus executes the status operation (f5xcctl compatible)
+// runConfigStatus executes the status operation (xcsh compatible)
 func runConfigStatus(rt *types.ResourceType, flags *configurationFlags) error {
 	client := GetClient()
 	if client == nil {
@@ -427,7 +427,7 @@ func runConfigStatus(rt *types.ResourceType, flags *configurationFlags) error {
 		return fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	// Status defaults to YAML output (matching original f5xcctl)
+	// Status defaults to YAML output (matching original xcsh)
 	return output.Print(result, GetOutputFormatWithDefault("yaml"))
 }
 
@@ -496,7 +496,7 @@ func runConfigApply(rt *types.ResourceType, flags *configurationFlags) error {
 			if resp.StatusCode >= 400 {
 				return formatAPIError("replacing", "PUT", getPath, resp.StatusCode, resp.Body)
 			}
-			// Print only "Replaced" (matching original f5xcctl - no response body output)
+			// Print only "Replaced" (matching original xcsh - no response body output)
 			fmt.Println("Replaced")
 			return nil
 		}
@@ -611,7 +611,7 @@ func runConfigRemoveLabels(rt *types.ResourceType, flags *configurationFlags) er
 	return nil
 }
 
-// formatAPIError formats an API error to match original f5xcctl error format
+// formatAPIError formats an API error to match original xcsh error format
 func formatAPIError(operation, method, path string, statusCode int, body []byte) error {
 	baseURL := serverURL
 	// Capitalize first letter of operation

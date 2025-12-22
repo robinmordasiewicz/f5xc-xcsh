@@ -27,21 +27,21 @@ Activation behavior depends on the addon's activation type:
   - Partially Managed: Creates a pending request with partial backend processing
   - Fully Managed: Creates a pending request requiring SRE approval
 
-Use 'f5xcctl subscription addons --filter available' to see which addons can be activated.
-Use 'f5xcctl subscription activation-status' to check pending activation requests.
+Use 'xcsh subscription addons --filter available' to see which addons can be activated.
+Use 'xcsh subscription activation-status' to check pending activation requests.
 
 EXIT CODES:
   0 - Activation successful or pending request created
   1 - Generic error (API failure, invalid arguments)
   9 - Feature not available (access denied, requires upgrade, contact sales)`,
 	Example: `  # Activate bot-defense addon
-  f5xcctl subscription activate --addon bot-defense
+  xcsh subscription activate --addon bot-defense
 
   # Activate addon in specific namespace
-  f5xcctl subscription activate --addon api-security -n production
+  xcsh subscription activate --addon api-security -n production
 
   # Get activation result as JSON
-  f5xcctl subscription activate --addon client-side-defense --output-format json`,
+  xcsh subscription activate --addon client-side-defense --output-format json`,
 	RunE: runSubscriptionActivate,
 }
 

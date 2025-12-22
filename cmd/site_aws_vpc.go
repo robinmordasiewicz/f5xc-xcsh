@@ -39,13 +39,13 @@ var awsVPCCmd = &cobra.Command{
 AWS VPC sites allow you to deploy F5 XC Customer Edge (CE) nodes in your
 AWS Virtual Private Cloud, enabling secure connectivity and edge services.`,
 	Example: `  # Create an AWS VPC site from a YAML file
-  f5xcctl site aws_vpc create -i aws-site.yaml
+  xcsh site aws_vpc create -i aws-site.yaml
 
   # Delete an AWS VPC site
-  f5xcctl site aws_vpc delete --name example-site
+  xcsh site aws_vpc delete --name example-site
 
   # Run Terraform to provision infrastructure
-  f5xcctl site aws_vpc run --name example-site --action apply --auto-approve`,
+  xcsh site aws_vpc run --name example-site --action apply --auto-approve`,
 }
 
 var awsVPCCreateCmd = &cobra.Command{
@@ -54,20 +54,20 @@ var awsVPCCreateCmd = &cobra.Command{
 	Long: `Create a new AWS VPC site in F5 Distributed Cloud.
 
 This command registers an AWS VPC site configuration. After creation,
-use 'f5xcctl site aws_vpc run --action apply' to provision the infrastructure.
+use 'xcsh site aws_vpc run --action apply' to provision the infrastructure.
 
 You can provide the site specification via:
 - YAML/JSON file using --input-file
 - Command line flags for common options`,
 	Example: `  # Create from YAML file
-  f5xcctl site aws_vpc create -i aws-site.yaml
+  xcsh site aws_vpc create -i aws-site.yaml
 
   # Create with command line flags
-  f5xcctl site aws_vpc create --name example-site --region us-west-2 \
+  xcsh site aws_vpc create --name example-site --region us-west-2 \
     --vpc-cidr 10.0.0.0/16 --cloud-creds example-aws-creds
 
   # Create with availability zones
-  f5xcctl site aws_vpc create --name example-site --region us-west-2 \
+  xcsh site aws_vpc create --name example-site --region us-west-2 \
     --azs us-west-2a,us-west-2b --cloud-creds example-aws-creds`,
 	RunE: runAWSVPCCreate,
 }
@@ -78,13 +78,13 @@ var awsVPCDeleteCmd = &cobra.Command{
 	Long: `Delete an AWS VPC site from F5 Distributed Cloud.
 
 Note: This only removes the site configuration from F5 XC. To fully clean up
-AWS resources, first run 'f5xcctl site aws_vpc run --action destroy' before
+AWS resources, first run 'xcsh site aws_vpc run --action destroy' before
 deleting the site configuration.`,
 	Example: `  # Delete a site (after destroying infrastructure)
-  f5xcctl site aws_vpc delete --name example-site
+  xcsh site aws_vpc delete --name example-site
 
   # Delete from a specific namespace
-  f5xcctl site aws_vpc delete --name example-site -n system`,
+  xcsh site aws_vpc delete --name example-site -n system`,
 	RunE: runAWSVPCDelete,
 }
 
@@ -94,12 +94,12 @@ var awsVPCReplaceCmd = &cobra.Command{
 	Long: `Replace an existing AWS VPC site configuration in F5 Distributed Cloud.
 
 This updates the site specification. After replacing, you may need to
-run 'f5xcctl site aws_vpc run --action apply' to apply infrastructure changes.`,
+run 'xcsh site aws_vpc run --action apply' to apply infrastructure changes.`,
 	Example: `  # Replace site configuration from file
-  f5xcctl site aws_vpc replace -i updated-site.yaml
+  xcsh site aws_vpc replace -i updated-site.yaml
 
   # Replace with specific name
-  f5xcctl site aws_vpc replace --name example-site -i updated-site.yaml`,
+  xcsh site aws_vpc replace --name example-site -i updated-site.yaml`,
 	RunE: runAWSVPCReplace,
 }
 
@@ -116,16 +116,16 @@ Available actions:
 - apply: Create or update infrastructure
 - destroy: Remove all infrastructure`,
 	Example: `  # Preview infrastructure changes
-  f5xcctl site aws_vpc run --name example-site --action plan
+  xcsh site aws_vpc run --name example-site --action plan
 
   # Apply infrastructure (with confirmation prompt)
-  f5xcctl site aws_vpc run --name example-site --action apply
+  xcsh site aws_vpc run --name example-site --action apply
 
   # Apply infrastructure automatically (for CI/CD)
-  f5xcctl site aws_vpc run --name example-site --action apply --auto-approve
+  xcsh site aws_vpc run --name example-site --action apply --auto-approve
 
   # Destroy infrastructure
-  f5xcctl site aws_vpc run --name example-site --action destroy --auto-approve`,
+  xcsh site aws_vpc run --name example-site --action destroy --auto-approve`,
 	RunE: runAWSVPCTerraform,
 }
 
@@ -357,7 +357,7 @@ func runAWSVPCTerraform(cmd *cobra.Command, args []string) error {
 	// Setup Terraform directory
 	tfDir := awsVPCFlags.terraformDir
 	if tfDir == "" {
-		tfDir = filepath.Join(os.TempDir(), "f5xcctl-terraform", awsVPCFlags.name)
+		tfDir = filepath.Join(os.TempDir(), "xcsh-terraform", awsVPCFlags.name)
 	}
 
 	if err := os.MkdirAll(tfDir, 0755); err != nil {

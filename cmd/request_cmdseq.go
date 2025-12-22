@@ -37,13 +37,13 @@ Supported operations:
   - delete: Delete all resources in the sequence
   - replace: Replace existing resources (requires --old-file)`,
 	Example: `  # Create resources from a sequence file
-  f5xcctl request command-sequence -i objects.yaml --operation create
+  xcsh request command-sequence -i objects.yaml --operation create
 
   # Delete resources from a sequence file
-  f5xcctl request command-sequence -i objects.yaml --operation delete
+  xcsh request command-sequence -i objects.yaml --operation delete
 
   # Replace resources (requires old file for comparison)
-  f5xcctl request command-sequence -i newobjects.yaml --old-file oldobjects.yaml --operation replace`,
+  xcsh request command-sequence -i newobjects.yaml --old-file oldobjects.yaml --operation replace`,
 	RunE: runCommandSequence,
 }
 

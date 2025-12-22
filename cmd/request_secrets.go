@@ -28,13 +28,13 @@ The secrets command provides tools for encrypting, decrypting, and managing
 secrets that can only be accessed by the F5 XC platform. This uses the
 blindfold encryption mechanism for secure secret storage.`,
 	Example: `  # Get the public key for encryption
-  f5xcctl request secrets get-public-key
+  xcsh request secrets get-public-key
 
   # Encrypt a secret
-  f5xcctl request secrets encrypt --policy-doc policy.json --public-key key.pem secret.txt
+  xcsh request secrets encrypt --policy-doc policy.json --public-key key.pem secret.txt
 
   # Build a Kubernetes secret bundle
-  f5xcctl request secrets build-blindfold-bundle --name example-secret --data secret.txt`,
+  xcsh request secrets build-blindfold-bundle --name example-secret --data secret.txt`,
 }
 
 // Encrypt command
@@ -52,10 +52,10 @@ var encryptCmd = &cobra.Command{
 The encryption uses the public key obtained from the F5 XC API
 and a policy document that defines the decryption policy.`,
 	Example: `  # Encrypt a secret with policy and public key
-  f5xcctl request secrets encrypt --policy-doc policy.json --public-key key.pem secret.txt
+  xcsh request secrets encrypt --policy-doc policy.json --public-key key.pem secret.txt
 
   # Encrypt and save to file
-  f5xcctl request secrets encrypt --policy-doc policy.json --public-key key.pem --outfile encrypted.txt secret.txt`,
+  xcsh request secrets encrypt --policy-doc policy.json --public-key key.pem --outfile encrypted.txt secret.txt`,
 	Args: cobra.ExactArgs(1),
 	RunE: runEncrypt,
 }
@@ -73,10 +73,10 @@ var getPublicKeyCmd = &cobra.Command{
 The public key is used with the blindfold encryption mechanism to
 encrypt secrets that can only be decrypted by the F5 XC platform.`,
 	Example: `  # Get the current public key
-  f5xcctl request secrets get-public-key
+  xcsh request secrets get-public-key
 
   # Get a specific key version
-  f5xcctl request secrets get-public-key --key-version 1`,
+  xcsh request secrets get-public-key --key-version 1`,
 	RunE: runGetPublicKey,
 }
 
@@ -89,7 +89,7 @@ var getPolicyDocumentCmd = &cobra.Command{
 The policy document defines which services and conditions can decrypt
 the encrypted secrets.`,
 	Example: `  # Get the policy document
-  f5xcctl request secrets get-policy-document`,
+  xcsh request secrets get-policy-document`,
 	RunE: runGetPolicyDocument,
 }
 
@@ -102,7 +102,7 @@ var secretInfoCmd = &cobra.Command{
 This command reads an encrypted secret file and displays metadata
 about the encryption, including the policy and key version used.`,
 	Example: `  # Show info about an encrypted secret
-  f5xcctl request secrets secret-info encrypted-secret.txt`,
+  xcsh request secrets secret-info encrypted-secret.txt`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSecretInfo,
 }
@@ -123,13 +123,13 @@ var buildBlindfoldBundleCmd = &cobra.Command{
 This command creates a Kubernetes Secret resource with the encrypted
 secret data, ready to be applied to a cluster managed by F5 XC.`,
 	Example: `  # Build a secret bundle
-  f5xcctl request secrets build-blindfold-bundle --name example-secret --data secret.txt
+  xcsh request secrets build-blindfold-bundle --name example-secret --data secret.txt
 
   # Build with custom namespace
-  f5xcctl request secrets build-blindfold-bundle --name example-secret --namespace production --data secret.txt
+  xcsh request secrets build-blindfold-bundle --name example-secret --namespace production --data secret.txt
 
   # Build and save to file
-  f5xcctl request secrets build-blindfold-bundle --name example-secret --data secret.txt --outfile k8s-secret.yaml`,
+  xcsh request secrets build-blindfold-bundle --name example-secret --data secret.txt --outfile k8s-secret.yaml`,
 	RunE: runBuildBlindfoldBundle,
 }
 
@@ -139,7 +139,7 @@ func init() {
 	// Enable AI-agent-friendly error handling for invalid subcommands
 	secretsCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl request secrets <action> [flags]\n\nAvailable actions:\n  encrypt, get-public-key, get-policy-document, secret-info, build-blindfold-bundle\n\nRun 'f5xcctl request secrets --help' for usage", args[0], cmd.CommandPath())
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh request secrets <action> [flags]\n\nAvailable actions:\n  encrypt, get-public-key, get-policy-document, secret-info, build-blindfold-bundle\n\nRun 'xcsh request secrets --help' for usage", args[0], cmd.CommandPath())
 		}
 		return cmd.Help()
 	}

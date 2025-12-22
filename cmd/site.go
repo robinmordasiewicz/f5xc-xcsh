@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Site-specific flags matching original f5xcctl
+// Site-specific flags matching original xcsh
 var (
 	siteLogColor    bool
 	siteLogFabulous bool
@@ -33,22 +33,22 @@ LIFECYCLE:
   3. Monitor site status until nodes report ONLINE
   4. Optionally destroy infrastructure and delete site
 
-AI assistants should use 'f5xcctl site <provider> --help' for provider-specific
-options and 'f5xcctl site <provider> run --help' for Terraform actions.`,
+AI assistants should use 'xcsh site <provider> --help' for provider-specific
+options and 'xcsh site <provider> run --help' for Terraform actions.`,
 	Example: `  # Create an AWS VPC site from configuration
-  f5xcctl site aws_vpc create -i aws-site.yaml
+  xcsh site aws_vpc create -i aws-site.yaml
 
   # Delete an AWS VPC site
-  f5xcctl site aws_vpc delete --name example-site
+  xcsh site aws_vpc delete --name example-site
 
   # Run Terraform to provision AWS infrastructure
-  f5xcctl site aws_vpc run --name example-site --action apply --auto-approve
+  xcsh site aws_vpc run --name example-site --action apply --auto-approve
 
   # Create an Azure VNet site
-  f5xcctl site azure_vnet create -i azure-site.yaml
+  xcsh site azure_vnet create -i azure-site.yaml
 
   # Check available site commands
-  f5xcctl site aws_vpc --help`,
+  xcsh site aws_vpc --help`,
 }
 
 func init() {
@@ -57,13 +57,13 @@ func init() {
 	// Enable AI-agent-friendly error handling for invalid subcommands
 	siteCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl site <provider> <action> [flags]\n\nAvailable providers:\n  aws_vpc, azure_vnet\n\nRun 'f5xcctl site --help' for usage", args[0], cmd.CommandPath())
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh site <provider> <action> [flags]\n\nAvailable providers:\n  aws_vpc, azure_vnet\n\nRun 'xcsh site --help' for usage", args[0], cmd.CommandPath())
 		}
 		return cmd.Help()
 	}
 	siteCmd.SuggestionsMinimumDistance = 2
 
-	// Site-specific flags matching original f5xcctl
+	// Site-specific flags matching original xcsh
 	siteCmd.PersistentFlags().BoolVar(&siteLogColor, "log-color", true, "Enable colored log output.")
 	siteCmd.PersistentFlags().BoolVar(&siteLogFabulous, "log-fabulous", true, "Enable enhanced log formatting.")
 	siteCmd.PersistentFlags().IntVar(&siteLogLevel, "log-level", 3, "Set the logging verbosity level for site operations.")

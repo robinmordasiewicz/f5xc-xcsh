@@ -33,13 +33,13 @@ EXCEEDED.
 AI assistants should check quota availability before deploying resources to ensure
 deployment will not fail due to quota limits.`,
 	Example: `  # Show tenant quota usage
-  f5xcctl subscription quota
+  xcsh subscription quota
 
   # Show quota as JSON for automation
-  f5xcctl subscription quota --output-format json
+  xcsh subscription quota --output-format json
 
   # Show only object quotas
-  f5xcctl subscription quota --type objects`,
+  xcsh subscription quota --type objects`,
 	RunE: runSubscriptionQuota,
 }
 
@@ -192,7 +192,7 @@ func outputQuotaTable(quotaInfo *subscription.QuotaUsageInfo) error {
 
 	fmt.Println("HINTS")
 	fmt.Println(strings.Repeat("-", 75))
-	fmt.Println("  Use 'f5xcctl subscription validate --resource-type <type> --count <n>' to check")
+	fmt.Println("  Use 'xcsh subscription validate --resource-type <type> --count <n>' to check")
 	fmt.Println("  if you can create additional resources before deployment.")
 	fmt.Println()
 

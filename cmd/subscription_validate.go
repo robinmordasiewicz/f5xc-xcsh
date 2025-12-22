@@ -34,19 +34,19 @@ Exit codes:
 AI assistants should run this validation before 'terraform apply' to catch
 quota and feature issues early, preventing deployment failures.`,
 	Example: `  # Validate if you can create 5 more HTTP load balancers
-  f5xcctl subscription validate --resource-type http_loadbalancer --count 5
+  xcsh subscription validate --resource-type http_loadbalancer --count 5
 
   # Validate if bot-defense feature is available
-  f5xcctl subscription validate --feature bot-defense
+  xcsh subscription validate --feature bot-defense
 
   # Validate multiple resources at once
-  f5xcctl subscription validate --resource-type origin_pool --count 10
+  xcsh subscription validate --resource-type origin_pool --count 10
 
   # Get validation result as JSON for automation
-  f5xcctl subscription validate --resource-type http_loadbalancer --count 5 --output-format json
+  xcsh subscription validate --resource-type http_loadbalancer --count 5 --output-format json
 
   # Validate in a specific namespace
-  f5xcctl subscription validate --resource-type http_loadbalancer --count 5 -n shared`,
+  xcsh subscription validate --resource-type http_loadbalancer --count 5 -n shared`,
 	RunE: runSubscriptionValidate,
 }
 
@@ -71,7 +71,7 @@ func runSubscriptionValidate(cmd *cobra.Command, args []string) error {
 
 	// Require at least one validation type
 	if validateResourceType == "" && validateFeature == "" {
-		return fmt.Errorf("at least one of --resource-type or --feature is required\n\nUsage:\n  f5xcctl subscription validate --resource-type <type> --count <n>\n  f5xcctl subscription validate --feature <name>")
+		return fmt.Errorf("at least one of --resource-type or --feature is required\n\nUsage:\n  xcsh subscription validate --resource-type <type> --count <n>\n  xcsh subscription validate --feature <name>")
 	}
 
 	namespace := GetSubscriptionNamespace()
@@ -292,8 +292,8 @@ func outputValidationTable(result *subscription.ValidationResult) error {
 		fmt.Println("HINTS")
 		fmt.Println(strings.Repeat("-", 75))
 		fmt.Println("  Deployment may fail due to validation errors above.")
-		fmt.Println("  Use 'f5xcctl subscription quota' to see current quota usage.")
-		fmt.Println("  Use 'f5xcctl subscription addons' to see available addon services.")
+		fmt.Println("  Use 'xcsh subscription quota' to see current quota usage.")
+		fmt.Println("  Use 'xcsh subscription addons' to see available addon services.")
 		fmt.Println()
 	}
 

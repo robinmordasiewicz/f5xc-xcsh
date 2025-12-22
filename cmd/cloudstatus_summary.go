@@ -25,13 +25,13 @@ Includes:
 
 Use --brief for a condensed one-liner per section.`,
 	Example: `  # Full summary
-  f5xcctl cloudstatus summary
+  xcsh cloudstatus summary
 
   # Brief summary
-  f5xcctl cloudstatus summary --brief
+  xcsh cloudstatus summary --brief
 
   # JSON output for parsing
-  f5xcctl cloudstatus summary --output-format json`,
+  xcsh cloudstatus summary --output-format json`,
 	RunE: runCloudstatusSummary,
 }
 

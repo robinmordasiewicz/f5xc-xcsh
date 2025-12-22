@@ -27,7 +27,7 @@ View your current subscription tier (Standard/Advanced), active and available
 addon services, tenant-level quota limits and usage, and validate Terraform
 plans against subscription capabilities.
 
-AI assistants should use 'f5xcctl subscription show --output-format json' to
+AI assistants should use 'xcsh subscription show --output-format json' to
 understand tenant capabilities before attempting resource deployments.
 
 SUBSCRIPTION TIERS:
@@ -50,31 +50,31 @@ QUOTA ENFORCEMENT:
   Quotas are enforced at the TENANT level, not per-namespace. Resource counts
   across all namespaces accumulate toward the same tenant-wide quota limits.`,
 	Example: `  # Show subscription summary
-  f5xcctl subscription show
+  xcsh subscription show
 
   # Show subscription as JSON for automation
-  f5xcctl subscription show --output-format json
+  xcsh subscription show --output-format json
 
   # List active addon services
-  f5xcctl subscription addons --filter active
+  xcsh subscription addons --filter active
 
   # List all addon services including denied ones
-  f5xcctl subscription addons --all
+  xcsh subscription addons --all
 
   # Check tenant quota usage
-  f5xcctl subscription quota
+  xcsh subscription quota
 
   # Check quota usage as JSON
-  f5xcctl subscription quota --output-format json
+  xcsh subscription quota --output-format json
 
   # Validate if you can create 5 more HTTP load balancers
-  f5xcctl subscription validate --resource-type http_loadbalancer --count 5
+  xcsh subscription validate --resource-type http_loadbalancer --count 5
 
   # Validate if bot-defense feature is available
-  f5xcctl subscription validate --feature bot-defense
+  xcsh subscription validate --feature bot-defense
 
   # Get subscription spec for AI assistants
-  f5xcctl subscription --spec --output-format json`,
+  xcsh subscription --spec --output-format json`,
 	// Note: We don't override PersistentPreRunE here to let root's PersistentPreRunE run
 	// and initialize the API client. The subscription client is lazily initialized in GetSubscriptionClient()
 }
@@ -92,7 +92,7 @@ func init() {
 		}
 
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl subscription <command> [flags]\n\nAvailable Commands:\n  show, addons, quota, validate\n\nRun 'f5xcctl subscription --help' for usage", args[0], cmd.CommandPath())
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh subscription <command> [flags]\n\nAvailable Commands:\n  show, addons, quota, validate\n\nRun 'xcsh subscription --help' for usage", args[0], cmd.CommandPath())
 		}
 		return cmd.Help()
 	}

@@ -27,16 +27,16 @@ var cloudstatusIncidentsCmd = &cobra.Command{
 	Short: "View and manage F5 Cloud Status incidents.",
 	Long:  `View incident history and details for F5 Distributed Cloud services.`,
 	Example: `  # List all incidents
-  f5xcctl cloudstatus incidents list
+  xcsh cloudstatus incidents list
 
   # List active (unresolved) incidents
-  f5xcctl cloudstatus incidents active
+  xcsh cloudstatus incidents active
 
   # Get incident details
-  f5xcctl cloudstatus incidents get <incident-id>
+  xcsh cloudstatus incidents get <incident-id>
 
   # Show incident timeline
-  f5xcctl cloudstatus incidents updates <incident-id>`,
+  xcsh cloudstatus incidents updates <incident-id>`,
 }
 
 var cloudstatusIncidentsListCmd = &cobra.Command{
@@ -50,19 +50,19 @@ Supports filtering by:
 - Since: Time range (1h, 1d, 7d, 30d)
 - Limit: Maximum number of results`,
 	Example: `  # List all incidents
-  f5xcctl cloudstatus incidents list
+  xcsh cloudstatus incidents list
 
   # Filter by status
-  f5xcctl cloudstatus incidents list --status monitoring
+  xcsh cloudstatus incidents list --status monitoring
 
   # Filter by impact
-  f5xcctl cloudstatus incidents list --impact major
+  xcsh cloudstatus incidents list --impact major
 
   # Recent incidents (last 7 days)
-  f5xcctl cloudstatus incidents list --since 7d
+  xcsh cloudstatus incidents list --since 7d
 
   # Limit results
-  f5xcctl cloudstatus incidents list --limit 10`,
+  xcsh cloudstatus incidents list --limit 10`,
 	RunE: runIncidentsList,
 }
 
@@ -70,8 +70,8 @@ var cloudstatusIncidentsActiveCmd = &cobra.Command{
 	Use:   "active",
 	Short: "List only unresolved incidents.",
 	Long:  `List all currently active (unresolved) incidents.`,
-	Example: `  f5xcctl cloudstatus incidents active
-  f5xcctl cloudstatus incidents active --output-format json`,
+	Example: `  xcsh cloudstatus incidents active
+  xcsh cloudstatus incidents active --output-format json`,
 	RunE: runIncidentsActive,
 }
 
@@ -79,7 +79,7 @@ var cloudstatusIncidentsGetCmd = &cobra.Command{
 	Use:     "get <incident-id>",
 	Short:   "Get details for a specific incident.",
 	Long:    `Get detailed information about a specific incident by its ID.`,
-	Example: `  f5xcctl cloudstatus incidents get kcxnsw71xmwp`,
+	Example: `  xcsh cloudstatus incidents get kcxnsw71xmwp`,
 	Args:    cobra.ExactArgs(1),
 	RunE:    runIncidentsGet,
 }
@@ -88,7 +88,7 @@ var cloudstatusIncidentsUpdatesCmd = &cobra.Command{
 	Use:     "updates <incident-id>",
 	Short:   "Show incident update timeline.",
 	Long:    `Display the chronological timeline of updates for a specific incident.`,
-	Example: `  f5xcctl cloudstatus incidents updates kcxnsw71xmwp`,
+	Example: `  xcsh cloudstatus incidents updates kcxnsw71xmwp`,
 	Args:    cobra.ExactArgs(1),
 	RunE:    runIncidentsUpdates,
 }

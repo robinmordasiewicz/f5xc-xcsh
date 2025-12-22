@@ -26,7 +26,7 @@ var configureFlags struct {
 var configureCmd = &cobra.Command{
 	Use:    "configure",
 	Short:  "Configure CLI settings.",
-	Hidden: true, // Hide from help to match original f5xcctl
+	Hidden: true, // Hide from help to match original xcsh
 	Long: `Configure the F5 Distributed Cloud CLI settings.
 
 This command helps you set up your CLI configuration including:
@@ -36,15 +36,15 @@ This command helps you set up your CLI configuration including:
 
 The configuration is saved to ~/.f5xcconfig (or the path specified by --config).`,
 	Example: `  # Interactive configuration
-  f5xcctl configure
+  xcsh configure
 
   # Non-interactive configuration
-  f5xcctl configure --server-url https://example-tenant.console.ves.volterra.io/api \
-    --p12-bundle ~/.f5xcctl/example-cert.p12
+  xcsh configure --server-url https://example-tenant.console.ves.volterra.io/api \
+    --p12-bundle ~/.xcsh/example-cert.p12
 
   # Configure with certificate and key
-  f5xcctl configure --server-url https://example-tenant.console.ves.volterra.io/api \
-    --cert ~/.f5xcctl/cert.pem --key ~/.f5xcctl/key.pem`,
+  xcsh configure --server-url https://example-tenant.console.ves.volterra.io/api \
+    --cert ~/.xcsh/cert.pem --key ~/.xcsh/key.pem`,
 	RunE: runConfigure,
 }
 
@@ -53,7 +53,7 @@ var configureShowCmd = &cobra.Command{
 	Short: "Show current configuration",
 	Long:  `Display the current CLI configuration settings.`,
 	Example: `  # Show current configuration
-  f5xcctl configure show`,
+  xcsh configure show`,
 	RunE: runConfigureShow,
 }
 
@@ -70,13 +70,13 @@ Available keys:
   - api-token: Enable API token auth (true/false)
   - output: Default output format (json, yaml, table)`,
 	Example: `  # Set the server URL
-  f5xcctl configure set server-url https://example-tenant.console.ves.volterra.io/api
+  xcsh configure set server-url https://example-tenant.console.ves.volterra.io/api
 
   # Enable API token authentication
-  f5xcctl configure set api-token true
+  xcsh configure set api-token true
 
   # Set the default output format
-  f5xcctl configure set output yaml`,
+  xcsh configure set output yaml`,
 	Args: cobra.ExactArgs(2),
 	RunE: runConfigureSet,
 }
@@ -248,7 +248,7 @@ func runConfigureShow(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			fmt.Printf("No configuration file found at %s\n", configPath)
-			fmt.Println("Run 'f5xcctl configure' to create one.")
+			fmt.Println("Run 'xcsh configure' to create one.")
 			return nil
 		}
 		return fmt.Errorf("failed to read config: %w", err)

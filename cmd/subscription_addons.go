@@ -32,22 +32,22 @@ Use --filter to show only specific addon types:
 AI assistants should check addon status before deploying resources that depend
 on specific services like bot-defense, api-security, or web-app-firewall.`,
 	Example: `  # List all addon services (excluding denied by default)
-  f5xcctl subscription addons
+  xcsh subscription addons
 
   # List all addon services including denied ones
-  f5xcctl subscription addons --all
+  xcsh subscription addons --all
 
   # List only active addons
-  f5xcctl subscription addons --filter active
+  xcsh subscription addons --filter active
 
   # List available addons that can be activated
-  f5xcctl subscription addons --filter available
+  xcsh subscription addons --filter available
 
   # List addons that need upgrade or sales contact
-  f5xcctl subscription addons --filter denied
+  xcsh subscription addons --filter denied
 
   # Output as JSON for automation
-  f5xcctl subscription addons --output-format json`,
+  xcsh subscription addons --output-format json`,
 	RunE: runSubscriptionAddons,
 }
 
@@ -156,7 +156,7 @@ func outputAddonsTable(addons []subscription.AddonServiceInfo) error {
 		fmt.Println(strings.Repeat("-", 90))
 		fmt.Println("  Addons with 'Upgrade Req' need a plan upgrade to access")
 		fmt.Println("  Addons with 'Sales' require contacting F5 sales")
-		fmt.Println("  Use 'f5xcctl subscription validate --feature <name>' to check specific addon availability")
+		fmt.Println("  Use 'xcsh subscription validate --feature <name>' to check specific addon availability")
 		fmt.Println()
 	}
 

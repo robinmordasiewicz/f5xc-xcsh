@@ -177,7 +177,7 @@ func init() {
 	RegisterSpecFlag(rootCmd)
 
 	// Set custom version template for clean one-liner output (--version, -v)
-	rootCmd.SetVersionTemplate("f5xcctl version {{.Version}}\n")
+	rootCmd.SetVersionTemplate("xcsh version {{.Version}}\n")
 
 	// Set custom help template with Environment Variables section
 	rootCmd.SetHelpTemplate(helpTemplateWithEnvVars())
@@ -459,10 +459,10 @@ func helpTemplateWithEnvVars() string {
 	// Add examples section
 	examplesSection := `
 Examples:
-  f5xcctl identity list namespace                    List all namespaces
-  f5xcctl load_balancer get http_loadbalancer -n shared   Get a specific resource
-  f5xcctl request /api/web/namespaces                     Execute custom API request
-  f5xcctl --spec --output-format json                     Output CLI spec for automation
+  xcsh identity list namespace                    List all namespaces
+  xcsh load_balancer get http_loadbalancer -n shared   Get a specific resource
+  xcsh request /api/web/namespaces                     Execute custom API request
+  xcsh --spec --output-format json                     Output CLI spec for automation
 `
 
 	// Add configuration precedence section
@@ -471,7 +471,7 @@ Configuration:
   Config file:  ~/.f5xcconfig
   Priority:     CLI flags > environment variables > config file > defaults
 
-Learn more:    https://robinmordasiewicz.github.io/f5xcctl/
+Learn more:    https://robinmordasiewicz.github.io/xcsh/
 `
 
 	// Custom template based on Cobra's default, with additional sections

@@ -22,16 +22,16 @@ var cloudstatusMaintenanceCmd = &cobra.Command{
 	Short:   "View scheduled maintenance windows.",
 	Long:    `View scheduled maintenance windows for F5 Distributed Cloud services.`,
 	Example: `  # List all maintenance windows
-  f5xcctl cloudstatus maintenance list
+  xcsh cloudstatus maintenance list
 
   # List upcoming maintenance
-  f5xcctl cloudstatus maintenance upcoming
+  xcsh cloudstatus maintenance upcoming
 
   # List active (in-progress) maintenance
-  f5xcctl cloudstatus maintenance active
+  xcsh cloudstatus maintenance active
 
   # Get maintenance details
-  f5xcctl cloudstatus maintenance get <maintenance-id>`,
+  xcsh cloudstatus maintenance get <maintenance-id>`,
 }
 
 var cloudstatusMaintenanceListCmd = &cobra.Command{
@@ -45,10 +45,10 @@ Status values:
 - verifying: Maintenance is being verified
 - completed: Maintenance has finished`,
 	Example: `  # List all maintenance
-  f5xcctl cloudstatus maintenance list
+  xcsh cloudstatus maintenance list
 
   # Filter by status
-  f5xcctl cloudstatus maintenance list --status scheduled`,
+  xcsh cloudstatus maintenance list --status scheduled`,
 	RunE: runMaintenanceList,
 }
 
@@ -56,8 +56,8 @@ var cloudstatusMaintenanceUpcomingCmd = &cobra.Command{
 	Use:   "upcoming",
 	Short: "List upcoming maintenance windows.",
 	Long:  `List only upcoming (scheduled but not started) maintenance windows.`,
-	Example: `  f5xcctl cloudstatus maintenance upcoming
-  f5xcctl cloudstatus maintenance upcoming --output-format json`,
+	Example: `  xcsh cloudstatus maintenance upcoming
+  xcsh cloudstatus maintenance upcoming --output-format json`,
 	RunE: runMaintenanceUpcoming,
 }
 
@@ -65,7 +65,7 @@ var cloudstatusMaintenanceActiveCmd = &cobra.Command{
 	Use:     "active",
 	Short:   "List in-progress maintenance windows.",
 	Long:    `List maintenance windows that are currently in progress.`,
-	Example: `  f5xcctl cloudstatus maintenance active`,
+	Example: `  xcsh cloudstatus maintenance active`,
 	RunE:    runMaintenanceActive,
 }
 
@@ -73,7 +73,7 @@ var cloudstatusMaintenanceGetCmd = &cobra.Command{
 	Use:     "get <maintenance-id>",
 	Short:   "Get details for a specific maintenance window.",
 	Long:    `Get detailed information about a specific maintenance window by its ID.`,
-	Example: `  f5xcctl cloudstatus maintenance get xp5l86wjjzyy`,
+	Example: `  xcsh cloudstatus maintenance get xp5l86wjjzyy`,
 	Args:    cobra.ExactArgs(1),
 	RunE:    runMaintenanceGet,
 }

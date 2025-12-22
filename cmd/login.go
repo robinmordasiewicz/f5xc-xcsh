@@ -26,7 +26,7 @@ var loginFlags struct {
 var loginCmd = &cobra.Command{
 	Use:    "login",
 	Short:  "Log in to F5 Distributed Cloud.",
-	Hidden: true, // Hide from help to match original f5xcctl
+	Hidden: true, // Hide from help to match original xcsh
 	Long: `Authenticate with F5 Distributed Cloud.
 
 This command validates your credentials and saves them to the configuration file.
@@ -35,39 +35,39 @@ You can authenticate using:
   - Certificate and key files
   - API token (set F5XC_API_TOKEN environment variable)
 
-After successful login, you can use all f5xcctl commands to manage your resources.`,
+After successful login, you can use all xcsh commands to manage your resources.`,
 	Example: `  # Login with P12 bundle
-  f5xcctl login --tenant example-tenant --p12-bundle ~/.f5xcctl/example-cert.p12
+  xcsh login --tenant example-tenant --p12-bundle ~/.xcsh/example-cert.p12
 
   # Login with certificate and key
-  f5xcctl login --tenant example-tenant --cert ~/.f5xcctl/cert.pem --key ~/.f5xcctl/key.pem
+  xcsh login --tenant example-tenant --cert ~/.xcsh/cert.pem --key ~/.xcsh/key.pem
 
   # Login with API token
   export F5XC_API_TOKEN='your-api-token'
-  f5xcctl login --tenant example-tenant --api-token
+  xcsh login --tenant example-tenant --api-token
 
   # Login (using existing configuration)
-  f5xcctl login`,
+  xcsh login`,
 	RunE: runLogin,
 }
 
 var logoutCmd = &cobra.Command{
 	Use:    "logout",
 	Short:  "Log out from F5 Distributed Cloud.",
-	Hidden: true, // Hide from help to match original f5xcctl
+	Hidden: true, // Hide from help to match original xcsh
 	Long:   `Clear saved credentials from the configuration file.`,
 	Example: `  # Log out
-  f5xcctl logout`,
+  xcsh logout`,
 	RunE: runLogout,
 }
 
 var whoamiCmd = &cobra.Command{
 	Use:    "whoami",
 	Short:  "Show current user information",
-	Hidden: true, // Hide from help to match original f5xcctl
+	Hidden: true, // Hide from help to match original xcsh
 	Long:   `Display information about the currently authenticated user.`,
 	Example: `  # Show current user
-  f5xcctl whoami`,
+  xcsh whoami`,
 	RunE: runWhoami,
 }
 
@@ -241,7 +241,7 @@ func runLogout(cmd *cobra.Command, args []string) error {
 func runWhoami(cmd *cobra.Command, args []string) error {
 	client := GetClient()
 	if client == nil {
-		return fmt.Errorf("not logged in - run 'f5xcctl login' first")
+		return fmt.Errorf("not logged in - run 'xcsh login' first")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

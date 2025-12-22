@@ -9,7 +9,7 @@ type EnvVarSpec struct {
 	Sensitive   bool   `json:"sensitive,omitempty" yaml:"sensitive,omitempty"`
 }
 
-// EnvVarRegistry contains all environment variables supported by f5xcctl.
+// EnvVarRegistry contains all environment variables supported by xcsh.
 // This registry is the single source of truth for --help and --spec output.
 var EnvVarRegistry = []EnvVarSpec{
 	{

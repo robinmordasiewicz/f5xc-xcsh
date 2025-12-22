@@ -141,15 +141,15 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Build f5xcctl
+      - name: Build xcsh
         if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
-        run: go build -o f5xcctl .
+        run: go build -o xcsh .
 
       - name: Generate spec and compute hash
         if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
         id: spec-hash
         run: |
-          ./f5xcctl --spec > spec.json
+          ./xcsh --spec > spec.json
           SPEC_HASH=$(sha256sum spec.json | cut -d' ' -f1)
           echo "hash=$SPEC_HASH" >> $GITHUB_OUTPUT
           echo "$SPEC_HASH" > spec-hash-current.txt
@@ -162,9 +162,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: spec-hash-cached.txt
-          key: f5xcctl-spec-hash-${{ github.run_number }}
+          key: xcsh-spec-hash-${{ github.run_number }}
           restore-keys: |
-            f5xcctl-spec-hash-
+            xcsh-spec-hash-
 
       - name: Compare spec hashes
         if: github.event_name != 'workflow_run' || steps.check-release.outputs.recent_release == 'true'
@@ -235,13 +235,13 @@ jobs:
       - name: Install Python dependencies
         run: pip install jinja2 pyyaml
 
-      - name: Build f5xcctl
-        run: go build -o f5xcctl .
+      - name: Build xcsh
+        run: go build -o xcsh .
 
       - name: Generate command documentation
         run: |
           python scripts/generate-docs.py \
-            --f5xcctl ./f5xcctl \
+            --xcsh ./xcsh \
             --output docs/commands \
             --clean \
             --update-mkdocs
@@ -287,7 +287,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: spec-hash-cached.txt
-          key: f5xcctl-spec-hash-${{ github.run_number }}
+          key: xcsh-spec-hash-${{ github.run_number }}
 
       - name: Upload generated docs
         uses: actions/upload-artifact@v4
@@ -332,7 +332,7 @@ jobs:
 
           Write-Host "Latest release: $latestTag"
           $version = $latestTag.TrimStart('v')
-          $expectedAsset = "f5xcctl_${version}_windows_amd64.zip"
+          $expectedAsset = "xcsh_${version}_windows_amd64.zip"
 
           Write-Host "Waiting for asset: $expectedAsset"
 
@@ -359,20 +359,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Download and install f5xcctl
+      - name: Download and install xcsh
         id: install
         shell: pwsh
         run: |
           $version = "${{ steps.wait-assets.outputs.version }}"
-          $url = "https://github.com/${{ github.repository }}/releases/download/v$version/f5xcctl_${version}_windows_amd64.zip"
+          $url = "https://github.com/${{ github.repository }}/releases/download/v$version/xcsh_${version}_windows_amd64.zip"
 
-          Write-Host "Downloading f5xcctl $version from $url"
+          Write-Host "Downloading xcsh $version from $url"
 
           # Capture installation output
           $output = @()
 
           # Download with retry logic and exponential backoff
-          $output += "Downloading f5xcctl_${version}_windows_amd64.zip..."
+          $output += "Downloading xcsh_${version}_windows_amd64.zip..."
 
           $maxRetries = 5
           $baseDelay = 5
@@ -381,7 +381,7 @@ jobs:
           for ($i = 1; $i -le $maxRetries; $i++) {
             Write-Host "Download attempt $i of $maxRetries..."
             try {
-              Invoke-WebRequest -Uri $url -OutFile f5xcctl.zip -TimeoutSec 120
+              Invoke-WebRequest -Uri $url -OutFile xcsh.zip -TimeoutSec 120
               $downloaded = $true
               Write-Host "Download successful on attempt $i"
               break
@@ -396,17 +396,17 @@ jobs:
           }
 
           if (-not $downloaded) {
-            Write-Host "::error::Failed to download f5xcctl after $maxRetries attempts"
+            Write-Host "::error::Failed to download xcsh after $maxRetries attempts"
             exit 1
           }
 
           $output += "Download complete."
 
           # Extract
-          $installDir = "$env:LOCALAPPDATA\Programs\f5xcctl"
+          $installDir = "$env:LOCALAPPDATA\Programs\xcsh"
           $output += "Extracting to $installDir..."
           New-Item -ItemType Directory -Force -Path $installDir | Out-Null
-          Expand-Archive -Path f5xcctl.zip -DestinationPath $installDir -Force
+          Expand-Archive -Path xcsh.zip -DestinationPath $installDir -Force
           $output += "Extraction complete."
 
           # Add to PATH
@@ -415,14 +415,14 @@ jobs:
           # Verify installation
           $output += ""
           $output += "Verifying installation:"
-          $versionOutput = & "$installDir\f5xcctl.exe" version 2>&1
+          $versionOutput = & "$installDir\xcsh.exe" version 2>&1
           $output += $versionOutput
 
           # Write output to file
           $output | Out-File -FilePath install-output.txt -Encoding utf8
 
           # Parse version info
-          $versionLine = $versionOutput | Select-String -Pattern "f5xcctl version"
+          $versionLine = $versionOutput | Select-String -Pattern "xcsh version"
           $commitLine = $versionOutput | Select-String -Pattern "commit:"
           $builtLine = $versionOutput | Select-String -Pattern "built:"
           $goLine = $versionOutput | Select-String -Pattern "go:"
@@ -487,11 +487,11 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: docs/commands/
-          key: f5xcctl-docs-${{ needs.check-spec.outputs.spec_hash }}
+          key: xcsh-docs-${{ needs.check-spec.outputs.spec_hash }}
           restore-keys: |
-            f5xcctl-docs-
+            xcsh-docs-
 
-      - name: Install f5xcctl via Homebrew
+      - name: Install xcsh via Homebrew
         id: homebrew-install
         run: |
           MAX_RETRIES=5
@@ -503,7 +503,7 @@ jobs:
             # Clean state before retry (except first attempt)
             if [ $i -gt 1 ]; then
               echo "Cleaning up before retry..."
-              brew uninstall --cask f5xcctl 2>/dev/null || true
+              brew uninstall --cask xcsh 2>/dev/null || true
               brew untap robinmordasiewicz/tap 2>/dev/null || true
             fi
 
@@ -522,14 +522,14 @@ jobs:
             brew update
 
             # Try to install (using cask) and capture output
-            if brew install --cask f5xcctl 2>&1 | tee homebrew-output.txt; then
-              echo "Successfully installed f5xcctl on attempt $i"
+            if brew install --cask xcsh 2>&1 | tee homebrew-output.txt; then
+              echo "Successfully installed xcsh on attempt $i"
               echo "homebrew_success=true" >> $GITHUB_OUTPUT
               exit 0
             fi
 
             if [ $i -eq $MAX_RETRIES ]; then
-              echo "::warning::Failed to install f5xcctl via Homebrew after $MAX_RETRIES attempts"
+              echo "::warning::Failed to install xcsh via Homebrew after $MAX_RETRIES attempts"
               echo "homebrew_success=false" >> $GITHUB_OUTPUT
               exit 0
             fi
@@ -540,34 +540,34 @@ jobs:
             sleep $DELAY
           done
 
-      - name: Capture f5xcctl version
+      - name: Capture xcsh version
         if: steps.homebrew-install.outputs.homebrew_success == 'true'
-        id: f5xcctl-version
+        id: xcsh-version
         run: |
           # Ensure Homebrew bin is in PATH (ARM and Intel macOS)
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
           # Debug: Show Caskroom contents
           echo "=== Caskroom contents ==="
-          ls -la /opt/homebrew/Caskroom/f5xcctl/ 2>/dev/null || ls -la /usr/local/Caskroom/f5xcctl/ 2>/dev/null || echo "No Caskroom found"
+          ls -la /opt/homebrew/Caskroom/xcsh/ 2>/dev/null || ls -la /usr/local/Caskroom/xcsh/ 2>/dev/null || echo "No Caskroom found"
 
           # Debug: Show what's in the version directory
           echo "=== Version directory contents ==="
-          ls -la /opt/homebrew/Caskroom/f5xcctl/*/ 2>/dev/null || ls -la /usr/local/Caskroom/f5xcctl/*/ 2>/dev/null || echo "No version directory found"
+          ls -la /opt/homebrew/Caskroom/xcsh/*/ 2>/dev/null || ls -la /usr/local/Caskroom/xcsh/*/ 2>/dev/null || echo "No version directory found"
 
           # Debug: Show bin directory for symlinks
-          echo "=== Homebrew bin directory (f5xcctl entries) ==="
-          ls -la /opt/homebrew/bin/f5xcctl* 2>/dev/null || ls -la /usr/local/bin/f5xcctl* 2>/dev/null || echo "No f5xcctl in bin"
+          echo "=== Homebrew bin directory (xcsh entries) ==="
+          ls -la /opt/homebrew/bin/xcsh* 2>/dev/null || ls -la /usr/local/bin/xcsh* 2>/dev/null || echo "No xcsh in bin"
 
-          # Find f5xcctl - check multiple locations including Caskroom
+          # Find xcsh - check multiple locations including Caskroom
           F5XCCTL_PATH=""
 
           # 1. Try which (if symlink was created)
-          F5XCCTL_PATH=$(which f5xcctl 2>/dev/null || true)
+          F5XCCTL_PATH=$(which xcsh 2>/dev/null || true)
 
           # 2. Try common symlink locations
           if [ -z "$F5XCCTL_PATH" ] || [ ! -x "$F5XCCTL_PATH" ]; then
-            for path in /opt/homebrew/bin/f5xcctl /usr/local/bin/f5xcctl; do
+            for path in /opt/homebrew/bin/xcsh /usr/local/bin/xcsh; do
               if [ -x "$path" ]; then
                 F5XCCTL_PATH="$path"
                 break
@@ -577,26 +577,26 @@ jobs:
 
           # 3. Try Caskroom location directly (ARM Mac)
           if [ -z "$F5XCCTL_PATH" ] || [ ! -x "$F5XCCTL_PATH" ]; then
-            F5XCCTL_PATH=$(find /opt/homebrew/Caskroom/f5xcctl -name f5xcctl -type f 2>/dev/null | head -1 || true)
+            F5XCCTL_PATH=$(find /opt/homebrew/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
           fi
 
           # 4. Try Caskroom location directly (Intel Mac)
           if [ -z "$F5XCCTL_PATH" ] || [ ! -x "$F5XCCTL_PATH" ]; then
-            F5XCCTL_PATH=$(find /usr/local/Caskroom/f5xcctl -name f5xcctl -type f 2>/dev/null | head -1 || true)
+            F5XCCTL_PATH=$(find /usr/local/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
           fi
 
-          echo "f5xcctl found at: $F5XCCTL_PATH"
+          echo "xcsh found at: $F5XCCTL_PATH"
 
           if [ -z "$F5XCCTL_PATH" ] || [ ! -x "$F5XCCTL_PATH" ]; then
-            echo "::error::f5xcctl binary not found after Homebrew installation"
+            echo "::error::xcsh binary not found after Homebrew installation"
             exit 1
           fi
 
-          VERSION_OUTPUT=$("$F5XCCTL_PATH" version 2>/dev/null || f5xcctl version)
+          VERSION_OUTPUT=$("$F5XCCTL_PATH" version 2>/dev/null || xcsh version)
           echo "Full version output:"
           echo "$VERSION_OUTPUT"
 
-          # Parse new format: f5xcctl version X.Y.Z
+          # Parse new format: xcsh version X.Y.Z
           VERSION=$(echo "$VERSION_OUTPUT" | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
           COMMIT=$(echo "$VERSION_OUTPUT" | grep 'commit:' | awk '{print $2}' || echo "")
           BUILT=$(echo "$VERSION_OUTPUT" | grep 'built:' | awk '{print $2}' || echo "")
@@ -648,11 +648,11 @@ jobs:
 
           # Use Homebrew output if available, otherwise use GitHub API data
           if [ "${{ steps.homebrew-install.outputs.homebrew_success }}" == "true" ]; then
-            VERSION="${{ steps.f5xcctl-version.outputs.version }}"
-            COMMIT="${{ steps.f5xcctl-version.outputs.commit }}"
-            BUILT="${{ steps.f5xcctl-version.outputs.built }}"
-            GO_VERSION="${{ steps.f5xcctl-version.outputs.go_version }}"
-            PLATFORM="${{ steps.f5xcctl-version.outputs.platform }}"
+            VERSION="${{ steps.xcsh-version.outputs.version }}"
+            COMMIT="${{ steps.xcsh-version.outputs.commit }}"
+            BUILT="${{ steps.xcsh-version.outputs.built }}"
+            GO_VERSION="${{ steps.xcsh-version.outputs.go_version }}"
+            PLATFORM="${{ steps.xcsh-version.outputs.platform }}"
           elif [ "${{ steps.release-info.outputs.has_release }}" == "true" ]; then
             VERSION="${{ steps.release-info.outputs.version }}"
             COMMIT="${{ steps.release-info.outputs.commit }}"
@@ -695,7 +695,7 @@ jobs:
 
           # Expected asset name for darwin arm64 (what the macOS runner will download)
           VERSION="${LATEST_TAG#v}"
-          EXPECTED_ASSET="f5xcctl_${VERSION}_darwin_arm64.tar.gz"
+          EXPECTED_ASSET="xcsh_${VERSION}_darwin_arm64.tar.gz"
 
           echo "Waiting for asset: $EXPECTED_ASSET"
 
@@ -735,8 +735,8 @@ jobs:
           set +e  # Disable errexit to capture exit codes properly
 
           # Uninstall homebrew version first if present (try both cask and formula)
-          if command -v f5xcctl &>/dev/null; then
-            brew uninstall --cask f5xcctl 2>/dev/null || brew uninstall f5xcctl 2>/dev/null || true
+          if command -v xcsh &>/dev/null; then
+            brew uninstall --cask xcsh 2>/dev/null || brew uninstall xcsh 2>/dev/null || true
           fi
 
           # Download install script with retry and exponential backoff
@@ -790,7 +790,7 @@ jobs:
             echo "Install attempt $INSTALL_RETRY_COUNT of $INSTALL_MAX_RETRIES..."
 
             # Clean up any partial installation from previous attempt
-            rm -rf $HOME/.local/bin/f5xcctl 2>/dev/null || true
+            rm -rf $HOME/.local/bin/xcsh 2>/dev/null || true
             rm -f install-output.txt 2>/dev/null || true
 
             # Run the install script and capture output
@@ -873,7 +873,7 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          echo "Successfully installed f5xcctl version: $VERSION"
+          echo "Successfully installed xcsh version: $VERSION"
 
       - name: Generate script docs with real output
         if: steps.script-install.outputs.version != ''
@@ -919,27 +919,27 @@ jobs:
 
           # Capture clone output
           echo "Cloning repository..."
-          CLONE_OUTPUT_RAW=$(git clone https://github.com/${{ github.repository }}.git f5xcctl 2>&1)
+          CLONE_OUTPUT_RAW=$(git clone https://github.com/${{ github.repository }}.git xcsh 2>&1)
           CLONE_OUTPUT=$(cat <<EOF
           $ git clone https://github.com/${{ github.repository }}.git
           $CLONE_OUTPUT_RAW
-          $ cd f5xcctl
+          $ cd xcsh
           EOF
           )
           echo "clone_output<<EOFCLONE" >> $GITHUB_OUTPUT
           echo "$CLONE_OUTPUT" >> $GITHUB_OUTPUT
           echo "EOFCLONE" >> $GITHUB_OUTPUT
 
-          cd f5xcctl
+          cd xcsh
 
           # Capture build output
-          echo "Building f5xcctl..."
-          BUILD_OUTPUT_RAW=$(go build -o f5xcctl . 2>&1) || true
+          echo "Building xcsh..."
+          BUILD_OUTPUT_RAW=$(go build -o xcsh . 2>&1) || true
           if [ -z "$BUILD_OUTPUT_RAW" ]; then
             BUILD_OUTPUT_RAW="(no output - build successful)"
           fi
           BUILD_OUTPUT=$(cat <<EOF
-          $ go build -o f5xcctl .
+          $ go build -o xcsh .
           $BUILD_OUTPUT_RAW
           EOF
           )
@@ -949,9 +949,9 @@ jobs:
 
           # Capture version output
           echo "Verifying build..."
-          VERSION_OUTPUT_RAW=$(./f5xcctl version 2>&1)
+          VERSION_OUTPUT_RAW=$(./xcsh version 2>&1)
           VERSION_OUTPUT=$(cat <<EOF
-          $ ./f5xcctl version
+          $ ./xcsh version
           $VERSION_OUTPUT_RAW
           EOF
           )
@@ -964,11 +964,11 @@ jobs:
           COMMIT=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-          go build -ldflags="-X github.com/robinmordasiewicz/f5xcctl/cmd.Version=dev -X github.com/robinmordasiewicz/f5xcctl/cmd.GitCommit=$COMMIT -X github.com/robinmordasiewicz/f5xcctl/cmd.BuildDate=$BUILD_DATE" -o f5xcctl .
+          go build -ldflags="-X github.com/robinmordasiewicz/xcsh/cmd.Version=dev -X github.com/robinmordasiewicz/xcsh/cmd.GitCommit=$COMMIT -X github.com/robinmordasiewicz/xcsh/cmd.BuildDate=$BUILD_DATE" -o xcsh .
 
-          LDFLAGS_VERSION_RAW=$(./f5xcctl version 2>&1)
+          LDFLAGS_VERSION_RAW=$(./xcsh version 2>&1)
           LDFLAGS_BUILD_OUTPUT=$(cat <<EOF
-          $ ./f5xcctl version
+          $ ./xcsh version
           $LDFLAGS_VERSION_RAW
           EOF
           )
@@ -1080,7 +1080,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: docs/commands/
-          key: f5xcctl-docs-${{ needs.check-spec.outputs.spec_hash }}
+          key: xcsh-docs-${{ needs.check-spec.outputs.spec_hash }}
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v4

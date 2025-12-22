@@ -21,16 +21,16 @@ AVAILABLE SERVICES:
   rpc               Execute raw RPC calls to F5 XC API endpoints
   command-sequence  Run multiple API operations from a sequence file
 
-AI assistants should use 'f5xcctl request <service> --help' for service-specific
+AI assistants should use 'xcsh request <service> --help' for service-specific
 options and available actions.`,
 	Example: `  # Encrypt a secret using policy-based encryption
-  f5xcctl request secrets encrypt --policy-doc policy.yaml --public-key key.pem secret
+  xcsh request secrets encrypt --policy-doc policy.yaml --public-key key.pem secret
 
   # Execute a command sequence from file
-  f5xcctl request command-sequence -i commands.yaml
+  xcsh request command-sequence -i commands.yaml
 
   # Check available request services
-  f5xcctl request --help`,
+  xcsh request --help`,
 }
 
 func init() {
@@ -39,7 +39,7 @@ func init() {
 	// Enable AI-agent-friendly error handling for invalid subcommands
 	requestCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
-			return fmt.Errorf("unknown command %q for %q\n\nUsage: f5xcctl request <service> <action> [flags]\n\nAvailable services:\n  secrets, rpc, command-sequence\n\nRun 'f5xcctl request --help' for usage", args[0], cmd.CommandPath())
+			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh request <service> <action> [flags]\n\nAvailable services:\n  secrets, rpc, command-sequence\n\nRun 'xcsh request --help' for usage", args[0], cmd.CommandPath())
 		}
 		return cmd.Help()
 	}

@@ -181,19 +181,19 @@ jobs:
           mkdir -p dist
 
           # Linux amd64
-          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/f5xcctl-linux-amd64 .
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/xcsh-linux-amd64 .
 
           # Linux arm64
-          GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/f5xcctl-linux-arm64 .
+          GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/xcsh-linux-arm64 .
 
           # macOS amd64
-          GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/f5xcctl-darwin-amd64 .
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/xcsh-darwin-amd64 .
 
           # macOS arm64
-          GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/f5xcctl-darwin-arm64 .
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/xcsh-darwin-arm64 .
 
           # Windows amd64
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/f5xcctl-windows-amd64.exe .
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/xcsh-windows-amd64.exe .
 
       - name: List built binaries
         run: ls -la dist/

@@ -28,19 +28,19 @@ var cloudstatusComponentsCmd = &cobra.Command{
 	Short: "Manage and view F5 Cloud Status components.",
 	Long:  `View and filter F5 Distributed Cloud service components and their status.`,
 	Example: `  # List all components
-  f5xcctl cloudstatus components list
+  xcsh cloudstatus components list
 
   # List degraded components only
-  f5xcctl cloudstatus components list --degraded-only
+  xcsh cloudstatus components list --degraded-only
 
   # List PoP components
-  f5xcctl cloudstatus components list --pop
+  xcsh cloudstatus components list --pop
 
   # Get a specific component
-  f5xcctl cloudstatus components get <component-id>
+  xcsh cloudstatus components get <component-id>
 
   # List component groups
-  f5xcctl cloudstatus components groups`,
+  xcsh cloudstatus components groups`,
 }
 
 var cloudstatusComponentsListCmd = &cobra.Command{
@@ -55,19 +55,19 @@ Supports filtering by:
 - Services: Show only service components
 - Degraded: Show only non-operational components`,
 	Example: `  # List all components
-  f5xcctl cloudstatus components list
+  xcsh cloudstatus components list
 
   # Filter by group
-  f5xcctl cloudstatus components list --group "Services"
+  xcsh cloudstatus components list --group "Services"
 
   # Filter by status
-  f5xcctl cloudstatus components list --status degraded_performance
+  xcsh cloudstatus components list --status degraded_performance
 
   # Show only degraded components
-  f5xcctl cloudstatus components list --degraded-only
+  xcsh cloudstatus components list --degraded-only
 
   # Show only PoP components
-  f5xcctl cloudstatus components list --pop`,
+  xcsh cloudstatus components list --pop`,
 	RunE: runComponentsList,
 }
 
@@ -76,10 +76,10 @@ var cloudstatusComponentsGetCmd = &cobra.Command{
 	Short: "Get details for a specific component.",
 	Long:  `Get detailed information about a specific component by its ID or name.`,
 	Example: `  # Get by ID
-  f5xcctl cloudstatus components get ybcpdlwcdq67
+  xcsh cloudstatus components get ybcpdlwcdq67
 
   # Get by name (partial match)
-  f5xcctl cloudstatus components get "Portal"`,
+  xcsh cloudstatus components get "Portal"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runComponentsGet,
 }
@@ -89,10 +89,10 @@ var cloudstatusComponentsGroupsCmd = &cobra.Command{
 	Short: "List component groups.",
 	Long:  `List all component groups and their hierarchy.`,
 	Example: `  # List groups
-  f5xcctl cloudstatus components groups
+  xcsh cloudstatus components groups
 
   # List groups with component counts
-  f5xcctl cloudstatus components groups --with-components`,
+  xcsh cloudstatus components groups --with-components`,
 	RunE: runComponentsGroups,
 }
 

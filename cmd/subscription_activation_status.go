@@ -26,19 +26,19 @@ Shows all addon services with pending activation requests, including:
   - Current subscription state
   - Expected processing time based on activation type
 
-Use this command after 'f5xcctl subscription activate' to monitor
+Use this command after 'xcsh subscription activate' to monitor
 the progress of managed activation requests.`,
 	Example: `  # Show all pending activation requests
-  f5xcctl subscription activation-status
+  xcsh subscription activation-status
 
   # Check status for a specific addon
-  f5xcctl subscription activation-status --addon bot-defense
+  xcsh subscription activation-status --addon bot-defense
 
   # Get status as JSON for automation
-  f5xcctl subscription activation-status --output-format json
+  xcsh subscription activation-status --output-format json
 
   # Check status in a specific namespace
-  f5xcctl subscription activation-status -n production`,
+  xcsh subscription activation-status -n production`,
 	RunE: runSubscriptionActivationStatus,
 }
 
@@ -108,8 +108,8 @@ func outputActivationStatusTable(result *subscription.ActivationStatusResult) er
 
 		fmt.Println("HINTS")
 		fmt.Println(strings.Repeat("-", 85))
-		fmt.Println("  Use 'f5xcctl subscription addons --filter available' to see activatable addons")
-		fmt.Println("  Use 'f5xcctl subscription activate --addon <name>' to activate an addon")
+		fmt.Println("  Use 'xcsh subscription addons --filter available' to see activatable addons")
+		fmt.Println("  Use 'xcsh subscription activate --addon <name>' to activate an addon")
 		fmt.Println()
 		return nil
 	}

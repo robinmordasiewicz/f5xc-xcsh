@@ -33,19 +33,19 @@ Continuously polls the status API and displays updates. Useful for:
 
 Press Ctrl+C to stop monitoring.`,
 	Example: `  # Default monitoring (60s interval)
-  f5xcctl cloudstatus watch
+  xcsh cloudstatus watch
 
   # Faster polling (30s interval)
-  f5xcctl cloudstatus watch --interval 30
+  xcsh cloudstatus watch --interval 30
 
   # Watch specific components
-  f5xcctl cloudstatus watch --components "Portal,DNS"
+  xcsh cloudstatus watch --components "Portal,DNS"
 
   # Exit when status changes (for alerting)
-  f5xcctl cloudstatus watch --exit-on-change
+  xcsh cloudstatus watch --exit-on-change
 
   # Keep history visible (no screen clear)
-  f5xcctl cloudstatus watch --no-clear`,
+  xcsh cloudstatus watch --no-clear`,
 	RunE: runWatch,
 }
 

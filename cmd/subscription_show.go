@@ -23,13 +23,13 @@ AI assistants should call this command first to understand tenant capabilities
 before attempting to deploy resources that may require specific subscription tiers
 or addon services.`,
 	Example: `  # Show subscription summary in table format
-  f5xcctl subscription show
+  xcsh subscription show
 
   # Show subscription as JSON for automation
-  f5xcctl subscription show --output-format json
+  xcsh subscription show --output-format json
 
   # Show subscription as YAML
-  f5xcctl subscription show --output-format yaml`,
+  xcsh subscription show --output-format yaml`,
 	RunE: runSubscriptionShow,
 }
 
@@ -157,9 +157,9 @@ func outputSubscriptionTable(info *subscription.SubscriptionInfo) error {
 	// Hints for AI assistants
 	fmt.Println("HINTS")
 	fmt.Println(strings.Repeat("-", 60))
-	fmt.Println("  Use 'f5xcctl subscription addons' for detailed addon list")
-	fmt.Println("  Use 'f5xcctl subscription quota' for full quota details")
-	fmt.Println("  Use 'f5xcctl subscription validate' before terraform apply")
+	fmt.Println("  Use 'xcsh subscription addons' for detailed addon list")
+	fmt.Println("  Use 'xcsh subscription quota' for full quota details")
+	fmt.Println("  Use 'xcsh subscription validate' before terraform apply")
 	fmt.Println()
 
 	return nil

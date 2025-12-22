@@ -30,16 +30,16 @@ access to F5 XC services. Available regions:
 - oceania
 - middle-east`,
 	Example: `  # List all PoPs
-  f5xcctl cloudstatus pops list
+  xcsh cloudstatus pops list
 
   # List PoPs in a specific region
-  f5xcctl cloudstatus pops list --region north-america
+  xcsh cloudstatus pops list --region north-america
 
   # Get regional status summary
-  f5xcctl cloudstatus pops status
+  xcsh cloudstatus pops status
 
   # Get status for a specific region
-  f5xcctl cloudstatus pops status --region europe`,
+  xcsh cloudstatus pops status --region europe`,
 }
 
 var cloudstatusPopsListCmd = &cobra.Command{
@@ -47,11 +47,11 @@ var cloudstatusPopsListCmd = &cobra.Command{
 	Short: "List PoP locations.",
 	Long:  `List all Point of Presence (PoP) locations and their current status.`,
 	Example: `  # List all PoPs
-  f5xcctl cloudstatus pops list
+  xcsh cloudstatus pops list
 
   # List PoPs by region
-  f5xcctl cloudstatus pops list --region north-america
-  f5xcctl cloudstatus pops list --region europe`,
+  xcsh cloudstatus pops list --region north-america
+  xcsh cloudstatus pops list --region europe`,
 	RunE: runPopsList,
 }
 
@@ -60,10 +60,10 @@ var cloudstatusPopsStatusCmd = &cobra.Command{
 	Short: "Get aggregated status by region.",
 	Long:  `Get aggregated status summary for each geographic region.`,
 	Example: `  # All regions summary
-  f5xcctl cloudstatus pops status
+  xcsh cloudstatus pops status
 
   # Specific region
-  f5xcctl cloudstatus pops status --region asia`,
+  xcsh cloudstatus pops status --region asia`,
 	RunE: runPopsStatus,
 }
 

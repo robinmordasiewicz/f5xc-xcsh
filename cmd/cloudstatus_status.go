@@ -29,14 +29,14 @@ Exit Codes:
   3 - Critical system outage (critical)
   4 - System under maintenance (maintenance)`,
 	Example: `  # Quick status check
-  f5xcctl cloudstatus status
+  xcsh cloudstatus status
 
   # CI/CD health gate (exits with appropriate code)
-  f5xcctl cloudstatus status --quiet
+  xcsh cloudstatus status --quiet
   if [ $? -ne 0 ]; then echo "F5 XC has issues"; fi
 
   # JSON output for parsing
-  f5xcctl cloudstatus status --output-format json`,
+  xcsh cloudstatus status --output-format json`,
 	RunE: runCloudstatusStatus,
 }
 

@@ -26,7 +26,7 @@ var rpcCmd = &cobra.Command{
 	Use:     "rpc",
 	Short:   "RPC Invocation",
 	Long:    `RPC Invocation`,
-	Example: `f5xcctl request rpc registration.CustomAPI.RegistrationApprove -i approval_req.yaml`,
+	Example: `xcsh request rpc registration.CustomAPI.RegistrationApprove -i approval_req.yaml`,
 	Args:    cobra.MaximumNArgs(1),
 	RunE:    runRPC,
 }

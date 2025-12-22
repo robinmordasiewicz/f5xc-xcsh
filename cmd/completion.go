@@ -12,25 +12,25 @@ var completionCmd = &cobra.Command{
 	Long: `To load completions:
 
 Bash:
-  $ source <(f5xcctl completion bash)
+  $ source <(xcsh completion bash)
 
   # To load completions for each session, execute once:
   Linux:
-    $ f5xcctl completion bash > /etc/bash_completion.d/f5xcctl
+    $ xcsh completion bash > /etc/bash_completion.d/xcsh
   MacOS:
-    $ f5xcctl completion bash > /usr/local/etc/bash_completion.d/f5xcctl
+    $ xcsh completion bash > /usr/local/etc/bash_completion.d/xcsh
 
 Zsh:
-  $ source <(f5xcctl completion zsh)
+  $ source <(xcsh completion zsh)
 
   # To load completions for each session, execute once:
-  $ f5xcctl completion zsh > "${fpath[1]}/_f5xcctl"
+  $ xcsh completion zsh > "${fpath[1]}/_xcsh"
 
 Fish:
-  $ f5xcctl completion fish | source
+  $ xcsh completion fish | source
 
   # To load completions for each session, execute once:
-  $ f5xcctl completion fish > ~/.config/fish/completions/f5xcctl.fish
+  $ xcsh completion fish > ~/.config/fish/completions/xcsh.fish
 `,
 	DisableFlagsInUseLine: true,
 	ValidArgs:             []string{"bash", "zsh", "fish"},
