@@ -23,11 +23,11 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from naming import to_human_readable, normalize_acronyms, to_title_case
 
 
-def load_spec(f5xcctl_path: str) -> dict:
+def load_spec(cli_binary_path: str) -> dict:
     """Run f5xcctl --spec and return the full CLI spec."""
     try:
         result = subprocess.run(
-            [f5xcctl_path, "--spec", "--output-format", "json"],
+            [cli_binary_path, "--spec", "--output-format", "json"],
             capture_output=True,
             text=True,
             check=True
@@ -41,11 +41,11 @@ def load_spec(f5xcctl_path: str) -> dict:
         sys.exit(1)
 
 
-def load_cloudstatus_spec(f5xcctl_path: str) -> dict:
+def load_cloudstatus_spec(cli_binary_path: str) -> dict:
     """Run f5xcctl cloudstatus --spec for extended cloudstatus-specific data."""
     try:
         result = subprocess.run(
-            [f5xcctl_path, "cloudstatus", "--spec", "--output-format", "json"],
+            [cli_binary_path, "cloudstatus", "--spec", "--output-format", "json"],
             capture_output=True,
             text=True,
             check=True
@@ -311,12 +311,12 @@ def generate_nav_structure(cloudstatus_cmd: dict) -> list:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate cloudstatus documentation from f5xcctl --spec"
+        description="Generate cloudstatus documentation from CLI --spec"
     )
     parser.add_argument(
-        "--f5xcctl",
-        default="./f5xcctl",
-        help="Path to f5xcctl binary (default: ./f5xcctl)"
+        "--cli-binary",
+        default="./xcsh",
+        help="Path to CLI binary (default: ./xcsh)"
     )
     parser.add_argument(
         "--output",
@@ -342,13 +342,13 @@ def main():
     args = parser.parse_args()
 
     # Resolve paths
-    f5xcctl_path = Path(args.f5xcctl).resolve()
+    cli_binary_path = Path(args.cli_binary).resolve()
     output_dir = Path(args.output)
     templates_dir = Path(args.templates)
 
-    # Verify f5xcctl exists
-    if not f5xcctl_path.exists():
-        print(f"Error: f5xcctl not found at {f5xcctl_path}", file=sys.stderr)
+    # Verify CLI binary exists
+    if not cli_binary_path.exists():
+        print(f"Error: CLI binary not found at {cli_binary_path}", file=sys.stderr)
         sys.exit(1)
 
     # Verify templates exist
@@ -356,9 +356,9 @@ def main():
         print(f"Error: Templates directory not found at {templates_dir}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Loading spec from {f5xcctl_path}...")
-    spec = load_spec(str(f5xcctl_path))
-    extended_spec = load_cloudstatus_spec(str(f5xcctl_path))
+    print(f"Loading spec from {cli_binary_path}...")
+    spec = load_spec(str(cli_binary_path))
+    extended_spec = load_cloudstatus_spec(str(cli_binary_path))
 
     # Find cloudstatus command
     cloudstatus_cmd = find_cloudstatus_command(spec)

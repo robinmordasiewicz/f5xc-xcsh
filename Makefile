@@ -238,11 +238,11 @@ PYTHON ?= python3
 DOCS_OUTPUT = docs/commands
 DOCS_TEMPLATES = scripts/templates
 
-# Generate documentation from f5xcctl --spec
+# Generate documentation from CLI spec
 docs: build
 	@echo "Generating documentation from CLI spec..."
 	@$(PYTHON) scripts/generate-docs.py \
-		--f5xcctl ./$(BINARY_NAME) \
+		--cli-binary ./$(BINARY_NAME) \
 		--output $(DOCS_OUTPUT) \
 		--templates $(DOCS_TEMPLATES) \
 		--clean \
@@ -272,7 +272,7 @@ docs: build
 docs-nav: build
 	@echo "Generating navigation structure..."
 	@$(PYTHON) scripts/generate-docs.py \
-		--f5xcctl ./$(BINARY_NAME) \
+		--cli-binary ./$(BINARY_NAME) \
 		--nav-only \
 		--update-mkdocs
 	@echo "Navigation updated in mkdocs.yml"
@@ -392,7 +392,7 @@ docs-all: build
 	@echo ""
 	@echo "Step 1/4: Command documentation..."
 	@$(PYTHON) scripts/generate-docs.py \
-		--f5xcctl ./$(BINARY_NAME) \
+		--cli-binary ./$(BINARY_NAME) \
 		--output $(DOCS_OUTPUT) \
 		--templates $(DOCS_TEMPLATES) \
 		--clean \
