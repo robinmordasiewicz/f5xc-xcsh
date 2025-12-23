@@ -159,10 +159,109 @@ jobs:
           fi
           echo "✅ All critical resources have schemas"
 
+  verify-domains:
+    name: Verify Domains
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Download enriched API specifications
+        run: ./scripts/download-specs.sh
+
+      - name: Regenerate domains
+        run: go run scripts/generate-domains.go
+
+      - name: Check for uncommitted changes
+        run: |
+          if ! git diff --quiet pkg/types/domains_generated.go; then
+            echo "::error::Domain file is out of sync with OpenAPI specs!"
+            echo "Run 'make generate-domains' locally and commit the changes."
+            git diff pkg/types/domains_generated.go
+            exit 1
+          fi
+          echo "✅ Domains are up to date."
+
+      - name: Verify idempotency
+        run: |
+          echo "Running domain generation twice to verify idempotency..."
+          cp pkg/types/domains_generated.go /tmp/domains_first.go
+          go run scripts/generate-domains.go 2>/dev/null
+          if ! diff -q pkg/types/domains_generated.go /tmp/domains_first.go > /dev/null; then
+            echo "::error::Domain generation is not idempotent!"
+            diff pkg/types/domains_generated.go /tmp/domains_first.go
+            exit 1
+          fi
+          echo "✅ Domain generation is idempotent"
+
+      - name: Validate upstream domains count
+        run: |
+          echo "Validating domain count matches upstream specs..."
+          DOMAIN_COUNT=$(grep -c '".*": {' pkg/types/domains_generated.go)
+          EXPECTED_COUNT=48
+          if [ "$DOMAIN_COUNT" -ne "$EXPECTED_COUNT" ]; then
+            echo "::warning::Domain count changed from expected $EXPECTED_COUNT to $DOMAIN_COUNT"
+            echo "This may indicate upstream spec changes. Review carefully."
+          fi
+          echo "✅ Domains validated: $DOMAIN_COUNT domains"
+
+  spec-quality:
+    name: Validate Spec Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Download enriched API specifications
+        run: ./scripts/download-specs.sh
+
+      - name: Validate spec quality
+        id: validate
+        run: |
+          echo "🔍 Running spec quality validation..."
+          go run scripts/validate-specs.go --report > /tmp/validation-report.json
+          ISSUES=$(jq '.summary.total_issues // 0' /tmp/validation-report.json)
+          CRITICAL=$(jq '.summary.critical_issues // 0' /tmp/validation-report.json)
+          echo "Found $ISSUES total issues ($CRITICAL critical)"
+
+          # Warn on any critical issues, but don't fail
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "::warning::Found $CRITICAL critical spec quality issues"
+            jq '.issues[] | select(.severity == "critical")' /tmp/validation-report.json
+          fi
+          echo "✅ Spec quality validation complete"
+
+      - name: Check metadata completeness
+        id: metadata
+        run: |
+          echo "🔍 Checking metadata completeness..."
+          go run scripts/check-missing-metadata.go \
+            --config .specs/domain_config.yaml \
+            --index .specs/index.json
+          echo "✅ Metadata check complete"
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, test, verify-schemas]
+    needs: [lint, test, verify-schemas, verify-domains]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

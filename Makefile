@@ -42,7 +42,8 @@ LLM_WORKERS?=8
         generate-schemas validate-schemas report-schemas generate-schemas-strict \
         generate-llm-descriptions generate-schemas-with-llm maybe-llm-descriptions \
         ci pre-commit pre-push verify-schemas-ci verify-lint-config \
-        download-specs download-specs-force
+        download-specs download-specs-force \
+        generate generate-domains generate-resources validate-generated ci-generate clean-generated
 
 # Default target
 all: build
@@ -343,6 +344,53 @@ generate-schemas-strict:
 	@go run scripts/generate-schemas.go -v -strict
 
 # =============================================================================
+# Domain-Based Code Generation
+# Idempotent code generation pipeline for dynamic domain synchronization
+# =============================================================================
+
+# Idempotent code generation pipeline
+# Generates both domain registry and resource schemas from upstream specs
+generate: download-specs generate-domains generate-resources validate-generated
+	@echo ""
+	@echo "✅ Code generation complete!"
+	@echo "   Domains: pkg/types/domains_generated.go"
+	@echo "   Resources: pkg/types/resources_generated.go"
+
+# Generate domain registry from upstream specs
+# Creates pkg/types/domains_generated.go with DomainRegistry and AliasRegistry
+generate-domains: download-specs
+	@echo "🏗️  Generating domains from upstream specs..."
+	@go run scripts/generate-domains.go
+	@echo "✓ Generated: pkg/types/domains_generated.go"
+
+# Generate resource schemas from upstream specs
+# Creates pkg/types/resources_generated.go (wrapper for existing generate-schemas.go)
+generate-resources: download-specs
+	@echo "🏗️  Generating resources from upstream specs..."
+	@go run scripts/generate-schemas.go -v -update-resources
+	@echo "✓ Generated: pkg/types/resources_generated.go"
+
+# Validate generated files are present and syntactically correct
+validate-generated:
+	@echo "🔍 Validating generated code..."
+	@test -f pkg/types/domains_generated.go || (echo "❌ domains_generated.go missing" && exit 1)
+	@test -f pkg/types/resources_generated.go || (echo "❌ resources_generated.go missing" && exit 1)
+	@echo "✓ All generated files present"
+
+# CI target: Ensure generated files are in sync with upstream specs
+# Performs clean regeneration and verifies idempotency
+ci-generate: clean-generated generate
+	@echo ""
+	@echo "🤖 Verifying generated files are idempotent..."
+	@git diff --exit-code pkg/types/domains_generated.go pkg/types/resources_generated.go > /dev/null || \
+		(echo "❌ Generated files differ from current commit"; echo "Run 'make generate' and commit changes"; git diff pkg/types/domains_generated.go pkg/types/resources_generated.go || true; exit 1)
+	@echo "✓ Generated files are up to date and idempotent"
+
+# Clean generated files (for ci-generate fresh rebuild)
+clean-generated:
+	@rm -f pkg/types/domains_generated.go pkg/types/resources_generated.go
+
+# =============================================================================
 # CI/CD Consistency Targets
 # These targets mirror the GitHub Actions CI pipeline for local development
 # =============================================================================
@@ -496,11 +544,16 @@ help:
 	@echo "  make download-specs-force - Force re-download specs (bypass cache)"
 	@echo ""
 	@echo "=== Code Generation Commands ==="
+	@echo "  make generate          - Run full idempotent generation pipeline"
+	@echo "  make generate-domains  - Generate domain registry from OpenAPI specs"
+	@echo "  make generate-resources - Generate resource schemas from OpenAPI specs"
 	@echo "  make generate-examples - Generate CLI examples from OpenAPI specs"
 	@echo "  make generate-schemas  - Generate resource schemas from OpenAPI specs"
+	@echo "  make validate-generated - Validate generated files are present"
 	@echo "  make validate-schemas  - Validate schemas without regenerating"
 	@echo "  make report-schemas    - Report missing specs and coverage"
 	@echo "  make generate-schemas-strict - Generate schemas, fail on missing critical"
+	@echo "  make ci-generate       - CI pipeline: clean + generate + verify idempotency"
 	@echo "  make generate-llm-descriptions - Generate LLM descriptions (requires Ollama)"
 	@echo "  make generate-schemas-with-llm - Regenerate schemas with LLM descriptions"
 	@echo "  make maybe-llm-descriptions    - Auto-detect Ollama and regenerate if available"

@@ -113,6 +113,93 @@ xcsh load_balancer list --help
 xcsh load_balancer list http_loadbalancer --help
 ```
 
+## Development & Domain System
+
+### Automated Domain Synchronization
+
+xcsh uses an **automated CI/CD-driven system** to keep domain definitions synchronized with upstream F5 Distributed Cloud API changes. This ensures the CLI always reflects the latest API structure without manual intervention.
+
+#### How It Works
+
+1. **Daily Checks**: GitHub Actions workflow (`sync-upstream-specs.yml`) checks for new upstream spec versions daily at 6 AM UTC
+2. **Automatic Regeneration**: When updates are detected, the system:
+   - Downloads latest enriched API specifications
+   - Regenerates domain and resource registries
+   - Validates code quality and tests pass
+   - Creates a pull request with all changes
+3. **Idempotent Generation**: Code generation is deterministic - running it twice with identical inputs produces byte-for-byte identical output
+4. **CI/CD Validation**: Every commit validates that generated files match upstream specs and are reproducible
+
+#### Domain Registry
+
+The domain registry (`pkg/types/domains_generated.go`) is **automatically generated** from upstream API specifications (``.specs/index.json`). It currently contains **48 domains** organized by functional area:
+
+- **Infrastructure**: cloud_infrastructure, site, site_management, container_services
+- **Security**: app_firewall, application_firewall, bot_and_threat_defense, network_security
+- **Networking**: network, dns, network_connectivity, vpn
+- **Observability**: observability_and_analytics, telemetry_and_insights, statistics
+- **Identity**: identity, user_and_account_management, users
+- **And 24 more...**
+
+#### Manual Domain Configuration
+
+Team-specific domain customization is managed in `.specs/domain_config.yaml`:
+
+```yaml
+# Domain aliases (short command shortcuts)
+aliases:
+  load_balancer: [lb]
+  security: [sec]
+  networking: [net]
+  infrastructure: [infra]
+
+# Deprecated domains with migration guidance
+deprecated_domains:
+  config:
+    maps_to: system
+    reason: "Configuration management merged into system domain"
+    deprecated_since: "v1.0.25"
+
+# Missing metadata requiring upstream attention
+missing_metadata:
+  - domain: api_security
+    missing_field: "is_preview"
+    reason: "Need to mark preview/beta domains"
+```
+
+This file is **version-controlled** and survives automated spec updates, allowing teams to maintain consistent domain aliases across releases.
+
+#### For Developers
+
+To regenerate domain definitions:
+
+```bash
+# Full generation pipeline
+make generate
+
+# Just regenerate domains
+make generate-domains
+
+# Verify idempotency (CI safety check)
+make ci-generate
+```
+
+The generation pipeline:
+1. Downloads latest specs via `scripts/download-specs.sh`
+2. Runs `scripts/generate-domains.go` to create domain registry
+3. Runs `scripts/generate-schemas.go` to create resource schemas
+4. Validates against `scripts/validate-specs.go`
+
+#### Upstream Spec Quality
+
+When spec organization issues are detected, the system can automatically report them to the upstream repository. Use the GitHub issue template to report specification problems:
+
+- Missing metadata fields
+- Resource classification issues
+- Domain organization concerns
+
+See `.github/ISSUE_TEMPLATE/upstream-spec-quality.md` for the standardized reporting format.
+
 ## License
 
 This project is open source. See the LICENSE file for details.

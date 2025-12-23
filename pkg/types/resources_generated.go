@@ -11,23 +11,23 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "address_allocator",
 		CLIName:           "address-allocator",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/address_allocators",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "advertise_policy",
 		CLIName:           "advertise-policy",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/advertise_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -60,7 +60,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "alert",
 		CLIName:           "alert",
-		Description:       "Alert may be generated based on the metrics or based on severity level in the logs. All alerts are scoped by \\\\ntenant and namespace and tagged with the following default labels that can be used to fetch\\\\nthe desired alerts.\\\\n\\\\n\\\\\\\"alertname\\\\\\\" - Name of the alert. This uniquely identifies the alert rule/configuration that generated the alert.\\\\n\\\\\\\"type\\\\\\\" - Type of the alert. Type is used to associate alert to a configuration object or any user visible entity.\\\\n         For example, virtual host, virtual network, app_type, etc.\\\\n\\\\\\\"identifier\\\\\\\" - Identifier of the alert. For virtual-network, this would be the name of the virtual-network.\\\\n\\\\\\\"severity\\\\\\\" - Indicates the severity of the alert. Valid values are minor, major, critical.\\\\n\\\\nAlert may have additional labels associated depending on the labels associated with the metric used to configure the alert rule.\\\\nAlerts can be queried by specifying one or more of the above labels in the match filter.\\\\nIf the match filter is not specified, then all the alerts for the tenant and corresponding namespace in the request will be returned in the response.",
+		Description:       "Alert may be generated based on the metrics or based on severity level in the logs. All alerts are scoped by \\\\\\\\\\\\\\\\ntenant and namespace and tagged with the following default labels that can be used to fetch\\\\\\\\\\\\\\\\nthe desired alerts.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"alertname\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" - Name of the alert. This uniquely identifies the alert rule/configuration that generated the alert.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"type\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" - Type of the alert. Type is used to associate alert to a configuration object or any user visible entity.\\\\\\\\\\\\\\\\n         For example, virtual host, virtual network, app_type, etc.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"identifier\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" - Identifier of the alert. For virtual-network, this would be the name of the virtual-network.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"severity\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" - Indicates the severity of the alert. Valid values are minor, major, critical.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAlert may have additional labels associated depending on the labels associated with the metric used to configure the alert rule.\\\\\\\\\\\\\\\\nAlerts can be queried by specifying one or more of the above labels in the match filter.\\\\\\\\\\\\\\\\nIf the match filter is not specified, then all the alerts for the tenant and corresponding namespace in the request will be returned in the response.",
 		APIPath:           "/api/data/namespaces/{namespace}/alerts",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -69,51 +69,51 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "alert_policy",
 		CLIName:           "alert-policy",
-		Description:       "F5 Distributed Cloud Observability API specifications",
+		Description:       "F5 Distributed Cloud Statistics API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/alert_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "observability",
-		Domains:           []string{"observability"},
+		PrimaryDomain:     "statistics",
+		Domains:           []string{"statistics"},
 	})
 
 	Register(&ResourceType{
 		Name:              "alert_receiver",
 		CLIName:           "alert-receiver",
-		Description:       "F5 Distributed Cloud Observability API specifications",
+		Description:       "F5 Distributed Cloud Statistics API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/alert_receivers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "observability",
-		Domains:           []string{"observability"},
+		PrimaryDomain:     "statistics",
+		Domains:           []string{"statistics"},
 	})
 
 	Register(&ResourceType{
 		Name:              "api_credential",
 		CLIName:           "api-credential",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud Api API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/api_credentials",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		Domains:           []string{"api", "identity", "user_and_account_management"},
 	})
 
 	Register(&ResourceType{
 		Name:              "api_definition",
 		CLIName:           "api-definition",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Api API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/api_definitions",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"api", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "api_group",
 		CLIName:           "api-group",
-		Description:       "The api_group construct provides a mechanism to classify the universal set of request APIs into a much smaller number of logical groups in order to make it\\\\neasier to author and maintain API level access control policies.\\\\n\\\\nA api_group object consists of an unordered list of api group elements. The method and path from the input request API are matched against all elements in\\\\nan api_group to determine if the request API belongs to the api group in question. The request API belongs to an api group if it matches at least one element\\\\nin the api group.\\\\n\\\\nAn api group object can only be created in the 'shared' namespace of a tenant or in the 'shared' namespace of the ves-io tenant. Input request APIs from a\\\\ntenant are matched against all api groups in that tenant and in the ves-io tenant to determine the set of api groups for that request. The names of the api\\\\ngroups to which a given request API belongs are subsequently used as input to to check the api group predicate in a service policy or service policy rule.",
+		Description:       "The api_group construct provides a mechanism to classify the universal set of request APIs into a much smaller number of logical groups in order to make it\\\\\\\\\\\\\\\\neasier to author and maintain API level access control policies.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA api_group object consists of an unordered list of api group elements. The method and path from the input request API are matched against all elements in\\\\\\\\\\\\\\\\nan api_group to determine if the request API belongs to the api group in question. The request API belongs to an api group if it matches at least one element\\\\\\\\\\\\\\\\nin the api group.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAn api group object can only be created in the 'shared' namespace of a tenant or in the 'shared' namespace of the ves-io tenant. Input request APIs from a\\\\\\\\\\\\\\\\ntenant are matched against all api groups in that tenant and in the ves-io tenant to determine the set of api groups for that request. The names of the api\\\\\\\\\\\\\\\\ngroups to which a given request API belongs are subsequently used as input to to check the api group predicate in a service policy or service policy rule.",
 		APIPath:           "/api/web/namespaces/{namespace}/api_groups",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -122,7 +122,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "api_group_element",
 		CLIName:           "api-group-element",
-		Description:       "A api_group_element object consists of an unordered list of HTTP methods and a path regular expression. The method and path from the input request API are\\\\nmatched against all elements in an api_group to determine if the request API belongs to the api group in question. The match of an input request API against\\\\nan element is considered to be successful if the input method belongs to the list of HTTP methods in the element and the input path matches the path regex in\\\\nthe element. The request API belongs to an api group if it matches at least one element in the api group.\\\\n\\\\nAn api group element object can only be created in the 'shared' namespace of a tenant or in the 'shared' namespace of the ves-io tenant. Note that any given\\\\nelement can belong to one or more api groups. Input request APIs from a tenant are matched against all api groups in that tenant and in the ves-io tenant to\\\\ndetermine the set of api groups for that request. The names of the api groups to which a given request API belongs are subsequently used as input to to check\\\\nthe api group predicate in a service policy or service policy rule.",
+		Description:       "A api_group_element object consists of an unordered list of HTTP methods and a path regular expression. The method and path from the input request API are\\\\\\\\\\\\\\\\nmatched against all elements in an api_group to determine if the request API belongs to the api group in question. The match of an input request API against\\\\\\\\\\\\\\\\nan element is considered to be successful if the input method belongs to the list of HTTP methods in the element and the input path matches the path regex in\\\\\\\\\\\\\\\\nthe element. The request API belongs to an api group if it matches at least one element in the api group.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAn api group element object can only be created in the 'shared' namespace of a tenant or in the 'shared' namespace of the ves-io tenant. Note that any given\\\\\\\\\\\\\\\\nelement can belong to one or more api groups. Input request APIs from a tenant are matched against all api groups in that tenant and in the ves-io tenant to\\\\\\\\\\\\\\\\ndetermine the set of api groups for that request. The names of the api groups to which a given request API belongs are subsequently used as input to to check\\\\\\\\\\\\\\\\nthe api group predicate in a service policy or service policy rule.",
 		APIPath:           "/api/web/namespaces/{namespace}/api_group_elements",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -176,23 +176,23 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "app_api_group",
 		CLIName:           "app-api-group",
-		Description:       "F5 Distributed Cloud Api Security API specifications",
+		Description:       "F5 Distributed Cloud Api API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/app_api_groups",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "api_security",
-		Domains:           []string{"api_security"},
+		PrimaryDomain:     "api",
+		Domains:           []string{"api", "api_security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "app_firewall",
 		CLIName:           "app-firewall",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud App Firewall API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/app_firewalls",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"app_firewall", "application_firewall", "security"},
 	})
 
 	Register(&ResourceType{
@@ -211,8 +211,8 @@ func registerGeneratedResources() {
 		APIPath:           "/api/config/namespaces/{namespace}/app_settings",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "applications",
-		Domains:           []string{"applications"},
+		PrimaryDomain:     "service_mesh",
+		Domains:           []string{"applications", "service_mesh"},
 	})
 
 	Register(&ResourceType{
@@ -223,84 +223,84 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "applications",
-		Domains:           []string{"applications"},
+		Domains:           []string{"applications", "service_mesh"},
 	})
 
 	Register(&ResourceType{
 		Name:              "authentication",
 		CLIName:           "authentication",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/authentications",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "system",
+		Domains:           []string{"identity", "system"},
 	})
 
 	Register(&ResourceType{
 		Name:              "aws_tgw_site",
 		CLIName:           "aws-tgw-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/aws_tgw_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "aws_vpc_site",
 		CLIName:           "aws-vpc-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/aws_vpc_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "azure_vnet_site",
 		CLIName:           "azure-vnet-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/azure_vnet_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "bgp",
 		CLIName:           "bgp",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/bgps",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "bgp_asn_set",
 		CLIName:           "bgp-asn-set",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/bgp_asn_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "bgp_routing_policy",
 		CLIName:           "bgp-routing-policy",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/bgp_routing_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -328,8 +328,8 @@ func registerGeneratedResources() {
 		APIPath:           "/api/config/namespaces/{namespace}/apms",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "bigip",
-		Domains:           []string{"bigip"},
+		PrimaryDomain:     "bigip_integration",
+		Domains:           []string{"bigip", "bigip_integration"},
 	})
 
 	Register(&ResourceType{
@@ -346,7 +346,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "bigip_virtual_server",
 		CLIName:           "bigip-virtual-server",
-		Description:       "BIG-IP virtual server view repesents the internal virtual host corresponding to the virtual-servers discovered from BIG-IPs\\\\nIt exposes parameters to enable API discovery and other WAAP security features on the virtual server.\\\\n\\\\nView will create following child objects.\\\\n\\\\n* Virtual-host\\\\n* API-inventory\\\\n* App-type\\\\n* App-setting",
+		Description:       "BIG-IP virtual server view repesents the internal virtual host corresponding to the virtual-servers discovered from BIG-IPs\\\\\\\\\\\\\\\\nIt exposes parameters to enable API discovery and other WAAP security features on the virtual server.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nView will create following child objects.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n* Virtual-host\\\\\\\\\\\\\\\\n* API-inventory\\\\\\\\\\\\\\\\n* App-type\\\\\\\\\\\\\\\\n* App-setting",
 		APIPath:           "/api/config/namespaces/{namespace}/bigip_virtual_servers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -373,12 +373,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "bot_defense_app_infrastructure",
 		CLIName:           "bot-defense-app-infrastructure",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Bot And Threat Defense API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/bot_defense_app_infrastructures",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"bot_and_threat_defense", "security"},
 	})
 
 	Register(&ResourceType{
@@ -395,40 +395,40 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "cdn_loadbalancer",
 		CLIName:           "cdn-loadbalancer",
-		Description:       "F5 Distributed Cloud Cdn API specifications",
+		Description:       "F5 Distributed Cloud Cdn And Content Delivery API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/cdn_loadbalancers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "cdn",
-		Domains:           []string{"cdn"},
+		Domains:           []string{"cdn", "cdn_and_content_delivery"},
 	})
 
 	Register(&ResourceType{
 		Name:              "certificate",
 		CLIName:           "certificate",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud Certificates API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/certificates",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "certificates",
+		Domains:           []string{"certificates", "identity"},
 	})
 
 	Register(&ResourceType{
 		Name:              "certificate_chain",
 		CLIName:           "certificate-chain",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud Certificates API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/certificate_chains",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "certificates",
+		Domains:           []string{"certificates", "identity"},
 	})
 
 	Register(&ResourceType{
 		Name:              "certified_hardware",
 		CLIName:           "certified-hardware",
-		Description:       "Certified Hardware object represents physical hardware or cloud instance type that will be used to instantiate\\\\na volterra software appliance instance for the F5XC sites (Customer edge site). It has following information\\\\n  *  Type\\\\n  *  Vendor\\\\n  *  Model\\\\n  *  List of devices supported\\\\n  *  Image name\\\\n  *  Latest image release as status\\\\nCertified Hardware objects are only available in volterra shared namespace (ves-io/shared).\\\\nThese are created by volterra. It serves following purpose.\\\\n\\\\n  *  Let user know supported hardware and devices on given hardware.\\\\n\\\\n  *  How they are used and configured at boot strap\\\\n\\\\n  *  Image in which boot strap config  and any custom scripts are bundled\\\\n\\\\nThis is required so that zero touch provisioning would work. If a generic image is used then, user will have to login into the hardware and\\\\nprovide bootstrap config.",
+		Description:       "Certified Hardware object represents physical hardware or cloud instance type that will be used to instantiate\\\\\\\\\\\\\\\\na volterra software appliance instance for the F5XC sites (Customer edge site). It has following information\\\\\\\\\\\\\\\\n  *  Type\\\\\\\\\\\\\\\\n  *  Vendor\\\\\\\\\\\\\\\\n  *  Model\\\\\\\\\\\\\\\\n  *  List of devices supported\\\\\\\\\\\\\\\\n  *  Image name\\\\\\\\\\\\\\\\n  *  Latest image release as status\\\\\\\\\\\\\\\\nCertified Hardware objects are only available in volterra shared namespace (ves-io/shared).\\\\\\\\\\\\\\\\nThese are created by volterra. It serves following purpose.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n  *  Let user know supported hardware and devices on given hardware.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n  *  How they are used and configured at boot strap\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n  *  Image in which boot strap config  and any custom scripts are bundled\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nThis is required so that zero touch provisioning would work. If a generic image is used then, user will have to login into the hardware and\\\\\\\\\\\\\\\\nprovide bootstrap config.",
 		APIPath:           "/api/config/namespaces/{namespace}/certified_hardwares",
 		SupportsNamespace: true,
 		Operations:        ReadOnlyOperations(),
@@ -437,12 +437,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "cloud_connect",
 		CLIName:           "cloud-connect",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Cloud Infrastructure API specifications",
 		APIPath:           "/api/config/namespaces/system/edge_credentials",
 		SupportsNamespace: false,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "cloud_infrastructure",
+		Domains:           []string{"cloud_infrastructure", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -452,36 +452,36 @@ func registerGeneratedResources() {
 		APIPath:           "/api/config/namespaces/{namespace}/cloud_credentialss",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "cloud_infrastructure",
+		Domains:           []string{"cloud_infrastructure", "infrastructure"},
 	})
 
 	Register(&ResourceType{
 		Name:              "cloud_elastic_ip",
 		CLIName:           "cloud-elastic-ip",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Cloud Infrastructure API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/cloud_elastic_ips",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"cloud_infrastructure", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "cloud_link",
 		CLIName:           "cloud-link",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Cloud Infrastructure API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/cloud_links",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "cloud_infrastructure",
+		Domains:           []string{"cloud_infrastructure", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "cloud_region",
 		CLIName:           "cloud-region",
-		Description:       "Cloud Region contains tenant specific configuration\\\\nobject. Users cannot create/delete these objects. They will be internally created\\\\nor deleted whenever the corresponding cloud_region_region object is created/deleted \\\\nand possibly based on tenant configuration (e.g. Cloud Region feature may be disabled\\\\nfor some tenants)",
+		Description:       "Cloud Region contains tenant specific configuration\\\\\\\\\\\\\\\\nobject. Users cannot create/delete these objects. They will be internally created\\\\\\\\\\\\\\\\nor deleted whenever the corresponding cloud_region_region object is created/deleted \\\\\\\\\\\\\\\\nand possibly based on tenant configuration (e.g. Cloud Region feature may be disabled\\\\\\\\\\\\\\\\nfor some tenants)",
 		APIPath:           "/api/config/namespaces/{namespace}/cloud_regions",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -490,67 +490,67 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "cluster",
 		CLIName:           "cluster",
-		Description:       "F5 Distributed Cloud Service Mesh API specifications",
+		Description:       "F5 Distributed Cloud Kubernetes API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/clusters",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "service_mesh",
-		Domains:           []string{"service_mesh"},
+		PrimaryDomain:     "kubernetes",
+		Domains:           []string{"kubernetes"},
 	})
 
 	Register(&ResourceType{
 		Name:              "cminstance",
 		CLIName:           "cminstance",
-		Description:       "F5 Distributed Cloud Integrations API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/cminstances",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "integrations",
-		Domains:           []string{"integrations"},
+		PrimaryDomain:     "marketplace",
+		Domains:           []string{"integrations", "marketplace"},
 	})
 
 	Register(&ResourceType{
 		Name:              "contact",
 		CLIName:           "contact",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/contacts",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "system",
+		Domains:           []string{"identity", "system"},
 	})
 
 	Register(&ResourceType{
 		Name:              "container_registry",
 		CLIName:           "container-registry",
-		Description:       "F5 Distributed Cloud Service Mesh API specifications",
+		Description:       "F5 Distributed Cloud Kubernetes API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/container_registrys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "service_mesh",
-		Domains:           []string{"service_mesh"},
+		PrimaryDomain:     "kubernetes",
+		Domains:           []string{"kubernetes"},
 	})
 
 	Register(&ResourceType{
 		Name:              "crl",
 		CLIName:           "crl",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Certificates API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/crls",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "certificates",
+		Domains:           []string{"certificates", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "customer_support",
 		CLIName:           "customer-support",
-		Description:       "F5 Distributed Cloud Operations API specifications",
+		Description:       "F5 Distributed Cloud Support API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/customer_supports",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "operations",
-		Domains:           []string{"operations"},
+		Domains:           []string{"operations", "support"},
 	})
 
 	Register(&ResourceType{
@@ -574,29 +574,29 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "data_type",
 		CLIName:           "data-type",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Client Side Defense API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/data_types",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "client_side_defense",
+		Domains:           []string{"client_side_defense", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dc_cluster_group",
 		CLIName:           "dc-cluster-group",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/dc_cluster_groups",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "network_connectivity", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "discovered_service",
 		CLIName:           "discovered-service",
-		Description:       "Discovered Services represents the services (virtual-servers, k8s services, etc) which are discovered via the different discovery workflows.\\\\n\\\\npackage for Discovered Services",
+		Description:       "Discovered Services represents the services (virtual-servers, k8s services, etc) which are discovered via the different discovery workflows.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\npackage for Discovered Services",
 		APIPath:           "/api/config/namespaces/{namespace}/discovered_services",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: false, Delete: false, Status: false},
@@ -616,67 +616,67 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "dns_compliance_checks",
 		CLIName:           "dns-compliance-checks",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/dns_compliance_checkss",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dns_domain",
 		CLIName:           "dns-domain",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/dns_domains",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dns_lb_health_check",
 		CLIName:           "dns-lb-health-check",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/dns/namespaces/{namespace}/dns_lb_health_checks",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dns_lb_pool",
 		CLIName:           "dns-lb-pool",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/dns/namespaces/{namespace}/dns_lb_pools",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dns_load_balancer",
 		CLIName:           "dns-load-balancer",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/dns/namespaces/{namespace}/dns_load_balancers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "dns_and_domain_management", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "dns_zone",
 		CLIName:           "dns-zone",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Dns API specifications",
 		APIPath:           "/api/config/dns/namespaces/{namespace}/dns_zones",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "dns",
+		Domains:           []string{"dns", "dns_and_domain_management", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -716,62 +716,62 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"application_firewall", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "external_connector",
 		CLIName:           "external-connector",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/external_connectors",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"marketplace", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "fast_acl",
 		CLIName:           "fast-acl",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/fast_acls",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "fast_acl_rule",
 		CLIName:           "fast-acl-rule",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/fast_acl_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "filter_set",
 		CLIName:           "filter-set",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/filter_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "fleet",
 		CLIName:           "fleet",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Container Services API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/fleets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "container_services",
+		Domains:           []string{"container_services", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -799,41 +799,41 @@ func registerGeneratedResources() {
 		APIPath:           "/api/config/namespaces/{namespace}/forward_proxy_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"load_balancer", "network_security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "forwarding_class",
 		CLIName:           "forwarding-class",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/forwarding_classs",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "gcp_vpc_site",
 		CLIName:           "gcp-vpc-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/gcp_vpc_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "geo_location_set",
 		CLIName:           "geo-location-set",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Virtual API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/geo_location_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "virtual",
+		Domains:           []string{"security", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -848,12 +848,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "global_log_receiver",
 		CLIName:           "global-log-receiver",
-		Description:       "F5 Distributed Cloud Observability API specifications",
+		Description:       "F5 Distributed Cloud Statistics API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/global_log_receivers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "observability",
-		Domains:           []string{"observability"},
+		PrimaryDomain:     "statistics",
+		Domains:           []string{"statistics"},
 	})
 
 	Register(&ResourceType{
@@ -900,7 +900,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"load_balancer", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -911,57 +911,57 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"cdn_and_content_delivery", "load_balancer", "virtual", "virtual_server"},
 	})
 
 	Register(&ResourceType{
 		Name:              "ike1",
 		CLIName:           "ike1",
-		Description:       "F5 Distributed Cloud Vpn API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/ike1s",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "vpn",
-		Domains:           []string{"vpn"},
+		Domains:           []string{"network", "vpn"},
 	})
 
 	Register(&ResourceType{
 		Name:              "ike2",
 		CLIName:           "ike2",
-		Description:       "F5 Distributed Cloud Vpn API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/ike2s",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "vpn",
-		Domains:           []string{"vpn"},
+		Domains:           []string{"network", "vpn"},
 	})
 
 	Register(&ResourceType{
 		Name:              "ike_phase1_profile",
 		CLIName:           "ike-phase1-profile",
-		Description:       "F5 Distributed Cloud Vpn API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/ike_phase1_profiles",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "vpn",
-		Domains:           []string{"vpn"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "vpn"},
 	})
 
 	Register(&ResourceType{
 		Name:              "ike_phase2_profile",
 		CLIName:           "ike-phase2-profile",
-		Description:       "F5 Distributed Cloud Vpn API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/ike_phase2_profiles",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "vpn",
-		Domains:           []string{"vpn"},
+		Domains:           []string{"network", "vpn"},
 	})
 
 	Register(&ResourceType{
 		Name:              "implicit_label",
 		CLIName:           "implicit-label",
-		Description:       "Implicit labels are attached to objects implicitly by the system. Users are not allowed to create/update/delete these labels\\\\nThey are also not allowed to attach/detach these labels to objects. This API is provided to get the implicit labels available\\\\nto be used in service-policies",
+		Description:       "Implicit labels are attached to objects implicitly by the system. Users are not allowed to create/update/delete these labels\\\\\\\\\\\\\\\\nThey are also not allowed to attach/detach these labels to objects. This API is provided to get the implicit labels available\\\\\\\\\\\\\\\\nto be used in service-policies",
 		APIPath:           "/api/config/namespaces/system/implicit_labels",
 		SupportsNamespace: false,
 		Operations:        ReadOnlyOperations(),
@@ -979,56 +979,56 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "infraprotect_asn",
 		CLIName:           "infraprotect-asn",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_asns",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "infraprotect_asn_prefix",
 		CLIName:           "infraprotect-asn-prefix",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_asn_prefixs",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "infraprotect_deny_list_rule",
 		CLIName:           "infraprotect-deny-list-rule",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_deny_list_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "infraprotect_firewall_rule",
 		CLIName:           "infraprotect-firewall-rule",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_firewall_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "infraprotect_firewall_rule_group",
 		CLIName:           "infraprotect-firewall-rule-group",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_firewall_rule_groups",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
@@ -1052,45 +1052,45 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "infraprotect_internet_prefix_advertisement",
 		CLIName:           "infraprotect-internet-prefix-advertisement",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_internet_prefix_advertisements",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "infraprotect_tunnel",
 		CLIName:           "infraprotect-tunnel",
-		Description:       "F5 Distributed Cloud Infrastructure Protection API specifications",
+		Description:       "F5 Distributed Cloud Ddos API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/infraprotect_tunnels",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure_protection",
-		Domains:           []string{"infrastructure_protection"},
+		PrimaryDomain:     "ddos",
+		Domains:           []string{"ddos"},
 	})
 
 	Register(&ResourceType{
 		Name:              "ip_prefix_set",
 		CLIName:           "ip-prefix-set",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/ip_prefix_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "k8s_cluster",
 		CLIName:           "k8s-cluster",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/k8s_clusters",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
@@ -1101,7 +1101,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		Domains:           []string{"identity", "site"},
 	})
 
 	Register(&ResourceType{
@@ -1112,57 +1112,57 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		Domains:           []string{"identity", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "k8s_pod_security_admission",
 		CLIName:           "k8s-pod-security-admission",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Kubernetes API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/k8s_pod_security_admissions",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "kubernetes",
+		Domains:           []string{"infrastructure", "kubernetes"},
 	})
 
 	Register(&ResourceType{
 		Name:              "k8s_pod_security_policy",
 		CLIName:           "k8s-pod-security-policy",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Kubernetes API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/k8s_pod_security_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "kubernetes",
+		Domains:           []string{"infrastructure", "kubernetes"},
 	})
 
 	Register(&ResourceType{
 		Name:              "known_label",
 		CLIName:           "known-label",
-		Description:       "F5 Distributed Cloud Config API specifications",
+		Description:       "F5 Distributed Cloud Users API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/known_labels",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "config",
-		Domains:           []string{"config"},
+		PrimaryDomain:     "users",
+		Domains:           []string{"config", "users"},
 	})
 
 	Register(&ResourceType{
 		Name:              "known_label_key",
 		CLIName:           "known-label-key",
-		Description:       "F5 Distributed Cloud Config API specifications",
+		Description:       "F5 Distributed Cloud Users API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/known_label_keys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "config",
-		Domains:           []string{"config"},
+		PrimaryDomain:     "users",
+		Domains:           []string{"config", "users"},
 	})
 
 	Register(&ResourceType{
 		Name:              "log",
 		CLIName:           "log",
-		Description:       "Two types of logs are supported, viz, access logs and audit logs.\\\\n  * Access logs are sampled records of API calls made to a virtual host. It contains\\\\n    both the request and the response data with more context like application type,\\\\n    user, request path, method, request body, response code, source,\\\\n    destination, etc.,\\\\n  * Audit logs provides audit of all configuration changes made in the system using\\\\n    public APIs provided by Volterra. It contains both the request and response body\\\\n    with additional context necessary for post-mortem analysis such as user, request path,\\\\n    method, request body, response code, source, destination service, etc.,\\\\nBoth the access logs and audit logs are used to find \\\\\\\"who did what and when and what was the result?\\\\\\\"\\\\nwho - answered by user/user-agent in the log.\\\\nwhat - answered by request url/method/body in the log.\\\\nwhen - answered by timestamp in the log.\\\\nresult - answered by response code in the log.",
+		Description:       "Two types of logs are supported, viz, access logs and audit logs.\\\\\\\\\\\\\\\\n  * Access logs are sampled records of API calls made to a virtual host. It contains\\\\\\\\\\\\\\\\n    both the request and the response data with more context like application type,\\\\\\\\\\\\\\\\n    user, request path, method, request body, response code, source,\\\\\\\\\\\\\\\\n    destination, etc.,\\\\\\\\\\\\\\\\n  * Audit logs provides audit of all configuration changes made in the system using\\\\\\\\\\\\\\\\n    public APIs provided by Volterra. It contains both the request and response body\\\\\\\\\\\\\\\\n    with additional context necessary for post-mortem analysis such as user, request path,\\\\\\\\\\\\\\\\n    method, request body, response code, source, destination service, etc.,\\\\\\\\\\\\\\\\nBoth the access logs and audit logs are used to find \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"who did what and when and what was the result?\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\nwho - answered by user/user-agent in the log.\\\\\\\\\\\\\\\\nwhat - answered by request url/method/body in the log.\\\\\\\\\\\\\\\\nwhen - answered by timestamp in the log.\\\\\\\\\\\\\\\\nresult - answered by response code in the log.",
 		APIPath:           "/api/data/namespaces/{namespace}/logs",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1171,12 +1171,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "log_receiver",
 		CLIName:           "log-receiver",
-		Description:       "F5 Distributed Cloud Observability API specifications",
+		Description:       "F5 Distributed Cloud Statistics API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/log_receivers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "observability",
-		Domains:           []string{"observability"},
+		PrimaryDomain:     "statistics",
+		Domains:           []string{"statistics"},
 	})
 
 	Register(&ResourceType{
@@ -1191,12 +1191,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "malicious_user_mitigation",
 		CLIName:           "malicious-user-mitigation",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Virtual API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/malicious_user_mitigations",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"security", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -1238,7 +1238,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "namespace",
 		CLIName:           "namespace",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces",
 		SupportsNamespace: false,
 		Operations:        AllOperations(),
@@ -1247,14 +1247,14 @@ func registerGeneratedResources() {
 			Method:      "POST",
 			IncludeBody: true,
 		},
-		PrimaryDomain: "identity",
-		Domains:       []string{"identity"},
+		PrimaryDomain: "system",
+		Domains:       []string{"identity", "system"},
 	})
 
 	Register(&ResourceType{
 		Name:              "namespace_role",
 		CLIName:           "namespace-role",
-		Description:       "Namespace role defines a user's role in a namespace.\\\\nNamespace role links a user with a role namespace. Using this object one can assign/remove a role to a user in a namespace.\\\\nNamespace roles are assigned either explicitly by calling this API, or implicitly by creating users or by signing up.\\\\n see role object for information on roles\\\\n see namespace object for information on namespaces\\\\n see user object for information on users",
+		Description:       "Namespace role defines a user's role in a namespace.\\\\\\\\\\\\\\\\nNamespace role links a user with a role namespace. Using this object one can assign/remove a role to a user in a namespace.\\\\\\\\\\\\\\\\nNamespace roles are assigned either explicitly by calling this API, or implicitly by creating users or by signing up.\\\\\\\\\\\\\\\\n see role object for information on roles\\\\\\\\\\\\\\\\n see namespace object for information on namespaces\\\\\\\\\\\\\\\\n see user object for information on users",
 		APIPath:           "/api/web/namespaces/{namespace}/namespace_roles",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1263,73 +1263,73 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "nat_policy",
 		CLIName:           "nat-policy",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/nat_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_connector",
 		CLIName:           "network-connector",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_connectors",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_firewall",
 		CLIName:           "network-firewall",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_firewalls",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_interface",
 		CLIName:           "network-interface",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Customer Edge API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_interfaces",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"customer_edge", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_policy",
 		CLIName:           "network-policy",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_policy_rule",
 		CLIName:           "network-policy-rule",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_policy_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "network_policy_set",
 		CLIName:           "network-policy-set",
-		Description:       "Network policy set implements L3/L4 stateful firewall.\\\\nIt is a list of one or more Network policy references and are applied sequentially in order specified in the list.\\\\n\\\\nNetwork policy set can be configured via network firewall object or vK8s\\\\n* Network Firewall is a fleet object which can take a reference to network policy set.\\\\n  Firewall is applied to VIRTUAL_NETWORK_SITE_LOCAL and VIRTUAL_NETWORK_SITE in corresponding fleet\\\\n* vK8s will inherit network policy set configured in its own namespace and tenant\\\\n\\\\nNetwork policy references to be attached to network policy set can be picked from\\\\n* Same namespace and tenant as of network policy set\\\\n* Shared namespace of the Tenant\\\\n* Shared namespace of 'ves.io' tenant",
+		Description:       "Network policy set implements L3/L4 stateful firewall.\\\\\\\\\\\\\\\\nIt is a list of one or more Network policy references and are applied sequentially in order specified in the list.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNetwork policy set can be configured via network firewall object or vK8s\\\\\\\\\\\\\\\\n* Network Firewall is a fleet object which can take a reference to network policy set.\\\\\\\\\\\\\\\\n  Firewall is applied to VIRTUAL_NETWORK_SITE_LOCAL and VIRTUAL_NETWORK_SITE in corresponding fleet\\\\\\\\\\\\\\\\n* vK8s will inherit network policy set configured in its own namespace and tenant\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNetwork policy references to be attached to network policy set can be picked from\\\\\\\\\\\\\\\\n* Same namespace and tenant as of network policy set\\\\\\\\\\\\\\\\n* Shared namespace of the Tenant\\\\\\\\\\\\\\\\n* Shared namespace of 'ves.io' tenant",
 		APIPath:           "/api/config/namespaces/{namespace}/network_policy_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1338,12 +1338,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "network_policy_view",
 		CLIName:           "network-policy-view",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/network_policy_views",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -1414,7 +1414,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "oidc_provider",
 		CLIName:           "oidc-provider",
-		Description:       "F5XC Identity supports identity brokering and third-party identity can be added to\\\\nprovide Single Sign-On (SSO) login for user to access tenant via VoltConsole. \\\\nUsing Volterra's OIDC Provider config object API(s), tenant admin can configure and manage\\\\nSSO providers such as Google, Microsoft, Okta or any provider that supports\\\\nOpenIDConnect(OIDC) V1.0 protocol. It is required that the OIDC provider application that will \\\\nbe integrated must have the support enabled for Authorization Code flow as defined by the specification.\\\\n\\\\nBefore proceeding, admin needs to have access to organization's authentication application\\\\nor has permission to create a new one. Create API require entering details of well-known\\\\nOpenID configuration of authentication application and once successful creation, admin should\\\\nenable the redirect URL provided by volterra identity in application's allowed list of URLs. \\\\nMore details of this can be found under create request/response.\\\\n\\\\nWith OIDC provider configured, admin of a tenant can make use of Single Sign On (SSO)\\\\nfunctionality for users to access F5XC service using same email address and admin has the\\\\nflexibility to re-use the authentication/identity provider that may be already using \\\\nwithin their organization. Once SSO is enabled, except tenant admin (owner) all users in the tenant \\\\nwill be converted to SSO user and will lose existing email/password login created with Volterra\\\\nand can only use SSO to login.",
+		Description:       "F5XC Identity supports identity brokering and third-party identity can be added to\\\\\\\\\\\\\\\\nprovide Single Sign-On (SSO) login for user to access tenant via VoltConsole. \\\\\\\\\\\\\\\\nUsing Volterra's OIDC Provider config object API(s), tenant admin can configure and manage\\\\\\\\\\\\\\\\nSSO providers such as Google, Microsoft, Okta or any provider that supports\\\\\\\\\\\\\\\\nOpenIDConnect(OIDC) V1.0 protocol. It is required that the OIDC provider application that will \\\\\\\\\\\\\\\\nbe integrated must have the support enabled for Authorization Code flow as defined by the specification.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nBefore proceeding, admin needs to have access to organization's authentication application\\\\\\\\\\\\\\\\nor has permission to create a new one. Create API require entering details of well-known\\\\\\\\\\\\\\\\nOpenID configuration of authentication application and once successful creation, admin should\\\\\\\\\\\\\\\\nenable the redirect URL provided by volterra identity in application's allowed list of URLs. \\\\\\\\\\\\\\\\nMore details of this can be found under create request/response.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nWith OIDC provider configured, admin of a tenant can make use of Single Sign On (SSO)\\\\\\\\\\\\\\\\nfunctionality for users to access F5XC service using same email address and admin has the\\\\\\\\\\\\\\\\nflexibility to re-use the authentication/identity provider that may be already using \\\\\\\\\\\\\\\\nwithin their organization. Once SSO is enabled, except tenant admin (owner) all users in the tenant \\\\\\\\\\\\\\\\nwill be converted to SSO user and will lose existing email/password login created with Volterra\\\\\\\\\\\\\\\\nand can only use SSO to login.",
 		APIPath:           "/api/config/namespaces/{namespace}/oidc_providers",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: true, Delete: false, Status: false},
@@ -1536,7 +1536,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"load_balancer", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -1587,23 +1587,23 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "policer",
 		CLIName:           "policer",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Rate Limiting API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/policers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"rate_limiting", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "policy_based_routing",
 		CLIName:           "policy-based-routing",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/policy_based_routings",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -1614,18 +1614,18 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"application_firewall", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "protocol_policer",
 		CLIName:           "protocol-policer",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Rate Limiting API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/protocol_policers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "rate_limiting",
+		Domains:           []string{"rate_limiting", "security"},
 	})
 
 	Register(&ResourceType{
@@ -1636,7 +1636,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"load_balancer", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -1651,40 +1651,40 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "quota",
 		CLIName:           "quota",
-		Description:       "F5 Distributed Cloud Billing API specifications",
+		Description:       "F5 Distributed Cloud Billing And Usage API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/quotas",
 		SupportsNamespace: true,
 		Operations:        ReadOnlyOperations(),
-		PrimaryDomain:     "billing",
-		Domains:           []string{"billing"},
+		PrimaryDomain:     "billing_and_usage",
+		Domains:           []string{"billing", "billing_and_usage"},
 	})
 
 	Register(&ResourceType{
 		Name:              "rate_limiter",
 		CLIName:           "rate-limiter",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Rate Limiting API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/rate_limiters",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "rate_limiting",
+		Domains:           []string{"rate_limiting", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "rate_limiter_policy",
 		CLIName:           "rate-limiter-policy",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Virtual API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/rate_limiter_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "virtual",
+		Domains:           []string{"security", "virtual"},
 	})
 
 	Register(&ResourceType{
 		Name:              "rbac_policy",
 		CLIName:           "rbac-policy",
-		Description:       "A rbac_policy object consists of list of rbac policy rules that when assigned to a user via Role object,\\\\nit controls access of an user to list of APIs defined under the API Group name.\\\\nEach rule under rbac_policy consist of a name of the API Group.\\\\nBy default, the access is set to allow for the API Group.",
+		Description:       "A rbac_policy object consists of list of rbac policy rules that when assigned to a user via Role object,\\\\\\\\\\\\\\\\nit controls access of an user to list of APIs defined under the API Group name.\\\\\\\\\\\\\\\\nEach rule under rbac_policy consist of a name of the API Group.\\\\\\\\\\\\\\\\nBy default, the access is set to allow for the API Group.",
 		APIPath:           "/api/web/namespaces/{namespace}/rbac_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1698,13 +1698,13 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		Domains:           []string{"customer_edge", "infrastructure"},
 	})
 
 	Register(&ResourceType{
 		Name:              "report",
 		CLIName:           "report",
-		Description:       "Report configuration contains the information like\\\\n\\\\n    Time at which the report was last sent to object store.\\\\n    Report ID.",
+		Description:       "Report configuration contains the information like\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n    Time at which the report was last sent to object store.\\\\\\\\\\\\\\\\n    Report ID.",
 		APIPath:           "/api/config/namespaces/{namespace}/reports",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1713,40 +1713,40 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "report_config",
 		CLIName:           "report-config",
-		Description:       "F5 Distributed Cloud Observability API specifications",
+		Description:       "F5 Distributed Cloud Statistics API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/report_configs",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "observability",
-		Domains:           []string{"observability"},
+		PrimaryDomain:     "statistics",
+		Domains:           []string{"statistics"},
 	})
 
 	Register(&ResourceType{
 		Name:              "role",
 		CLIName:           "role",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/roles",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "system",
+		Domains:           []string{"identity", "system"},
 	})
 
 	Register(&ResourceType{
 		Name:              "route",
 		CLIName:           "route",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/routes",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "scim",
 		CLIName:           "scim",
-		Description:       "This schema specification details Volterra's support for SCIM protocol.\\\\nAdmin can use SCIM feature on top of SSO to enable automated provisioning of\\\\nuser and user groups from external identity provider into the F5 saas platform.\\\\nWith this feature, complete life cycle management of user and groups can be\\\\nachieved from single source of truth which is managed by tenant's admin.\\\\n\\\\ncurrent protocol support is using schema version v2.0 https://datatracker.ietf.org/doc/html/rfc7643 \\\\n\\\\nSCIM feature can be enabled part of SSO configuration (using RPC `UpdateScimIntegration` under oidc_provider resource)\\\\nBy default, F5XC will not sync groups and users. Admin is required to set object identifier of group \\\\nin external identity provider to corresponding user_group resource in volterra. Users with corresponding\\\\ngroup membership if exist in external identity provider will be synced.",
+		Description:       "This schema specification details Volterra's support for SCIM protocol.\\\\\\\\\\\\\\\\nAdmin can use SCIM feature on top of SSO to enable automated provisioning of\\\\\\\\\\\\\\\\nuser and user groups from external identity provider into the F5 saas platform.\\\\\\\\\\\\\\\\nWith this feature, complete life cycle management of user and groups can be\\\\\\\\\\\\\\\\nachieved from single source of truth which is managed by tenant's admin.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\ncurrent protocol support is using schema version v2.0 https://datatracker.ietf.org/doc/html/rfc7643 \\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSCIM feature can be enabled part of SSO configuration (using RPC `UpdateScimIntegration` under oidc_provider resource)\\\\\\\\\\\\\\\\nBy default, F5XC will not sync groups and users. Admin is required to set object identifier of group \\\\\\\\\\\\\\\\nin external identity provider to corresponding user_group resource in volterra. Users with corresponding\\\\\\\\\\\\\\\\ngroup membership if exist in external identity provider will be synced.",
 		APIPath:           "/api/scim/v2",
 		SupportsNamespace: false,
 		Operations:        AllOperations(),
@@ -1764,67 +1764,67 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "secret_management_access",
 		CLIName:           "secret-management-access",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Container Services API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/secret_management_accesss",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "container_services",
+		Domains:           []string{"container_services", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "secret_policy",
 		CLIName:           "secret-policy",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Blindfold API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/secret_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "blindfold",
+		Domains:           []string{"blindfold", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "secret_policy_rule",
 		CLIName:           "secret-policy-rule",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Blindfold API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/secret_policy_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "blindfold",
+		Domains:           []string{"blindfold", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "securemesh_site",
 		CLIName:           "securemesh-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/securemesh_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "securemesh_site_v2",
 		CLIName:           "securemesh-site-v2",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/securemesh_site_v2s",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "segment",
 		CLIName:           "segment",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network Security API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/segments",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network_security",
+		Domains:           []string{"network_security", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -1844,35 +1844,35 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "api_security",
-		Domains:           []string{"api_security"},
+		Domains:           []string{"api_security", "client_side_defense"},
 	})
 
 	Register(&ResourceType{
 		Name:              "service_policy",
 		CLIName:           "service-policy",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Virtual API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/service_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "virtual",
+		Domains:           []string{"network_security", "security", "virtual"},
 	})
 
 	Register(&ResourceType{
 		Name:              "service_policy_rule",
 		CLIName:           "service-policy-rule",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Virtual API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/service_policy_rules",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "virtual",
+		Domains:           []string{"security", "virtual"},
 	})
 
 	Register(&ResourceType{
 		Name:              "service_policy_set",
 		CLIName:           "service-policy-set",
-		Description:       "A service_policy_set object consists of an ordered list of references to service_policy objects. The policies are evaluated in the specified order against\\\\na set of input fields that are extracted from or derived from an L7 request API. The evaluation of the policy set terminates when the request API matches a\\\\npolicy which results in an \\\\\\\"allow\\\\\\\" or \\\\\\\"deny\\\\\\\" action. If the request API does not match a policy, the next policy in the list is evaluated. If the request API\\\\ndoes not match any of the policies in the set, the result is a \\\\\\\"default_deny\\\\\\\" action.\\\\n\\\\nThere can be no more than one service policy set configured under a namespace. That policy set is applied to requests destined to all virtual_hosts in that\\\\nnamespace.",
+		Description:       "A service_policy_set object consists of an ordered list of references to service_policy objects. The policies are evaluated in the specified order against\\\\\\\\\\\\\\\\na set of input fields that are extracted from or derived from an L7 request API. The evaluation of the policy set terminates when the request API matches a\\\\\\\\\\\\\\\\npolicy which results in an \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"allow\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" or \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"deny\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" action. If the request API does not match a policy, the next policy in the list is evaluated. If the request API\\\\\\\\\\\\\\\\ndoes not match any of the policies in the set, the result is a \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"default_deny\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" action.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nThere can be no more than one service policy set configured under a namespace. That policy set is applied to requests destined to all virtual_hosts in that\\\\\\\\\\\\\\\\nnamespace.",
 		APIPath:           "/api/config/namespaces/{namespace}/service_policy_sets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -1917,7 +1917,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "shape_bot_defense_instance",
 		CLIName:           "shape-bot-defense-instance",
-		Description:       "Shape Bot Defense Instance is the main configuration for a Shape Integration.\\\\nIt defines various configuration parameters needed to use Shape SSEs.",
+		Description:       "Shape Bot Defense Instance is the main configuration for a Shape Integration.\\\\\\\\\\\\\\\\nIt defines various configuration parameters needed to use Shape SSEs.",
 		APIPath:           "/api/config/namespaces/{namespace}/shape_bot_defense_instances",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2133,7 +2133,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "signup",
 		CLIName:           "signup",
-		Description:       "Use this API to signup for F5XC service.\\\\none can signup to use volterra service as an individual/free account or\\\\nas a team account more suited for enterprise customers. \\\\nfor more details on what each type of account features, visit - https://console.ves.volterra.io/signup/usage_plan\\\\nsince signup flow includes more complex selections and passing in secure payment processing,\\\\nwe recommend using web UI for this process https://console.ves.volterra.io/signup/start",
+		Description:       "Use this API to signup for F5XC service.\\\\\\\\\\\\\\\\none can signup to use volterra service as an individual/free account or\\\\\\\\\\\\\\\\nas a team account more suited for enterprise customers. \\\\\\\\\\\\\\\\nfor more details on what each type of account features, visit - https://console.ves.volterra.io/signup/usage_plan\\\\\\\\\\\\\\\\nsince signup flow includes more complex selections and passing in secure payment processing,\\\\\\\\\\\\\\\\nwe recommend using web UI for this process https://console.ves.volterra.io/signup/start",
 		APIPath:           "/api/signup",
 		SupportsNamespace: false,
 		Operations:        ResourceOperations{Create: true, Get: true, List: false, Update: false, Delete: false, Status: false},
@@ -2142,7 +2142,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "site",
 		CLIName:           "site",
-		Description:       "Site represent physical/cloud cluster of volterra processing elements. There are two types of sites currently.\\\\n\\\\n   Regional Edge (RE)\\\\n\\\\n    Regional Edge sites are network edge sites owned and operated by volterra edge cloud. RE can be used to\\\\n    host VIPs, run API gateway or any application at network edge.\\\\n\\\\n   Customer Edge (CE)\\\\n\\\\n    Customer Edge sites are edge sites owned by customer and operated by volterra cloud. CE can be as application gateway\\\\n    to connect applications in multiple clusters or clouds. CE can also run applications at customer premise.\\\\n   \\\\n   Nginx One\\\\n     Nginx One sites are sites owned and operated by Nginx One SaaS Console. Nginx One site can be used to configure service\\\\n     discovery which allows customer to bring their NGINX inventory visibility into the core XC workspaces.\\\\n\\\\nSite configuration contains the information like\\\\n\\\\n    Site locations\\\\n    parameters to override fleet config\\\\n    IP Addresses to be used by automatic vip assignments for default networks\\\\n    etc\\\\n\\\\n Sites are automatically created by registration mechanism. They can be modified to add location or description and they can be deleted.",
+		Description:       "Site represent physical/cloud cluster of volterra processing elements. There are two types of sites currently.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n   Regional Edge (RE)\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n    Regional Edge sites are network edge sites owned and operated by volterra edge cloud. RE can be used to\\\\\\\\\\\\\\\\n    host VIPs, run API gateway or any application at network edge.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n   Customer Edge (CE)\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n    Customer Edge sites are edge sites owned by customer and operated by volterra cloud. CE can be as application gateway\\\\\\\\\\\\\\\\n    to connect applications in multiple clusters or clouds. CE can also run applications at customer premise.\\\\\\\\\\\\\\\\n   \\\\\\\\\\\\\\\\n   Nginx One\\\\\\\\\\\\\\\\n     Nginx One sites are sites owned and operated by Nginx One SaaS Console. Nginx One site can be used to configure service\\\\\\\\\\\\\\\\n     discovery which allows customer to bring their NGINX inventory visibility into the core XC workspaces.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSite configuration contains the information like\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n    Site locations\\\\\\\\\\\\\\\\n    parameters to override fleet config\\\\\\\\\\\\\\\\n    IP Addresses to be used by automatic vip assignments for default networks\\\\\\\\\\\\\\\\n    etc\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n Sites are automatically created by registration mechanism. They can be modified to add location or description and they can be deleted.",
 		APIPath:           "/api/config/namespaces/{namespace}/sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2151,29 +2151,29 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "site_mesh_group",
 		CLIName:           "site-mesh-group",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Service Mesh API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/site_mesh_groups",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"networking", "service_mesh"},
 	})
 
 	Register(&ResourceType{
 		Name:              "srv6_network_slice",
 		CLIName:           "srv6-network-slice",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/srv6_network_slices",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "status_at_site",
 		CLIName:           "status-at-site",
-		Description:       "Any user configured object in F5XC Edge Cloud has a status object associated with that it.\\\\nAn object may be created in multiple sites and therefore it is desirable to have the ability\\\\nto get the current status of the configured object in a given site.",
+		Description:       "Any user configured object in F5XC Edge Cloud has a status object associated with that it.\\\\\\\\\\\\\\\\nAn object may be created in multiple sites and therefore it is desirable to have the ability\\\\\\\\\\\\\\\\nto get the current status of the configured object in a given site.",
 		APIPath:           "/api/config/namespaces/{namespace}/status_at_sites",
 		SupportsNamespace: true,
 		Operations:        ReadOnlyOperations(),
@@ -2191,18 +2191,18 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "subnet",
 		CLIName:           "subnet",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/subnets",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "networking"},
 	})
 
 	Register(&ResourceType{
 		Name:              "subscription",
 		CLIName:           "subscription",
-		Description:       "\\\\nRepresents addon subscription \\\\nEywa will create the schema.pbac.addon_subscription object (SUBSCRIPTION_PENDING)\\\\nSRE/Support team member via f5xc-support tenant changes the status of the addon_subscription object (SUBSCRIPTION_ENABLE)",
+		Description:       "\\\\\\\\\\\\\\\\nRepresents addon subscription \\\\\\\\\\\\\\\\nEywa will create the schema.pbac.addon_subscription object (SUBSCRIPTION_PENDING)\\\\\\\\\\\\\\\\nSRE/Support team member via f5xc-support tenant changes the status of the addon_subscription object (SUBSCRIPTION_ENABLE)",
 		APIPath:           "/api/usage/namespaces/{namespace}/subscriptions",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: false, List: false, Update: false, Delete: false, Status: false},
@@ -2243,7 +2243,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"load_balancer", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -2258,18 +2258,18 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tenant_configuration",
 		CLIName:           "tenant-configuration",
-		Description:       "F5 Distributed Cloud Tenant Management API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tenant_configurations",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "tenant_management",
-		Domains:           []string{"tenant_management"},
+		PrimaryDomain:     "system",
+		Domains:           []string{"system", "tenant_management"},
 	})
 
 	Register(&ResourceType{
 		Name:              "tenant_management",
 		CLIName:           "tenant-management",
-		Description:       "\\\\nTenant profile objects are required for creating child tenant using Child Tenant Manager as part of MSP.\\\\nTenant Profile is the template which defines the child tenant configuration properties e.g., Name, plan,\\\\nchild tenant groups, allowed groups, log receiver, alert receiver etc.\\\\n\\\\nWhile defining tenant profile, admin can choose PBAC plan to be subscribed for child tenant, user groups\\\\nneeds to be created on child tenant and allowed groups which can be mapped to user groups from root MSP\\\\ntenant to allow access to child tenant. It also stores log and alert receiver configuration for streaming\\\\nlogs and sending alert notification.\\\\n\\\\nThis feature may not be enabled by default and will require subscribing to additional addon service\\\\n`Tenant Management` depending upon the tenant's plan",
+		Description:       "\\\\\\\\\\\\\\\\nTenant profile objects are required for creating child tenant using Child Tenant Manager as part of MSP.\\\\\\\\\\\\\\\\nTenant Profile is the template which defines the child tenant configuration properties e.g., Name, plan,\\\\\\\\\\\\\\\\nchild tenant groups, allowed groups, log receiver, alert receiver etc.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nWhile defining tenant profile, admin can choose PBAC plan to be subscribed for child tenant, user groups\\\\\\\\\\\\\\\\nneeds to be created on child tenant and allowed groups which can be mapped to user groups from root MSP\\\\\\\\\\\\\\\\ntenant to allow access to child tenant. It also stores log and alert receiver configuration for streaming\\\\\\\\\\\\\\\\nlogs and sending alert notification.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nThis feature may not be enabled by default and will require subscribing to additional addon service\\\\\\\\\\\\\\\\n`Tenant Management` depending upon the tenant's plan",
 		APIPath:           "/api/config/namespaces/{namespace}/tenant_managements",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2278,7 +2278,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tenant_management_allowed_tenant",
 		CLIName:           "tenant-management-allowed-tenant",
-		Description:       "F5 Distributed Cloud Tenant Management API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/allowed_tenants",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2287,7 +2287,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tenant_management_child_tenant",
 		CLIName:           "tenant-management-child-tenant",
-		Description:       "F5 Distributed Cloud Tenant Management API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/child_tenants",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2296,7 +2296,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tenant_management_child_tenant_manager",
 		CLIName:           "tenant-management-child-tenant-manager",
-		Description:       "F5 Distributed Cloud Tenant Management API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/child_tenant_managers",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2305,7 +2305,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tenant_management_managed_tenant",
 		CLIName:           "tenant-management-managed-tenant",
-		Description:       "F5 Distributed Cloud Tenant Management API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/web/namespaces/{namespace}/managed_tenants",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2323,7 +2323,7 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "third_party_application",
 		CLIName:           "third-party-application",
-		Description:       "View will create following child objects.\\\\n\\\\n* Virtual-host\\\\n* API-inventory\\\\n* App-type\\\\n* App-setting",
+		Description:       "View will create following child objects.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n* Virtual-host\\\\\\\\\\\\\\\\n* API-inventory\\\\\\\\\\\\\\\\n* App-type\\\\\\\\\\\\\\\\n* App-setting",
 		APIPath:           "/api/config/namespaces/{namespace}/third_party_applications",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
@@ -2341,18 +2341,18 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "token",
 		CLIName:           "token",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud Users API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tokens",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		PrimaryDomain:     "users",
+		Domains:           []string{"identity", "users"},
 	})
 
 	Register(&ResourceType{
 		Name:              "topology",
 		CLIName:           "topology",
-		Description:       "APIs to get topology of all the resources associated/connected to a site such as other CEs (Customer Edge),\\\\nREs (Regional Edge), VPCs (Virtual Private Cloud) networks, etc., and the associated metrics. Relationship between\\\\nthe resources associated with a site is represented as a graph, where each resource/entity is represented as a node\\\\n(example: CE, RE, VPC, Subnet, etc.,) and their association is represented as edge (example: CE - RE connection,\\\\nNetwork - Subnets association, etc.,)",
+		Description:       "APIs to get topology of all the resources associated/connected to a site such as other CEs (Customer Edge),\\\\\\\\\\\\\\\\nREs (Regional Edge), VPCs (Virtual Private Cloud) networks, etc., and the associated metrics. Relationship between\\\\\\\\\\\\\\\\nthe resources associated with a site is represented as a graph, where each resource/entity is represented as a node\\\\\\\\\\\\\\\\n(example: CE, RE, VPC, Subnet, etc.,) and their association is represented as edge (example: CE - RE connection,\\\\\\\\\\\\\\\\nNetwork - Subnets association, etc.,)",
 		APIPath:           "/api/topology",
 		SupportsNamespace: false,
 		Operations:        ResourceOperations{Create: true, Get: true, List: false, Update: false, Delete: false, Status: false},
@@ -2361,40 +2361,40 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "tpm_api_key",
 		CLIName:           "tpm-api-key",
-		Description:       "F5 Distributed Cloud Integrations API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tpm_api_keys",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: true, Delete: false, Status: false},
-		PrimaryDomain:     "integrations",
-		Domains:           []string{"integrations"},
+		PrimaryDomain:     "marketplace",
+		Domains:           []string{"integrations", "marketplace"},
 	})
 
 	Register(&ResourceType{
 		Name:              "tpm_category",
 		CLIName:           "tpm-category",
-		Description:       "F5 Distributed Cloud Integrations API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tpm_categorys",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: true, Delete: false, Status: false},
-		PrimaryDomain:     "integrations",
-		Domains:           []string{"integrations"},
+		PrimaryDomain:     "marketplace",
+		Domains:           []string{"integrations", "marketplace"},
 	})
 
 	Register(&ResourceType{
 		Name:              "tpm_manager",
 		CLIName:           "tpm-manager",
-		Description:       "F5 Distributed Cloud Integrations API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tpm_managers",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: false, Delete: false, Status: false},
-		PrimaryDomain:     "integrations",
-		Domains:           []string{"integrations"},
+		PrimaryDomain:     "marketplace",
+		Domains:           []string{"integrations", "marketplace"},
 	})
 
 	Register(&ResourceType{
 		Name:              "tpm_provision",
 		CLIName:           "tpm-provision",
-		Description:       "TPM Provisioning APIs used to generate F5XC certificates\\\\nto program device TPM.",
+		Description:       "TPM Provisioning APIs used to generate F5XC certificates\\\\\\\\\\\\\\\\nto program device TPM.",
 		APIPath:           "/api/config/namespaces/system/tpm_provisions",
 		SupportsNamespace: false,
 		Operations:        ResourceOperations{Create: true, Get: false, List: false, Update: false, Delete: false, Status: false},
@@ -2403,23 +2403,23 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "trusted_ca_list",
 		CLIName:           "trusted-ca-list",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Certificates API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/trusted_ca_lists",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		PrimaryDomain:     "certificates",
+		Domains:           []string{"certificates", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "tunnel",
 		CLIName:           "tunnel",
-		Description:       "F5 Distributed Cloud Vpn API specifications",
+		Description:       "F5 Distributed Cloud Network API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/tunnels",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "vpn",
-		Domains:           []string{"vpn"},
+		PrimaryDomain:     "network",
+		Domains:           []string{"network", "vpn"},
 	})
 
 	Register(&ResourceType{
@@ -2430,7 +2430,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "load_balancer",
-		Domains:           []string{"load_balancer"},
+		Domains:           []string{"load_balancer", "virtual"},
 	})
 
 	Register(&ResourceType{
@@ -2486,13 +2486,13 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		Domains:           []string{"customer_edge", "infrastructure"},
 	})
 
 	Register(&ResourceType{
 		Name:              "user",
 		CLIName:           "user",
-		Description:       "This API can be used to manage various attributes of the user like\\\\nrole, contact information etc.",
+		Description:       "This API can be used to manage various attributes of the user like\\\\\\\\\\\\\\\\nrole, contact information etc.",
 		APIPath:           "/api/web/namespaces/system/users",
 		SupportsNamespace: false,
 		Operations:        ResourceOperations{Create: false, Get: true, List: true, Update: true, Delete: true, Status: false},
@@ -2510,12 +2510,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "user_identification",
 		CLIName:           "user-identification",
-		Description:       "F5 Distributed Cloud Identity API specifications",
+		Description:       "F5 Distributed Cloud System API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/user_identifications",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "identity",
-		Domains:           []string{"identity"},
+		Domains:           []string{"identity", "system"},
 	})
 
 	Register(&ResourceType{
@@ -2557,12 +2557,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "virtual_host",
 		CLIName:           "virtual-host",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Container Services API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/virtual_hosts",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		Domains:           []string{"container_services", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -2573,29 +2573,29 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		Domains:           []string{"infrastructure", "site_management"},
 	})
 
 	Register(&ResourceType{
 		Name:              "virtual_network",
 		CLIName:           "virtual-network",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Service Mesh API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/virtual_networks",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "service_mesh",
+		Domains:           []string{"container_services", "networking", "service_mesh"},
 	})
 
 	Register(&ResourceType{
 		Name:              "virtual_site",
 		CLIName:           "virtual-site",
-		Description:       "F5 Distributed Cloud Networking API specifications",
+		Description:       "F5 Distributed Cloud Container Services API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/virtual_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "networking",
-		Domains:           []string{"networking"},
+		PrimaryDomain:     "container_services",
+		Domains:           []string{"container_services", "networking"},
 	})
 
 	Register(&ResourceType{
@@ -2610,29 +2610,29 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "voltshare_admin_policy",
 		CLIName:           "voltshare-admin-policy",
-		Description:       "F5 Distributed Cloud Security API specifications",
+		Description:       "F5 Distributed Cloud Marketplace API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/voltshare_admin_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"marketplace", "security"},
 	})
 
 	Register(&ResourceType{
 		Name:              "voltstack_site",
 		CLIName:           "voltstack-site",
-		Description:       "F5 Distributed Cloud Infrastructure API specifications",
+		Description:       "F5 Distributed Cloud Site API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/voltstack_sites",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "infrastructure",
-		Domains:           []string{"infrastructure"},
+		PrimaryDomain:     "site",
+		Domains:           []string{"infrastructure", "site"},
 	})
 
 	Register(&ResourceType{
 		Name:              "waf",
 		CLIName:           "waf",
-		Description:       "APIs to get monitoring information about WAF instances on virtual-host basis. \\\\nIt gets data for a given virtual host based on any WAF instance attached to virtual host or route used by virtual host.",
+		Description:       "APIs to get monitoring information about WAF instances on virtual-host basis. \\\\\\\\\\\\\\\\nIt gets data for a given virtual host based on any WAF instance attached to virtual host or route used by virtual host.",
 		APIPath:           "/api/config/namespaces/{namespace}/wafs",
 		SupportsNamespace: true,
 		Operations:        ResourceOperations{Create: true, Get: true, List: true, Update: false, Delete: false, Status: false},
@@ -2646,7 +2646,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "security",
-		Domains:           []string{"security"},
+		Domains:           []string{"application_firewall", "security"},
 	})
 
 	Register(&ResourceType{
@@ -2675,7 +2675,7 @@ func registerGeneratedResources() {
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
 		PrimaryDomain:     "applications",
-		Domains:           []string{"applications"},
+		Domains:           []string{"applications", "container_services", "kubernetes_and_orchestration"},
 	})
 
 	Register(&ResourceType{
@@ -2685,8 +2685,8 @@ func registerGeneratedResources() {
 		APIPath:           "/api/config/namespaces/{namespace}/workload_flavors",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:     "applications",
-		Domains:           []string{"applications"},
+		PrimaryDomain:     "container_services",
+		Domains:           []string{"applications", "container_services"},
 	})
 
 }

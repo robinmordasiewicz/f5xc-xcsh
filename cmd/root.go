@@ -79,12 +79,12 @@ var rootCmd = &cobra.Command{
 
 		// Check if API URL is configured
 		if serverURL == "" {
-			return fmt.Errorf("F5 Distributed Cloud API URL is not configured.\n\n" +
-				"Please set the API URL using one of the following methods:\n" +
-				"  1. Environment variable: export F5XC_API_URL=\"https://tenant.console.ves.volterra.io\"\n" +
-				"  2. Command-line flag:    --server-url \"https://tenant.console.ves.volterra.io\"\n" +
-				"  3. Configuration file:   Add 'server_url' to ~/%s\n\n" +
-				"Replace 'tenant' with your actual F5 XC tenant name.\n" +
+			return fmt.Errorf("F5 Distributed Cloud API URL is not configured.\n\n"+
+				"Please set the API URL using one of the following methods:\n"+
+				"  1. Environment variable: export F5XC_API_URL=\"https://tenant.console.ves.volterra.io\"\n"+
+				"  2. Command-line flag:    --server-url \"https://tenant.console.ves.volterra.io\"\n"+
+				"  3. Configuration file:   Add 'server_url' to ~/%s\n\n"+
+				"Replace 'tenant' with your actual F5 XC tenant name.\n"+
 				"For staging environment, use: https://tenant.staging.volterra.us",
 				branding.ConfigFileName)
 		}

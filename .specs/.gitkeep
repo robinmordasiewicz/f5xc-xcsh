@@ -1,0 +1,3 @@
+# Enriched API specifications directory
+# Download with: make download-specs
+# This directory is created at build time and is not committed to git
