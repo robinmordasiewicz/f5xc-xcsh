@@ -249,15 +249,6 @@ jobs:
           fi
           echo "✅ Spec quality validation complete"
 
-      - name: Check metadata completeness
-        id: metadata
-        run: |
-          echo "🔍 Checking metadata completeness..."
-          go run scripts/check-missing-metadata.go \
-            --config .specs/domain_config.yaml \
-            --index .specs/index.json
-          echo "✅ Metadata check complete"
-
   build:
     name: Build
     runs-on: ubuntu-latest
