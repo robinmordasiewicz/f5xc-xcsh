@@ -42,7 +42,7 @@ func TestTierValidationProfessionalTierDomains(t *testing.T) {
 		"api",
 		"network_security",
 		"kubernetes",
-		"application_firewall",
+		"waf",
 	}
 
 	for _, domain := range professionalDomains {
@@ -242,11 +242,11 @@ func TestDomainTierRequirementsConsistency(t *testing.T) {
 		}
 	}
 
-	// Verify we have all 41 domains
-	assert.Equal(t, 41, domainCount, "Should have 41 domains total")
+	// Verify we have all 40 domains
+	assert.Equal(t, 40, domainCount, "Should have 40 domains total")
 
-	// Verify tier distribution matches actual: 24 Standard, 11 Professional, 6 Enterprise
-	assert.Equal(t, 24, standardCount, "Should have 24 Standard domains")
+	// Verify tier distribution matches actual: 23 Standard, 11 Professional, 6 Enterprise
+	assert.Equal(t, 23, standardCount, "Should have 23 Standard domains")
 	assert.Equal(t, 11, professionalCount, "Should have 11 Professional domains")
 	assert.Equal(t, 6, enterpriseCount, "Should have 6 Enterprise domains")
 

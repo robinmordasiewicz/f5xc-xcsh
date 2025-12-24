@@ -187,12 +187,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "app_firewall",
 		CLIName:           "app-firewall",
-		Description:       "F5 Distributed Cloud App Firewall API specifications",
+		Description:       "F5 Distributed Cloud Waf API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/app_firewalls",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:    "app_firewall",
-		Domains:          []string{"app_firewall", "application_firewall"},
+		PrimaryDomain:    "waf",
+		Domains:          []string{"waf"},
 	})
 
 	Register(&ResourceType{
@@ -711,12 +711,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "enhanced_firewall_policy",
 		CLIName:           "enhanced-firewall-policy",
-		Description:       "F5 Distributed Cloud App Firewall API specifications",
+		Description:       "F5 Distributed Cloud Waf API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/enhanced_firewall_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:    "app_firewall",
-		Domains:          []string{"app_firewall"},
+		PrimaryDomain:    "waf",
+		Domains:          []string{"waf"},
 	})
 
 	Register(&ResourceType{
@@ -1609,12 +1609,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "protocol_inspection",
 		CLIName:           "protocol-inspection",
-		Description:       "F5 Distributed Cloud App Firewall API specifications",
+		Description:       "F5 Distributed Cloud Waf API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/protocol_inspections",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:    "app_firewall",
-		Domains:          []string{"app_firewall"},
+		PrimaryDomain:    "waf",
+		Domains:          []string{"waf"},
 	})
 
 	Register(&ResourceType{
@@ -2641,12 +2641,12 @@ func registerGeneratedResources() {
 	Register(&ResourceType{
 		Name:              "waf_exclusion_policy",
 		CLIName:           "waf-exclusion-policy",
-		Description:       "F5 Distributed Cloud App Firewall API specifications",
+		Description:       "F5 Distributed Cloud Waf API specifications",
 		APIPath:           "/api/config/namespaces/{namespace}/waf_exclusion_policys",
 		SupportsNamespace: true,
 		Operations:        AllOperations(),
-		PrimaryDomain:    "app_firewall",
-		Domains:          []string{"app_firewall"},
+		PrimaryDomain:    "waf",
+		Domains:          []string{"waf"},
 	})
 
 	Register(&ResourceType{

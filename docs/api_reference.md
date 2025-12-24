@@ -515,7 +515,7 @@ for _, domain := range relatedDomains {
     fmt.Printf("- %s (%s)\n", domain.Name, domain.Category)
 }
 // Output:
-// - application_firewall (Security)
+// - waf (Security)
 // - authentication (Security)
 // - threat_campaign (Security)
 // - network_security (Security)
@@ -554,7 +554,7 @@ formatted := validation.FormatRelatedDomains(domains)
 fmt.Println(formatted)
 // Output:
 // RELATED DOMAINS:
-//   • application_firewall - F5 Distributed Cloud Application Firewall...
+//   • waf - F5 Distributed Cloud Application Firewall...
 //   • authentication - F5 Distributed Cloud Authentication...
 //   [... up to 5 domains ...]
 ```
@@ -593,7 +593,7 @@ fmt.Println(formatted)
 // SUGGESTED WORKFLOWS:
 //   • API Security Workflow
 //     Secure APIs with firewall and threat detection
-//     Involves: api, application_firewall, threat_campaign
+//     Involves: api, waf, threat_campaign
 //   [... up to 3 workflows ...]
 ```
 

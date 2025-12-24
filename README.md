@@ -132,10 +132,10 @@ xcsh uses an **automated CI/CD-driven system** to keep domain definitions synchr
 
 #### Domain Registry
 
-The domain registry (`pkg/types/domains_generated.go`) is **automatically generated** from upstream API specifications (``.specs/index.json`). It currently contains **48 domains** organized by functional area:
+The domain registry (`pkg/types/domains_generated.go`) is **automatically generated** from upstream API specifications (``.specs/index.json`). It currently contains **40 domains** organized by functional area:
 
 - **Infrastructure**: cloud_infrastructure, site, site_management, container_services
-- **Security**: app_firewall, application_firewall, bot_and_threat_defense, network_security
+- **Security**: waf, bot_and_threat_defense, network_security
 - **Networking**: network, dns, network_connectivity, vpn
 - **Observability**: observability_and_analytics, telemetry_and_insights, statistics
 - **Identity**: identity, user_and_account_management, users

@@ -132,7 +132,7 @@ func GetWorkflowSuggestions(domain string) []WorkflowSuggestion {
 			WorkflowSuggestion{
 				Name:        "API Security Workflow",
 				Description: "Secure APIs with firewall and threat detection",
-				Domains:     []string{"api", "application_firewall", "threat_campaign"},
+				Domains:     []string{"api", "waf", "threat_campaign"},
 				Category:    "Security",
 			},
 			WorkflowSuggestion{

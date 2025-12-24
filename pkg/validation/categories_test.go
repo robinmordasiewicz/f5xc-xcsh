@@ -208,7 +208,7 @@ func TestSecurityCategoryDomains(t *testing.T) {
 		domainSet[domain.Name] = true
 	}
 
-	expectedSecurityDomains := []string{"api", "application_firewall", "certificates", "ddos", "network_security", "shape", "threat_campaign"}
+	expectedSecurityDomains := []string{"api", "certificates", "ddos", "network_security", "shape", "threat_campaign", "waf"}
 	for _, expected := range expectedSecurityDomains {
 		assert.True(t, domainSet[expected], "Security category should contain domain %q", expected)
 	}
@@ -298,7 +298,7 @@ func TestDistributionTotals(t *testing.T) {
 
 	// Expected distribution based on domain count analysis
 	expectedTotals := map[string]int{
-		"Other":          10,
+		"Other":          9,
 		"Security":       9,
 		"Platform":       7,
 		"Operations":     5,

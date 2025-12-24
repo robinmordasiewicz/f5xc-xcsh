@@ -81,12 +81,12 @@ xcsh organizes all 42 API domains into 7 categories to help you find and underst
 
 | Category | Description | Domains | Examples |
 |----------|-------------|---------|----------|
-| **Security** | API security, firewalls, threat protection | 9 | api, application_firewall, ddos, threat_campaign |
+| **Security** | API security, firewalls, threat protection | 9 | api, waf, ddos, threat_campaign |
 | **Platform** | User management, authentication, identity | 7 | authentication, users, tenant_and_identity, marketplace |
 | **Networking** | DNS, CDN, load balancing, network config | 5 | dns, virtual, cdn, rate_limiting, network |
 | **Infrastructure** | Kubernetes, cloud, service mesh, sites | 4 | kubernetes, service_mesh, cloud_infrastructure, site |
 | **Operations** | Monitoring, analytics, observability, telemetry | 5 | observability, statistics, telemetry_and_insights, data_intelligence |
-| **Other** | General utilities and management tools | 11 | marketplace, bigip, nginx_one, shape, blindfold, etc. |
+| **Other** | General utilities and management tools | 9 | marketplace, bigip, nginx_one, shape, blindfold, etc. |
 | **AI** | AI and machine learning features | 1 | generative_ai |
 
 ### Why Categories Matter
@@ -133,7 +133,7 @@ See which domains work well together:
 ```bash
 xcsh api --help
 # Under "RELATED DOMAINS:" shows:
-# - application_firewall (same security category)
+# - waf (same security category)
 # - authentication (authentication is related to API security)
 # - network_security (complementary security functionality)
 # etc.
@@ -279,7 +279,7 @@ $ xcsh api --help
 SUGGESTED WORKFLOWS:
   • API Security Workflow
     Secure APIs with firewall and threat detection
-    Involves: api, application_firewall, threat_campaign
+    Involves: api, waf, threat_campaign
 
   • Network Protection Workflow
     Protect network infrastructure and applications
@@ -297,7 +297,7 @@ SUGGESTED WORKFLOWS:
 
 | Workflow | Domains | Purpose |
 |----------|---------|---------|
-| **API Security** | api, application_firewall, threat_campaign | Protect your APIs |
+| **API Security** | api, waf, threat_campaign | Protect your APIs |
 | **Network Protection** | network_security, ddos, infrastructure_protection | Protect infrastructure |
 | **Load Balancing** | dns, virtual, cdn | Distribute traffic |
 | **Access Management** | authentication, users, tenant_and_identity | Manage access |
@@ -414,7 +414,7 @@ xcsh [domain] add-labels [name] [labels]  # Add labels
 **Domains involved**:
 
 - `api` - Define and manage your APIs
-- `application_firewall` - Add security rules
+- `waf` - Add security rules
 - `threat_campaign` - Monitor threats
 
 **Steps**:
@@ -429,7 +429,7 @@ xcsh [domain] add-labels [name] [labels]  # Add labels
 
    ```bash
    xcsh api --help          # Understand API management
-   xcsh application_firewall --help  # Learn firewall options
+   xcsh waf --help  # Learn firewall options
    xcsh threat_campaign --help       # Understand threat detection
    ```
 
@@ -443,7 +443,7 @@ xcsh [domain] add-labels [name] [labels]  # Add labels
 4. **Add firewall rules**:
 
    ```bash
-   xcsh application_firewall create rules.yaml
+   xcsh waf create rules.yaml
    ```
 
 5. **Enable threat detection**:
@@ -738,7 +738,7 @@ Begin with one domain, then expand to related domains:
 xcsh api list
 
 # Then explore related domains
-xcsh application_firewall --help
+xcsh waf --help
 ```
 
 ### 7. Use Tier Appropriately

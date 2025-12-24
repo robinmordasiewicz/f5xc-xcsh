@@ -41,14 +41,14 @@ func TestGetRelatedDomainsNonExistent(t *testing.T) {
 // TestGetRelatedDomainsCategoryGrouping verifies same category domains are related
 func TestGetRelatedDomainsCategoryGrouping(t *testing.T) {
 	// Test security domain (has same category domains)
-	related := GetRelatedDomains("application_firewall")
+	related := GetRelatedDomains("waf")
 	assert.Greater(t, len(related), 0, "Security domain should have related domains")
 
 	// At least some should be in same category
-	appFwInfo, _ := types.GetDomainInfo("application_firewall")
+	wafInfo, _ := types.GetDomainInfo("waf")
 	sameCategoryFound := false
 	for _, domain := range related {
-		if domain.Category == appFwInfo.Category {
+		if domain.Category == wafInfo.Category {
 			sameCategoryFound = true
 			break
 		}

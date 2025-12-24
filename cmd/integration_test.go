@@ -69,7 +69,7 @@ func TestPhase3DomainCategorization(t *testing.T) {
 	// Verify expected category distribution
 	assert.GreaterOrEqual(t, categoryCounts["Security"], 9, "Should have at least 9 Security domains")
 	assert.GreaterOrEqual(t, categoryCounts["Platform"], 7, "Should have at least 7 Platform domains")
-	assert.GreaterOrEqual(t, categoryCounts["Other"], 10, "Should have at least 10 Other domains")
+	assert.GreaterOrEqual(t, categoryCounts["Other"], 9, "Should have at least 9 Other domains")
 }
 
 // TestPhase4UseCaseDocumentation verifies use cases are available where applicable
@@ -246,7 +246,7 @@ func TestCompletionHelperIntegration(t *testing.T) {
 	for domainName := range types.DomainRegistry {
 		allDomainNames = append(allDomainNames, domainName)
 	}
-	assert.Equal(t, len(allDomainNames), 41, "Should have 41 domains")
+	assert.Equal(t, len(allDomainNames), 40, "Should have 40 domains")
 
 	// Test category-based completion works
 	categoryDomains := validation.GetDomainsByCategory("Security")
@@ -364,9 +364,9 @@ func TestDomainWorkflowConsistency(t *testing.T) {
 	}
 }
 
-// TestAllDomainsAccessible verifies all 41 domains are accessible and complete
+// TestAllDomainsAccessible verifies all 40 domains are accessible and complete
 func TestAllDomainsAccessible(t *testing.T) {
-	assert.Equal(t, len(types.DomainRegistry), 41, "Should have exactly 41 domains")
+	assert.Equal(t, len(types.DomainRegistry), 40, "Should have exactly 40 domains")
 
 	accessibleCount := 0
 	completeCount := 0
@@ -387,6 +387,6 @@ func TestAllDomainsAccessible(t *testing.T) {
 		completeCount++
 	}
 
-	assert.Equal(t, accessibleCount, 41, "All 41 domains should be accessible")
-	assert.Equal(t, completeCount, 41, "All 41 domains should be complete")
+	assert.Equal(t, accessibleCount, 40, "All 40 domains should be accessible")
+	assert.Equal(t, completeCount, 40, "All 40 domains should be complete")
 }
