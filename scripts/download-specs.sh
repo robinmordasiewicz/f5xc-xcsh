@@ -225,3 +225,13 @@ fi
 log_success "Downloaded enriched specs $VERSION"
 log_info "Location: $SPECS_DIR/domains/"
 log_info "Domain files: $DOMAIN_COUNT"
+
+# Restore CHANGELOG.md to prevent git dirty state during releases
+# The downloaded specs ZIP may include a CHANGELOG.md that differs from our tracked version
+# This ensures GoReleaser's git validation passes without skipping any checks
+if [ -f "$SPECS_DIR/CHANGELOG.md" ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    if git ls-files --error-unmatch "$SPECS_DIR/CHANGELOG.md" >/dev/null 2>&1; then
+        log_info "Restoring CHANGELOG.md to tracked version..."
+        git checkout -- "$SPECS_DIR/CHANGELOG.md" 2>/dev/null && log_success "CHANGELOG.md restored" || log_warn "Could not restore CHANGELOG.md"
+    fi
+fi
