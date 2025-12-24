@@ -80,5 +80,16 @@ completions/
 .claude/
 
 # Downloaded API specifications (enriched specs)
-.specs/
+# Commit domain_config.yaml for CI/CD automation
+# Commit .version for tracking current upstream version
+# Ignore individual spec files (regenerated via download-specs.sh)
+.specs/domains/
+.specs/resources/
+.specs/index.json
 !.specs/.gitkeep
+!.specs/domain_config.yaml
+!.specs/.version
+
+# Generated Go source files are committed (idempotent, needed for reproducibility)
+# pkg/types/domains_generated.go
+# pkg/types/resources_generated.go

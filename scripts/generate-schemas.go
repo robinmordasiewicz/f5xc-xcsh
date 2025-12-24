@@ -682,7 +682,7 @@ func writeSchemaEntry(f *os.File, name string, schema *types.ResourceSchemaInfo)
 `,
 		name,
 		schema.ResourceName,
-		escapeString(schema.Description),
+		schema.Description,
 		escapeForGoString(string(fieldsJSON)),
 		escapeForGoString(string(oneOfJSON)),
 		decisionJSON,
@@ -786,8 +786,16 @@ func buildResourceDomainMap(specs map[string]*openapi.Spec, mapper *openapi.Spec
 			Domains: []string{},
 		}
 
+		// Sort spec filePaths for deterministic iteration (maps have random order in Go)
+		var sortedFilePaths []string
+		for filePath := range specs {
+			sortedFilePaths = append(sortedFilePaths, filePath)
+		}
+		sort.Strings(sortedFilePaths)
+
 		// Check each spec file to see if it contains this resource
-		for filePath, spec := range specs {
+		for _, filePath := range sortedFilePaths {
+			spec := specs[filePath]
 			// Extract domain from filename (e.g., "load_balancer.json" -> "load_balancer")
 			// The filepath from LoadAllSpecs is the full path, so extract just the filename
 			filename := filepath.Base(filePath)
@@ -910,7 +918,7 @@ func writeResourceEntry(f *os.File, rt *types.ResourceType, description string, 
 		Operations:        %s,`,
 		rt.Name,
 		rt.CLIName,
-		escapeString(description),
+		description,
 		rt.APIPath,
 		rt.SupportsNamespace,
 		formatOperations(rt.Operations),

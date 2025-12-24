@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -213,6 +214,9 @@ func LoadAllSpecs(dir string) (map[string]*Spec, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("no spec files found in %s", dir)
 	}
+
+	// Sort files for deterministic loading order (filepath.Glob returns undefined order)
+	sort.Strings(files)
 
 	for _, file := range files {
 		// Skip metadata files

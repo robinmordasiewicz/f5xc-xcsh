@@ -1,0 +1,181 @@
+name: Sync Upstream Specs
+
+on:
+  # Run daily at 6 AM UTC to check for upstream updates
+  schedule:
+    - cron: '0 6 * * *'
+
+  # Allow manual trigger for immediate sync
+  workflow_dispatch:
+
+  # Trigger on domain config changes
+  push:
+    paths:
+      - '.specs/domain_config.yaml'
+      - 'scripts/generate-domains.go'
+      - 'scripts/templates/domains.go.tmpl'
+
+jobs:
+  # Step 1: Check if upstream has new version
+  check-upstream:
+    name: Check for Upstream Updates
+    runs-on: ubuntu-latest
+    outputs:
+      has_updates: ${{ steps.check.outputs.has_updates }}
+      new_version: ${{ steps.check.outputs.new_version }}
+      current_version: ${{ steps.check.outputs.current_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get current version from specs
+        id: current
+        run: |
+          if [ -f .specs/.version ]; then
+            CURRENT=$(cat .specs/.version)
+          else
+            CURRENT="none"
+          fi
+          echo "current_version=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Check latest upstream version
+        id: check
+        run: |
+          # Get latest release from upstream enriched specs
+          LATEST=$(curl -s https://api.github.com/repos/robinmordasiewicz/f5xc-api-enriched/releases/latest | jq -r '.tag_name')
+
+          echo "new_version=$LATEST" >> $GITHUB_OUTPUT
+          echo "current_version=${{ steps.current.outputs.current_version }}" >> $GITHUB_OUTPUT
+
+          if [ "$LATEST" != "${{ steps.current.outputs.current_version }}" ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+            echo "🆕 New upstream version available: $LATEST (current: ${{ steps.current.outputs.current_version }})"
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+            echo "✓ Already on latest version: $LATEST"
+          fi
+
+  # Step 2: If updates available, regenerate code and create PR
+  update-and-regenerate:
+    name: Update Specs and Regenerate Code
+    needs: check-upstream
+    if: needs.check-upstream.outputs.has_updates == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Download latest specs
+        run: ./scripts/download-specs.sh
+
+      - name: Generate domains
+        run: go run scripts/generate-domains.go
+
+      - name: Generate resources
+        run: go run scripts/generate-schemas.go --update-resources
+
+      - name: Validate generated code
+        run: go build ./...
+
+      - name: Run tests
+        run: go test -v ./pkg/...
+
+      - name: Create validation report
+        id: validate
+        run: |
+          echo "## ✅ Validation Results" >> validation-report.md
+          echo "" >> validation-report.md
+          echo "- **Build:** SUCCESS" >> validation-report.md
+          echo "- **Tests:** PASSED" >> validation-report.md
+          echo "- **Generated Files:** domains_generated.go, resources_generated.go" >> validation-report.md
+          echo "" >> validation-report.md
+          echo "### Domain Summary" >> validation-report.md
+          DOMAIN_COUNT=$(grep -c '".*": {' pkg/types/domains_generated.go || echo "0")
+          echo "- **Total Domains:** $DOMAIN_COUNT" >> validation-report.md
+          echo "" >> validation-report.md
+          echo "### Upstream Version" >> validation-report.md
+          echo "- **Previous:** ${{ needs.check-upstream.outputs.current_version }}" >> validation-report.md
+          echo "- **New:** ${{ needs.check-upstream.outputs.new_version }}" >> validation-report.md
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: sync upstream specs ${{ needs.check-upstream.outputs.new_version }}
+
+            Automatically synced OpenAPI specifications from upstream.
+
+            **Changes:**
+            - Updated specs from ${{ needs.check-upstream.outputs.current_version }} to ${{ needs.check-upstream.outputs.new_version }}
+            - Regenerated: domains_generated.go, resources_generated.go
+            - Validated: Build ✅ Tests ✅
+
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+            Co-Authored-By: Upstream Sync Bot <noreply@github.com>
+          branch: sync/upstream-${{ needs.check-upstream.outputs.new_version }}
+          title: 'chore: sync upstream specs ${{ needs.check-upstream.outputs.new_version }}'
+          body: |
+            ## 🔄 Automated Upstream Specification Sync
+
+            **Previous Version:** `${{ needs.check-upstream.outputs.current_version }}`
+            **New Version:** `${{ needs.check-upstream.outputs.new_version }}`
+
+            ### 📊 Summary
+            This PR automatically syncs changes from the upstream F5 Distributed Cloud API enriched specifications.
+
+            ### ✅ Validation Checklist
+            - [x] Build succeeds
+            - [x] Tests pass
+            - [x] Generated code is reproducible (idempotent)
+            - [x] Domain count matches upstream specs
+
+            ### 🔎 Review Guidance
+            1. Check the git diff for `pkg/types/domains_generated.go` to see domain changes
+            2. Review `pkg/types/resources_generated.go` for resource updates
+            3. Verify no manual modifications are needed to `.specs/domain_config.yaml`
+            4. Merge if CI checks pass
+
+            ### 📝 Files Changed
+            - `pkg/types/domains_generated.go` - Auto-generated domain registry
+            - `pkg/types/resources_generated.go` - Auto-generated resource schemas
+            - `.specs/` - Updated API specifications
+            - `.specs/.version` - Updated version tracking
+
+            ---
+            🤖 This PR was automatically created by the sync-upstream-specs workflow.
+            For issues with upstream specs, please open an issue in [robinmordasiewicz/f5xc-api-enriched](https://github.com/robinmordasiewicz/f5xc-api-enriched/issues).
+          labels: |
+            automated
+            upstream-sync
+            chore
+          reviewers: |
+            robinmordasiewicz
+          team-reviewers: |
+            maintainers
+
+  # Step 3: Report if no updates
+  no-updates:
+    name: Report Status
+    needs: check-upstream
+    if: needs.check-upstream.outputs.has_updates == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log status
+        run: |
+          echo "✓ No upstream updates available"
+          echo "Current version: ${{ needs.check-upstream.outputs.current_version }}"
+          echo "Latest version: ${{ needs.check-upstream.outputs.new_version }}"

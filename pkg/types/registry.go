@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -36,7 +37,7 @@ func Get(cliName string) (*ResourceType, bool) {
 	return rt, ok
 }
 
-// All returns all registered resource types
+// All returns all registered resource types in sorted order (deterministic)
 func All() []*ResourceType {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -45,6 +46,10 @@ func All() []*ResourceType {
 	for _, rt := range globalRegistry.resources {
 		result = append(result, rt)
 	}
+	// Sort by name for deterministic output (maps have random iteration order in Go)
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Name < result[j].Name
+	})
 	return result
 }
 

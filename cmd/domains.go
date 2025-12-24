@@ -8,6 +8,7 @@ import (
 
 	"github.com/robinmordasiewicz/xcsh/pkg/naming"
 	"github.com/robinmordasiewicz/xcsh/pkg/types"
+	"github.com/robinmordasiewicz/xcsh/pkg/validation"
 )
 
 // init registers all domain commands dynamically
@@ -22,14 +23,51 @@ func init() {
 func buildDomainCmd(domain string) *cobra.Command {
 	info, _ := types.GetDomainInfo(domain)
 
-	cmd := &cobra.Command{
-		Use:     domain,
-		Aliases: info.Aliases,
-		Short:   fmt.Sprintf("Manage %s resources", info.DisplayName),
-		Long: fmt.Sprintf(`Manage F5 Distributed Cloud %s resources.
+	// Build short description with tier annotation and preview badge if needed
+	shortDesc := fmt.Sprintf("Manage %s resources", info.DisplayName)
+
+	// Add preview badge if domain is in preview
+	if info.IsPreview {
+		shortDesc = validation.AppendPreviewToShortDescription(shortDesc, true)
+	}
+
+	// Add tier requirement annotation if not Standard
+	if info.RequiresTier != "Standard" && info.RequiresTier != "" {
+		shortDesc = fmt.Sprintf("[Requires %s] %s", info.RequiresTier, shortDesc)
+	}
+
+	// Build long description with preview warning if needed
+	categoryInfo := ""
+	if info.Category != "" {
+		categoryInfo = fmt.Sprintf("Category: %s\n", info.Category)
+	}
+
+	complexityInfo := ""
+	if info.Complexity != "" {
+		complexityInfo = fmt.Sprintf("Complexity: %s\n", info.Complexity)
+	}
+
+	useCasesInfo := ""
+	if len(info.UseCases) > 0 {
+		useCasesInfo = validation.FormatUseCases(info.UseCases) + "\n"
+	}
+
+	relatedDomainsInfo := ""
+	relatedDomains := validation.GetRelatedDomains(domain)
+	if len(relatedDomains) > 0 {
+		relatedDomainsInfo = validation.FormatRelatedDomains(relatedDomains) + "\n"
+	}
+
+	workflowInfo := ""
+	workflows := validation.GetWorkflowSuggestions(domain)
+	if len(workflows) > 0 {
+		workflowInfo = validation.FormatWorkflowSuggestions(workflows) + "\n"
+	}
+
+	longDesc := fmt.Sprintf(`Manage F5 Distributed Cloud %s resources.
 
 %s
-
+%s%s%s%s%s
 OPERATIONS:
   list           List resources of a type (optionally filtered by namespace)
   get            Retrieve a specific resource by name
@@ -42,13 +80,43 @@ OPERATIONS:
   add-labels     Add labels to a resource
   remove-labels  Remove labels from a resource
 
-Run 'xcsh %s --help' for more information.`, info.DisplayName, info.Description, domain),
+Run 'xcsh %s --help' for more information.`, info.DisplayName, info.Description, categoryInfo, complexityInfo, useCasesInfo, relatedDomainsInfo, workflowInfo, domain)
+
+	// Prepend preview warning if domain is in preview
+	if info.IsPreview {
+		longDesc = fmt.Sprintf("⚠️  PREVIEW: This domain is in beta and may have breaking changes.\n\n%s", longDesc)
 	}
 
-	// Enable error handling for invalid subcommands
+	cmd := &cobra.Command{
+		Use:     domain,
+		Aliases: info.Aliases,
+		Short:   shortDesc,
+		Long:    longDesc,
+	}
+
+	// Wrap the RunE with tier validation and preview warnings
+	originalRunE := cmd.RunE
 	cmd.RunE = func(c *cobra.Command, args []string) error {
+		// Check subscription tier before allowing access to domain
+		tierErr := ValidateDomainTier(c.Context(), domain)
+		if tierErr != nil {
+			_, _ = fmt.Fprintf(c.OutOrStderr(), "Error: %v\n", tierErr)
+			return tierErr
+		}
+
+		// Check for preview status and display warning if applicable (non-blocking)
+		previewWarning := CheckAndWarnPreviewDomain(domain)
+		if previewWarning != nil {
+			_, _ = fmt.Fprintf(c.OutOrStderr(), "Warning: %v\n\n", previewWarning)
+		}
+
+		// If tier check passed, proceed with normal command handling
 		if len(args) > 0 {
 			return fmt.Errorf("unknown command %q for %q\n\nUsage: xcsh %s <action> [resource-type] [name] [flags]\n\nAvailable actions:\n  list, get, create, replace, apply, delete, status, patch, add-labels, remove-labels\n\nRun 'xcsh %s --help' for usage", args[0], c.CommandPath(), domain, domain)
+		}
+
+		if originalRunE != nil {
+			return originalRunE(c, args)
 		}
 		return c.Help()
 	}

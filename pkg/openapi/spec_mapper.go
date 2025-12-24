@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"sort"
 	"strings"
 )
 
@@ -23,7 +24,15 @@ func NewSpecMapper(specs map[string]*Spec) *SpecMapper {
 // buildResourceMap builds the mapping from resource names to spec files
 // Uses schema-based discovery: scans all schemas for CreateRequest patterns
 func (m *SpecMapper) buildResourceMap() {
-	for filename, spec := range m.specs {
+	// Sort filenames for deterministic iteration (maps have random iteration order in Go)
+	var sortedFilenames []string
+	for filename := range m.specs {
+		sortedFilenames = append(sortedFilenames, filename)
+	}
+	sort.Strings(sortedFilenames)
+
+	for _, filename := range sortedFilenames {
+		spec := m.specs[filename]
 		// Extract resource names from schema names (domain-organized specs)
 		// Each spec file can contain multiple resources
 		resources := spec.FindAllResourceSchemas()
@@ -52,9 +61,16 @@ func (m *SpecMapper) FindSpec(resourceName string) *Spec {
 	lowerResource := strings.ToLower(resourceName)
 	normalized := strings.ReplaceAll(lowerResource, "_", "")
 
-	for mappedName, filename := range m.resourceMap {
+	// Sort mapped names for deterministic fuzzy matching (maps have random iteration order in Go)
+	var sortedMappedNames []string
+	for mappedName := range m.resourceMap {
+		sortedMappedNames = append(sortedMappedNames, mappedName)
+	}
+	sort.Strings(sortedMappedNames)
+
+	for _, mappedName := range sortedMappedNames {
 		if strings.ReplaceAll(mappedName, "_", "") == normalized {
-			return m.specs[filename]
+			return m.specs[m.resourceMap[mappedName]]
 		}
 	}
 

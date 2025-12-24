@@ -12,7 +12,7 @@ import (
 
 // Build-time version variables: set via ldflags during release, or auto-detected from VCS info
 var (
-	Version   = "5.0.0"
+	Version   = "5.1.0"
 	GitCommit = "local"
 	BuildDate = "now"
 )
