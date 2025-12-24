@@ -586,9 +586,9 @@ nav:
         - Pops Overview: commands/cloudstatus/pops/index.md
         - List: commands/cloudstatus/pops/list.md
         - Status: commands/cloudstatus/pops/status.md
-      - Status: commands/cloudstatus/status.md
-      - Summary: commands/cloudstatus/summary.md
-      - Watch: commands/cloudstatus/watch.md
+      - Status: commands/cloudstatus/status/index.md
+      - Summary: commands/cloudstatus/summary/index.md
+      - Watch: commands/cloudstatus/watch/index.md
     - Completion: commands/completion/index.md
     - Data And Privacy Security:
       - Data And Privacy Security Overview: commands/data_and_privacy_security/index.md
