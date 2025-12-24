@@ -93,3 +93,6 @@ completions/
 # Generated Go source files are committed (idempotent, needed for reproducibility)
 # pkg/types/domains_generated.go
 # pkg/types/resources_generated.go
+
+# Claude development documentation (internal planning artifacts)
+claudedocs/
