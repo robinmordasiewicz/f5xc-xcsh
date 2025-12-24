@@ -97,7 +97,7 @@ func TestAllPreviewDomainsDetected(t *testing.T) {
 	}
 
 	assert.Equal(t, 1, previewCount, "Should have 1 preview domain")
-	assert.Equal(t, 39, stableCount, "Should have 39 stable domains")
+	assert.Equal(t, 38, stableCount, "Should have 38 stable domains")
 }
 
 // TestPreviewBadgeFormatting verifies preview badges are formatted correctly
