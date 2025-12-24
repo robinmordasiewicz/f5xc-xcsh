@@ -133,7 +133,7 @@ func TestAllDomainsInCategories(t *testing.T) {
 	}
 
 	// Should have all 40 domains
-	assert.Equal(t, 40, totalDomains, "Should have all 40 domains across categories")
+	assert.Equal(t, 39, totalDomains, "Should have all 39 domains across categories")
 
 	// All registry domains should be categorized
 	for domainName := range types.DomainRegistry {
@@ -169,7 +169,7 @@ func TestCategoryDomainCount(t *testing.T) {
 		"Operations":     5,
 		"Other":          9,
 		"Platform":       7,
-		"Security":       9,
+		"Security":       8,
 	}
 
 	for category, expectedCount := range expectedCounts {
@@ -183,7 +183,7 @@ func TestCategoryDomainCount(t *testing.T) {
 // TestSecurityCategoryDomains verifies specific security domains
 func TestSecurityCategoryDomains(t *testing.T) {
 	domains := validation.GetDomainsByCategory("Security")
-	assert.Equal(t, 9, len(domains), "Security category should have 9 domains")
+	assert.Equal(t, 8, len(domains), "Security category should have 8 domains")
 
 	domainMap := make(map[string]*types.DomainInfo)
 	for _, domain := range domains {
@@ -193,7 +193,7 @@ func TestSecurityCategoryDomains(t *testing.T) {
 	// Verify key security domains
 	expectedSecurityDomains := []string{
 		"api", "waf", "blindfold", "certificates",
-		"ddos", "infrastructure_protection", "network_security", "shape", "threat_campaign",
+		"ddos", "network_security", "shape", "threat_campaign",
 	}
 
 	for _, expected := range expectedSecurityDomains {
@@ -300,7 +300,7 @@ func TestCategoryDistribution(t *testing.T) {
 	for _, cd := range distribution {
 		totalCount += cd.Count
 	}
-	assert.Equal(t, 40, totalCount, "Total domains should be 40")
+	assert.Equal(t, 39, totalCount, "Total domains should be 39")
 }
 
 // TestMultipleCategoryFilter verifies filtering by multiple categories

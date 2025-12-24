@@ -243,10 +243,10 @@ func TestDomainTierRequirementsConsistency(t *testing.T) {
 	}
 
 	// Verify we have all 40 domains
-	assert.Equal(t, 40, domainCount, "Should have 40 domains total")
+	assert.Equal(t, 39, domainCount, "Should have 39 domains total")
 
 	// Verify tier distribution matches actual: 23 Standard, 11 Professional, 6 Enterprise
-	assert.Equal(t, 23, standardCount, "Should have 23 Standard domains")
+	assert.Equal(t, 22, standardCount, "Should have 22 Standard domains")
 	assert.Equal(t, 11, professionalCount, "Should have 11 Professional domains")
 	assert.Equal(t, 6, enterpriseCount, "Should have 6 Enterprise domains")
 

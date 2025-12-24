@@ -299,7 +299,7 @@ func TestDistributionTotals(t *testing.T) {
 	// Expected distribution based on domain count analysis
 	expectedTotals := map[string]int{
 		"Other":          9,
-		"Security":       9,
+		"Security":       8,
 		"Platform":       7,
 		"Operations":     5,
 		"Networking":     5,

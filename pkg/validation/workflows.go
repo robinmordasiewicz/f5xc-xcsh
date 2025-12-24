@@ -138,7 +138,7 @@ func GetWorkflowSuggestions(domain string) []WorkflowSuggestion {
 			WorkflowSuggestion{
 				Name:        "Network Protection Workflow",
 				Description: "Protect network infrastructure and applications",
-				Domains:     []string{"network_security", "ddos", "infrastructure_protection"},
+				Domains:     []string{"network_security", "ddos"},
 				Category:    "Security",
 			},
 		)
