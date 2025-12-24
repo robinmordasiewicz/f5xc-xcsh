@@ -3,12 +3,14 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/robinmordasiewicz/xcsh/pkg/naming"
 	"github.com/robinmordasiewicz/xcsh/pkg/types"
+	"github.com/robinmordasiewicz/xcsh/pkg/validation"
 )
 
 // Domain completion client with caching
@@ -176,6 +178,44 @@ func completeLabelKey(cmd *cobra.Command, args []string, toComplete string) ([]s
 		"tier\tTier label",
 		"version\tVersion label",
 	}, cobra.ShellCompDirectiveNoFileComp
+}
+
+// completeDomainsByUseCase provides completion for domains filtered by use case keywords
+func completeDomainsByUseCase(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	// If no search term provided, return popular use case keywords
+	if toComplete == "" {
+		return []string{
+			"configure\tFind domains for configuration tasks",
+			"manage\tFind domains for management tasks",
+			"deploy\tFind domains for deployment tasks",
+			"monitor\tFind domains for monitoring tasks",
+			"security\tFind domains for security tasks",
+		}, cobra.ShellCompDirectiveDefault
+	}
+
+	// Search for domains matching use case keywords
+	keyword := strings.ToLower(toComplete)
+	results := validation.SearchUseCases(keyword)
+
+	// Group results by domain and avoid duplicates
+	domainMap := make(map[string]string)
+	for _, useCase := range results {
+		if _, exists := domainMap[useCase.Domain]; !exists {
+			info, found := types.GetDomainInfo(useCase.Domain)
+			if found {
+				shortDesc := fmt.Sprintf("Use case: %s (%s)", useCase.Description, info.Category)
+				domainMap[useCase.Domain] = shortDesc
+			}
+		}
+	}
+
+	// Convert to completion format
+	completions := make([]string, 0, len(domainMap))
+	for domain, description := range domainMap {
+		completions = append(completions, domain+"\t"+description)
+	}
+
+	return completions, cobra.ShellCompDirectiveNoFileComp
 }
 
 // Helper functions
