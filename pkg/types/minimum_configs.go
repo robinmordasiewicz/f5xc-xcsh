@@ -111,12 +111,17 @@ func GetMinimumConfiguration(resourceName string) *MinimumConfigSpec {
 	return nil
 }
 
-// init adds minimum configurations to the resource schemas
+// init adds minimum configurations to the resource schemas.
+// This acts as a fallback - upstream MinimumConfiguration from x-ves-minimum-configuration
+// extension takes priority over local definitions in this file.
 func init() {
 	for resourceName, minConfig := range MinimumConfigurations {
 		if schema, ok := ResourceSchemas[resourceName]; ok {
-			schema.MinimumConfiguration = minConfig
-			ResourceSchemas[resourceName] = schema
+			// Only add local config if upstream doesn't provide one
+			if schema.MinimumConfiguration == nil {
+				schema.MinimumConfiguration = minConfig
+				ResourceSchemas[resourceName] = schema
+			}
 		}
 	}
 }

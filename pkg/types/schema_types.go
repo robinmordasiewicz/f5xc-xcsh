@@ -247,3 +247,12 @@ func unmarshalStringSlice(jsonStr string) []string {
 	}
 	return slice
 }
+
+// unmarshalMinimumConfig unmarshals a JSON string into a MinimumConfigSpec.
+func unmarshalMinimumConfig(jsonStr string) *MinimumConfigSpec {
+	var config MinimumConfigSpec
+	if err := json.Unmarshal([]byte(jsonStr), &config); err != nil {
+		return nil
+	}
+	return &config
+}

@@ -384,6 +384,17 @@ func extractSchemaInfo(resourceName string, spec *openapi.Spec) *types.ResourceS
 	// Build decision tree from oneOf groups
 	info.DecisionTree = buildDecisionTree(info.OneOfGroups, info.Fields, spec, schema)
 
+	// Extract MinimumConfiguration from x-ves-minimum-configuration extension (issue #152)
+	if schema.XVesMinimumConfiguration != nil {
+		info.MinimumConfiguration = &types.MinimumConfigSpec{
+			Description:    schema.XVesMinimumConfiguration.Description,
+			RequiredFields: schema.XVesMinimumConfiguration.RequiredFields,
+			ExampleYAML:    schema.XVesMinimumConfiguration.ExampleYAML,
+			ExampleCommand: schema.XVesMinimumConfiguration.ExampleCommand,
+			Domain:         schema.XVesCLIDomain, // from x-ves-cli-domain
+		}
+	}
+
 	return info
 }
 
@@ -671,13 +682,24 @@ func writeSchemaEntry(f *os.File, name string, schema *types.ResourceSchemaInfo)
 		return err
 	}
 
+	// Marshal MinimumConfiguration if present (from x-ves-minimum-configuration extension)
+	minConfigJSON := "nil"
+	if schema.MinimumConfiguration != nil {
+		bytes, err := json.Marshal(schema.MinimumConfiguration)
+		if err != nil {
+			return err
+		}
+		minConfigJSON = fmt.Sprintf("unmarshalMinimumConfig(%s)", escapeForGoString(string(bytes)))
+	}
+
 	entry := fmt.Sprintf(`	%q: {
-		ResourceName:   %q,
-		Description:    %q,
-		Fields:         unmarshalFields(%s),
-		OneOfGroups:    unmarshalOneOfGroups(%s),
-		DecisionTree:   %s,
-		RequiredFields: unmarshalStringSlice(%s),
+		ResourceName:          %q,
+		Description:           %q,
+		Fields:                unmarshalFields(%s),
+		OneOfGroups:           unmarshalOneOfGroups(%s),
+		DecisionTree:          %s,
+		RequiredFields:        unmarshalStringSlice(%s),
+		MinimumConfiguration:  %s,
 	},
 `,
 		name,
@@ -687,6 +709,7 @@ func writeSchemaEntry(f *os.File, name string, schema *types.ResourceSchemaInfo)
 		escapeForGoString(string(oneOfJSON)),
 		decisionJSON,
 		escapeForGoString(string(requiredJSON)),
+		minConfigJSON,
 	)
 
 	_, err = f.WriteString(entry)
