@@ -4,44 +4,82 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mattn/go-runewidth"
 	"github.com/robinmordasiewicz/xcsh/pkg/branding"
 	"github.com/robinmordasiewicz/xcsh/pkg/client"
 )
 
-// renderWelcomeBanner creates the modern CLI welcome banner with F5 logo
+// renderWelcomeBanner creates the modern CLI welcome banner with F5 logo in a dark red frame
+// Vertical layout: logo centered on top, info text below
 func renderWelcomeBanner() string {
 	var sb strings.Builder
+	const frameWidth = 80
+	const innerWidth = frameWidth - 2 // Account for left and right borders
 
 	// Add leading newline for visual separation
 	sb.WriteString("\n")
 
-	// Display the F5 logo with two colors:
-	// - Red for the circle background (▓ characters)
-	// - Bold white for the F5 text (█ characters)
+	// Build title for top border (title in bold white)
+	title := fmt.Sprintf(" %s v%s ", branding.CLIFullName, Version)
+	titleLen := len(title)
+	dashesAfterTitle := frameWidth - 5 - titleLen
+
+	// Top border: ╭─── Title ───...─╮ with title in bold white
+	sb.WriteString(branding.ColorDarkRed + "╭───" + branding.ColorReset)
+	sb.WriteString(branding.ColorBoldWhite + title + branding.ColorReset)
+	sb.WriteString(branding.ColorDarkRed + strings.Repeat("─", dashesAfterTitle) + "╮" + branding.ColorReset + "\n")
+
+	// Get logo lines
 	logoLines := strings.Split(branding.F5Logo, "\n")
+
+	// Render logo lines using embedded spacing from branding.go
 	for _, line := range logoLines {
 		coloredLine := colorizeLogoLine(line)
-		sb.WriteString(coloredLine + "\n")
+		lineWidth := runeWidth(line)
+
+		// Use logo's embedded spacing, only right-pad to fill frame
+		rightPad := innerWidth - lineWidth
+		if rightPad < 0 {
+			rightPad = 0
+		}
+
+		sb.WriteString(branding.ColorDarkRed + "│" + branding.ColorReset)
+		sb.WriteString(coloredLine)
+		sb.WriteString(strings.Repeat(" ", rightPad))
+		sb.WriteString(branding.ColorDarkRed + "│" + branding.ColorReset + "\n")
 	}
 
-	// Add spacing after logo
-	sb.WriteString("\n")
+	// Add separator line
+	sb.WriteString(branding.ColorDarkRed + "├" + strings.Repeat("─", innerWidth) + "┤" + branding.ColorReset + "\n")
 
-	// Display info lines in bold white
+	// Info content below logo
 	infoLines := []string{
-		fmt.Sprintf("%s v%s", branding.CLIFullName, Version),
+		"Type 'help' for commands, 'exit' or Ctrl+D to quit. Tab completion available.",
 		buildConnectionInfo(),
-		"",
-		"Type 'help' for commands, 'exit' or Ctrl+D to quit.",
-		"Tab completion available.",
 	}
 
 	for _, line := range infoLines {
-		sb.WriteString(branding.ColorBoldWhite + line + branding.ColorReset + "\n")
+		lineWidth := runeWidth(line)
+		// Center info text
+		leftPad := (innerWidth - lineWidth) / 2
+		rightPad := innerWidth - lineWidth - leftPad
+		if leftPad < 0 {
+			leftPad = 0
+		}
+		if rightPad < 0 {
+			rightPad = 0
+		}
+
+		sb.WriteString(branding.ColorDarkRed + "│" + branding.ColorReset)
+		sb.WriteString(strings.Repeat(" ", leftPad))
+		sb.WriteString(branding.ColorBoldWhite + line + branding.ColorReset)
+		sb.WriteString(strings.Repeat(" ", rightPad))
+		sb.WriteString(branding.ColorDarkRed + "│" + branding.ColorReset + "\n")
 	}
 
-	// Add separator line in red
-	sb.WriteString(branding.ColorRed + strings.Repeat("─", 80) + branding.ColorReset + "\n")
+	// Bottom border: ╰───...───╯
+	bottomBorder := "╰" + strings.Repeat("─", innerWidth) + "╯"
+	sb.WriteString(branding.ColorDarkRed + bottomBorder + branding.ColorReset + "\n")
 
 	return sb.String()
 }
@@ -50,7 +88,7 @@ func renderWelcomeBanner() string {
 // The logo uses:
 // - ▓ for the red circle background
 // - █ and ▒ for the white F5 text
-// - ( and ) for the circle outline (rendered in red)
+// - (, ), |, and _ for the circle outline (rendered in red)
 func colorizeLogoLine(line string) string {
 	var result strings.Builder
 	inRed := false
@@ -58,7 +96,7 @@ func colorizeLogoLine(line string) string {
 
 	for _, r := range line {
 		switch r {
-		case '▓', '▒', '(', ')':
+		case '▓', '▒', '(', ')', '|', '_':
 			// Red for circle background and outline
 			if !inRed {
 				if inWhite {
@@ -124,4 +162,10 @@ func extractDomain(url string) string {
 	// Remove trailing slashes
 	url = strings.TrimSuffix(url, "/")
 	return url
+}
+
+// runeWidth returns the display width of a string in terminal columns
+// Uses default runewidth mode where block elements (▓, ▒, █) are single-width
+func runeWidth(s string) int {
+	return runewidth.StringWidth(s)
 }
