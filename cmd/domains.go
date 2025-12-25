@@ -11,10 +11,20 @@ import (
 	"github.com/robinmordasiewicz/xcsh/pkg/validation"
 )
 
+// customDomainCommands lists domains that have custom implementations
+// and should not be auto-registered from DomainRegistry
+var customDomainCommands = map[string]bool{
+	"site": true, // Custom implementation in site.go with Terraform automation
+}
+
 // init registers all domain commands dynamically
 func init() {
 	// Register domain commands for all domains in DomainRegistry
 	for domain := range types.DomainRegistry {
+		// Skip domains with custom implementations
+		if customDomainCommands[domain] {
+			continue
+		}
 		rootCmd.AddCommand(buildDomainCmd(domain))
 	}
 }
