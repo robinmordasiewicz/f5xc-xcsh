@@ -58,6 +58,35 @@ type Schema struct {
 
 	// OneOf field indicators
 	XVesOneOfFields map[string]string `json:"-"` // Parsed from x-ves-oneof-field-* keys
+
+	// New F5 XC minimum configuration extensions (from issue #152)
+	XVesMinimumConfiguration *MinimumConfigExtension `json:"x-ves-minimum-configuration,omitempty"`
+	XVesRequiredFor          *RequiredForExtension   `json:"x-ves-required-for,omitempty"`
+	XVesCLIDomain            string                  `json:"x-ves-cli-domain,omitempty"`
+	XVesCLIAliases           []string                `json:"x-ves-cli-aliases,omitempty"`
+}
+
+// MinimumConfigExtension represents the x-ves-minimum-configuration extension
+type MinimumConfigExtension struct {
+	Description             string                   `json:"description"`
+	RequiredFields          []string                 `json:"required_fields"`
+	MutuallyExclusiveGroups []MutuallyExclusiveGroup `json:"mutually_exclusive_groups,omitempty"`
+	ExampleYAML             string                   `json:"example_yaml"`
+	ExampleCommand          string                   `json:"example_command"`
+}
+
+// MutuallyExclusiveGroup represents a group of mutually exclusive fields
+type MutuallyExclusiveGroup struct {
+	Fields []string `json:"fields"`
+	Reason string   `json:"reason"`
+}
+
+// RequiredForExtension represents an x-ves-required-for entry with context-specific requirement flags
+type RequiredForExtension struct {
+	MinimumConfig bool `json:"minimum_config"`
+	Create        bool `json:"create"`
+	Update        bool `json:"update"`
+	Read          bool `json:"read"`
 }
 
 // ParseSpec parses an OpenAPI specification from a JSON file

@@ -119,7 +119,9 @@ jobs:
         run: ./scripts/download-specs.sh
 
       - name: Regenerate schemas
-        run: go run scripts/generate-schemas.go
+        run: |
+          go run scripts/generate-schemas.go
+          gofmt -w pkg/types/schemas_generated.go
 
       - name: Check for uncommitted changes
         run: |
@@ -136,6 +138,7 @@ jobs:
           echo "Running schema generation twice to verify idempotency..."
           cp pkg/types/schemas_generated.go /tmp/schemas_first.go
           go run scripts/generate-schemas.go 2>/dev/null
+          gofmt -w pkg/types/schemas_generated.go
           if ! diff -q pkg/types/schemas_generated.go /tmp/schemas_first.go > /dev/null; then
             echo "::error::Schema generation is not idempotent!"
             diff pkg/types/schemas_generated.go /tmp/schemas_first.go
