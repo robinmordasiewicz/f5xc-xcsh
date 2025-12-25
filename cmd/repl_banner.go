@@ -58,7 +58,7 @@ func colorizeLogoLine(line string) string {
 
 	for _, r := range line {
 		switch r {
-		case '▓', '(', ')':
+		case '▓', '▒', '(', ')':
 			// Red for circle background and outline
 			if !inRed {
 				if inWhite {
@@ -68,12 +68,12 @@ func colorizeLogoLine(line string) string {
 				result.WriteString(branding.ColorRed)
 				inRed = true
 			}
-			if r == '▓' {
+			if r == '▓' || r == '▒' {
 				result.WriteRune('█') // Render as solid block
 			} else {
 				result.WriteRune(r)
 			}
-		case '█', '▒':
+		case '█':
 			// White for F5 text elements
 			if !inWhite {
 				if inRed {
