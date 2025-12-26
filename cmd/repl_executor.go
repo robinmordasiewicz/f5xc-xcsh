@@ -42,6 +42,30 @@ func (s *REPLSession) executeCommand(input string) {
 		return
 	}
 
+	// Check for /domain navigation syntax (e.g., /virtual to switch context)
+	// This allows switching domains from any context using /domain syntax
+	if len(args) >= 1 && strings.HasPrefix(args[0], "/") {
+		potentialDomain := strings.TrimPrefix(args[0], "/")
+		validator := s.GetValidator()
+		if validator.IsValidDomain(potentialDomain) {
+			// Resolve alias to canonical domain name
+			canonical := potentialDomain
+			if resolved, ok := validator.ResolveDomain(potentialDomain); ok {
+				canonical = resolved
+			}
+			// Navigate to the domain
+			ctx := s.GetContextPath()
+			ctx.Reset() // Go to root first
+			ctx.SetDomain(canonical)
+			s.lastExitCode = 0
+			// If there are additional args, execute them in new context
+			if len(args) > 1 {
+				s.lastExitCode = s.executeContextAwareCommand(args[1:])
+			}
+			return
+		}
+	}
+
 	// Check for REPL built-in commands
 	if handler, ok := replBuiltins[args[0]]; ok {
 		if err := handler(s, args[1:]); err != nil {

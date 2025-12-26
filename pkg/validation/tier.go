@@ -7,9 +7,8 @@ import (
 
 // Tier constants - subscription tier levels for domain access
 const (
-	TierStandard     = "Standard"
-	TierProfessional = "Professional"
-	TierEnterprise   = "Enterprise"
+	TierStandard = "Standard"
+	TierAdvanced = "Advanced"
 )
 
 // TierLevel returns the numeric level of a tier for comparison purposes.
@@ -19,23 +18,20 @@ func TierLevel(tier string) int {
 	switch tier {
 	case TierStandard:
 		return 1
-	case TierProfessional:
+	case TierAdvanced:
 		return 2
-	case TierEnterprise:
-		return 3
 	default:
 		return 0 // Unknown tier, treated as no access
 	}
 }
 
 // IsSufficientTier checks if the current tier is sufficient to access a domain requiring a specific tier.
-// Tier hierarchy: Standard (1) < Professional (2) < Enterprise (3)
+// Tier hierarchy: Standard (1) < Advanced (2)
 //
 // Examples:
-// - IsSufficientTier("Professional", "Standard") → true (Professional >= Standard)
-// - IsSufficientTier("Professional", "Professional") → true (exact match)
-// - IsSufficientTier("Standard", "Professional") → false (Standard < Professional)
-// - IsSufficientTier("Enterprise", "Any") → true (Enterprise is highest)
+// - IsSufficientTier("Advanced", "Standard") → true (Advanced >= Standard)
+// - IsSufficientTier("Advanced", "Advanced") → true (exact match)
+// - IsSufficientTier("Standard", "Advanced") → false (Standard < Advanced)
 // - IsSufficientTier("Standard", "") → true (empty requirement defaults to accessible)
 func IsSufficientTier(currentTier, requiredTier string) bool {
 	// Empty required tier means no restriction
@@ -61,10 +57,8 @@ func TierName(tier string) string {
 	switch tier {
 	case TierStandard:
 		return "Standard"
-	case TierProfessional:
-		return "Professional"
-	case TierEnterprise:
-		return "Enterprise"
+	case TierAdvanced:
+		return "Advanced"
 	default:
 		return tier
 	}
@@ -75,13 +69,11 @@ func TierName(tier string) string {
 func GetNextTier(currentTier string) string {
 	switch currentTier {
 	case TierStandard:
-		return TierProfessional
-	case TierProfessional:
-		return TierEnterprise
-	case TierEnterprise:
+		return TierAdvanced
+	case TierAdvanced:
 		return "" // Already at highest tier
 	default:
-		return TierProfessional // Default next tier
+		return TierAdvanced // Default next tier
 	}
 }
 

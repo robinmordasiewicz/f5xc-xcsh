@@ -104,6 +104,20 @@ type quotaEntry struct {
 	Description string     `json:"description,omitempty"`
 }
 
+// currentPlanResponse matches the /api/web/namespaces/system/usage_plans/current response
+type currentPlanResponse struct {
+	Locale string       `json:"locale"`
+	Plans  []planDetail `json:"plans"`
+}
+
+// planDetail contains details about a usage plan
+type planDetail struct {
+	Name       string `json:"name"`
+	Title      string `json:"title"`
+	TenantType string `json:"tenant_type"`
+	Current    bool   `json:"current"`
+}
+
 type quotaLimit struct {
 	Maximum float64 `json:"maximum"`
 }
@@ -350,6 +364,63 @@ func (c *Client) GetQuotaInfo(ctx context.Context) (*QuotaUsageInfo, error) {
 	}, nil
 }
 
+// GetCurrentUsagePlan retrieves the current usage plan from the API
+// This is the authoritative source for subscription tier detection using tenant_type field
+func (c *Client) GetCurrentUsagePlan(ctx context.Context) (*planDetail, error) {
+	path := "/api/web/namespaces/system/usage_plans/current"
+	resp, err := c.apiClient.Get(ctx, path, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current usage plan: %w", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("API returned status %d: %s", resp.StatusCode, string(resp.Body))
+	}
+
+	var planResp currentPlanResponse
+	if err := json.Unmarshal(resp.Body, &planResp); err != nil {
+		return nil, fmt.Errorf("failed to parse usage plan response: %w", err)
+	}
+
+	// Find the current plan
+	for i := range planResp.Plans {
+		if planResp.Plans[i].Current {
+			return &planResp.Plans[i], nil
+		}
+	}
+
+	// If no plan marked as current, return first plan if available
+	if len(planResp.Plans) > 0 {
+		return &planResp.Plans[0], nil
+	}
+
+	return nil, fmt.Errorf("no current usage plan found")
+}
+
+// GetTierFromCurrentPlan determines the subscription tier from the current usage plan
+// Uses tenant_type field: ENTERPRISE -> Advanced, FREEMIUM -> Standard
+func (c *Client) GetTierFromCurrentPlan(ctx context.Context) (string, error) {
+	plan, err := c.GetCurrentUsagePlan(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	return determineTierFromTenantType(plan.TenantType), nil
+}
+
+// determineTierFromTenantType maps tenant_type to subscription tier
+func determineTierFromTenantType(tenantType string) string {
+	switch strings.ToUpper(tenantType) {
+	case "ENTERPRISE":
+		return "Advanced"
+	case "FREEMIUM":
+		return "Standard"
+	default:
+		// For unknown types, default to Standard for safety
+		return "Standard"
+	}
+}
+
 // GetSubscriptionInfo retrieves complete subscription information
 func (c *Client) GetSubscriptionInfo(ctx context.Context) (*SubscriptionInfo, error) {
 	// Get plans
@@ -370,8 +441,13 @@ func (c *Client) GetSubscriptionInfo(ctx context.Context) (*SubscriptionInfo, er
 		return nil, fmt.Errorf("failed to get quota info: %w", err)
 	}
 
-	// Determine tier from plan or addons
-	tier := determineTier(plans, addons)
+	// Determine tier from current usage plan (tenant_type field)
+	// This is the authoritative source - uses /api/web/namespaces/system/usage_plans/current
+	tier, err := c.GetTierFromCurrentPlan(ctx)
+	if err != nil {
+		// Fall back to legacy detection if usage_plans API fails
+		tier = determineTier(plans, addons)
+	}
 
 	// Separate active and available addons
 	var activeAddons, availableAddons []AddonServiceInfo

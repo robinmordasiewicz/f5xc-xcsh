@@ -33,9 +33,13 @@ const (
               (▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒)`
 
 	// ANSI color codes for terminal output
-	ColorRed       = "\033[38;2;228;0;43m" // F5 Brand Red (#E4002B)
-	ColorBoldWhite = "\033[1;97m"          // Bold bright white
-	ColorReset     = "\033[0m"             // Reset to default
+	ColorRed       = "\033[38;2;228;0;43m"   // F5 Brand Red (#E4002B)
+	ColorBoldWhite = "\033[1;97m"            // Bold bright white
+	ColorReset     = "\033[0m"               // Reset to default
+	ColorGreen     = "\033[38;2;0;200;83m"   // Git clean status
+	ColorYellow    = "\033[38;2;255;193;7m"  // Git dirty status
+	ColorBlue      = "\033[38;2;33;150;243m" // Git ahead/behind
+	ColorDim       = "\033[2m"               // Dimmed text
 
 	// CLIFullName is the full descriptive name
 	CLIFullName = "F5 Distributed Cloud Shell"

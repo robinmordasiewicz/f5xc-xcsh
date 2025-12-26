@@ -3,9 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
-	"github.com/c-bata/go-prompt"
 	"github.com/robinmordasiewicz/xcsh/pkg/client"
 )
 
@@ -22,9 +20,6 @@ type REPLSession struct {
 	tenant      string            // Extracted tenant name from API URL
 	username    string            // Logged-in user's name/email
 	validator   *ContextValidator // Domain/action validator
-
-	// Exit handling
-	lastCtrlCTime time.Time // Track last Ctrl+C for double-press detection
 }
 
 // initREPLSession creates a new REPL session with initialized state
@@ -94,16 +89,6 @@ func initREPLSession() (*REPLSession, error) {
 	}
 
 	return session, nil
-}
-
-// completeInput delegates to the Cobra completer
-func (s *REPLSession) completeInput(d prompt.Document) []prompt.Suggest {
-	return s.completer.Complete(d)
-}
-
-// livePrefix provides dynamic prompt updates
-func (s *REPLSession) livePrefix() (string, bool) {
-	return buildPrompt(s), true
 }
 
 // SetNamespace updates the default namespace for the session

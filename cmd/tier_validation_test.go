@@ -36,64 +36,31 @@ func TestTierValidationStandardTierDomains(t *testing.T) {
 	}
 }
 
-// TestTierValidationProfessionalTierDomains verifies that Professional tier users can access Professional domains
-func TestTierValidationProfessionalTierDomains(t *testing.T) {
-	professionalDomains := []string{
+// TestTierValidationAdvancedTierDomains verifies that Advanced tier users can access Advanced domains
+func TestTierValidationAdvancedTierDomains(t *testing.T) {
+	advancedDomains := []string{
 		"api",
 		"network_security",
 		"kubernetes",
 		"waf",
 	}
 
-	for _, domain := range professionalDomains {
-		t.Run("Professional_access_"+domain, func(t *testing.T) {
+	for _, domain := range advancedDomains {
+		t.Run("Advanced_access_"+domain, func(t *testing.T) {
 			info, found := types.GetDomainInfo(domain)
 			require.True(t, found, "Domain %q should exist", domain)
 
-			// Verify domain requires Professional tier
-			require.Equal(t, validation.TierProfessional, info.RequiresTier,
-				"Domain %q should have Professional tier requirement", domain)
+			// Verify domain requires Advanced tier
+			require.Equal(t, validation.TierAdvanced, info.RequiresTier,
+				"Domain %q should have Advanced tier requirement", domain)
 
-			// Professional tier should access Professional domains
-			canAccess := validation.IsSufficientTier(validation.TierProfessional, info.RequiresTier)
-			assert.True(t, canAccess, "Professional tier user should access domain %q", domain)
+			// Advanced tier should access Advanced domains
+			canAccess := validation.IsSufficientTier(validation.TierAdvanced, info.RequiresTier)
+			assert.True(t, canAccess, "Advanced tier user should access domain %q", domain)
 
-			// Standard tier should NOT access Professional domains
+			// Standard tier should NOT access Advanced domains
 			cannotAccess := validation.IsSufficientTier(validation.TierStandard, info.RequiresTier)
 			assert.False(t, cannotAccess, "Standard tier user should not access domain %q", domain)
-		})
-	}
-}
-
-// TestTierValidationEnterpriseTierDomains verifies that Enterprise tier users can access Enterprise domains
-func TestTierValidationEnterpriseTierDomains(t *testing.T) {
-	enterpriseDomains := []string{
-		"generative_ai",
-		"ddos",
-		"cdn",
-		"blindfold",
-	}
-
-	for _, domain := range enterpriseDomains {
-		t.Run("Enterprise_access_"+domain, func(t *testing.T) {
-			info, found := types.GetDomainInfo(domain)
-			require.True(t, found, "Domain %q should exist", domain)
-
-			// Verify domain requires Enterprise tier
-			require.Equal(t, validation.TierEnterprise, info.RequiresTier,
-				"Domain %q should have Enterprise tier requirement", domain)
-
-			// Enterprise tier should access Enterprise domains
-			canAccess := validation.IsSufficientTier(validation.TierEnterprise, info.RequiresTier)
-			assert.True(t, canAccess, "Enterprise tier user should access domain %q", domain)
-
-			// Professional tier should NOT access Enterprise domains
-			cannotAccessProf := validation.IsSufficientTier(validation.TierProfessional, info.RequiresTier)
-			assert.False(t, cannotAccessProf, "Professional tier user should not access domain %q", domain)
-
-			// Standard tier should NOT access Enterprise domains
-			cannotAccessStd := validation.IsSufficientTier(validation.TierStandard, info.RequiresTier)
-			assert.False(t, cannotAccessStd, "Standard tier user should not access domain %q", domain)
 		})
 	}
 }
@@ -108,24 +75,12 @@ func TestTierValidationUpgradePath(t *testing.T) {
 	}{
 		{
 			currentTier:   validation.TierStandard,
-			requiredTier:  validation.TierProfessional,
+			requiredTier:  validation.TierAdvanced,
 			shouldUpgrade: true,
-			expectedPath:  "Upgrade from Standard to Professional tier",
+			expectedPath:  "Upgrade from Standard to Advanced tier",
 		},
 		{
-			currentTier:   validation.TierStandard,
-			requiredTier:  validation.TierEnterprise,
-			shouldUpgrade: true,
-			expectedPath:  "Upgrade from Standard to Enterprise tier",
-		},
-		{
-			currentTier:   validation.TierProfessional,
-			requiredTier:  validation.TierEnterprise,
-			shouldUpgrade: true,
-			expectedPath:  "Upgrade from Professional to Enterprise tier",
-		},
-		{
-			currentTier:   validation.TierProfessional,
+			currentTier:   validation.TierAdvanced,
 			requiredTier:  validation.TierStandard,
 			shouldUpgrade: false,
 			expectedPath:  "",
@@ -133,6 +88,12 @@ func TestTierValidationUpgradePath(t *testing.T) {
 		{
 			currentTier:   validation.TierStandard,
 			requiredTier:  validation.TierStandard,
+			shouldUpgrade: false,
+			expectedPath:  "",
+		},
+		{
+			currentTier:   validation.TierAdvanced,
+			requiredTier:  validation.TierAdvanced,
 			shouldUpgrade: false,
 			expectedPath:  "",
 		},
@@ -155,14 +116,14 @@ func TestTierValidationUpgradePath(t *testing.T) {
 
 // TestTierValidationErrorMessages verifies that error messages contain required information
 func TestTierValidationErrorMessages(t *testing.T) {
-	err := validation.NewTierAccessError("api", "API", validation.TierStandard, validation.TierProfessional)
+	err := validation.NewTierAccessError("api", "API", validation.TierStandard, validation.TierAdvanced)
 
 	errMsg := err.Error()
 	assert.NotEmpty(t, errMsg, "Error message should not be empty")
 
 	// Verify error message contains key information
 	assert.Contains(t, errMsg, "API", "Error should mention domain display name")
-	assert.Contains(t, errMsg, "Professional", "Error should mention required tier")
+	assert.Contains(t, errMsg, "Advanced", "Error should mention required tier")
 	assert.Contains(t, errMsg, "Standard", "Error should mention current tier")
 	assert.Contains(t, errMsg, "console.volterra.io", "Error should include upgrade URL")
 	assert.Contains(t, errMsg, "support@f5.com", "Error should include support contact")
@@ -173,7 +134,7 @@ func TestTierValidationErrorStructure(t *testing.T) {
 	domain := "api"
 	displayName := "API"
 	currentTier := validation.TierStandard
-	requiredTier := validation.TierProfessional
+	requiredTier := validation.TierAdvanced
 
 	err := validation.NewTierAccessError(domain, displayName, currentTier, requiredTier)
 
@@ -191,17 +152,17 @@ func TestValidateDomainTierStandard(t *testing.T) {
 	err := ValidateDomainTier(ctx, "dns")
 	assert.NoError(t, err, "Standard tier user should access Standard domain")
 
-	// Test Professional domain access (should fail)
+	// Test Advanced domain access (should fail)
 	err = ValidateDomainTier(ctx, "api")
-	assert.Error(t, err, "Standard tier user should not access Professional domain")
+	assert.Error(t, err, "Standard tier user should not access Advanced domain")
 	assert.Contains(t, err.Error(), "Api", "Error should mention domain")
 }
 
-// TestValidateDomainTierProfessional verifies domain tier validation for Professional tier users
-func TestValidateDomainTierProfessional(t *testing.T) {
+// TestValidateDomainTierAdvanced verifies domain tier validation for Advanced tier users
+func TestValidateDomainTierAdvanced(t *testing.T) {
 	ctx := context.Background()
 
-	// Professional users should access both Standard and Professional domains
+	// Advanced users should access both Standard and Advanced domains
 	// (This test verifies the validation logic works, though we can't directly
 	// control the subscription tier in unit tests without mocking)
 
@@ -212,15 +173,14 @@ func TestValidateDomainTierProfessional(t *testing.T) {
 
 	info, found := types.GetDomainInfo("api")
 	require.True(t, found, "api domain should exist")
-	assert.Equal(t, validation.TierProfessional, info.RequiresTier, "api should require Professional tier")
+	assert.Equal(t, validation.TierAdvanced, info.RequiresTier, "api should require Advanced tier")
 }
 
-// TestDomainTierRequirementsConsistency verifies all 42 domains have tier requirements set
+// TestDomainTierRequirementsConsistency verifies all 39 domains have tier requirements set
 func TestDomainTierRequirementsConsistency(t *testing.T) {
 	domainCount := 0
 	standardCount := 0
-	professionalCount := 0
-	enterpriseCount := 0
+	advancedCount := 0
 	emptyCount := 0
 
 	for domain := range types.DomainRegistry {
@@ -231,10 +191,8 @@ func TestDomainTierRequirementsConsistency(t *testing.T) {
 		switch info.RequiresTier {
 		case validation.TierStandard:
 			standardCount++
-		case validation.TierProfessional:
-			professionalCount++
-		case validation.TierEnterprise:
-			enterpriseCount++
+		case validation.TierAdvanced:
+			advancedCount++
 		case "":
 			emptyCount++
 		default:
@@ -242,19 +200,18 @@ func TestDomainTierRequirementsConsistency(t *testing.T) {
 		}
 	}
 
-	// Verify we have all 40 domains
+	// Verify we have all 39 domains
 	assert.Equal(t, 39, domainCount, "Should have 39 domains total")
 
-	// Verify tier distribution matches actual: 23 Standard, 11 Professional, 6 Enterprise
+	// Verify tier distribution matches actual: 22 Standard, 17 Advanced
 	assert.Equal(t, 22, standardCount, "Should have 22 Standard domains")
-	assert.Equal(t, 11, professionalCount, "Should have 11 Professional domains")
-	assert.Equal(t, 6, enterpriseCount, "Should have 6 Enterprise domains")
+	assert.Equal(t, 17, advancedCount, "Should have 17 Advanced domains")
 
 	// No domains should have empty tier requirement (should be set during generation)
 	assert.Equal(t, 0, emptyCount, "All domains should have tier requirement set")
 
-	t.Logf("Domain tier distribution: Standard=%d, Professional=%d, Enterprise=%d",
-		standardCount, professionalCount, enterpriseCount)
+	t.Logf("Domain tier distribution: Standard=%d, Advanced=%d",
+		standardCount, advancedCount)
 }
 
 // TestDomainDisplayNameConsistency verifies all domains have display names
@@ -272,8 +229,7 @@ func TestDomainDisplayNameConsistency(t *testing.T) {
 func TestTierComparisonConsistency(t *testing.T) {
 	tiers := []string{
 		validation.TierStandard,
-		validation.TierProfessional,
-		validation.TierEnterprise,
+		validation.TierAdvanced,
 	}
 
 	// Verify transitivity: if A >= B and B >= C then A >= C
@@ -296,14 +252,14 @@ func TestTierComparisonConsistency(t *testing.T) {
 	}
 }
 
-// TestEnterpriseCanAccessAll verifies that Enterprise tier can access all domains
-func TestEnterpriseCanAccessAll(t *testing.T) {
+// TestAdvancedCanAccessAll verifies that Advanced tier can access all domains
+func TestAdvancedCanAccessAll(t *testing.T) {
 	for domain := range types.DomainRegistry {
 		info, found := types.GetDomainInfo(domain)
 		require.True(t, found, "Domain %q should exist", domain)
 
-		canAccess := validation.IsSufficientTier(validation.TierEnterprise, info.RequiresTier)
-		assert.True(t, canAccess, "Enterprise tier should access domain %q (requires %s)",
+		canAccess := validation.IsSufficientTier(validation.TierAdvanced, info.RequiresTier)
+		assert.True(t, canAccess, "Advanced tier should access domain %q (requires %s)",
 			domain, info.RequiresTier)
 	}
 }
@@ -325,24 +281,6 @@ func TestStandardCanAccessOnlyStandard(t *testing.T) {
 	}
 }
 
-// TestProfessionalCanAccessStandardAndProfessional verifies Professional tier access rules
-func TestProfessionalCanAccessStandardAndProfessional(t *testing.T) {
-	for domain := range types.DomainRegistry {
-		info, found := types.GetDomainInfo(domain)
-		require.True(t, found, "Domain %q should exist", domain)
-
-		canAccess := validation.IsSufficientTier(validation.TierProfessional, info.RequiresTier)
-
-		switch info.RequiresTier {
-		case validation.TierStandard, validation.TierProfessional:
-			assert.True(t, canAccess, "Professional tier should access %s domain %q",
-				info.RequiresTier, domain)
-		case validation.TierEnterprise:
-			assert.False(t, canAccess, "Professional tier should not access Enterprise domain %q", domain)
-		}
-	}
-}
-
 // BenchmarkValidateDomainTier benchmarks the tier validation function
 func BenchmarkValidateDomainTier(b *testing.B) {
 	ctx := context.Background()
@@ -357,6 +295,6 @@ func BenchmarkValidateDomainTier(b *testing.B) {
 func BenchmarkTierComparison(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = validation.IsSufficientTier(validation.TierProfessional, validation.TierStandard)
+		_ = validation.IsSufficientTier(validation.TierAdvanced, validation.TierStandard)
 	}
 }

@@ -20,60 +20,42 @@ func TestTierEscalationStandard(t *testing.T) {
 		assert.Equal(t, "Standard", domain.RequiresTier, "Standard tier domain should require Standard")
 	}
 
-	// Verify Professional domains are NOT in Standard
-	proDomains := validation.GetDomainsByTier("Professional")
-	proOnlyCount := 0
-	for _, proDomain := range proDomains {
+	// Verify Advanced domains are NOT in Standard
+	advDomains := validation.GetDomainsByTier("Advanced")
+	advOnlyCount := 0
+	for _, advDomain := range advDomains {
 		found := false
 		for _, stdDomain := range standardDomains {
-			if proDomain.Name == stdDomain.Name {
+			if advDomain.Name == stdDomain.Name {
 				found = true
 				break
 			}
 		}
 		if !found {
-			proOnlyCount++
+			advOnlyCount++
 		}
 	}
 
-	assert.Greater(t, proOnlyCount, 0, "Should have Professional-only domains")
+	assert.Greater(t, advOnlyCount, 0, "Should have Advanced-only domains")
 }
 
-// TestTierEscalationProfessional verifies Professional tier includes all Standard
-func TestTierEscalationProfessional(t *testing.T) {
+// TestTierEscalationAdvanced verifies Advanced tier includes all Standard
+func TestTierEscalationAdvanced(t *testing.T) {
 	standardDomains := validation.GetDomainsByTier("Standard")
-	proDomains := validation.GetDomainsByTier("Professional")
+	advDomains := validation.GetDomainsByTier("Advanced")
 
-	assert.Equal(t, 33, len(proDomains), "Professional tier should have 33 domains")
+	assert.Equal(t, 39, len(advDomains), "Advanced tier should have 39 domains (all)")
 
-	// Verify all Standard domains are in Professional
+	// Verify all Standard domains are in Advanced
 	for _, stdDomain := range standardDomains {
 		found := false
-		for _, proDomain := range proDomains {
-			if stdDomain.Name == proDomain.Name {
+		for _, advDomain := range advDomains {
+			if stdDomain.Name == advDomain.Name {
 				found = true
 				break
 			}
 		}
-		assert.True(t, found, "Standard domain %q should be in Professional tier", stdDomain.Name)
-	}
-}
-
-// TestTierEscalationEnterprise verifies Enterprise has all domains
-func TestTierEscalationEnterprise(t *testing.T) {
-	entDomains := validation.GetDomainsByTier("Enterprise")
-	assert.Equal(t, 39, len(entDomains), "Enterprise tier should have 39 domains")
-
-	// Verify all 41 domains are accessible
-	for domainName := range types.DomainRegistry {
-		found := false
-		for _, entDomain := range entDomains {
-			if entDomain.Name == domainName {
-				found = true
-				break
-			}
-		}
-		assert.True(t, found, "All domains should be accessible at Enterprise tier")
+		assert.True(t, found, "Standard domain %q should be in Advanced tier", stdDomain.Name)
 	}
 }
 
@@ -86,9 +68,9 @@ func TestTierValidationWithPreview(t *testing.T) {
 		assert.NotEmpty(t, previewDomain.RequiresTier, "Preview domain %q should have tier", previewDomain.Name)
 
 		// Verify tier validation works for preview domains
-		// Some preview domains require Enterprise tier
-		ok := validation.ValidateTierAccess("Enterprise", previewDomain.RequiresTier)
-		assert.True(t, ok, "Enterprise user should access preview domain %q", previewDomain.Name)
+		// Preview domains require Advanced tier
+		ok := validation.ValidateTierAccess("Advanced", previewDomain.RequiresTier)
+		assert.True(t, ok, "Advanced user should access preview domain %q", previewDomain.Name)
 	}
 }
 
@@ -113,15 +95,15 @@ func TestWorkflowDomainsRespectTier(t *testing.T) {
 		workflows := validation.GetWorkflowSuggestions(domainName)
 
 		for _, workflow := range workflows {
-			// All domains in workflow should exist and be accessible at Enterprise tier
+			// All domains in workflow should exist and be accessible at Advanced tier
 			for _, workflowDomain := range workflow.Domains {
 				domainInfo, found := types.GetDomainInfo(workflowDomain)
 				assert.True(t, found, "Workflow domain %q should exist", workflowDomain)
 
-				// All workflow domains should be accessible at Enterprise tier
+				// All workflow domains should be accessible at Advanced tier
 				assert.NotNil(t, domainInfo)
-				ok := validation.ValidateTierAccess("Enterprise", domainInfo.RequiresTier)
-				assert.True(t, ok, "Workflow %q domain %q should be Enterprise-accessible", workflow.Name, workflowDomain)
+				ok := validation.ValidateTierAccess("Advanced", domainInfo.RequiresTier)
+				assert.True(t, ok, "Workflow %q domain %q should be Advanced-accessible", workflow.Name, workflowDomain)
 			}
 		}
 	}
@@ -134,11 +116,10 @@ func TestRelatedDomainsRespectTier(t *testing.T) {
 	for _, testDomain := range testDomains {
 		relatedDomains := validation.GetRelatedDomains(testDomain)
 
-		// All related domains should be tier-compatible with Enterprise
-		// (since some test domains like cdn require Enterprise tier)
+		// All related domains should be tier-compatible with Advanced
 		for _, relatedDomain := range relatedDomains {
-			ok := validation.ValidateTierAccess("Enterprise", relatedDomain.RequiresTier)
-			assert.True(t, ok, "Related domain %q should be Enterprise-accessible", relatedDomain.Name)
+			ok := validation.ValidateTierAccess("Advanced", relatedDomain.RequiresTier)
+			assert.True(t, ok, "Related domain %q should be Advanced-accessible", relatedDomain.Name)
 		}
 	}
 }
@@ -199,7 +180,7 @@ func TestUseCaseWorkflowAlignment(t *testing.T) {
 	}
 }
 
-// TestCategoryUsesCaseKeywordMatch verifies use cases match category patterns
+// TestCategoryUseCaseKeywordMatch verifies use cases match category patterns
 func TestCategoryUseCaseKeywordMatch(t *testing.T) {
 	categoryKeywords := map[string]string{
 		"Security":       "protect",
@@ -237,10 +218,10 @@ func TestRelatedDomainsCategoryAlignment(t *testing.T) {
 		assert.Greater(t, len(relatedDomains), 0, "Domain %q should have related domains", domain)
 		assert.LessOrEqual(t, len(relatedDomains), 5, "Domain %q should have at most 5 related domains", domain)
 
-		// All related domains should be accessible at Enterprise tier (some are Enterprise-only)
+		// All related domains should be accessible at Advanced tier
 		for _, relatedDomain := range relatedDomains {
-			canAccess := validation.ValidateTierAccess("Enterprise", relatedDomain.RequiresTier)
-			assert.True(t, canAccess, "Related domain %q should be accessible at Enterprise tier", relatedDomain.Name)
+			canAccess := validation.ValidateTierAccess("Advanced", relatedDomain.RequiresTier)
+			assert.True(t, canAccess, "Related domain %q should be accessible at Advanced tier", relatedDomain.Name)
 
 			// All related domains should exist
 			_, found := types.GetDomainInfo(relatedDomain.Name)
@@ -251,13 +232,13 @@ func TestRelatedDomainsCategoryAlignment(t *testing.T) {
 	}
 }
 
-// TestWorkflowConsistencyAcrossTiers verifies workflows for Professional-accessible domains
+// TestWorkflowConsistencyAcrossTiers verifies workflows for Advanced-accessible domains
 func TestWorkflowConsistencyAcrossTiers(t *testing.T) {
-	// Get Professional tier domains (36 total)
-	proDomains := validation.GetDomainsByTier("Professional")
+	// Get Advanced tier domains (all 39 domains)
+	advDomains := validation.GetDomainsByTier("Advanced")
 
-	// For each Professional domain, verify it has consistent workflow structure
-	for _, domain := range proDomains {
+	// For each Advanced-accessible domain, verify it has consistent workflow structure
+	for _, domain := range advDomains {
 		workflows := validation.GetWorkflowSuggestions(domain.Name)
 
 		// Each workflow should have required fields
@@ -349,15 +330,15 @@ func TestFullWorkflowPath(t *testing.T) {
 	workflows := validation.GetWorkflowSuggestions("api")
 	assert.Greater(t, len(workflows), 0, "API should have workflow suggestions")
 
-	// For each workflow, verify all domains exist and are accessible at Enterprise tier
+	// For each workflow, verify all domains exist and are accessible at Advanced tier
 	for _, workflow := range workflows {
 		for _, domainName := range workflow.Domains {
 			domain, found := types.GetDomainInfo(domainName)
 			require.True(t, found, "Workflow domain %q should exist", domainName)
 
-			// Domain should be Enterprise-accessible (workflows may include Enterprise-only domains)
-			ok := validation.ValidateTierAccess("Enterprise", domain.RequiresTier)
-			assert.True(t, ok, "Workflow domain %q should be Enterprise-accessible", domainName)
+			// Domain should be Advanced-accessible
+			ok := validation.ValidateTierAccess("Advanced", domain.RequiresTier)
+			assert.True(t, ok, "Workflow domain %q should be Advanced-accessible", domainName)
 
 			// Domain should have proper category
 			assert.NotEmpty(t, domain.Category, "Workflow domain %q should have category", domainName)
@@ -392,27 +373,27 @@ func TestCategoryToWorkflowMapping(t *testing.T) {
 
 // TestFeatureCombinations verifies realistic feature combinations work
 func TestFeatureCombinations(t *testing.T) {
-	// Scenario 1: Enterprise user exploring Security category
+	// Scenario 1: Advanced user exploring Security category
 	securityDomains := validation.GetDomainsByCategory("Security")
 	assert.Greater(t, len(securityDomains), 0)
 
-	// Count how many Security domains require Enterprise
-	enterpriseOnlyCount := 0
+	// Count how many Security domains require Advanced
+	advancedOnlyCount := 0
 	for _, domain := range securityDomains {
-		if domain.RequiresTier == "Enterprise" {
-			enterpriseOnlyCount++
+		if domain.RequiresTier == "Advanced" {
+			advancedOnlyCount++
 		}
 
-		// Enterprise user should access all Security domains
-		ok := validation.ValidateTierAccess("Enterprise", domain.RequiresTier)
-		assert.True(t, ok, "Enterprise user should access Security domain %q", domain.Name)
+		// Advanced user should access all Security domains
+		ok := validation.ValidateTierAccess("Advanced", domain.RequiresTier)
+		assert.True(t, ok, "Advanced user should access Security domain %q", domain.Name)
 
 		related := validation.GetRelatedDomains(domain.Name)
 		assert.Greater(t, len(related), 0, "Security domain %q should have related domains", domain.Name)
 	}
 
-	// Some Security domains require Enterprise (e.g., ddos, blindfold, shape)
-	assert.Greater(t, enterpriseOnlyCount, 0, "Security category should have some Enterprise-only domains")
+	// Some Security domains require Advanced (e.g., ddos, blindfold, shape)
+	assert.Greater(t, advancedOnlyCount, 0, "Security category should have some Advanced-only domains")
 
 	// Scenario 2: Standard user checking what they can access
 	standardDomains := validation.GetDomainsByTier("Standard")
@@ -421,13 +402,13 @@ func TestFeatureCombinations(t *testing.T) {
 		assert.True(t, ok, "Standard user should access Standard domain %q", domain.Name)
 	}
 
-	// Scenario 3: Verify some Infrastructure domains require Professional or Enterprise
+	// Scenario 3: Verify some Infrastructure domains require Advanced
 	infraDomains := validation.GetDomainsByCategory("Infrastructure")
-	hasNonStandardInfra := false
+	hasAdvancedInfra := false
 	for _, domain := range infraDomains {
-		if domain.RequiresTier != "Standard" {
-			hasNonStandardInfra = true
+		if domain.RequiresTier == "Advanced" {
+			hasAdvancedInfra = true
 		}
 	}
-	assert.True(t, hasNonStandardInfra, "Infrastructure should have some Professional+ domains")
+	assert.True(t, hasAdvancedInfra, "Infrastructure should have some Advanced domains")
 }

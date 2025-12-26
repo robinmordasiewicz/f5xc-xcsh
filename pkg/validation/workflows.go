@@ -263,9 +263,8 @@ func GetWorkflowsByCategory(category string) []WorkflowSuggestion {
 // Helper function: check if tiers are compatible
 func tierCompatible(tier1, tier2 string) bool {
 	tierOrder := map[string]int{
-		"Standard":     1,
-		"Professional": 2,
-		"Enterprise":   3,
+		"Standard": 1,
+		"Advanced": 2,
 	}
 
 	level1 := tierOrder[tier1]

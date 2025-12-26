@@ -103,17 +103,16 @@ func TestDomainsListByTierCommand(t *testing.T) {
 	require.NoError(t, err)
 	output := buf.String()
 
-	// Verify tier sections are shown
+	// Verify tier sections are shown (only Standard and Advanced)
 	assert.Contains(t, output, "Standard Tier")
-	assert.Contains(t, output, "Professional Tier")
-	assert.Contains(t, output, "Enterprise Tier")
+	assert.Contains(t, output, "Advanced Tier")
 
 	// Verify known standard tier domains
 	assert.Contains(t, output, "dns")
 	assert.Contains(t, output, "certificates")
 }
 
-// TestAllDomainsInCategories verifies all 42 domains are categorized
+// TestAllDomainsInCategories verifies all 39 domains are categorized
 func TestAllDomainsInCategories(t *testing.T) {
 	categories := validation.GetAllCategories()
 	assert.Greater(t, len(categories), 0, "Should have at least one category")
@@ -132,7 +131,7 @@ func TestAllDomainsInCategories(t *testing.T) {
 		}
 	}
 
-	// Should have all 40 domains
+	// Should have all 39 domains
 	assert.Equal(t, 39, totalDomains, "Should have all 39 domains across categories")
 
 	// All registry domains should be categorized

@@ -148,10 +148,10 @@ func TestPreviewAndTierCombination(t *testing.T) {
 	info, found := types.GetDomainInfo("generative_ai")
 	require.True(t, found)
 
-	// Generative AI should be both preview and require Enterprise tier
+	// Generative AI should be both preview and require Advanced tier
 	assert.True(t, info.IsPreview, "generative_ai should be in preview")
-	assert.Equal(t, validation.TierEnterprise, info.RequiresTier,
-		"generative_ai should require Enterprise tier")
+	assert.Equal(t, validation.TierAdvanced, info.RequiresTier,
+		"generative_ai should require Advanced tier")
 }
 
 // TestPreviewWarningNonBlocking verifies preview warnings don't block domain access

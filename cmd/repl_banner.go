@@ -11,6 +11,7 @@ import (
 	"github.com/mattn/go-runewidth"
 	"github.com/robinmordasiewicz/xcsh/pkg/branding"
 	"github.com/robinmordasiewicz/xcsh/pkg/client"
+	"github.com/robinmordasiewicz/xcsh/pkg/subscription"
 )
 
 // Padding constants for banner layout
@@ -278,6 +279,7 @@ func buildConnectionInfo() []string {
 
 	tenant := client.ExtractTenant(serverURL)
 	username := getUserInfo()
+	tier := getSubscriptionTier()
 
 	lines := []string{
 		fmt.Sprintf("• Tenant: %s", tenant),
@@ -287,10 +289,37 @@ func buildConnectionInfo() []string {
 		lines = append(lines, fmt.Sprintf("• User: %s", username))
 	}
 
+	if tier != "" {
+		lines = append(lines, fmt.Sprintf("• Tier: %s", tier))
+	}
+
 	// Use validated namespace (already validated during session init)
 	lines = append(lines, fmt.Sprintf("• Namespace: %s", GetValidatedDefaultNamespace()))
 
 	return lines
+}
+
+// getSubscriptionTier retrieves the subscription tier for display in banner
+func getSubscriptionTier() string {
+	// First check if cached
+	cachedTier := subscription.GetCachedTier()
+	if cachedTier != "" {
+		return cachedTier
+	}
+
+	// If not cached and we have an API client, try to detect
+	if apiClient == nil {
+		return ""
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tier, err := EnsureSubscriptionTier(ctx)
+	if err != nil {
+		return ""
+	}
+	return tier
 }
 
 // runeWidth returns the display width of a string in terminal columns

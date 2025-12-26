@@ -56,8 +56,7 @@ var domainsListByTierCmd = &cobra.Command{
 
 Subscription tiers:
 - Standard: Available with base subscription (Default)
-- Professional: Requires Professional tier or higher
-- Enterprise: Requires Enterprise tier
+- Advanced: Requires Advanced tier subscription
 
 This helps you understand which features are available with your subscription level.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -166,7 +165,7 @@ func displayGroupedDomains(cmd *cobra.Command, groupings []validation.CategoryGr
 
 // listDomainsByTier displays domains organized by subscription tier requirement
 func listDomainsByTier(cmd *cobra.Command, args ...interface{}) error {
-	tiers := []string{"Standard", "Professional", "Enterprise"}
+	tiers := []string{"Standard", "Advanced"}
 
 	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "\n%s\n", strings.Repeat("═", 80))
 	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Available Domains by Subscription Tier\n")
@@ -225,10 +224,8 @@ func getTierSymbol(tier string) string {
 	switch tier {
 	case "Standard":
 		return "🟢"
-	case "Professional":
+	case "Advanced":
 		return "🟡"
-	case "Enterprise":
-		return "🔴"
 	default:
 		return "⭕"
 	}

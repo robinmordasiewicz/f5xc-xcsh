@@ -14,18 +14,18 @@ import (
 
 // TestPhase1TierValidationIntegration verifies tier validation works in integrated context
 func TestPhase1TierValidationIntegration(t *testing.T) {
-	// Test Standard tier domains
-	standardTierDomains := []string{"api", "dns", "authentication"}
+	// Test domains across tiers
+	testDomains := []string{"api", "dns", "authentication"}
 
-	for _, domain := range standardTierDomains {
+	for _, domain := range testDomains {
 		info, found := types.GetDomainInfo(domain)
 		require.True(t, found, "Domain %q should exist", domain)
 
 		// Verify tier requirement is accessible
 		assert.NotEmpty(t, info.RequiresTier, "Domain %q should have tier requirement", domain)
 
-		// Verify tier is Standard or lower
-		validTiers := []string{"Standard", "Professional", "Enterprise"}
+		// Verify tier is Standard or Advanced
+		validTiers := []string{"Standard", "Advanced"}
 		assert.Contains(t, validTiers, info.RequiresTier, "Domain %q has invalid tier", domain)
 	}
 }
@@ -364,7 +364,7 @@ func TestDomainWorkflowConsistency(t *testing.T) {
 	}
 }
 
-// TestAllDomainsAccessible verifies all 40 domains are accessible and complete
+// TestAllDomainsAccessible verifies all 39 domains are accessible and complete
 func TestAllDomainsAccessible(t *testing.T) {
 	assert.Equal(t, len(types.DomainRegistry), 39, "Should have exactly 39 domains")
 

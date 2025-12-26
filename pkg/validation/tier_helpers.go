@@ -7,9 +7,8 @@ import (
 // ValidateTierAccess checks if a user's subscription tier meets domain requirements
 func ValidateTierAccess(userTier, requiredTier string) bool {
 	tierOrder := map[string]int{
-		"Standard":     1,
-		"Professional": 2,
-		"Enterprise":   3,
+		"Standard": 1,
+		"Advanced": 2,
 	}
 
 	userLevel := tierOrder[userTier]

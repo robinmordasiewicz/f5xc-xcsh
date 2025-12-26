@@ -12,8 +12,7 @@ func TestTierLevel(t *testing.T) {
 		expected int
 	}{
 		{"Standard tier", TierStandard, 1},
-		{"Professional tier", TierProfessional, 2},
-		{"Enterprise tier", TierEnterprise, 3},
+		{"Advanced tier", TierAdvanced, 2},
 		{"Unknown tier", "Unknown", 0},
 		{"Empty tier", "", 0},
 		{"Mixed case", "standard", 0}, // Case sensitive
@@ -38,22 +37,15 @@ func TestIsSufficientTier(t *testing.T) {
 	}{
 		// Standard user tests
 		{"Standard accessing Standard", TierStandard, TierStandard, true},
-		{"Standard accessing Professional", TierStandard, TierProfessional, false},
-		{"Standard accessing Enterprise", TierStandard, TierEnterprise, false},
+		{"Standard accessing Advanced", TierStandard, TierAdvanced, false},
 
-		// Professional user tests
-		{"Professional accessing Standard", TierProfessional, TierStandard, true},
-		{"Professional accessing Professional", TierProfessional, TierProfessional, true},
-		{"Professional accessing Enterprise", TierProfessional, TierEnterprise, false},
-
-		// Enterprise user tests
-		{"Enterprise accessing Standard", TierEnterprise, TierStandard, true},
-		{"Enterprise accessing Professional", TierEnterprise, TierProfessional, true},
-		{"Enterprise accessing Enterprise", TierEnterprise, TierEnterprise, true},
+		// Advanced user tests
+		{"Advanced accessing Standard", TierAdvanced, TierStandard, true},
+		{"Advanced accessing Advanced", TierAdvanced, TierAdvanced, true},
 
 		// Edge cases
 		{"Empty requirement (defaults to accessible)", TierStandard, "", true},
-		{"Unknown required tier", TierProfessional, "Unknown", false},
+		{"Unknown required tier", TierAdvanced, "Unknown", false},
 		{"Unknown current tier", "Unknown", TierStandard, false},
 		{"Both unknown", "Unknown1", "Unknown2", false},
 	}
@@ -81,8 +73,7 @@ func TestTierName(t *testing.T) {
 		expected string
 	}{
 		{"Standard", TierStandard, "Standard"},
-		{"Professional", TierProfessional, "Professional"},
-		{"Enterprise", TierEnterprise, "Enterprise"},
+		{"Advanced", TierAdvanced, "Advanced"},
 		{"Unknown returns original", "Custom", "Custom"},
 		{"Empty returns empty", "", ""},
 	}
@@ -103,11 +94,10 @@ func TestGetNextTier(t *testing.T) {
 		tier     string
 		expected string
 	}{
-		{"Standard → Professional", TierStandard, TierProfessional},
-		{"Professional → Enterprise", TierProfessional, TierEnterprise},
-		{"Enterprise → empty (highest)", TierEnterprise, ""},
-		{"Unknown → Professional (default)", "Unknown", TierProfessional},
-		{"Empty → Professional (default)", "", TierProfessional},
+		{"Standard → Advanced", TierStandard, TierAdvanced},
+		{"Advanced → empty (highest)", TierAdvanced, ""},
+		{"Unknown → Advanced (default)", "Unknown", TierAdvanced},
+		{"Empty → Advanced (default)", "", TierAdvanced},
 	}
 
 	for _, tt := range tests {
@@ -137,40 +127,26 @@ func TestGetUpgradePath(t *testing.T) {
 			true,
 		},
 		{
-			"Professional for Standard (sufficient)",
-			TierProfessional,
+			"Advanced for Standard (sufficient)",
+			TierAdvanced,
 			TierStandard,
 			"",
 			true,
 		},
 		{
-			"Enterprise for Professional (sufficient)",
-			TierEnterprise,
-			TierProfessional,
+			"Advanced for Advanced (sufficient)",
+			TierAdvanced,
+			TierAdvanced,
 			"",
 			true,
 		},
 
 		// Insufficient tier cases
 		{
-			"Standard → Professional (insufficient)",
+			"Standard → Advanced (insufficient)",
 			TierStandard,
-			TierProfessional,
-			"Upgrade from Standard to Professional tier",
-			false,
-		},
-		{
-			"Professional → Enterprise (insufficient)",
-			TierProfessional,
-			TierEnterprise,
-			"Upgrade from Professional to Enterprise tier",
-			false,
-		},
-		{
-			"Standard → Enterprise (insufficient)",
-			TierStandard,
-			TierEnterprise,
-			"Upgrade from Standard to Enterprise tier",
+			TierAdvanced,
+			"Upgrade from Standard to Advanced tier",
 			false,
 		},
 	}
@@ -209,24 +185,14 @@ func TestTierAccessError(t *testing.T) {
 		wantText []string // Substrings that should appear in error message
 	}{
 		{
-			"Standard tier insufficient for Professional domain",
-			NewTierAccessError("api", "API", TierStandard, TierProfessional),
+			"Standard tier insufficient for Advanced domain",
+			NewTierAccessError("api", "API", TierStandard, TierAdvanced),
 			[]string{
 				"API",
-				"Professional",
+				"Advanced",
 				"Standard",
-				"Upgrade from Standard to Professional",
+				"Upgrade from Standard to Advanced",
 				"console.volterra.io",
-			},
-		},
-		{
-			"Professional insufficient for Enterprise domain",
-			NewTierAccessError("generative_ai", "Generative AI", TierProfessional, TierEnterprise),
-			[]string{
-				"Generative AI",
-				"Enterprise",
-				"Professional",
-				"Upgrade from Professional to Enterprise",
 			},
 		},
 	}
@@ -249,7 +215,7 @@ func TestTierAccessError(t *testing.T) {
 }
 
 func TestNewTierAccessError(t *testing.T) {
-	err := NewTierAccessError("api", "API", TierStandard, TierProfessional)
+	err := NewTierAccessError("api", "API", TierStandard, TierAdvanced)
 
 	if err.Domain != "api" {
 		t.Errorf("Domain = %q, want %q", err.Domain, "api")
@@ -260,26 +226,26 @@ func TestNewTierAccessError(t *testing.T) {
 	if err.CurrentTier != TierStandard {
 		t.Errorf("CurrentTier = %q, want %q", err.CurrentTier, TierStandard)
 	}
-	if err.RequiredTier != TierProfessional {
-		t.Errorf("RequiredTier = %q, want %q", err.RequiredTier, TierProfessional)
+	if err.RequiredTier != TierAdvanced {
+		t.Errorf("RequiredTier = %q, want %q", err.RequiredTier, TierAdvanced)
 	}
 }
 
 // Benchmarks
 func BenchmarkTierLevel(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		TierLevel(TierProfessional)
+		TierLevel(TierAdvanced)
 	}
 }
 
 func BenchmarkIsSufficientTier(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		IsSufficientTier(TierProfessional, TierStandard)
+		IsSufficientTier(TierAdvanced, TierStandard)
 	}
 }
 
 func BenchmarkGetUpgradePath(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		GetUpgradePath(TierStandard, TierProfessional)
+		GetUpgradePath(TierStandard, TierAdvanced)
 	}
 }
