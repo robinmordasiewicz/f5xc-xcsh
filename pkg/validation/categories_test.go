@@ -286,7 +286,7 @@ func TestInfrastructureCategoryDomains(t *testing.T) {
 		domainSet[domain.Name] = true
 	}
 
-	expectedInfrastructureDomains := []string{"cloud_infrastructure", "kubernetes", "service_mesh", "site"}
+	expectedInfrastructureDomains := []string{"cloud_infrastructure", "kubernetes", "service_mesh", "sites"}
 	for _, expected := range expectedInfrastructureDomains {
 		assert.True(t, domainSet[expected], "Infrastructure category should contain domain %q", expected)
 	}
@@ -298,7 +298,7 @@ func TestDistributionTotals(t *testing.T) {
 
 	// Expected distribution based on domain count analysis
 	expectedTotals := map[string]int{
-		"Other":          9,
+		"Other":          8,
 		"Security":       8,
 		"Platform":       7,
 		"Operations":     5,

@@ -213,7 +213,7 @@ jobs:
         run: |
           echo "Validating domain count matches upstream specs..."
           DOMAIN_COUNT=$(grep -c '".*": {' pkg/types/domains_generated.go)
-          EXPECTED_COUNT=39
+          EXPECTED_COUNT=38
           if [ "$DOMAIN_COUNT" -ne "$EXPECTED_COUNT" ]; then
             echo "::error::Domain count changed from expected $EXPECTED_COUNT to $DOMAIN_COUNT"
             echo "This indicates upstream spec changes. Update EXPECTED_COUNT after review."
