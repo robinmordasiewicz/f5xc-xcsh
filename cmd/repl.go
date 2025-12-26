@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/mattn/go-isatty"
@@ -65,6 +66,10 @@ func StartREPL() error {
 			Key: prompt.ControlD,
 			Fn:  func(*prompt.Buffer) { handleExit(session) },
 		}),
+		prompt.OptionAddKeyBind(prompt.KeyBind{
+			Key: prompt.ControlC,
+			Fn:  func(*prompt.Buffer) { handleCtrlC(session) },
+		}),
 	)
 
 	// Run the REPL
@@ -89,4 +94,16 @@ func handleExit(session *REPLSession) {
 
 	fmt.Println("\nGoodbye!")
 	os.Exit(0)
+}
+
+// handleCtrlC handles Ctrl+C with double-press to exit
+func handleCtrlC(session *REPLSession) {
+	now := time.Now()
+	// 500ms window for double-press detection
+	if now.Sub(session.lastCtrlCTime) < 500*time.Millisecond {
+		handleExit(session)
+	}
+	session.lastCtrlCTime = now
+	// Show hint message
+	fmt.Print("\nPress Ctrl+C again to exit, or continue typing\n")
 }

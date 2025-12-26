@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/robinmordasiewicz/xcsh/pkg/client"
@@ -20,6 +21,9 @@ type REPLSession struct {
 	contextPath *ContextPath      // Current navigation context
 	tenant      string            // Extracted tenant name from API URL
 	validator   *ContextValidator // Domain/action validator
+
+	// Exit handling
+	lastCtrlCTime time.Time // Track last Ctrl+C for double-press detection
 }
 
 // initREPLSession creates a new REPL session with initialized state

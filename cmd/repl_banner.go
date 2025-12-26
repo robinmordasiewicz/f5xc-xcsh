@@ -54,7 +54,7 @@ func renderWelcomeBanner() string {
 
 	// Info content below logo
 	infoLines := []string{
-		"Type 'help' for commands, 'exit' or Ctrl+D to quit. Tab completion available.",
+		"Type 'help' for commands. Press Ctrl+C twice or Ctrl+D to quit.",
 		buildConnectionInfo(),
 	}
 
