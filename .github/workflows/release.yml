@@ -343,7 +343,7 @@ jobs:
 
           # Download all release assets with retry
           echo "Downloading all release assets..."
-          retry_with_backoff sh -c 'GH_TOKEN="$GITHUB_TOKEN" gh release download "v${VERSION}" --repo "${{ github.repository }}"'
+          retry_with_backoff sh -c "GH_TOKEN=\"\$GITHUB_TOKEN\" gh release download \"v${VERSION}\" --repo \"${{ github.repository }}\""
 
           # Generate new checksums.txt
           echo "Computing SHA256 checksums..."
