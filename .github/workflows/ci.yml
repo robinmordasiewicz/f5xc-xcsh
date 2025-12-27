@@ -211,15 +211,17 @@ jobs:
 
       - name: Validate upstream domains count
         run: |
-          echo "Validating domain count matches upstream specs..."
-          DOMAIN_COUNT=$(grep -c '".*": {' pkg/types/domains_generated.go)
-          EXPECTED_COUNT=38
-          if [ "$DOMAIN_COUNT" -ne "$EXPECTED_COUNT" ]; then
-            echo "::error::Domain count changed from expected $EXPECTED_COUNT to $DOMAIN_COUNT"
-            echo "This indicates upstream spec changes. Update EXPECTED_COUNT after review."
+          echo "Validating generated domains match upstream spec count..."
+          GENERATED_COUNT=$(grep -c '".*": {' pkg/types/domains_generated.go)
+          SPEC_COUNT=$(jq '.specifications | length' .specs/index.json)
+          echo "Generated domains: $GENERATED_COUNT"
+          echo "Upstream spec domains: $SPEC_COUNT"
+          if [ "$GENERATED_COUNT" -ne "$SPEC_COUNT" ]; then
+            echo "::error::Generated domain count ($GENERATED_COUNT) doesn't match spec count ($SPEC_COUNT)"
+            echo "This may indicate a code generation issue - investigate generate-domains.go"
             exit 1
           fi
-          echo "✅ Domains validated: $DOMAIN_COUNT domains"
+          echo "✅ Domain counts match: $GENERATED_COUNT domains from upstream specs"
 
   spec-quality:
     name: Validate Spec Quality
