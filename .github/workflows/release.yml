@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -29,20 +29,29 @@ jobs:
         with:
           filters: |
             code:
-              - '**.go'
-              - 'go.mod'
-              - 'go.sum'
+              - '**.ts'
+              - '**.tsx'
+              - 'package.json'
+              - 'package-lock.json'
 
-      - name: Set up Go
+      - name: Set up Node.js
         if: steps.changes.outputs.code == 'true'
-        uses: actions/setup-go@v6
+        uses: actions/setup-node@v4
         with:
-          go-version: "1.25"
-          cache: true
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        if: steps.changes.outputs.code == 'true'
+        run: npm ci
 
       - name: Run tests
         if: steps.changes.outputs.code == 'true'
-        run: go test -v -race ./pkg/...
+        run: npm test
+
+      - name: Run type check
+        if: steps.changes.outputs.code == 'true'
+        run: npm run typecheck
 
   version:
     name: Bump Version
@@ -52,7 +61,7 @@ jobs:
       version: ${{ steps.bump.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -82,74 +91,168 @@ jobs:
           git tag -a "v${{ steps.bump.outputs.version }}" -m "Release v${{ steps.bump.outputs.version }}"
           git push origin "v${{ steps.bump.outputs.version }}"
 
-  goreleaser:
-    name: GoReleaser
+  build:
+    name: Build Binaries
     runs-on: ubuntu-latest
     needs: version
     outputs:
       version: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          go-version: "1.25"
-          cache: false
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Download enriched API specifications
         run: ./scripts/download-specs.sh
 
-      - name: Install GoReleaser with retry
-        shell: bash
+      - name: Build TypeScript
+        run: XCSH_VERSION=${{ needs.version.outputs.version }} npm run build
+
+      - name: Build standalone binaries
+        run: npm run build:binaries
+
+      - name: List built binaries
+        run: ls -la binaries/
+
+      - name: Create release archives
         run: |
-          GORELEASER_VERSION="2.13.1"
-          max_retries=5
-          base_delay=15
+          VERSION="${{ needs.version.outputs.version }}"
+          mkdir -p release-archives
 
-          for attempt in $(seq 1 $max_retries); do
-            echo "Attempt $attempt of $max_retries to install GoReleaser v${GORELEASER_VERSION}..."
+          # Create archives for each platform
+          for file in binaries/*; do
+            filename=$(basename "$file")
 
-            # Download goreleaser tarball from GitHub releases
-            url="https://github.com/goreleaser/goreleaser/releases/download/v${GORELEASER_VERSION}/goreleaser_Linux_x86_64.tar.gz"
-            if curl -sSL --connect-timeout 30 --max-time 180 -o /tmp/goreleaser.tar.gz "$url" && \
-               tar -xzf /tmp/goreleaser.tar.gz -C /tmp goreleaser && \
-               sudo mv /tmp/goreleaser /usr/local/bin/goreleaser && \
-               chmod +x /usr/local/bin/goreleaser; then
-              echo "GoReleaser installed successfully"
-              goreleaser --version
-              rm -f /tmp/goreleaser.tar.gz
-              exit 0
-            fi
-
-            if [ $attempt -lt $max_retries ]; then
-              delay=$((base_delay * attempt))
-              echo "::warning::Failed to install GoReleaser on attempt $attempt, retrying in ${delay}s..."
-              rm -f /tmp/goreleaser.tar.gz /tmp/goreleaser
-              sleep $delay
-            fi
+            case "$filename" in
+              *-linux-x64)
+                ARCHIVE_NAME="xcsh_${VERSION}_linux_amd64.tar.gz"
+                mv "$file" xcsh
+                chmod +x xcsh
+                tar -czf "release-archives/${ARCHIVE_NAME}" xcsh
+                rm xcsh
+                ;;
+              *-linux-arm64)
+                ARCHIVE_NAME="xcsh_${VERSION}_linux_arm64.tar.gz"
+                mv "$file" xcsh
+                chmod +x xcsh
+                tar -czf "release-archives/${ARCHIVE_NAME}" xcsh
+                rm xcsh
+                ;;
+              *-macos-x64)
+                ARCHIVE_NAME="xcsh_${VERSION}_darwin_amd64.tar.gz"
+                mv "$file" xcsh
+                chmod +x xcsh
+                tar -czf "release-archives/${ARCHIVE_NAME}" xcsh
+                rm xcsh
+                ;;
+              *-macos-arm64)
+                ARCHIVE_NAME="xcsh_${VERSION}_darwin_arm64.tar.gz"
+                mv "$file" xcsh
+                chmod +x xcsh
+                tar -czf "release-archives/${ARCHIVE_NAME}" xcsh
+                rm xcsh
+                ;;
+              *-win-x64.exe)
+                ARCHIVE_NAME="xcsh_${VERSION}_windows_amd64.zip"
+                mv "$file" xcsh.exe
+                zip "release-archives/${ARCHIVE_NAME}" xcsh.exe
+                rm xcsh.exe
+                ;;
+              *-win-arm64.exe)
+                ARCHIVE_NAME="xcsh_${VERSION}_windows_arm64.zip"
+                mv "$file" xcsh.exe
+                zip "release-archives/${ARCHIVE_NAME}" xcsh.exe
+                rm xcsh.exe
+                ;;
+            esac
           done
 
-          echo "::error::Failed to install GoReleaser after $max_retries attempts"
-          exit 1
+          ls -la release-archives/
 
-      - name: Run GoReleaser
-        shell: bash
-        run: goreleaser release --clean
+      - name: Generate checksums
+        run: |
+          cd release-archives
+          shasum -a 256 * > checksums.txt
+          cat checksums.txt
+
+      - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+
+          # Create release notes
+          cat > release-notes.md << 'RELEASE_EOF'
+          ## xcsh v${VERSION}
+
+          ### Installation
+
+          **macOS (Apple Silicon)**
+          ```bash
+          curl -LO https://github.com/robinmordasiewicz/xcsh/releases/download/v${VERSION}/xcsh_${VERSION}_darwin_arm64.tar.gz
+          tar -xzf xcsh_${VERSION}_darwin_arm64.tar.gz
+          sudo mv xcsh /usr/local/bin/
+          ```
+
+          **macOS (Intel)**
+          ```bash
+          curl -LO https://github.com/robinmordasiewicz/xcsh/releases/download/v${VERSION}/xcsh_${VERSION}_darwin_amd64.tar.gz
+          tar -xzf xcsh_${VERSION}_darwin_amd64.tar.gz
+          sudo mv xcsh /usr/local/bin/
+          ```
+
+          **Linux (amd64)**
+          ```bash
+          curl -LO https://github.com/robinmordasiewicz/xcsh/releases/download/v${VERSION}/xcsh_${VERSION}_linux_amd64.tar.gz
+          tar -xzf xcsh_${VERSION}_linux_amd64.tar.gz
+          sudo mv xcsh /usr/local/bin/
+          ```
+
+          **Linux (arm64)**
+          ```bash
+          curl -LO https://github.com/robinmordasiewicz/xcsh/releases/download/v${VERSION}/xcsh_${VERSION}_linux_arm64.tar.gz
+          tar -xzf xcsh_${VERSION}_linux_arm64.tar.gz
+          sudo mv xcsh /usr/local/bin/
+          ```
+
+          **Windows (amd64)**
+          Download `xcsh_${VERSION}_windows_amd64.zip` and extract to your PATH.
+
+          **Windows (arm64)**
+          Download `xcsh_${VERSION}_windows_arm64.zip` and extract to your PATH.
+
+          **npm (requires Node.js)**
+          ```bash
+          npm install -g xcsh
+          ```
+          RELEASE_EOF
+
+          # Substitute version in release notes
+          sed -i "s/\${VERSION}/${VERSION}/g" release-notes.md
+
+          # Create GitHub release
+          gh release create "v${VERSION}" \
+            --title "xcsh v${VERSION}" \
+            --notes-file release-notes.md \
+            release-archives/*
 
   sign-macos:
     name: Sign macOS Binaries
     runs-on: macos-latest
-    needs: goreleaser
+    needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Import Code Signing Certificate
         env:
@@ -208,7 +311,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          VERSION="${{ needs.goreleaser.outputs.version }}"
+          VERSION="${{ needs.build.outputs.version }}"
           echo "Signing version: $VERSION"
 
           # Retry function with exponential backoff
@@ -281,10 +384,6 @@ jobs:
               --team-id "$APPLE_TEAM_ID" \
               --wait
 
-            # Note: Stapling is NOT possible for standalone binaries or ZIP files
-            # Apple's stapler only works with .app bundles, .dmg, and .pkg files
-            # For bare binaries, Gatekeeper verifies the notarization ticket online
-            # when the user first runs the binary - no stapling needed
             echo "Notarization complete for $ARCH (stapling skipped - not supported for bare binaries)"
 
             # Verify the signed binary with spctl
@@ -294,9 +393,8 @@ jobs:
             }
             echo "Binary ready for $ARCH"
 
-            # Repackage as tar.gz (preserving all original files including completions)
+            # Repackage as tar.gz
             cd $RUNNER_TEMP/sign_${ARCH}
-            # Use * to get all files without ./ prefix, preserving original archive structure
             tar -czf $RUNNER_TEMP/${ASSET_NAME} *
             cd -
 
@@ -311,7 +409,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${{ needs.goreleaser.outputs.version }}"
+          VERSION="${{ needs.build.outputs.version }}"
           echo "Regenerating checksums.txt for version $VERSION..."
 
           # Retry function with exponential backoff
@@ -360,7 +458,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |
-          VERSION="${{ needs.goreleaser.outputs.version }}"
+          VERSION="${{ needs.build.outputs.version }}"
 
           echo "Computing SHA256 hashes for all release assets..."
 
@@ -391,25 +489,23 @@ jobs:
           mkdir -p $RUNNER_TEMP/hash_check
           cd $RUNNER_TEMP/hash_check
 
-          # Download and compute hash for each platform (using GITHUB_TOKEN for xcsh repo)
+          # Download and compute hash for each platform
           for PLATFORM in darwin_amd64 darwin_arm64 linux_amd64 linux_arm64; do
             ASSET="xcsh_${VERSION}_${PLATFORM}.tar.gz"
             echo "Downloading $ASSET..."
             retry_with_backoff sh -c "GH_TOKEN=\"\$GITHUB_TOKEN\" gh release download \"v${VERSION}\" --pattern \"$ASSET\" --repo \"${{ github.repository }}\""
             HASH=$(shasum -a 256 "$ASSET" | cut -d' ' -f1)
-            # Export hash as environment variable for later use
             export "HASH_${PLATFORM}=${HASH}"
             echo "$PLATFORM: $HASH"
           done
 
-          # Clone homebrew-tap and update cask (using HOMEBREW_TAP_TOKEN for push access)
+          # Clone homebrew-tap and update cask
           cd $RUNNER_TEMP
           git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/robinmordasiewicz/homebrew-tap.git
           cd homebrew-tap
 
           # Update the cask file with correct hashes
           cat > Casks/xcsh.rb << CASKEOF
-          # This file was generated by GoReleaser. DO NOT EDIT.
           cask "xcsh" do
             name "xcsh"
             desc "Command-line interface for F5 Distributed Cloud"
@@ -421,9 +517,6 @@ jobs:
             end
 
             binary "xcsh"
-            bash_completion "completions/xcsh.bash"
-            zsh_completion "completions/xcsh.zsh"
-            fish_completion "completions/xcsh.fish"
 
             on_macos do
               on_intel do
@@ -447,23 +540,14 @@ jobs:
               end
             end
 
-            # Clear zsh completion cache after install/upgrade
-            postflight do
-              system_command "/bin/rm", args: ["-f", "#{Dir.home}/.zcompdump", "#{Dir.home}/.zcompdump-#{Socket.gethostname}-*"]
-            end
-
             caveats <<~EOS
-              Shell completions have been installed for bash, zsh, and fish.
+              xcsh has been installed.
 
               For setup instructions, see:
-                https://robinmordasiewicz.github.io/xcsh/install/homebrew/#shell-completions
+                https://robinmordasiewicz.github.io/xcsh/install/homebrew/
 
               Quick start:
-                Zsh: Usually works automatically. Restart your terminal.
-                Bash: Run 'brew install bash-completion@2' first.
-                Fish: Works automatically.
-
-              Test with: xcsh [TAB]
+                xcsh --help
             EOS
           end
           CASKEOF
@@ -474,5 +558,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Casks/xcsh.rb
-          git commit -m "fix: update SHA256 hashes for signed macOS binaries v${VERSION}"
+          git commit -m "chore: Update xcsh cask to v${VERSION}"
           git push
