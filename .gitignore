@@ -9,6 +9,7 @@ generate-schemas
 
 # Build output
 dist/
+binaries/
 
 # Test binary, built with `go test -c`
 *.test
@@ -44,8 +45,7 @@ debug
 .env.local
 *.env
 
-# GoReleaser
-dist/
+# Build artifacts (pkg binaries created during release)
 
 # Temporary files
 tmp/

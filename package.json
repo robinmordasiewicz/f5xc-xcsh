@@ -9,6 +9,8 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup",
+    "build:binaries": "pkg . --compress GZip",
+    "build:release": "npm run build && npm run build:binaries",
     "dev": "tsx src/index.tsx",
     "start": "node dist/index.js",
     "test": "vitest",
@@ -49,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
     "@vitest/coverage-v8": "^2.1.8",
+    "@yao-pkg/pkg": "^6.11.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.37.2",
@@ -66,5 +69,20 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "assets": [
+      ".specs/**/*"
+    ],
+    "targets": [
+      "node22-linux-x64",
+      "node22-linux-arm64",
+      "node22-macos-x64",
+      "node22-macos-arm64",
+      "node22-win-x64",
+      "node22-win-arm64"
+    ],
+    "outputPath": "binaries"
   }
 }
