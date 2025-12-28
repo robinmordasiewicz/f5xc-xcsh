@@ -50,23 +50,25 @@ function getCategoryColor(category?: string): string {
 function SuggestionItem({
 	suggestion,
 	isSelected,
+	maxLabelWidth,
 }: {
 	suggestion: Suggestion;
 	isSelected: boolean;
 	index: number;
+	maxLabelWidth: number;
 }): React.ReactElement {
 	const categoryColor = getCategoryColor(suggestion.category);
 
 	return (
 		<Box>
-			{/* Selection indicator */}
+			{/* Selection indicator - use 3 chars for alignment (▶ may render as wide char) */}
 			<Text color={isSelected ? "#E4002B" : "#333333"}>
-				{isSelected ? "\u25B6 " : "  "}
+				{isSelected ? "▶ " : "   "}
 			</Text>
 
-			{/* Label with category color */}
+			{/* Label with category color - padded to align descriptions */}
 			<Text color={categoryColor} bold={isSelected} inverse={isSelected}>
-				{suggestion.label}
+				{suggestion.label.padEnd(maxLabelWidth)}
 			</Text>
 
 			{/* Description if present */}
@@ -144,6 +146,11 @@ export function Suggestions({
 	const showScrollUp = startIndex > 0;
 	const showScrollDown = startIndex + maxVisible < totalCount;
 
+	// Calculate max label width for column alignment
+	const maxLabelWidth = Math.max(
+		...visibleSuggestions.map((s) => s.label.length),
+	);
+
 	return (
 		<Box
 			flexDirection="column"
@@ -165,6 +172,7 @@ export function Suggestions({
 					suggestion={suggestion}
 					isSelected={startIndex + index === selectedIndex}
 					index={startIndex + index}
+					maxLabelWidth={maxLabelWidth}
 				/>
 			))}
 
