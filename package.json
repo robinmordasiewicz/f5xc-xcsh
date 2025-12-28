@@ -9,7 +9,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup",
-    "build:binaries": "pkg . --compress GZip",
+    "build:binaries": "./scripts/build-binaries.sh",
     "build:release": "npm run build && npm run build:binaries",
     "dev": "tsx src/index.tsx",
     "start": "node dist/index.js",
@@ -69,20 +69,5 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "pkg": {
-    "scripts": "dist/**/*.js",
-    "assets": [
-      ".specs/**/*"
-    ],
-    "targets": [
-      "node22-linux-x64",
-      "node22-linux-arm64",
-      "node22-macos-x64",
-      "node22-macos-arm64",
-      "node22-win-x64",
-      "node22-win-arm64"
-    ],
-    "outputPath": "binaries"
   }
 }

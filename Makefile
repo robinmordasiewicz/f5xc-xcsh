@@ -162,11 +162,30 @@ install:
 	@$(NPM) ci
 	@echo "Dependencies installed"
 
-# Link for local development
+# Run local dev build (recommended - doesn't pollute global npm)
+dev-run:
+	@echo "Running local development build..."
+	@$(NPM) run build
+	@node dist/index.js $(ARGS)
+
+# DANGEROUS: Link for local development (installs to global npm)
+# This creates a global symlink that may conflict with released versions!
+# Use 'make dev-run ARGS="<args>"' instead for safe local testing.
+# To unlink: npm unlink -g $(BINARY_NAME)
 link:
-	@echo "Linking for local development..."
+	@echo ""
+	@echo "⚠️  WARNING: This installs a DEV build to your global npm!"
+	@echo "   This may conflict with official releases installed via Homebrew."
+	@echo ""
+	@echo "   Safer alternatives:"
+	@echo "     make dev-run ARGS=\"version\"    # Run without global install"
+	@echo "     node dist/index.js <command>   # Direct execution"
+	@echo ""
+	@echo "   To unlink later: npm unlink -g $(BINARY_NAME)"
+	@echo ""
+	@read -p "Continue with global link? [y/N] " confirm && [ "$$confirm" = "y" ] || exit 1
 	@$(NPM) link
-	@echo "Linked: $(BINARY_NAME)"
+	@echo "Linked: $(BINARY_NAME) (to unlink: npm unlink -g $(BINARY_NAME))"
 
 # =============================================================================
 # API Specifications
@@ -347,7 +366,8 @@ help:
 	@echo "  make build          - Build for current platform"
 	@echo "  make build-all      - Build binaries for all platforms"
 	@echo "  make install        - Install npm dependencies"
-	@echo "  make link           - Link for local development"
+	@echo "  make dev-run ARGS=  - Run local build safely (recommended)"
+	@echo "  make link           - ⚠️  Global npm link (NOT recommended)"
 	@echo "  make clean          - Clean build artifacts"
 	@echo ""
 	@echo "=== Test Commands ==="

@@ -129,6 +129,11 @@ jobs:
       - name: Build TypeScript
         run: XCSH_VERSION=${{ needs.version.outputs.version }} npm run build
 
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Build standalone binaries
         run: npm run build:binaries
 
