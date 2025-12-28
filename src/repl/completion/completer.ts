@@ -7,6 +7,7 @@ import type { CompletionSuggestion, ParsedInput } from "./types.js";
 import type { REPLSession } from "../session.js";
 import { domainRegistry } from "../../types/domains.js";
 import { customDomains, isCustomDomain } from "../../domains/index.js";
+import { extensionRegistry } from "../../extensions/index.js";
 import { CompletionCache } from "./cache.js";
 
 /**
@@ -378,6 +379,16 @@ export class Completer {
 		// Add actions
 		suggestions.push(...this.getActionSuggestions());
 
+		// Add extension commands if domain has an extension
+		if (this.session) {
+			const ctx = this.session.getContextPath();
+			if (ctx.domain) {
+				suggestions.push(
+					...this.getExtensionCommandSuggestions(ctx.domain),
+				);
+			}
+		}
+
 		// Add navigation commands
 		suggestions.push(
 			{
@@ -401,6 +412,51 @@ export class Completer {
 				category: "builtin",
 			},
 		);
+
+		return suggestions;
+	}
+
+	/**
+	 * Get extension command suggestions for a domain
+	 */
+	getExtensionCommandSuggestions(domain: string): CompletionSuggestion[] {
+		const suggestions: CompletionSuggestion[] = [];
+		const extension = extensionRegistry.getExtension(domain);
+
+		if (!extension) {
+			return suggestions;
+		}
+
+		// Add extension commands
+		for (const [name, cmd] of extension.commands) {
+			suggestions.push({
+				text: name,
+				description: cmd.description,
+				category: "command",
+			});
+
+			// Add command aliases
+			if (cmd.aliases) {
+				for (const alias of cmd.aliases) {
+					suggestions.push({
+						text: alias,
+						description: `${cmd.description} (alias for ${name})`,
+						category: "command",
+					});
+				}
+			}
+		}
+
+		// Add extension subcommand groups
+		if (extension.subcommands) {
+			for (const [name, group] of extension.subcommands) {
+				suggestions.push({
+					text: name,
+					description: group.description,
+					category: "subcommand",
+				});
+			}
+		}
 
 		return suggestions;
 	}
@@ -456,25 +512,44 @@ export class Completer {
 	 */
 	getDomainSuggestions(): CompletionSuggestion[] {
 		const suggestions: CompletionSuggestion[] = [];
+		const addedDomains = new Set<string>();
 
-		// Add custom domains first (higher priority)
+		// Add custom domains first (highest priority)
 		for (const domain of customDomains.all()) {
 			suggestions.push({
 				text: domain.name,
 				description: domain.description,
 				category: "domain",
 			});
+			addedDomains.add(domain.name);
 		}
 
-		// Add API-generated domains (skip if already added as custom)
+		// Add standalone extension domains (not in API registry)
+		for (const extDomain of extensionRegistry.getExtendedDomains()) {
+			if (addedDomains.has(extDomain)) continue;
+			if (domainRegistry.has(extDomain)) continue; // Will be added below with API info
+
+			const merged = extensionRegistry.getMergedDomain(extDomain);
+			if (merged && merged.source === "extension") {
+				suggestions.push({
+					text: extDomain,
+					description: merged.description,
+					category: "domain",
+				});
+				addedDomains.add(extDomain);
+			}
+		}
+
+		// Add API-generated domains (skip if already added)
 		for (const [domain, meta] of domainRegistry) {
-			if (isCustomDomain(domain)) continue;
+			if (addedDomains.has(domain)) continue;
 
 			suggestions.push({
 				text: domain,
 				description: meta.description,
 				category: "domain",
 			});
+			addedDomains.add(domain);
 		}
 
 		return suggestions;
@@ -723,8 +798,23 @@ export class Completer {
 	 */
 	async completeNamespace(partial: string): Promise<CompletionSuggestion[]> {
 		const namespaces = await this.cache.getNamespaces(async () => {
-			// TODO: Fetch from API client when available
-			// For now, return common defaults
+			// Fetch from API client if available
+			const client = this.session?.getAPIClient();
+			if (client?.isAuthenticated()) {
+				try {
+					const response = await client.get<{
+						items?: Array<{ name?: string }>;
+					}>("/api/web/namespaces");
+					if (response.ok && response.data?.items) {
+						return response.data.items
+							.map((item) => item.name)
+							.filter((name): name is string => !!name);
+					}
+				} catch {
+					// Fall back to defaults on error
+				}
+			}
+			// Return common defaults if not connected
 			return ["default", "system", "shared"];
 		});
 
@@ -738,17 +828,43 @@ export class Completer {
 	}
 
 	/**
+	 * Convert domain name to API resource path
+	 */
+	private domainToResourcePath(domain: string): string {
+		// Convert snake_case to kebab-case for API paths
+		const resourceName = domain.replace(/_/g, "-");
+		// Add 's' for plural form (most F5 XC resources are plural in API)
+		return resourceName.endsWith("s") ? resourceName : `${resourceName}s`;
+	}
+
+	/**
 	 * Complete resource names with caching
 	 */
 	async completeResourceName(
 		domain: string,
-		resourceType: string,
+		_resourceType: string,
 		partial: string,
 	): Promise<CompletionSuggestion[]> {
-		const cacheKey = `${domain}:${resourceType}`;
+		const namespace = this.session?.getNamespace() ?? "default";
+		const cacheKey = `${domain}:${namespace}`;
 		const names = await this.cache.getResourceNames(cacheKey, async () => {
-			// TODO: Fetch from API client when available
-			// For now, return empty - requires API integration
+			// Fetch from API client if available
+			const client = this.session?.getAPIClient();
+			if (client?.isAuthenticated()) {
+				try {
+					const resourcePath = this.domainToResourcePath(domain);
+					const response = await client.get<{
+						items?: Array<{ name?: string }>;
+					}>(`/api/config/namespaces/${namespace}/${resourcePath}`);
+					if (response.ok && response.data?.items) {
+						return response.data.items
+							.map((item) => item.name)
+							.filter((name): name is string => !!name);
+					}
+				} catch {
+					// Return empty on error
+				}
+			}
 			return [];
 		});
 

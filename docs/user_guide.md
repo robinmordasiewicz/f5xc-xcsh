@@ -1,22 +1,24 @@
 # xcsh User Guide - Complete Feature Reference
 
-**Version**: 1.0
-**Last Updated**: 2025-12-24
+**Version**: 6.0.0
+**Last Updated**: 2025-12-27
 **Status**: Complete
+**Platform**: TypeScript / Ink (React for CLI)
 
 ---
 
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [Understanding Domain Categories](#understanding-domain-categories)
-3. [Finding Domains](#finding-domains)
-4. [Subscription Tier System](#subscription-tier-system)
-5. [Preview Features](#preview-features)
-6. [Use Cases and Workflows](#use-cases-and-workflows)
-7. [Command Reference](#command-reference)
-8. [Common Tasks and Examples](#common-tasks-and-examples)
-9. [Troubleshooting](#troubleshooting)
+2. [Interactive REPL](#interactive-repl)
+3. [Understanding Domain Categories](#understanding-domain-categories)
+4. [Finding Domains](#finding-domains)
+5. [Subscription Tier System](#subscription-tier-system)
+6. [Preview Features](#preview-features)
+7. [Use Cases and Workflows](#use-cases-and-workflows)
+8. [Command Reference](#command-reference)
+9. [Common Tasks and Examples](#common-tasks-and-examples)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -36,40 +38,94 @@ brew install robinmordasiewicz/tap/xcsh
 sh -c "$(curl -sSL https://raw.githubusercontent.com/robinmordasiewicz/xcsh/main/install.sh)"
 ```
 
-#### Manual Build
+#### Using npm (for development)
 
 ```bash
 git clone https://github.com/robinmordasiewicz/xcsh.git
 cd xcsh
-go build -o xcsh
-./xcsh version
+npm install
+npm run build
+npm start
 ```
 
 ### First Steps
 
-1. **View help**:
+1. **Start the interactive shell**:
 
    ```bash
-   xcsh help
+   xcsh
    ```
 
-2. **List all domains**:
+2. **View help**:
 
    ```bash
-   xcsh domains list
+   # From within REPL:
+   /help
    ```
 
-3. **Get help for a specific domain**:
+3. **List all domains**:
 
    ```bash
-   xcsh api --help
+   # From within REPL:
+   /domains
    ```
 
-4. **View your configuration**:
+4. **Navigate to a domain**:
 
    ```bash
-   xcsh configure show
+   # From within REPL:
+   /http_loadbalancers
    ```
+
+5. **View your profile configuration**:
+
+   ```bash
+   # From within REPL:
+   /profile show
+   ```
+
+---
+
+## Interactive REPL
+
+xcsh v6.0 features a modern interactive REPL (Read-Eval-Print Loop) built with Ink.
+
+### Starting the REPL
+
+```bash
+xcsh
+```
+
+### REPL Features
+
+- **Command History**: Use up/down arrows to navigate history
+- **Tab Completion**: Press Tab to see available commands and domains
+- **Slash Commands**: Quick actions starting with `/`
+- **Status Bar**: Shows connection status and git information
+- **Real-time Completion**: Suggestions appear as you type
+
+### Key Bindings
+
+| Key | Action |
+|-----|--------|
+| Tab | Trigger/cycle completion |
+| Up/Down | Navigate history or suggestions |
+| Enter | Execute command or select suggestion |
+| Escape | Cancel suggestions |
+| Ctrl+C (2x) | Exit REPL |
+| Ctrl+D | Exit REPL immediately |
+
+### Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show help information |
+| `/domains` | List all available domains |
+| `/login` | Configure authentication |
+| `/profile` | Manage connection profiles |
+| `/namespace [ns]` | Switch namespace |
+| `/clear` | Clear screen |
+| `/exit` | Exit REPL |
 
 ---
 
@@ -104,57 +160,52 @@ Categories help you:
 
 ### Method 1: List by Category
 
-List all domains in a specific category:
+List all domains using the `/domains` command:
 
 ```bash
-xcsh domains list --category Security
-xcsh domains list --category Platform
-xcsh domains list --category Infrastructure
+# From within REPL:
+/domains
 ```
 
-Output shows all domains with their descriptions and tier requirements.
+Output shows all 42 domains organized by category with descriptions and tier requirements.
 
-### Method 2: Search by Use Case
+### Method 2: Navigate to a Domain
 
-Find domains that help with specific tasks:
+Navigate directly to any domain to see its resources:
 
 ```bash
-xcsh api --help
-# Shows use cases: "Discover and catalog APIs", "Test API security", etc.
-
-xcsh dns --help
-# Shows use cases: "Configure DNS load balancing", "Manage DNS zones", etc.
+# From within REPL:
+/http_loadbalancers    # Navigate to HTTP load balancers
+/origin_pools          # Navigate to origin pools
+/app_firewalls         # Navigate to application firewalls
 ```
 
-### Method 3: Explore Related Domains
+### Method 3: Use Tab Completion
 
-See which domains work well together:
+The REPL provides intelligent tab completion:
 
 ```bash
-xcsh api --help
-# Under "RELATED DOMAINS:" shows:
-# - waf (same security category)
-# - authentication (authentication is related to API security)
-# - network_security (complementary security functionality)
-# etc.
+# Type partial domain name and press Tab:
+/http<Tab>             # Shows http_loadbalancers, etc.
+/app<Tab>              # Shows app_firewalls, etc.
 ```
 
-### Method 4: Direct Domain Help
+### Method 4: Explore Domain Resources
 
-Get complete information about a domain:
+Once in a domain, list available resources:
 
 ```bash
-xcsh kubernetes --help
+# Navigate to domain, then:
+list                   # List all resources in namespace
+get [name]             # Get specific resource details
 ```
 
-This displays:
+The REPL displays:
 
-- Domain description
-- Category and complexity level
-- Use cases (practical examples)
-- Related domains (work well with this domain)
-- Suggested workflows (common task sequences)
-- Available operations
+- Available resources in the domain
+- Resource metadata and configuration
+- Namespace context
+- Related domains for navigation
 
 ---
 
@@ -193,27 +244,20 @@ echo $F5XC_SUBSCRIPTION_TIER
 
 # Set your tier (for testing with Standard-only features)
 export F5XC_SUBSCRIPTION_TIER=Standard
-xcsh domains list
+xcsh
 
-# Check which domains you have access to
-xcsh domains list --tier Standard
+# Within REPL, view domains available at your tier:
+/domains
 ```
 
 ### Understanding Tier Requirements
 
-Every domain has a tier requirement shown in help text:
+The REPL shows tier information in the status bar and domain navigation. Higher-tier domains will indicate their requirements.
 
-```bash
-$ xcsh kubernetes --help
-Category: Infrastructure
-Tier: Professional
-# This domain requires Professional or Enterprise tier
-```
+Tier information appears in:
 
-Domains show their tier in:
-
-- Domain help text
-- Domain list output
+- Status bar display
+- Domain navigation responses
 - Completion suggestions
 
 ---
@@ -224,13 +268,13 @@ Some domains are marked as "preview" or "beta" because they're still under devel
 
 ### Identifying Preview Domains
 
-Preview domains are marked with a badge in help text:
+Preview domains are marked with a badge in the REPL:
 
 ```bash
-$ xcsh [preview-domain] --help
-[PREVIEW] This is a preview feature
+# Within REPL, navigate to a preview domain:
+/[preview-domain]
 
-# Additional information about preview status
+# The REPL displays: [PREVIEW] This is a preview feature
 ```
 
 ### Using Preview Features
@@ -255,36 +299,30 @@ Preview domains work like standard domains:
 
 ### What Are Use Cases?
 
-Use cases are **practical examples** of what you can do with a domain:
+Use cases are **practical examples** of what you can do with a domain. Each domain supports specific operations:
 
-```bash
-$ xcsh api --help
+- **Discover and catalog** - List and explore resources
+- **Configure and manage** - Create, update, delete resources
+- **Monitor and observe** - View status and metrics
+- **Secure and protect** - Apply security policies
 
-USE CASES:
-  • Discover and catalog APIs
-  • Test API security and behavior
-  • Manage API credentials
-  • Define API groups and testing policies
-```
-
-Each use case describes a real-world task you can accomplish.
+Each use case describes a real-world task you can accomplish within the REPL.
 
 ### What Are Workflows?
 
 Workflows are **recommended sequences** of domains that work together to accomplish larger goals:
 
-```bash
-$ xcsh api --help
+#### API Security Workflow
 
-SUGGESTED WORKFLOWS:
-  • API Security Workflow
-    Secure APIs with firewall and threat detection
-    Involves: api, waf, threat_campaign
+- Navigate to `/http_loadbalancers` for load balancer configuration
+- Use `/app_firewalls` for security policies
+- Configure `/origin_pools` for backend services
 
-  • Network Protection Workflow
-    Protect network infrastructure and applications
-    Involves: network_security, ddos, infrastructure_protection
-```
+#### Network Protection Workflow
+
+- Start with `/http_loadbalancers` for entry points
+- Add `/service_policys` for traffic rules
+- Configure `/rate_limiting` for protection
 
 ### Workflow Benefits
 
@@ -309,281 +347,261 @@ SUGGESTED WORKFLOWS:
 
 ## Command Reference
 
-### Core Commands
+### REPL Commands
 
-#### `xcsh help`
+All commands are executed within the interactive REPL. Start with `xcsh` to enter the shell.
 
-Show general help and list available domains.
+#### `/help`
 
-```bash
-xcsh help
-```
-
-#### `xcsh [domain] --help`
-
-Get detailed help for a specific domain.
+Show general help and list available commands.
 
 ```bash
-xcsh api --help
-xcsh kubernetes --help
-xcsh dns --help
+/help
 ```
 
-**Help text includes**:
+#### `/domains`
 
-- Domain description
-- Tier requirement
-- Category and complexity
-- Use cases (practical examples)
-- Related domains (work well together)
-- Suggested workflows (common task sequences)
-- Available operations
-
-#### `xcsh domains list`
-
-List all 42 domains with brief descriptions.
+List all available API domains with brief descriptions.
 
 ```bash
-# List all domains
-xcsh domains list
-
-# Filter by category
-xcsh domains list --category Security
-
-# Filter by tier
-xcsh domains list --tier Professional
-
-# Combine filters
-xcsh domains list --category Infrastructure --tier Professional
+/domains
 ```
 
-#### `xcsh domains completion`
+#### `/[domain]`
 
-Generate shell completion scripts.
+Navigate to a domain to see available actions and resources.
 
 ```bash
-# For Bash
-xcsh completion bash | sudo tee /usr/local/etc/bash_completion.d/xcsh
-
-# For Zsh
-xcsh completion zsh | sudo tee /usr/share/zsh/site-functions/_xcsh
-
-# Then reload shell
-source ~/.bashrc  # or ~/.zshrc
+/http_loadbalancers
+/origin_pools
+/app_firewalls
 ```
 
-#### `xcsh configure show`
+#### `/login`
 
-View current configuration.
+Configure authentication with the F5 Distributed Cloud API.
 
 ```bash
-xcsh configure show
+/login
 ```
 
-Shows:
+#### `/profile`
 
-- API endpoint
-- Authentication status
-- Current subscription tier
-- Namespace (if set)
+Manage connection profiles for different environments.
+
+```bash
+/profile show          # Show current profile
+/profile list          # List all profiles
+/profile use [name]    # Switch to a profile
+```
+
+#### `/namespace [name]`
+
+Switch the current namespace context.
+
+```bash
+/namespace shared
+/namespace system
+```
+
+#### `/cloudstatus`
+
+Check F5 Distributed Cloud service status.
+
+```bash
+/cloudstatus           # Show overall status
+/cloudstatus incidents # Show current incidents
+```
 
 ### Domain Operations
 
-Once you've selected a domain, available operations include:
+Once you've navigated to a domain, available operations include:
 
 ```bash
-xcsh [domain] list              # List resources
-xcsh [domain] get [name]        # Get specific resource
-xcsh [domain] create [file]     # Create from YAML/JSON
-xcsh [domain] delete [name]     # Delete resource
-xcsh [domain] apply [file]      # Create or update
-xcsh [domain] replace [name] [file]   # Replace entirely
-xcsh [domain] patch [name]      # Partial update
-xcsh [domain] status [name]     # Check status
-xcsh [domain] add-labels [name] [labels]  # Add labels
+# List resources in the domain
+list
+
+# Get a specific resource by name
+get [name]
+
+# Create a new resource from JSON
+create [json-payload]
+
+# Delete a resource by name
+delete [name]
+
+# Escape back to show domains (prefix with /)
+/domains
 ```
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `F5XC_API_URL` | API endpoint URL |
+| `F5XC_API_TOKEN` | API authentication token |
+| `F5XC_NAMESPACE` | Default namespace |
+| `F5XC_DEBUG` | Enable debug output |
 
 ---
 
 ## Common Tasks and Examples
 
-### Task 1: Set Up API Security
+### Task 1: Set Up HTTP Load Balancer
 
-**Goal**: Secure your APIs with firewall and threat detection
-
-**Domains involved**:
-
-- `api` - Define and manage your APIs
-- `waf` - Add security rules
-- `threat_campaign` - Monitor threats
-
-**Steps**:
-
-1. **View the recommended workflow**:
-
-   ```bash
-   xcsh api --help | grep -A 5 "API Security Workflow"
-   ```
-
-2. **Explore each domain**:
-
-   ```bash
-   xcsh api --help          # Understand API management
-   xcsh waf --help  # Learn firewall options
-   xcsh threat_campaign --help       # Understand threat detection
-   ```
-
-3. **Start with API management**:
-
-   ```bash
-   xcsh api list            # See existing APIs
-   xcsh api create api.yaml # Add your API definition
-   ```
-
-4. **Add firewall rules**:
-
-   ```bash
-   xcsh waf create rules.yaml
-   ```
-
-5. **Enable threat detection**:
-
-   ```bash
-   xcsh threat_campaign create campaign.yaml
-   ```
-
-### Task 2: Deploy to Kubernetes
-
-**Goal**: Manage Kubernetes clusters and services
+**Goal**: Configure an HTTP load balancer with origin pools
 
 **Domains involved**:
 
-- `kubernetes` - Core Kubernetes management
-- `service_mesh` - Advanced traffic control
-- `observability` - Monitor performance
+- `http_loadbalancers` - Frontend load balancer configuration
+- `origin_pools` - Backend server pools
+- `app_firewalls` - Security policies
 
 **Steps**:
 
-1. **Check prerequisites**:
+1. **Start the REPL and navigate**:
 
    ```bash
-   # Verify you have Professional tier (Kubernetes requires it)
-   echo $F5XC_SUBSCRIPTION_TIER
+   xcsh
+   # Within REPL:
+   /http_loadbalancers
    ```
 
-2. **View the workflow**:
+2. **List existing load balancers**:
 
    ```bash
-   xcsh kubernetes --help | grep -A 5 "Kubernetes Management"
+   list
    ```
 
-3. **List existing clusters**:
+3. **Get details of a specific load balancer**:
 
    ```bash
-   xcsh kubernetes list
+   get my-load-balancer
    ```
 
-4. **Deploy your cluster config**:
+4. **Navigate to origin pools**:
 
    ```bash
-   xcsh kubernetes create cluster.yaml
+   /origin_pools
+   list
    ```
 
-5. **Set up service mesh (advanced)**:
+5. **Configure application firewall**:
 
    ```bash
-   xcsh service_mesh create service-mesh.yaml
+   /app_firewalls
+   list
    ```
 
-6. **Monitor health**:
+### Task 2: Manage Namespaces
 
-   ```bash
-   xcsh observability list
-   xcsh observability get [name]
-   ```
-
-### Task 3: Configure DNS Load Balancing
-
-**Goal**: Distribute traffic across regions
+**Goal**: Work with different namespaces
 
 **Domains involved**:
 
-- `dns` - DNS configuration
-- `virtual` - Virtual hosts
-- `cdn` - Content delivery
+- All domains support namespace context
+- `/namespace` command for switching
 
 **Steps**:
 
-1. **View load balancing workflow**:
+1. **Start the REPL**:
 
    ```bash
-   xcsh dns --help | grep -A 5 "Load Balancing"
+   xcsh
    ```
 
-2. **Check available DNS configurations**:
+2. **View current namespace**:
 
    ```bash
-   xcsh dns list
+   /profile show
    ```
 
-3. **Create DNS zone**:
+3. **Switch namespace**:
 
    ```bash
-   xcsh dns create zone.yaml
+   /namespace shared
+   /namespace system
    ```
 
-4. **Set up virtual hosts**:
+4. **List resources in current namespace**:
 
    ```bash
-   xcsh virtual create virtual-host.yaml
+   /http_loadbalancers
+   list
    ```
 
-5. **Enable CDN caching**:
+5. **Resources are scoped to namespace**:
 
    ```bash
-   xcsh cdn create cdn-config.yaml
+   # Each domain shows resources in current namespace
+   /origin_pools
+   list
    ```
 
-### Task 4: Manage User Access
+### Task 3: Check Cloud Status
 
-**Goal**: Control who can access your resources
-
-**Domains involved**:
-
-- `authentication` - Login and auth setup
-- `users` - User management
-- `tenant_and_identity` - Identity governance
+**Goal**: Monitor F5 Distributed Cloud service status
 
 **Steps**:
 
-1. **View access management workflow**:
+1. **Start the REPL**:
 
    ```bash
-   xcsh authentication --help | grep -A 5 "Access Management"
+   xcsh
    ```
 
-2. **Check authentication methods**:
+2. **Check overall status**:
 
    ```bash
-   xcsh authentication list
+   /cloudstatus
    ```
 
-3. **Configure authentication**:
+3. **View current incidents**:
 
    ```bash
-   xcsh authentication create auth.yaml
+   /cloudstatus incidents
    ```
 
-4. **Create users**:
+4. **Monitor maintenance windows**:
 
    ```bash
-   xcsh users create users.yaml
+   /cloudstatus maintenance
    ```
 
-5. **Set up tenant identity**:
+### Task 4: Configure Authentication
+
+**Goal**: Set up and manage API authentication
+
+**Steps**:
+
+1. **Start the REPL**:
 
    ```bash
-   xcsh tenant_and_identity apply identity.yaml
+   xcsh
+   ```
+
+2. **Configure login**:
+
+   ```bash
+   /login
+   ```
+
+3. **View current profile**:
+
+   ```bash
+   /profile show
+   ```
+
+4. **List all profiles**:
+
+   ```bash
+   /profile list
+   ```
+
+5. **Switch to different profile**:
+
+   ```bash
+   /profile use production
    ```
 
 ---
@@ -592,20 +610,18 @@ xcsh [domain] add-labels [name] [labels]  # Add labels
 
 ### Issue: "Domain not found"
 
-**Problem**: When running `xcsh [domain] --help`, you get "domain not found"
+**Problem**: Navigation to a domain doesn't work
 
 **Solution**:
 
-1. Check domain name spelling - use `xcsh domains list` to see exact names
+1. Check domain name spelling - use `/domains` to see available domains
 2. Verify tier requirement - some domains need Professional/Enterprise tier
-3. Check if domain is preview - preview domains may need additional setup
+3. Use tab completion to find correct domain names
 
 ```bash
-# Find the right domain
-xcsh domains list | grep -i keyword
-
-# Check tier requirement
-xcsh domains list | grep [domain-name]
+# Within REPL:
+/domains            # List all available domains
+/http<Tab>          # Use tab completion
 ```
 
 ### Issue: "Permission denied" for authentication
@@ -619,11 +635,9 @@ xcsh domains list | grep [domain-name]
 3. Ensure you're using correct API endpoint
 
 ```bash
-# Check configuration
-xcsh configure show
-
-# Verify authentication works
-xcsh api list
+# Within REPL:
+/profile show       # Check current configuration
+/login              # Reconfigure credentials
 ```
 
 ### Issue: "Tier requirement not met"
@@ -637,11 +651,11 @@ xcsh api list
 3. Or test with domains available at your tier
 
 ```bash
-# See your tier
+# Check environment variable
 echo $F5XC_SUBSCRIPTION_TIER
 
-# List only domains at your tier
-xcsh domains list --tier Standard
+# Within REPL:
+/domains            # Shows available domains at your tier
 ```
 
 ### Issue: Slow command response
@@ -652,73 +666,73 @@ xcsh domains list --tier Standard
 
 1. Check network connectivity
 2. Verify API endpoint is responsive
-3. Try with a single domain instead of listing all
+3. Check status bar in REPL for connection status
 
 ```bash
-# Test API connectivity
-xcsh api list
+# Within REPL:
+/cloudstatus        # Check service status
 
-# If slow, check network:
+# From terminal:
 ping api.volterra.us
 ```
 
-### Issue: Completion not working in terminal
+### Issue: REPL not starting
 
-**Problem**: Tab completion isn't working for domain names
+**Problem**: The interactive shell fails to start
 
 **Solution**:
 
-1. Ensure completion script is installed
-2. Reload shell configuration
+1. Ensure Node.js 18+ is installed
+2. Check environment variables are set
+3. Try running with debug mode
 
 ```bash
-# For Bash
-source ~/.bashrc
+# Check Node version
+node --version
 
-# For Zsh
-source ~/.zshrc
-
-# Or restart terminal
+# Run with debug
+F5XC_DEBUG=true xcsh
 ```
 
 ---
 
 ## Tips and Best Practices
 
-### 1. Use Help Frequently
+### 1. Use Tab Completion
 
-Help text is comprehensive and always current:
-
-```bash
-xcsh [domain] --help
-```
-
-### 2. Explore Related Domains
-
-Every domain shows 5 related domains that work well together:
+Tab completion is your best friend for navigating domains:
 
 ```bash
-xcsh api --help
-# Look at "RELATED DOMAINS:" section
+# Type partial names and press Tab:
+/http<Tab>          # Shows http_loadbalancers
+/app<Tab>           # Shows app_firewalls
 ```
 
-### 3. Follow Suggested Workflows
+### 2. Navigate Efficiently
 
-Workflows are pre-planned sequences that follow best practices:
+Use slash commands for quick domain switching:
 
 ```bash
-xcsh [domain] --help
-# Look at "SUGGESTED WORKFLOWS:" section
+/domains            # See all domains
+/http_loadbalancers # Navigate directly
+/origin_pools       # Switch domains
 ```
 
-### 4. Check Use Cases
+### 3. Use History Navigation
 
-Use cases show practical examples of what you can accomplish:
+The REPL remembers your command history:
 
-```bash
-xcsh [domain] --help
-# Look at "USE CASES:" section
-```
+- **Up/Down arrows**: Navigate previous commands
+- **Tab**: Cycle through suggestions
+- **Escape**: Cancel current suggestion
+
+### 4. Monitor Connection Status
+
+The status bar shows important information:
+
+- Connection status to API
+- Current namespace
+- Git branch information
 
 ### 5. Organize by Category
 
@@ -731,23 +745,23 @@ Group related work by domain category:
 
 ### 6. Start Simple
 
-Begin with one domain, then expand to related domains:
+Begin with listing resources, then explore details:
 
 ```bash
-# Start with basic API management
-xcsh api list
-
-# Then explore related domains
-xcsh waf --help
+# Within REPL:
+/http_loadbalancers
+list                # List all resources
+get my-lb           # Get specific resource
 ```
 
-### 7. Use Tier Appropriately
+### 7. Use Profiles for Environments
 
-Know what your subscription includes and use tier-appropriate domains:
+Manage multiple environments with profiles:
 
 ```bash
-# Standard tier - 25 domains
-# Professional tier - all 42 domains
+# Within REPL:
+/profile list       # See available profiles
+/profile use prod   # Switch to production
 ```
 
 ---
@@ -777,18 +791,19 @@ Know what your subscription includes and use tier-appropriate domains:
 
 ## Summary
 
-**xcsh** is a comprehensive CLI for managing F5 Distributed Cloud resources across 42 domains organized into 7 categories. It features:
+**xcsh** is an interactive CLI for managing F5 Distributed Cloud resources with a modern REPL interface built on TypeScript and Ink. It features:
 
-✅ **Smart Discovery** - Find domains by category, use case, or workflow
-✅ **Tier-Based Access** - Respects your subscription level
-✅ **Practical Guidance** - Use cases and workflows for common tasks
-✅ **Related Domain Discovery** - See what works together
-✅ **Complete Help** - Everything in one place
+✅ **Interactive REPL** - Real-time command completion and navigation
+✅ **42 API Domains** - Comprehensive coverage of F5 XC resources
+✅ **Smart Completion** - Tab completion for domains and commands
+✅ **Profile Management** - Multiple environment configurations
+✅ **Status Monitoring** - Cloud status and connection information
+✅ **Namespace Support** - Seamless namespace switching
 
-**Get started today**: `xcsh help`
+**Get started today**: `xcsh`
 
 ---
 
-*Last updated: 2025-12-24*
-*Version: 1.0*
-*Part of the xcsh data-driven CLI architecture*
+*Last updated: 2025-12-27*
+*Version: 6.0.0*
+*Built with TypeScript and Ink (React for CLI)*

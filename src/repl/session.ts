@@ -11,6 +11,8 @@ import {
 	type Profile,
 	type ProfileManager,
 } from "../profile/index.js";
+import { APIClient } from "../api/index.js";
+import type { OutputFormat } from "../output/index.js";
 
 /**
  * Configuration for creating a REPL session
@@ -19,6 +21,8 @@ export interface SessionConfig {
 	namespace?: string;
 	serverUrl?: string;
 	apiToken?: string;
+	outputFormat?: OutputFormat;
+	debug?: boolean;
 }
 
 /**
@@ -33,6 +37,10 @@ export class REPLSession {
 	private _username: string = "";
 	private _validator: ContextValidator;
 	private _serverUrl: string = "";
+	private _apiToken: string = "";
+	private _apiClient: APIClient | null = null;
+	private _outputFormat: OutputFormat = "yaml";
+	private _debug: boolean = false;
 	private _profileManager: ProfileManager;
 	private _activeProfile: Profile | null = null;
 	private _activeProfileName: string | null = null;
@@ -44,10 +52,24 @@ export class REPLSession {
 		this._profileManager = getProfileManager();
 		this._serverUrl =
 			config.serverUrl ?? process.env[`${ENV_PREFIX}_API_URL`] ?? "";
+		this._apiToken =
+			config.apiToken ?? process.env[`${ENV_PREFIX}_API_TOKEN`] ?? "";
+		this._outputFormat = config.outputFormat ?? "yaml";
+		this._debug =
+			config.debug ?? process.env[`${ENV_PREFIX}_DEBUG`] === "true";
 
 		// Extract tenant from server URL if available
 		if (this._serverUrl) {
 			this._tenant = this.extractTenant(this._serverUrl);
+		}
+
+		// Create API client if we have server URL
+		if (this._serverUrl) {
+			this._apiClient = new APIClient({
+				serverUrl: this._serverUrl,
+				apiToken: this._apiToken,
+				debug: this._debug,
+			});
 		}
 	}
 
@@ -69,8 +91,35 @@ export class REPLSession {
 		// Load active profile if one is set
 		await this.loadActiveProfile();
 
-		// TODO: Initialize API client when client module is ported
-		// TODO: Fetch user info when API is available
+		// Fetch user info if connected and authenticated
+		if (this._apiClient?.isAuthenticated()) {
+			await this.fetchUserInfo();
+		}
+	}
+
+	/**
+	 * Fetch user info from the API
+	 */
+	private async fetchUserInfo(): Promise<void> {
+		if (!this._apiClient) return;
+
+		try {
+			const response = await this._apiClient.get<{
+				email?: string;
+				name?: string;
+				username?: string;
+			}>("/api/web/custom/user/info");
+
+			if (response.ok && response.data) {
+				this._username =
+					response.data.email ||
+					response.data.name ||
+					response.data.username ||
+					"";
+			}
+		} catch {
+			// Ignore user info fetch errors - not critical for session
+		}
 	}
 
 	/**
@@ -90,8 +139,20 @@ export class REPLSession {
 						this._serverUrl = profile.apiUrl;
 						this._tenant = this.extractTenant(profile.apiUrl);
 					}
+					if (profile.apiToken) {
+						this._apiToken = profile.apiToken;
+					}
 					if (profile.defaultNamespace) {
 						this._namespace = profile.defaultNamespace;
+					}
+
+					// Recreate API client with profile settings
+					if (this._serverUrl) {
+						this._apiClient = new APIClient({
+							serverUrl: this._serverUrl,
+							apiToken: this._apiToken,
+							debug: this._debug,
+						});
 					}
 				}
 			}
@@ -207,7 +268,42 @@ export class REPLSession {
 	 * Check if connected to an API server
 	 */
 	isConnected(): boolean {
-		return this._serverUrl !== "";
+		return this._serverUrl !== "" && this._apiClient !== null;
+	}
+
+	/**
+	 * Check if authenticated with API
+	 */
+	isAuthenticated(): boolean {
+		return this._apiClient?.isAuthenticated() ?? false;
+	}
+
+	/**
+	 * Get the API client
+	 */
+	getAPIClient(): APIClient | null {
+		return this._apiClient;
+	}
+
+	/**
+	 * Get the current output format
+	 */
+	getOutputFormat(): OutputFormat {
+		return this._outputFormat;
+	}
+
+	/**
+	 * Set the output format
+	 */
+	setOutputFormat(format: OutputFormat): void {
+		this._outputFormat = format;
+	}
+
+	/**
+	 * Get debug mode status
+	 */
+	isDebug(): boolean {
+		return this._debug;
 	}
 
 	/**
@@ -253,8 +349,22 @@ export class REPLSession {
 			this._serverUrl = profile.apiUrl;
 			this._tenant = this.extractTenant(profile.apiUrl);
 		}
+		if (profile.apiToken) {
+			this._apiToken = profile.apiToken;
+		}
 		if (profile.defaultNamespace) {
 			this._namespace = profile.defaultNamespace;
+		}
+
+		// Recreate API client with new profile settings
+		if (this._serverUrl) {
+			this._apiClient = new APIClient({
+				serverUrl: this._serverUrl,
+				apiToken: this._apiToken,
+				debug: this._debug,
+			});
+		} else {
+			this._apiClient = null;
 		}
 
 		return true;

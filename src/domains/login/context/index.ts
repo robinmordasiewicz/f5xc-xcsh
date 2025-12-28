@@ -86,9 +86,27 @@ const setCommand: CommandDefinition = {
 		return successResult(lines, true); // contextChanged = true to update prompt
 	},
 
-	async completion(partial: string, _args: string[], _session: REPLSession) {
-		// Could provide namespace completion from API in the future
-		// For now, return common namespace patterns
+	async completion(partial: string, _args: string[], session: REPLSession) {
+		// Fetch namespaces from API if available
+		const client = session.getAPIClient();
+		if (client?.isAuthenticated()) {
+			try {
+				const response = await client.get<{
+					items?: Array<{ name?: string }>;
+				}>("/api/web/namespaces");
+				if (response.ok && response.data?.items) {
+					const namespaces = response.data.items
+						.map((item) => item.name)
+						.filter((name): name is string => !!name);
+					return namespaces.filter((ns) =>
+						ns.toLowerCase().startsWith(partial.toLowerCase()),
+					);
+				}
+			} catch {
+				// Fall back to defaults on error
+			}
+		}
+		// Return common namespace patterns as fallback
 		const suggestions = ["default", "system", "shared"];
 		return suggestions.filter((ns) => ns.startsWith(partial));
 	},
@@ -96,11 +114,10 @@ const setCommand: CommandDefinition = {
 
 /**
  * List command - Show available namespaces
- * Note: This would require API access to list real namespaces
  */
 const listCommand: CommandDefinition = {
 	name: "list",
-	description: "List available namespaces (requires API connection)",
+	description: "List available namespaces",
 	usage: "",
 	aliases: ["ls"],
 
@@ -114,18 +131,46 @@ const listCommand: CommandDefinition = {
 			);
 		}
 
-		// For now, show a message that API integration is needed
-		// TODO: Implement actual namespace listing via API
-		const lines: string[] = [
-			"Available namespaces:",
-			"",
-			`  ${currentNamespace} (current)`,
-			"",
-			"Note: Full namespace listing requires API integration.",
-			"Use 'login context set <namespace>' to switch namespaces.",
-		];
+		// Check if authenticated
+		const client = session.getAPIClient();
+		if (!client?.isAuthenticated()) {
+			return errorResult(
+				"Not authenticated. Configure a profile with API token.",
+			);
+		}
 
-		return successResult(lines);
+		// Fetch namespaces from API
+		try {
+			const response = await client.get<{
+				items?: Array<{ name?: string }>;
+			}>("/api/web/namespaces");
+
+			if (!response.ok || !response.data?.items) {
+				return errorResult("Failed to fetch namespaces from API.");
+			}
+
+			const namespaces = response.data.items
+				.map((item) => item.name)
+				.filter((name): name is string => !!name)
+				.sort();
+
+			const lines: string[] = ["Available namespaces:", ""];
+			for (const ns of namespaces) {
+				if (ns === currentNamespace) {
+					lines.push(`  ${ns} (current)`);
+				} else {
+					lines.push(`  ${ns}`);
+				}
+			}
+			lines.push("");
+			lines.push("Use 'login context set <namespace>' to switch.");
+
+			return successResult(lines);
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : String(error);
+			return errorResult(`Failed to list namespaces: ${message}`);
+		}
 	},
 };
 
