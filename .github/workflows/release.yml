@@ -124,6 +124,8 @@ jobs:
         run: npm ci
 
       - name: Download enriched API specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Build TypeScript
@@ -164,6 +166,8 @@ jobs:
         run: npm ci
 
       - name: Download enriched API specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Build TypeScript
@@ -205,6 +209,8 @@ jobs:
 
       - name: Download enriched API specifications
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Build TypeScript
