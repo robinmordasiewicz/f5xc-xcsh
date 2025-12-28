@@ -414,7 +414,7 @@ export function App(): React.ReactElement {
 	const connectionInfo = {
 		tenant: session.getTenant() || undefined,
 		username: session.getUsername() || undefined,
-		tier: undefined, // TODO: Add subscription tier when API client is ready
+		tier: undefined, // Subscription tier fetched on-demand via /subscription commands
 		namespace: session.getNamespace(),
 		isConnected: session.isConnected(),
 	};

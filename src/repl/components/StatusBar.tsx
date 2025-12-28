@@ -5,6 +5,7 @@
 
 import React from "react";
 import { Box, Text, Spacer } from "ink";
+import { execSync } from "child_process";
 import { CLI_NAME } from "../../branding/index.js";
 
 /**
@@ -102,18 +103,80 @@ export function StatusBar({
 }
 
 /**
- * Get git repository info (stub - actual implementation will call git)
+ * Get git repository info by executing git commands
  */
 export function getGitInfo(): GitInfo {
-	// TODO: Implement actual git status detection
-	// For now, return a default state
-	return {
+	const defaultInfo: GitInfo = {
 		inRepo: false,
 		branch: "",
 		isDirty: false,
 		ahead: 0,
 		behind: 0,
 	};
+
+	try {
+		// Check if we're in a git repo
+		try {
+			execSync("git rev-parse --is-inside-work-tree", {
+				encoding: "utf-8",
+				stdio: ["pipe", "pipe", "pipe"],
+			});
+		} catch {
+			return defaultInfo;
+		}
+
+		// Get current branch
+		let branch = "";
+		try {
+			branch = execSync("git rev-parse --abbrev-ref HEAD", {
+				encoding: "utf-8",
+				stdio: ["pipe", "pipe", "pipe"],
+			}).trim();
+		} catch {
+			branch = "unknown";
+		}
+
+		// Check for uncommitted changes
+		let isDirty = false;
+		try {
+			const status = execSync("git status --porcelain", {
+				encoding: "utf-8",
+				stdio: ["pipe", "pipe", "pipe"],
+			});
+			isDirty = status.trim().length > 0;
+		} catch {
+			// Ignore errors
+		}
+
+		// Get ahead/behind counts
+		let ahead = 0;
+		let behind = 0;
+		try {
+			const counts = execSync(
+				"git rev-list --left-right --count HEAD...@{upstream}",
+				{
+					encoding: "utf-8",
+					stdio: ["pipe", "pipe", "pipe"],
+				},
+			).trim();
+			const [aheadStr, behindStr] = counts.split(/\s+/);
+			ahead = parseInt(aheadStr ?? "0", 10) || 0;
+			behind = parseInt(behindStr ?? "0", 10) || 0;
+		} catch {
+			// No upstream or error - that's fine
+		}
+
+		return {
+			inRepo: true,
+			branch,
+			isDirty,
+			ahead,
+			behind,
+		};
+	} catch {
+		// If anything fails, return default
+		return defaultInfo;
+	}
 }
 
 export default StatusBar;

@@ -5,8 +5,22 @@
 
 import type { REPLSession } from "./session.js";
 import type { ContextPath } from "./context.js";
-import { allDomains, isValidDomain } from "../types/domains.js";
-import { customDomains, isCustomDomain } from "../domains/index.js";
+import {
+	allDomains,
+	isValidDomain,
+	resolveDomain,
+	validActions,
+	aliasRegistry,
+} from "../types/domains.js";
+import {
+	customDomains,
+	isCustomDomain,
+	resolveDomainAlias,
+	getDomainAliases,
+} from "../domains/index.js";
+import { extensionRegistry } from "../extensions/index.js";
+import { APIError } from "../api/index.js";
+import { formatOutput, formatAPIError } from "../output/index.js";
 
 /**
  * Command execution result
@@ -41,6 +55,7 @@ const BUILTIN_COMMANDS = new Set([
 	"history",
 	"version",
 	"domains",
+	"whoami",
 ]);
 
 /**
@@ -82,8 +97,13 @@ export function parseCommand(input: string): ParsedCommand {
 		const parts = trimmed.slice(1).split(/\s+/);
 		const domainPart = parts[0] ?? "";
 
-		// Check if it's a valid domain (custom or API-generated)
-		if (isValidDomain(domainPart) || isCustomDomain(domainPart)) {
+		// Check if it's a valid domain (custom, extension, or API-generated)
+		const hasExtension = extensionRegistry.hasExtension(domainPart);
+		if (
+			isValidDomain(domainPart) ||
+			isCustomDomain(domainPart) ||
+			hasExtension
+		) {
 			return {
 				raw: trimmed,
 				isDirectNavigation: true,
@@ -261,6 +281,40 @@ function executeBuiltin(
 		};
 	}
 
+	// Show current user and connection info
+	if (command === "whoami") {
+		const lines: string[] = [];
+		const profile = session.getActiveProfile();
+		const profileName = session.getActiveProfileName();
+
+		if (profileName && profile) {
+			lines.push(`Profile: ${profileName}`);
+			lines.push(`Server:  ${session.getServerUrl()}`);
+			lines.push(`Tenant:  ${session.getTenant()}`);
+
+			const username = session.getUsername();
+			if (username) {
+				lines.push(`User:    ${username}`);
+			}
+
+			lines.push(`Namespace: ${session.getNamespace()}`);
+			lines.push(
+				`Authenticated: ${session.isAuthenticated() ? "Yes" : "No"}`,
+			);
+		} else {
+			lines.push("Not connected to any profile.");
+			lines.push("");
+			lines.push("Use 'login profile use <name>' to connect.");
+		}
+
+		return {
+			output: lines,
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+		};
+	}
+
 	// Help command
 	if (command === "help" || command.startsWith("help ")) {
 		return {
@@ -279,6 +333,7 @@ function executeBuiltin(
 				"  quit            Exit the shell",
 				"  history         Show command history",
 				"  domains         List available domains",
+				"  whoami          Show current user and connection",
 				"  version         Show version info",
 				"",
 				"Keyboard shortcuts:",
@@ -306,6 +361,11 @@ function executeBuiltin(
 
 /**
  * Handle direct domain navigation with "/" prefix
+ *
+ * Resolution order:
+ * 1. Custom domains (login, cloudstatus) - full custom implementation
+ * 2. Extension commands - xcsh-specific augmentations
+ * 3. API domains - generated from upstream specs
  */
 async function handleDirectNavigation(
 	cmd: ParsedCommand,
@@ -322,16 +382,82 @@ async function handleDirectNavigation(
 		};
 	}
 
-	// Check if it's a custom domain - execute directly with all args
+	// Check if it's a custom domain (including aliases) - execute directly with all args
 	if (isCustomDomain(cmd.targetDomain)) {
+		const canonicalDomain = resolveDomainAlias(cmd.targetDomain);
 		const allArgs = [cmd.targetAction, ...cmd.args].filter(
 			(arg): arg is string => arg !== undefined,
 		);
-		return customDomains.execute(cmd.targetDomain, allArgs, session);
+		return customDomains.execute(canonicalDomain, allArgs, session);
+	}
+
+	// Check for extension commands
+	// Extensions augment API domains with xcsh-specific functionality
+	const extensionDomain =
+		aliasRegistry.get(cmd.targetDomain) ?? cmd.targetDomain;
+	const merged = extensionRegistry.getMergedDomain(extensionDomain);
+
+	if (merged?.hasExtension && cmd.targetAction) {
+		// Check if action is an extension command (not an API action)
+		const extCmd = extensionRegistry.getExtensionCommand(
+			extensionDomain,
+			cmd.targetAction,
+		);
+		if (extCmd) {
+			// Execute extension command
+			const result = await extCmd.execute(cmd.args, session);
+			const execResult: ExecutionResult = {
+				output: result.output,
+				shouldExit: result.shouldExit ?? false,
+				shouldClear: result.shouldClear ?? false,
+				contextChanged: result.contextChanged ?? false,
+			};
+			if (result.error) {
+				execResult.error = result.error;
+			}
+			return execResult;
+		}
+	}
+
+	// Handle standalone extensions (extension exists but no API domain yet)
+	if (merged?.hasExtension && !merged.hasGeneratedDomain) {
+		// Standalone extension - if no action, show available commands
+		if (!cmd.targetAction) {
+			const lines = [`${merged.displayName} commands:`];
+			lines.push("");
+			for (const [name, cmdDef] of merged.extensionCommands) {
+				const aliases = cmdDef.aliases
+					? ` (${cmdDef.aliases.join(", ")})`
+					: "";
+				lines.push(`  ${name}${aliases} - ${cmdDef.description}`);
+			}
+			return {
+				output: lines,
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+			};
+		}
+
+		// Action specified but not found in extension
+		return {
+			output: [
+				`Unknown command: ${cmd.targetAction}`,
+				"",
+				`Available ${merged.displayName} commands:`,
+				...Array.from(merged.extensionCommands.keys()).map(
+					(c) => `  ${c}`,
+				),
+			],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: `Unknown command: ${cmd.targetAction}`,
+		};
 	}
 
 	// Validate API-generated domain
-	if (!isValidDomain(cmd.targetDomain)) {
+	if (!isValidDomain(cmd.targetDomain) && !merged?.hasExtension) {
 		return {
 			output: [`Unknown domain: ${cmd.targetDomain}`],
 			shouldExit: false,
@@ -341,7 +467,7 @@ async function handleDirectNavigation(
 		};
 	}
 
-	// Navigate to domain
+	// Navigate to domain (API domain or merged domain with API support)
 	ctx.reset();
 	ctx.setDomain(cmd.targetDomain);
 
@@ -366,6 +492,11 @@ async function handleDirectNavigation(
 
 /**
  * Handle domain navigation (entering a domain from root)
+ *
+ * Resolution order:
+ * 1. Custom domains (login, cloudstatus) - full custom implementation
+ * 2. Extension domains - check for extension commands
+ * 3. API domains - generated from upstream specs
  */
 async function handleDomainNavigation(
 	domain: string,
@@ -373,13 +504,78 @@ async function handleDomainNavigation(
 	ctx: ContextPath,
 	session: REPLSession,
 ): Promise<ExecutionResult> {
-	// Check if it's a custom domain - execute directly
+	// Check if it's a custom domain (including aliases) - execute directly
 	if (isCustomDomain(domain)) {
-		return customDomains.execute(domain, args, session);
+		const canonicalDomain = resolveDomainAlias(domain);
+		return customDomains.execute(canonicalDomain, args, session);
+	}
+
+	// Check for extension domain
+	const merged = extensionRegistry.getMergedDomain(domain);
+
+	if (merged?.hasExtension) {
+		// If args provided, check if first arg is an extension command
+		if (args.length > 0) {
+			const action = args[0];
+			const extCmd = extensionRegistry.getExtensionCommand(
+				domain,
+				action ?? "",
+			);
+			if (extCmd) {
+				// Execute extension command
+				const result = await extCmd.execute(args.slice(1), session);
+				const execResult: ExecutionResult = {
+					output: result.output,
+					shouldExit: result.shouldExit ?? false,
+					shouldClear: result.shouldClear ?? false,
+					contextChanged: result.contextChanged ?? false,
+				};
+				if (result.error) {
+					execResult.error = result.error;
+				}
+				return execResult;
+			}
+		}
+
+		// Standalone extension with no API domain - show commands
+		if (!merged.hasGeneratedDomain) {
+			if (args.length === 0) {
+				const lines = [`${merged.displayName} commands:`];
+				lines.push("");
+				for (const [name, cmdDef] of merged.extensionCommands) {
+					const aliases = cmdDef.aliases
+						? ` (${cmdDef.aliases.join(", ")})`
+						: "";
+					lines.push(`  ${name}${aliases} - ${cmdDef.description}`);
+				}
+				return {
+					output: lines,
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+				};
+			}
+
+			// Unknown command for standalone extension
+			return {
+				output: [
+					`Unknown command: ${args[0]}`,
+					"",
+					`Available ${merged.displayName} commands:`,
+					...Array.from(merged.extensionCommands.keys()).map(
+						(c) => `  ${c}`,
+					),
+				],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: `Unknown command: ${args[0]}`,
+			};
+		}
 	}
 
 	// Check if it's an API-generated domain
-	if (!isValidDomain(domain)) {
+	if (!isValidDomain(domain) && !merged?.hasExtension) {
 		return {
 			output: [`Unknown domain: ${domain}`],
 			shouldExit: false,
@@ -428,11 +624,16 @@ export async function executeCommand(
 		return executeBuiltin(cmd, session, ctx);
 	}
 
-	// At root context, check if first word is a domain (custom or API-generated)
+	// At root context, check if first word is a domain (custom, extension, or API-generated)
 	if (ctx.isRoot()) {
 		const firstWord = cmd.args[0]?.toLowerCase() ?? "";
-		if (isValidDomain(firstWord) || isCustomDomain(firstWord)) {
-			// Pass remaining args for custom domain execution
+		const hasExtension = extensionRegistry.hasExtension(firstWord);
+		if (
+			isValidDomain(firstWord) ||
+			isCustomDomain(firstWord) ||
+			hasExtension
+		) {
+			// Pass remaining args for domain execution
 			const domainArgs = cmd.args.slice(1);
 			return handleDomainNavigation(firstWord, domainArgs, ctx, session);
 		}
@@ -441,8 +642,8 @@ export async function executeCommand(
 	// In domain context, check if first word is an action
 	if (ctx.isDomain() && !ctx.isAction()) {
 		const firstWord = cmd.args[0] ?? "";
-		// For now, just set the action context
-		// TODO: Validate against domain's available actions
+		// Set the action context - validation occurs at execution time
+		// via API response (invalid actions get clear 404/400 errors)
 		if (firstWord && !firstWord.startsWith("-")) {
 			ctx.setAction(firstWord);
 			return {
@@ -454,31 +655,287 @@ export async function executeCommand(
 		}
 	}
 
-	// Build full command with context prepending
-	let fullCommand = cmd.raw;
-	if (!ctx.isRoot()) {
-		if (ctx.isAction()) {
-			fullCommand = `${ctx.domain} ${ctx.action} ${cmd.raw}`;
-		} else {
-			fullCommand = `${ctx.domain} ${cmd.raw}`;
-		}
-	}
-
 	// Add to history
 	session.addToHistory(cmd.raw);
 
-	// TODO: Execute actual F5 XC API commands
-	// For now, return placeholder indicating the full command
-	return {
-		output: [
-			`[Command execution placeholder]`,
-			`Context: ${ctx.isRoot() ? "root" : ctx.isAction() ? `${ctx.domain}/${ctx.action}` : ctx.domain}`,
-			`Full command: ${fullCommand}`,
-		],
-		shouldExit: false,
-		shouldClear: false,
-		contextChanged: false,
-	};
+	// Execute API command
+	return await executeAPICommand(session, ctx, cmd);
+}
+
+/**
+ * Convert domain name to API resource path
+ */
+function domainToResourcePath(domain: string): string {
+	// Resolve alias to canonical name
+	const canonical = resolveDomain(domain) ?? domain;
+
+	// Convert snake_case to kebab-case for API paths
+	// e.g., http_loadbalancer → http-loadbalancers (plural)
+	const resourceName = canonical.replace(/_/g, "-");
+
+	// Add 's' for plural form (most F5 XC resources are plural in API)
+	return resourceName.endsWith("s") ? resourceName : `${resourceName}s`;
+}
+
+/**
+ * Parsed command arguments
+ */
+interface ParsedArgs {
+	name: string | undefined;
+	namespace: string | undefined;
+}
+
+/**
+ * Parse command arguments for name and namespace
+ */
+function parseCommandArgs(args: string[]): ParsedArgs {
+	let name: string | undefined;
+	let namespace: string | undefined;
+
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i] ?? "";
+
+		if (arg.startsWith("--")) {
+			const flagName = arg.slice(2);
+			const nextArg = args[i + 1];
+
+			if (flagName === "namespace" || flagName === "ns") {
+				namespace = nextArg;
+				i++;
+			} else if (flagName === "name") {
+				name = nextArg;
+				i++;
+			} else if (nextArg && !nextArg.startsWith("--")) {
+				// Skip other flags with values
+				i++;
+			}
+		} else if (arg.startsWith("-")) {
+			const flagName = arg.slice(1);
+			const nextArg = args[i + 1];
+
+			if (flagName === "n") {
+				namespace = nextArg;
+				i++;
+			} else if (nextArg && !nextArg.startsWith("-")) {
+				// Skip other flags with values
+				i++;
+			}
+		} else if (!name) {
+			// First non-flag argument is the resource name
+			name = arg;
+		}
+	}
+
+	return { name, namespace };
+}
+
+/**
+ * Execute an API command against the F5 XC API
+ */
+async function executeAPICommand(
+	session: REPLSession,
+	ctx: ContextPath,
+	cmd: ParsedCommand,
+): Promise<ExecutionResult> {
+	const client = session.getAPIClient();
+
+	// Check if connected
+	if (!client) {
+		return {
+			output: ["Error: Not connected to F5 XC API"],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: "Not connected. Use 'login profile use <profile>' to connect.",
+		};
+	}
+
+	// Check if authenticated
+	if (!client.isAuthenticated()) {
+		return {
+			output: ["Error: Not authenticated"],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: "Not authenticated. Configure a profile with API token.",
+		};
+	}
+
+	// Determine domain and action from context and command
+	let domain: string;
+	let action: string;
+	let args: string[];
+
+	if (ctx.isAction()) {
+		// Already in action context, command is arguments
+		domain = ctx.domain ?? "";
+		action = ctx.action ?? "";
+		args = cmd.args;
+	} else if (ctx.domain) {
+		// In domain context, first arg might be action
+		domain = ctx.domain;
+		const firstArg = cmd.args[0]?.toLowerCase() ?? "";
+		if (validActions.has(firstArg)) {
+			action = firstArg;
+			args = cmd.args.slice(1);
+		} else {
+			// Default to list if no action specified
+			action = "list";
+			args = cmd.args;
+		}
+	} else {
+		// At root, parse domain/action from command
+		const parts = cmd.raw.split(/\s+/);
+		domain = parts[0] ?? "";
+		action = parts[1]?.toLowerCase() ?? "list";
+		args = parts.slice(validActions.has(action) ? 2 : 1);
+
+		// If second part is not a valid action, treat as args
+		if (!validActions.has(action)) {
+			action = "list";
+		}
+	}
+
+	// Resolve domain alias
+	const canonicalDomain = resolveDomain(domain) ?? domain;
+
+	// Parse arguments
+	const { name, namespace } = parseCommandArgs(args);
+	const effectiveNamespace = namespace ?? session.getNamespace();
+
+	// Build API path
+	const resourcePath = domainToResourcePath(canonicalDomain);
+	let apiPath = `/api/config/namespaces/${effectiveNamespace}/${resourcePath}`;
+
+	// Execute based on action
+	try {
+		let result: unknown;
+
+		switch (action) {
+			case "list": {
+				const response = await client.get(apiPath);
+				result = response.data;
+				break;
+			}
+
+			case "get": {
+				if (!name) {
+					return {
+						output: [
+							"Error: Resource name required for 'get' action",
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: "Usage: get <name>",
+					};
+				}
+				apiPath += `/${name}`;
+				const response = await client.get(apiPath);
+				result = response.data;
+				break;
+			}
+
+			case "delete": {
+				if (!name) {
+					return {
+						output: [
+							"Error: Resource name required for 'delete' action",
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: "Usage: delete <name>",
+					};
+				}
+				apiPath += `/${name}`;
+				await client.delete(apiPath);
+				result = { message: `Deleted ${canonicalDomain} '${name}'` };
+				break;
+			}
+
+			case "create":
+			case "replace":
+			case "apply": {
+				// For create/replace/apply, we need a request body
+				// This would typically come from a file or stdin
+				return {
+					output: [
+						`Action '${action}' requires a resource specification.`,
+						"Use --file <path> to provide resource YAML/JSON.",
+					],
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+				};
+			}
+
+			case "status": {
+				if (!name) {
+					return {
+						output: [
+							"Error: Resource name required for 'status' action",
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: "Usage: status <name>",
+					};
+				}
+				// Status typically comes from a different endpoint
+				apiPath += `/${name}/status`;
+				const response = await client.get(apiPath);
+				result = response.data;
+				break;
+			}
+
+			default: {
+				return {
+					output: [`Unknown action: ${action}`],
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+					error: `Valid actions: ${Array.from(validActions).join(", ")}`,
+				};
+			}
+		}
+
+		// Format output
+		const outputFormat = session.getOutputFormat();
+		const formatted = formatOutput(result, outputFormat);
+
+		return {
+			output: formatted ? [formatted] : ["(no output)"],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+		};
+	} catch (error) {
+		if (error instanceof APIError) {
+			const formatted = formatAPIError(
+				error.statusCode,
+				error.response,
+				`${action} ${canonicalDomain}`,
+			);
+			return {
+				output: [formatted],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: error.message,
+			};
+		}
+
+		// Handle other errors
+		const message = error instanceof Error ? error.message : String(error);
+		return {
+			output: [`Error: ${message}`],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: message,
+		};
+	}
 }
 
 /**
@@ -511,6 +968,38 @@ export function getCommandSuggestions(
 			}
 		}
 
+		// Add domain aliases
+		for (const [alias, canonical] of getDomainAliases()) {
+			if (!input || alias.toLowerCase().startsWith(input.toLowerCase())) {
+				const domain = customDomains.get(canonical);
+				suggestions.push({
+					text: alias,
+					description: domain
+						? `${domain.description} (alias)`
+						: `Alias for ${canonical}`,
+					category: "domain",
+				});
+			}
+		}
+
+		// Add extension domain suggestions (standalone extensions not in API)
+		for (const extDomain of extensionRegistry.getExtendedDomains()) {
+			// Skip if already added as custom domain or API domain
+			if (isCustomDomain(extDomain) || isValidDomain(extDomain)) continue;
+
+			if (
+				!input ||
+				extDomain.toLowerCase().startsWith(input.toLowerCase())
+			) {
+				const merged = extensionRegistry.getMergedDomain(extDomain);
+				suggestions.push({
+					text: extDomain,
+					description: merged?.description ?? `${extDomain} commands`,
+					category: "domain",
+				});
+			}
+		}
+
 		// Add API-generated domain suggestions
 		allDomains().forEach((domain) => {
 			// Skip if already added as custom domain
@@ -520,9 +1009,11 @@ export function getCommandSuggestions(
 				!input ||
 				domain.toLowerCase().startsWith(input.toLowerCase())
 			) {
+				const merged = extensionRegistry.getMergedDomain(domain);
+				const hasExt = merged?.hasExtension ? " (+ext)" : "";
 				suggestions.push({
 					text: domain,
-					description: `Navigate to ${domain} domain`,
+					description: `Navigate to ${domain} domain${hasExt}`,
 					category: "domain",
 				});
 			}
@@ -542,8 +1033,25 @@ export function getCommandSuggestions(
 
 	// In domain context, suggest actions
 	if (ctx.isDomain() && !ctx.isAction()) {
-		// TODO: Get actual actions from domain registry
-		// For now, suggest common actions
+		const domain = ctx.domain ?? "";
+
+		// Add extension commands first (higher priority for xcsh-specific)
+		const extCmds = extensionRegistry.getExtensionCommandNames(domain);
+		for (const cmd of extCmds) {
+			if (!input || cmd.toLowerCase().startsWith(input.toLowerCase())) {
+				const cmdDef = extensionRegistry.getExtensionCommand(
+					domain,
+					cmd,
+				);
+				suggestions.push({
+					text: cmd,
+					description: cmdDef?.description ?? `${cmd} command`,
+					category: "extension",
+				});
+			}
+		}
+
+		// Add API actions
 		const commonActions = ["list", "get", "create", "delete", "update"];
 		commonActions.forEach((action) => {
 			if (
@@ -552,7 +1060,7 @@ export function getCommandSuggestions(
 			) {
 				suggestions.push({
 					text: action,
-					description: `${action} ${ctx.domain} resources`,
+					description: `${action} ${domain} resources`,
 					category: "action",
 				});
 			}
