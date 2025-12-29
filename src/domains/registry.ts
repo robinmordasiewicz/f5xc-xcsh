@@ -91,6 +91,8 @@ export interface DomainDefinition {
 	commands: Map<string, CommandDefinition>;
 	/** Subcommand groups (e.g., "login profile") */
 	subcommands: Map<string, SubcommandGroup>;
+	/** Default command to run when domain is invoked with no args */
+	defaultCommand?: CommandDefinition;
 }
 
 /**
@@ -159,8 +161,11 @@ class DomainRegistry {
 			};
 		}
 
-		// No args - show domain help
+		// No args - run default command if set, otherwise show help
 		if (args.length === 0) {
+			if (domain.defaultCommand) {
+				return domain.defaultCommand.execute([], session);
+			}
 			return this.showDomainHelp(domain);
 		}
 
