@@ -371,10 +371,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 				return;
 			}
 
-			// Execute command
-			await runCommand(value);
+			// Clear input immediately to prevent duplicate display in scrollback
+			// (InputBox would show command while addOutput also adds it to Static)
 			setInput("");
 			history.reset();
+
+			// Execute command
+			await runCommand(value);
 		},
 		[completion, applyCompletion, runCommand, history],
 	);
