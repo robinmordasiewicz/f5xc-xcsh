@@ -43,6 +43,10 @@ program
 				}
 
 				// Enter interactive REPL mode
+				// WORKAROUND: Bun doesn't call process.stdin.resume() automatically,
+				// which breaks Ink's useInput hook. This is a known Bun bug:
+				// https://github.com/oven-sh/bun/issues/6862
+				process.stdin.resume();
 				render(<App />);
 				return;
 			}
