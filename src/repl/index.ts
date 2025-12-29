@@ -15,7 +15,7 @@ export {
 } from "./prompt.js";
 
 // Main application
-export { App } from "./App.js";
+export { App, type AppProps } from "./App.js";
 
 // Hooks
 export { useDoubleCtrlC, useHistory, useCompletion } from "./hooks/index.js";

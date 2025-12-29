@@ -18,6 +18,15 @@ import { executeCommand } from "./executor.js";
 import { isCustomDomain } from "../domains/index.js";
 import { domainRegistry } from "../types/domains.js";
 import { extensionRegistry } from "../extensions/index.js";
+
+/**
+ * Props for the App component
+ */
+export interface AppProps {
+	/** Pre-initialized session (optional - will create new if not provided) */
+	initialSession?: REPLSession;
+}
+
 /**
  * Check if a word is a valid domain (custom, API, or extension)
  */
@@ -53,13 +62,14 @@ function toUISuggestions(
 /**
  * Main REPL Application
  */
-export function App(): React.ReactElement {
+export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	const { exit } = useApp();
 	const { stdout } = useStdout();
 
-	// Session state
-	const [session] = useState(() => new REPLSession());
-	const [isInitialized, setIsInitialized] = useState(false);
+	// Session state - use provided session or create new one
+	const [session] = useState(() => initialSession ?? new REPLSession());
+	// If session was pre-initialized, start as initialized
+	const [isInitialized, setIsInitialized] = useState(!!initialSession);
 
 	// UI state
 	const [input, setInputState] = useState("");
@@ -142,10 +152,16 @@ export function App(): React.ReactElement {
 		},
 	});
 
-	// Initialize session
+	// Initialize session (or set up UI state from pre-initialized session)
 	useEffect(() => {
 		const init = async () => {
-			await session.initialize();
+			// Only initialize if not pre-initialized
+			if (!isInitialized) {
+				await session.initialize();
+				setIsInitialized(true);
+			}
+
+			// Always set up prompt, history, and git info
 			setPrompt(buildPlainPrompt(session));
 
 			// Get initial history array
@@ -153,11 +169,12 @@ export function App(): React.ReactElement {
 			if (histMgr) {
 				setHistoryArray(histMgr.getHistory());
 			}
-			setIsInitialized(true);
+
 			// Get git repository info
 			setGitInfo(getGitInfo());
 		};
 		init();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [session]);
 
 	// Handle terminal resize

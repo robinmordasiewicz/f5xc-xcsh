@@ -12,7 +12,7 @@
 
 import { render } from "ink";
 import { Command } from "commander";
-import { App } from "./repl/index.js";
+import { App, type AppProps } from "./repl/index.js";
 import { CLI_NAME, CLI_VERSION } from "./branding/index.js";
 import { executeCommand } from "./repl/executor.js";
 import { REPLSession } from "./repl/session.js";
@@ -80,16 +80,27 @@ program
 						? (options.logo as LogoDisplayMode)
 						: undefined;
 
+				// Show initialization message first
+				process.stdout.write("Initializing...");
+
+				// Initialize session BEFORE Ink takes over
+				const session = new REPLSession();
+				await session.initialize();
+
+				// Clear the "Initializing..." message
+				process.stdout.write("\r\x1b[K");
+
 				// Print banner to scrollback BEFORE Ink takes over
 				// Use "startup" context for direct stdout with image support
 				renderBanner(cliLogoMode, "startup");
 
-				// Enter interactive REPL mode
+				// Enter interactive REPL mode with pre-initialized session
 				// WORKAROUND: Bun doesn't call process.stdin.resume() automatically,
 				// which breaks Ink's useInput hook. This is a known Bun bug:
 				// https://github.com/oven-sh/bun/issues/6862
 				process.stdin.resume();
-				render(<App />);
+				const appProps: AppProps = { initialSession: session };
+				render(<App {...appProps} />);
 				return;
 			}
 
