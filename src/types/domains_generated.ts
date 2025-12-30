@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v1.0.63
+ * Generated from .specs/index.json v1.0.72
  * Run: npx tsx scripts/generate-domains.ts
  */
 
@@ -9,7 +9,7 @@ import type { DomainInfo } from "./domains.js";
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "1.0.63";
+export const SPEC_VERSION = "1.0.72";
 
 /**
  * Generated domain data from upstream API specifications
@@ -21,18 +21,22 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "admin_console_and_ui",
 			displayName: "Admin Console And Ui",
 			description:
-				"Provides management capabilities for static components used in the F5 XC admin console and user interface. Enables operations to deploy, retrieve, update, and list static UI assets within namespace boundaries. Supports configuration of console interface elements, component metadata management, and asset lifecycle operations. Use this domain to manage custom UI components, static resources, and interface configurations that extend or customize the admin console experience.",
-			descriptionShort:
-				"Static UI component and console asset management",
+				"Set up static resource definitions that control administrative dashboard appearance. Register named entries using object references, status tracking fields, and view settings. Fetch individual records through dedicated get operations or enumerate available entries with pagination and sorting. Handle request validation through typed error responses and support multiple output codes for success states. Define custom initialization blocks and namespace-scoped boundaries for organization.",
+			descriptionShort: "Manage static UI assets for admin console",
 			descriptionMedium:
-				"Manage static components for the admin console interface. Deploy, retrieve, and list UI assets and configuration elements within namespaces.",
-			aliases: [],
+				"Deploy and list dashboard widgets within namespaces. Create named visual resources with initialization parameters and structured configuration data.",
+			aliases: ["console-ui", "ui-assets", "static-components"],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			category: "Platform",
+			useCases: [
+				"Manage static UI components for admin console",
+				"Deploy and retrieve UI assets within namespaces",
+				"Configure console interface elements",
+				"Manage custom UI component metadata",
+			],
+			relatedDomains: ["admin", "system"],
 		},
 	],
 	[
@@ -41,11 +45,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "api",
 			displayName: "Api",
 			description:
-				"Comprehensive API lifecycle management including automatic discovery and cataloging of APIs across your infrastructure, security testing to identify vulnerabilities and validate behavior, credential management for secure API access, and policy-driven API grouping. Define testing policies to continuously validate API security posture, organize APIs into logical groups for governance, and integrate with WAF and network security controls. Supports marking endpoints as non-API traffic and...",
-			descriptionShort:
-				"API discovery, security testing, and credential management",
+				"Catalog services automatically to maintain an inventory of operations and their characteristics. Organize related resources by function or ownership through logical groupings. Establish verification procedures that confirm authentication requirements and expected response structures. Link definitions with load balancers for traffic routing decisions. Flag non-standard paths for exclusion from automated scanning. Monitor resource status and metadata throughout deployment zones.",
+			descriptionShort: "Discover, catalog, and test service interfaces",
 			descriptionMedium:
-				"Discover and catalog APIs, test security behavior, manage credentials, and define API groups with testing policies for comprehensive API lifecycle...",
+				"Define interface groups and discovery policies. Set up verification rules to check security posture and expected patterns across environments.",
 			aliases: ["apisec", "api-discovery"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -148,11 +151,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "bigip",
 			displayName: "Bigip",
 			description:
-				"Configure and manage BigIP F5 appliance integration with Distributed Cloud infrastructure. Create and deploy iRule scripts for advanced traffic manipulation, manage data groups for dynamic configuration, configure Access Policy Manager (APM) settings for authentication and access control, and define BigIP virtual servers. Provides metrics collection for APM performance monitoring and enables seamless hybrid deployments combining traditional BigIP infrastructure with cloud-native services...",
-			descriptionShort:
-				"BigIP appliance management, iRules, and data groups",
+				"Define custom rule-based policies governing routing decisions and request handling. Build organized collections for network ranges, string patterns, and key-value entries. Map cloud services to physical appliances through connector setups. Link identity workflows using access modules. Track performance metrics and coordinate synchronization between components.",
+			descriptionShort: "Manage iRules, data groups, and virtual servers",
 			descriptionMedium:
-				"Manage BigIP F5 appliances including iRule script configuration, data groups, APM policies, and virtual server integration with Distributed Cloud.",
+				"Configure traffic logic scripts and structured list entries. Establish appliance bindings and access module integrations.",
 			aliases: ["f5-bigip", "irule", "ltm"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -173,18 +175,22 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "billing_and_usage",
 			displayName: "Billing And Usage",
 			description:
-				"Comprehensive billing and usage management for F5 XC tenants. Handle subscription plan transitions between tiers, configure primary and secondary payment methods, and download invoice PDFs. Monitor resource quota limits and current usage across namespaces. Supports custom invoice listing, quota configuration per namespace, and contact management for billing communications. Essential for financial operations, capacity planning, and subscription lifecycle management.",
-			descriptionShort:
-				"Subscription billing, payment methods, and usage tracking",
+				"Set up payment methods with primary and secondary designations for redundancy. Initiate plan transitions between subscription tiers with state tracking. Download invoice PDFs and query custom invoice lists by date range or status. Define quota limits per namespace and monitor current usage against allocated capacity. Swap payment method roles without service interruption.",
+			descriptionShort: "Manage subscription plans and payment methods",
 			descriptionMedium:
-				"Manage subscription plans, payment methods, invoices, and resource quotas. Track usage limits and billing transitions across namespaces.",
-			aliases: [],
+				"Configure billing transitions and payment processing. Track invoices and monitor resource quota consumption across namespaces.",
+			aliases: ["billing-usage", "quotas", "usage-tracking"],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			category: "Platform",
+			useCases: [
+				"Manage subscription plans and billing transitions",
+				"Configure payment methods and invoices",
+				"Track resource quota usage across namespaces",
+				"Monitor usage limits and capacity",
+			],
+			relatedDomains: ["system", "users"],
 		},
 	],
 	[
@@ -193,11 +199,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "blindfold",
 			displayName: "Blindfold",
 			description:
-				"Configure and manage cryptographic secret protection with policy-based access controls. Create secret policies and policy rules that govern how sensitive data is encrypted, shared, and accessed across namespaces. Retrieve public keys for encryption operations, process policy information for secret sharing workflows, and decrypt secrets with proper authorization. Monitor secret access through comprehensive audit logs with aggregation and scrolling capabilities. Enforce data protection...",
-			descriptionShort:
-				"Secret encryption and policy-based data protection",
+				"Define policy rules with label matching and combining algorithms. Set up transformers and matchers to control data safeguarding. Track access patterns through timestamped records with scroll queries and date groupings. Retrieve public keys for cryptographic operations and process policy information for decryption workflows.",
+			descriptionShort: "Manage secret encryption and policy rules",
 			descriptionMedium:
-				"Manage encryption keys, secret policies, and sensitive data protection. Configure policy rules for secure secret sharing with audit logging.",
+				"Configure protection policies and access controls for sensitive data. Monitor usage through detailed logs and date-based rollups.",
 			aliases: ["bf", "encrypt", "secrets"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -217,18 +222,22 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "bot_and_threat_defense",
 			displayName: "Bot And Threat Defense",
 			description:
-				"Manage comprehensive bot and threat defense capabilities including Shape bot defense instance configuration, threat protection manager (TPM) categories for threat classification, and API key provisioning for automated defense systems. Create and manage TPM categories to organize threats by type, configure bot defense instances per namespace, and handle TPM manager lifecycle operations. Supports preauthorization and provisioning workflows for integrating threat intelligence services with...",
-			descriptionShort:
-				"Bot detection, threat categorization, and defense management",
+				"Deploy Shape bot defense instances with namespace-scoped configuration for automated threat detection. Create TPM categories to classify and organize threat types across your security infrastructure. Generate and manage provisioning keys for programmatic access to defense systems. Set up threat managers to coordinate detection rules, integrate with WAF policies, and enable real-time protection against malicious traffic patterns.",
+			descriptionShort: "Configure bot protection and threat categories",
 			descriptionMedium:
-				"Configure bot defense instances, manage threat categories, and provision TPM API keys for automated threat detection and mitigation.",
-			aliases: [],
+				"Manage bot defense instances and threat classification per namespace. Provision automated defense keys for security integration.",
+			aliases: ["threat-defense", "tpm", "shape-bot"],
 			complexity: "moderate" as const,
 			isPreview: false,
-			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			requiresTier: "Advanced",
+			category: "Security",
+			useCases: [
+				"Configure bot defense instances per namespace",
+				"Manage TPM threat categories for classification",
+				"Provision API keys for automated defense systems",
+				"Integrate threat intelligence services",
+			],
+			relatedDomains: ["bot_defense", "shape", "waf"],
 		},
 	],
 	[
@@ -237,11 +246,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "cdn",
 			displayName: "Cdn",
 			description:
-				"Content Delivery Network services for global content distribution and edge caching. Configure CDN load balancers with custom caching rules based on paths, headers, cookies, and query parameters. Define cache TTL policies, eligibility options, and cache-control behaviors. Monitor CDN performance through access logs and metrics aggregation. Perform cache purge operations for content invalidation. Manage addon subscriptions and track service operation status for CDN deployments.",
-			descriptionShort:
-				"CDN load balancing, caching rules, and content delivery",
+				"Create cache rules with cookie, header, and query parameter matching to control content eligibility. Configure load balancers with origin pool routing, access logging, and metrics collection. Manage cache purge operations for immediate content invalidation. Monitor service operation status and aggregate access logs for performance analysis. Define path matchers and expressions for granular cache behavior control across namespaces.",
+			descriptionShort: "Configure caching rules and load balancers",
 			descriptionMedium:
-				"Configure CDN load balancers and caching rules for content delivery. Manage cache policies, purge operations, and access logs for optimized...",
+				"Define cache TTL policies and path matching rules. Set up load balancers with origin pools and purge controls for content delivery.",
 			aliases: ["cache", "content"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -262,18 +270,23 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "ce_management",
 			displayName: "Ce Management",
 			description:
-				"Configure and manage Customer Edge (CE) site infrastructure across distributed deployments. Define network interfaces with DHCP, IPv6, and dedicated management settings. Organize sites into fleets for coordinated management. Handle site registration workflows including token-based registration, image downloads, and suggested configuration values. Monitor and execute site upgrades with pre-upgrade checks and status tracking. Supports both dedicated and Ethernet interface types with...",
+				"Define network connectivity parameters including address allocation ranges, dual-stack protocol support, and isolated administrative ports for out-of-band access. Group physical locations under common policy templates for streamlined oversight. Onboard new deployments through secure credential workflows with expiration policies. Execute controlled software transitions featuring pre-flight validation, rollback capabilities, and progress tracking to maintain service continuity.",
 			descriptionShort:
-				"Customer Edge site lifecycle and network configuration",
+				"Manage Customer Edge sites and network interfaces",
 			descriptionMedium:
-				"Manage Customer Edge sites including network interfaces, fleet configurations, site upgrades, and registration workflows for distributed deployments.",
-			aliases: [],
+				"Configure DHCP pools, IPv6 addressing, and dedicated management ports. Handle site tokens with lifecycle controls and software version transitions.",
+			aliases: ["ce-mgmt", "edge-management", "ce-lifecycle"],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			category: "Infrastructure",
+			useCases: [
+				"Manage Customer Edge site lifecycle",
+				"Configure network interfaces and fleet settings",
+				"Handle site registration and token workflows",
+				"Execute site upgrades with pre-upgrade checks",
+			],
+			relatedDomains: ["customer_edge", "sites"],
 		},
 	],
 	[
@@ -282,10 +295,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "certificates",
 			displayName: "Certificates",
 			description:
-				"Comprehensive certificate lifecycle management for securing application communications. Configure SSL/TLS certificates and certificate chains for endpoints, manage trusted Certificate Authority (CA) lists for client verification, and maintain Certificate Revocation Lists (CRLs) to invalidate compromised certificates. Supports certificate manifests for organized deployment across namespaces, enabling mTLS authentication, HTTPS termination, and secure service-to-service communication patterns.",
-			descriptionShort: "SSL/TLS certificate and trusted CA management",
+				"Create PKI artifacts organizing cryptographic identity materials by namespace for multi-tenant isolation. Deploy keypair bundles with issuer hierarchies for TLS termination. Establish verification anchor collections governing which external parties can authenticate. Maintain deny-lists blocking compromised identities from initiating sessions. Organize resources within independent security boundaries supporting granular access control.",
+			descriptionShort:
+				"Manage SSL/TLS certificate chains and trusted CAs",
 			descriptionMedium:
-				"Manage SSL/TLS certificates, certificate chains, trusted CA lists, and certificate revocation lists for secure communications.",
+				"Configure certificate manifests linking keys to credential bundles. Define trust anchors for validating client authenticity during mutual TLS.",
 			aliases: ["cert", "certs", "ssl", "tls"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -306,11 +320,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "cloud_infrastructure",
 			displayName: "Cloud Infrastructure",
 			description:
-				"Establish and manage connectivity to major cloud providers including AWS, Azure, and GCP. Configure cloud credentials and authentication for secure provider access. Create and manage VPC attachments, transit gateways, and route tables for cross-cloud networking. Support elastic provisioning with automatic resource discovery and reapplication workflows. Monitor cloud connection metrics and segment performance. Integrate with Customer Edge sites for hybrid cloud deployments across multiple...",
-			descriptionShort:
-				"Multi-cloud provider connectivity and credential management",
+				"Establish connections to AWS, Azure, and GCP environments with secure authentication and network discovery. Define gateway links, edge site peering, and elastic provisioning workflows. Monitor segment performance and connection health across geographic regions. Create automated VPC attachment policies with intelligent path selection between customer locations and cloud workloads.",
+			descriptionShort: "Connect and manage multi-cloud providers",
 			descriptionMedium:
-				"Connect to AWS, Azure, and GCP cloud providers. Manage cloud credentials, VPC attachments, transit gateways, and cross-cloud networking with...",
+				"Configure cloud provider credentials and VPC attachments. Manage AWS transit gateways, Azure route tables, and cross-cloud connectivity.",
 			aliases: ["cloud", "infra", "provider"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -331,11 +344,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "container_services",
 			displayName: "Container Services",
 			description:
-				"Container Services (XCCS) enables deployment and management of containerized applications across distributed edge sites without requiring full Kubernetes complexity. Create virtual Kubernetes clusters for isolated multi-tenant environments, define workload flavors for resource allocation, and deploy container workloads with simplified orchestration. Monitor workload usage and PVC metrics, manage namespace isolation, and integrate with site infrastructure for edge-native container...",
-			descriptionShort:
-				"Edge container workloads and virtual Kubernetes management",
+				"Create definitions for applications running on distributed infrastructure. Establish standardized templates controlling resource consumption and disk limits. Set up partitioned execution contexts supporting namespace separation and multi-tenant isolation. Track persistent volume claims and usage metrics. Connect with mesh networking for traffic routing.",
+			descriptionShort: "Deploy containerized workloads across sites",
 			descriptionMedium:
-				"Deploy and manage containerized workloads at the edge with simplified orchestration. Configure virtual Kubernetes clusters, workload flavors, and...",
+				"Run services with simplified orchestration. Define blueprints governing processor and storage allocation.",
 			aliases: ["vk8s", "containers", "workloads"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -356,18 +368,23 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "data_and_privacy_security",
 			displayName: "Data And Privacy Security",
 			description:
-				"Manage comprehensive data privacy and security controls including sensitive data detection policies, custom data type definitions, and log management analytics (LMA) region configurations. Define patterns for identifying PII, financial data, and other sensitive information with configurable actions for masking, alerting, or blocking. Configure LMA regions with Elasticsearch, Kafka, or ClickHouse backends for centralized security logging and compliance auditing. Integrate geo-configurations...",
+				"Set up sensitive data policies that identify and protect personally identifiable information across traffic flows. Create custom data type definitions matching organizational privacy standards and industry regulations. Configure LMA region parameters including Clickhouse, Elastic, and Kafka integrations. Deploy geo-configurations enforcing data residency rules and regional compliance mandates. Monitor detection status through condition tracking and secret management with blindfold encryption.",
 			descriptionShort:
-				"Sensitive data detection, classification, and privacy...",
+				"Configure sensitive data detection and privacy policies",
 			descriptionMedium:
-				"Configure data types, sensitive data policies, and LMA regions for detecting, classifying, and protecting personally identifiable information and...",
-			aliases: [],
+				"Define custom data types for PII classification. Manage LMA regions and geo-configurations to meet regulatory compliance requirements.",
+			aliases: ["data-privacy", "pii", "sensitive-data", "lma"],
 			complexity: "simple" as const,
 			isPreview: false,
-			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			requiresTier: "Advanced",
+			category: "Security",
+			useCases: [
+				"Configure sensitive data detection policies",
+				"Define custom data types for PII classification",
+				"Manage LMA region configurations",
+				"Integrate geo-configurations for compliance",
+			],
+			relatedDomains: ["blindfold", "client_side_defense"],
 		},
 	],
 	[
@@ -399,11 +416,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "ddos",
 			displayName: "Ddos",
 			description:
-				"Comprehensive DDoS protection and infrastructure security management. Configure deny list rules to block malicious traffic sources, create firewall rule groups for granular traffic filtering, and manage protection tunnels for secure infrastructure connectivity. The infraprotect APIs enable proactive threat mitigation through customizable security policies, real-time tunnel status monitoring, and namespace-scoped rule management. Integrates with network security and virtual load balancing for...",
+				"Deploy definitions that block IP addresses and network segments from accessing protected resources. Organize by threat type or source classification. Manage secure channels routing suspicious packets for analysis before reaching origin servers. Update status for real-time visibility into active defenses. Add items during attacks and monitor health metrics.",
 			descriptionShort:
-				"DDoS protection and infrastructure security policies",
+				"Configure blocking policies and tunnel protection",
 			descriptionMedium:
-				"Configure DDoS protection policies, deny lists, and firewall rules. Monitor infrastructure threats and manage protection tunnels for network security.",
+				"Set up firewall configurations with deny list rules. Filter malicious traffic through inspection points.",
 			aliases: ["dos", "ddos-protect"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -423,11 +440,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "dns",
 			displayName: "Dns",
 			description:
-				"Comprehensive DNS management for zones, domains, and resource records. Configure DNS load balancing with health checks for high availability. Import and export zone files via BIND format or AXFR transfers. Manage resource record sets including A, AAAA, CNAME, CAA, CERT, AFSDB, and DLV records. Monitor DNS performance through metrics and request logs. Clone zones from existing domains and enforce DNS compliance policies across namespaces.",
-			descriptionShort:
-				"DNS zone management, load balancing, and record...",
+				"Set up primary and secondary zones with support for A, AAAA, CNAME, CAA, CERT, and AFSDB record types. Define health checks to monitor target availability and enable automatic failover between record destinations. Clone existing domains, import zone configurations from external servers, or export zone files for backup. Track query metrics and request logs to analyze resolution patterns across namespaces.",
+			descriptionShort: "Manage zones, records, and load balancing",
 			descriptionMedium:
-				"Manage DNS zones, configure DNS load balancing with health checks, and control resource record sets. Supports zone imports, BIND file handling,...",
+				"Configure authoritative name services with record sets and health checks. Import zones from BIND files or transfer via AXFR protocol.",
 			aliases: ["dns-zone", "zones"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -506,11 +522,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "generative_ai",
 			displayName: "Generative Ai",
 			description:
-				"Generative AI services providing intelligent automation and analysis capabilities. Configure AI assistant policies and submit queries with feedback tracking for continuous improvement. Enable flow anomaly detection powered by machine learning. Manage AI data collection through the BFDP subsystem including feature enablement, token management, and subscription controls. Supports IP allocation for GIA services. Integrates dashboard visualization with customizable displays, filters, and link...",
-			descriptionShort:
-				"AI-powered features, assistants, and data collection",
+				"Set up query evaluation and response handling for intelligent assistant workflows. Manage rating collection with positive and negative outcome tracking. Subscribe to data streams for traffic pattern detection and behavioral analysis. Allocate and deallocate IP resources for ML infrastructure. Control feature enablement and token management for telemetry collection paths.",
+			descriptionShort: "Access AI assistant queries and feedback",
 			descriptionMedium:
-				"Access generative AI capabilities including AI assistant queries, flow anomaly detection, and AI data collection with feedback mechanisms.",
+				"Configure machine learning interactions and collect response ratings. Enable flow pattern monitoring through data subscription channels.",
 			aliases: ["ai", "genai", "assistant"],
 			complexity: "simple" as const,
 			isPreview: true,
@@ -531,11 +546,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "managed_kubernetes",
 			displayName: "Managed Kubernetes",
 			description:
-				"Configure and manage Managed Kubernetes (XCKS) security and access controls. Define cluster roles with fine-grained permissions for API resources and non-resource URLs. Create role bindings to associate users and groups with cluster-wide permissions. Enforce pod security standards through admission controllers with configurable enforcement levels. Manage private container registries for secure image distribution. Integrates with external Kubernetes clusters including EKS, AKS, and GKE for...",
+				"Create granular access controls for namespace resources and non-resource URLs. Map permissions to users, groups, or service accounts through binding configurations. Deploy security admission enforcement using baseline, restricted, or privileged profiles. Register private image sources with credential management for secure pulls. Integrate with external managed solutions including EKS, AKS, and GKE infrastructure.",
 			descriptionShort:
-				"Kubernetes RBAC, pod security, and container registries",
+				"Configure Kubernetes RBAC and pod security policies",
 			descriptionMedium:
-				"Manage Kubernetes cluster roles, RBAC bindings, pod security admission policies, and container registries for enterprise deployments.",
+				"Define permission boundaries for workload access. Set up private image repositories with authentication for enterprise deployments.",
 			aliases: ["mk8s", "appstack", "k8s-mgmt"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -556,11 +571,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "marketplace",
 			displayName: "Marketplace",
 			description:
-				"Access and manage the marketplace ecosystem including third-party integrations, add-on services, and external connectors. Configure connection types for direct, GRE tunnel, and IPSec connectivity with customizable IKE parameters and DPD keepalive settings. Manage navigation tiles for custom UI extensions, activate and monitor add-on service status across namespaces, and integrate with external platforms like Terraform. Supports TPM policy management and configuration management instances for...",
-			descriptionShort:
-				"Third-party integrations, add-ons, and extensions",
+				"Set up secure tunnel connections using IKEv1/IKEv2 parameters, GRE encapsulation with source and destination addressing, or dedicated link types. Manage DPD keep-alive timers and tunnel termination points for reliable connectivity. Activate purchasable services with namespace-scoped status tracking. Create custom portal widgets for interface integration and configure Cloud Manager instances for Terraform and infrastructure automation workflows.",
+			descriptionShort: "Manage third-party integrations and add-ons",
 			descriptionMedium:
-				"Manage marketplace extensions, external connectors, and third-party add-on services. Configure Terraform integrations and TPM policies.",
+				"Configure connector tunnels with IPSec, GRE, or direct links. Deploy purchasable services and portal customizations across namespaces.",
 			aliases: ["market", "addons", "extensions"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -581,11 +595,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "network",
 			displayName: "Network",
 			description:
-				"Comprehensive network infrastructure management including BGP routing with ASN configuration and peering policies, IPsec tunnel establishment with full IKE phase 1 and phase 2 parameter control, and network connector configuration for hybrid cloud connectivity. Supports SRv6 segment routing, subnet management, DC cluster groups for data center integration, static and dynamic route definitions, and IP prefix set policies. Enables secure site-to-site VPN connections, multi-cloud network...",
+				"Deploy secure site connectivity using IPsec tunnels with customizable IKE phase settings, encryption algorithms, and DH groups. Configure BGP routing with peer state monitoring, ASN management, and traffic policies. Set up SRv6 segments, IP prefix sets, and subnet definitions. Manage DC cluster groups for data center integration and define routes for traffic steering across distributed infrastructure.",
 			descriptionShort:
-				"BGP routing, IPsec tunnels, and network connectivity",
+				"Configure BGP routing, tunnels, and connectivity",
 			descriptionMedium:
-				"Configure BGP routing policies, IPsec tunnels with IKE phases, network connectors, SRv6, and IP prefix sets for secure site-to-site connectivity.",
+				"Manage IPsec tunnels and IKE configurations. Define BGP peers, ASN assignments, and routing policies for site-to-site connections.",
 			aliases: ["net", "routing", "bgp"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -608,11 +622,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "network_security",
 			displayName: "Network Security",
 			description:
-				"Network security controls for protecting traffic at the network layer. Configure network firewalls with stateful inspection and ACL rules. Define NAT policies for address translation, port forwarding, and dynamic pool management. Create network policy sets for segmentation and micro-segmentation between workloads. Implement policy-based routing to direct traffic based on source, destination, or application criteria. Manage segment connections for multi-site network isolation. Configure...",
-			descriptionShort:
-				"Network firewall, NAT, ACL, and policy-based routing",
+				"Manage firewall configurations with match criteria and action rules. Create NAT policies using dynamic pools and port configurations for address translation. Define segment connections to isolate traffic between network zones. Configure policy-based routing to direct packets based on source, destination, or protocol attributes. Set up forward proxy policies and access control lists to govern outbound connections.",
+			descriptionShort: "Configure firewalls, NAT, and routing policies",
 			descriptionMedium:
-				"Configure network firewalls, NAT policies, ACLs, and policy-based routing. Manage network segmentation, port forwarding, and forward proxy policies.",
+				"Define network firewall rules and NAT policies. Set up policy-based routing with segment connections for traffic control.",
 			aliases: ["netsec", "nfw"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -634,11 +647,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "nginx_one",
 			displayName: "Nginx One",
 			description:
-				"Integrate and manage NGINX One platform capabilities including subscription lifecycle management, NGINX Plus instance provisioning, and server configuration. Configure dataplane servers, manage nginx instances with WAF and API discovery specifications, and enable service discovery integrations. Supports NGINX Configuration Sync Gateway (CSG) configurations for centralized management workflows. Typical operations include subscribing to NGINX One services, retrieving server status and...",
-			descriptionShort:
-				"NGINX One platform integration and instance management",
+				"Set up load balancing configurations with backend server definitions and routing logic. Create monitoring schedules for availability tracking across distributed nodes. Build request handling pipelines with rate controls and authentication layers. Track instance performance metrics and traffic patterns. Coordinate failover mechanisms using weighted distribution and priority-based selection.",
+			descriptionShort: "Configure NGINX proxy instances and deployments",
 			descriptionMedium:
-				"Manage NGINX One platform subscriptions, configure NGINX Plus instances and servers, and integrate service discovery with centralized...",
+				"Manage upstream server pools and health monitors. Define SSL termination rules and connection parameters for gateway endpoints.",
 			aliases: ["nginx", "nms", "nginx-plus"],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -658,11 +670,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "object_storage",
 			displayName: "Object Storage",
 			description:
-				"Manage versioned object storage for mobile application components and platform integrations. Upload and retrieve mobile app shield configurations, SDK integrations, and custom artifacts organized by namespace and object type. Support for multiple versions of each object enables rollback and version-specific deployments. Presigned URLs provide secure, time-limited access for direct object downloads. Object types include mobile-app-shield for application protection, mobile-integrator for...",
-			descriptionShort:
-				"Object storage for mobile SDK artifacts and integrations",
+				"Deploy binary artifacts and configuration bundles with automatic version tracking and lifecycle policies. Organize content by category including protection signatures, SDK packages, and third-party connector files. Enable time-limited download links for secure distribution without credential exposure. Track revision history for audit trails and support rollback to previous artifact versions when needed.",
+			descriptionShort: "Manage stored objects and bucket versioning",
 			descriptionMedium:
-				"Store and retrieve versioned objects including mobile app shields, SDK integrations, and custom artifacts with presigned URL access.",
+				"Create versioned content within tenant buckets. Generate secure access URLs for SDK distributions and application protection resources.",
 			aliases: ["storage", "s3", "buckets"],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -682,11 +693,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "observability",
 			displayName: "Observability",
 			description:
-				"Comprehensive synthetic monitoring and observability capabilities for proactive infrastructure health assessment. Configure DNS monitors to validate resolution across AWS regions, set up HTTP monitors for endpoint availability testing, and track SSL/TLS certificate expiration status. Access real-time health summaries at global and namespace levels, review historical monitoring data, and generate detailed reports for DNS and HTTP monitors. Integrate with dashboards to visualize monitoring...",
-			descriptionShort:
-				"Synthetic monitoring, health checks, and observability...",
+				"Deploy synthetic monitors to validate DNS resolution and HTTP service health from multiple geographic locations. Define monitoring schedules, response time thresholds, and alerting conditions for proactive issue detection. Access health summaries, historical trends, and detailed reports for certificate status and service availability. Integrate monitoring data with dashboards to visualize health patterns and identify performance degradation before user impact.",
+			descriptionShort: "Configure synthetic monitors and health checks",
 			descriptionMedium:
-				"Configure synthetic monitoring with DNS and HTTP health checks. Track certificate status, monitor global health summaries, and analyze monitoring...",
+				"Set up DNS and HTTP monitoring with alerting thresholds. Track certificate expiration and service availability across regions.",
 			aliases: ["obs", "monitoring", "synth"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -706,11 +716,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "rate_limiting",
 			displayName: "Rate Limiting",
 			description:
-				"Manage rate limiting policies to protect applications from traffic surges and abuse. Configure rate limiters with customizable thresholds, time periods, and enforcement actions including blocking or throttling. Implement policers using leaky bucket algorithms for smooth traffic shaping. Define protocol-specific policers for granular control over different traffic types. Integrate with virtual hosts and load balancers to enforce rate limits at the edge, preventing resource exhaustion and...",
-			descriptionShort:
-				"Traffic rate limiting, policers, and throttling controls",
+				"Create rate limiter policies with configurable time periods using seconds, minutes, or hours granularity. Deploy policers and protocol policers to enforce bandwidth constraints across namespaces. Define limit values, burst allowances, and blocking behaviors when thresholds trigger. Integrate with load balancers and security policies for layered traffic management and abuse prevention.",
+			descriptionShort: "Configure traffic throttling and policer rules",
 			descriptionMedium:
-				"Configure rate limiters and policers to control traffic flow. Define request thresholds, leaky bucket algorithms, and enforcement actions for API...",
+				"Define request limits and burst thresholds for traffic control. Set up leaky bucket algorithms and block actions for exceeded quotas.",
 			aliases: ["ratelimit", "throttle", "policer"],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -730,18 +739,22 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "secops_and_incident_response",
 			displayName: "Secops And Incident Response",
 			description:
-				"Security operations and incident response capabilities for detecting and mitigating malicious user activity. Create mitigation policies that define automated responses based on user threat levels, including blocking, challenging, or rate limiting suspicious users. Configure rules that match specific malicious user types and threat severity levels to appropriate mitigation actions. Supports namespace-scoped configurations for managing security policies across different application...",
-			descriptionShort:
-				"Malicious user detection and automated threat mitigation",
+				"Manage incident response workflows that detect and mitigate malicious users automatically. Create rules matching threat levels to actions like blocking, rate limiting, or alerting. Set up mitigation policies per namespace to isolate security responses. Define thresholds for user behavior analysis and configure graduated responses based on severity. Integrate with bot defense and WAF systems for coordinated protection across application layers.",
+			descriptionShort: "Configure automated threat mitigation rules",
 			descriptionMedium:
-				"Configure automated responses to malicious user behavior. Define mitigation rules based on threat levels and apply actions like blocking or rate...",
-			aliases: [],
+				"Define malicious user detection policies and response actions. Apply blocking or rate limiting based on threat levels.",
+			aliases: ["secops", "incident-response", "mitigation"],
 			complexity: "simple" as const,
 			isPreview: false,
-			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			requiresTier: "Advanced",
+			category: "Security",
+			useCases: [
+				"Configure automated threat mitigation policies",
+				"Define rules for malicious user detection",
+				"Manage incident response workflows",
+				"Apply blocking or rate limiting to threats",
+			],
+			relatedDomains: ["bot_defense", "waf", "network_security"],
 		},
 	],
 	[
@@ -750,11 +763,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "service_mesh",
 			displayName: "Service Mesh",
 			description:
-				"Manage service mesh infrastructure including endpoint discovery and intelligent routing between distributed services. Define application types with learned API schemas, security risk classifications, and authentication configurations. Configure NFV (Network Function Virtualization) services with lifecycle management including force-delete operations. Leverage machine learning capabilities for automatic API endpoint detection, schema learning, and traffic pattern analysis. Integrate with...",
-			descriptionShort:
-				"Service mesh connectivity, discovery, and NFV management",
+				"Create classifications to organize services and support automatic identification of interconnected components. Set up analysis pipelines to understand patterns and build intelligent routing rules. Define network function virtualization for regional architectures. Configure authentication settings including location, state, and type recognition.",
+			descriptionShort: "Configure application types and discovery",
 			descriptionMedium:
-				"Configure service mesh networking with endpoint discovery, application type definitions, API endpoint learning, and NFV service lifecycle management.",
+				"Manage NFV integrations and workload categories. Enable traffic learning across distributed deployments.",
 			aliases: ["mesh", "svc-mesh"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -779,11 +791,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "shape",
 			displayName: "Shape",
 			description:
-				"Shape Security integration for advanced bot defense and threat prevention capabilities. Configure bot infrastructure deployments with policy management, deployment history tracking, and status monitoring. Manage mobile SDK attributes for application shielding and integrator configurations. Subscribe to bot defense add-ons and client-side defense services. Includes SafeAP policy configuration, threat recognition rules, and automated bot mitigation across namespaces with comprehensive...",
-			descriptionShort:
-				"Bot defense and threat prevention with Shape Security",
+				"Set up bot defense infrastructure across namespaces with deployment tracking and status monitoring. Integrate mobile SDK attributes for app shielding and device recognition. Subscribe to threat intelligence services for real-time protection updates. Define cluster states and location-based policies for distributed bot mitigation. Track deployment history and manage policy configurations through centralized infrastructure objects.",
+			descriptionShort: "Configure bot defense and threat prevention",
 			descriptionMedium:
-				"Configure Shape Security policies for bot defense, threat recognition, and mobile SDK protection. Manage bot infrastructure deployments and SafeAP...",
+				"Deploy bot infrastructure with mobile SDK integration. Manage subscription services and policy enforcement for automated threat protection.",
 			aliases: ["shape-sec", "safeap"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -804,11 +815,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "sites",
 			displayName: "Sites",
 			description:
-				"Comprehensive site infrastructure management for deploying F5 XC across multiple cloud providers and edge locations. Configure AWS Transit Gateway sites with VPN tunnels, VPC IP prefixes, and security settings. Manage virtual sites for logical grouping and policy application. Deploy Secure Mesh sites for networking-focused edge deployments, integrate external Kubernetes clusters as Customer Edge nodes, and configure cloud-specific resources including AWS VPC, Azure VNet, and GCP VPC sites....",
-			descriptionShort:
-				"Multi-cloud site deployment and edge infrastructure",
+				"Create virtual and physical edge deployments spanning multiple providers. Establish AWS Transit Gateway connections and secure tunnel configurations for hybrid connectivity. Integrate external container orchestration systems as customer edge nodes with managed control planes. Define virtual groupings using label selectors to apply consistent policies across distributed infrastructure. Enable secure mesh communication between edge nodes and cloud workloads with automated certificate management.",
+			descriptionShort: "Deploy and manage edge infrastructure",
 			descriptionMedium:
-				"Deploy and manage F5 XC sites across AWS, Azure, and GCP. Configure AWS TGW sites, virtual sites, managed Kubernetes, and Customer Edge integrations.",
+				"Configure cloud provider resources on AWS, Azure, and GCP. Set up VPC peering, transit gateways, and VPN tunnels for hybrid environments.",
 			aliases: ["site", "deployment"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -896,11 +906,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "statistics",
 			displayName: "Statistics",
 			description:
-				"Comprehensive operational analytics and monitoring capabilities for distributed cloud infrastructure. Configure alert policies with custom matchers and grouping rules to detect anomalies across namespaces. Manage alert receivers with confirmation, testing, and verification workflows for reliable notification delivery. Access flow statistics, view historical alerts, generate reports and graphs for capacity planning, track service topology and discovery patterns, and monitor real-time status...",
-			descriptionShort:
-				"Flow statistics, alerts, logs, and operational analytics",
+				"Set up alert policies with custom matchers, label filters, and group-by rules for targeted notifications. Define routing channels via email, webhook, or integration receivers with confirmation and verification workflows. Access flow analytics, historical alert data, and namespace-scoped metrics. Build capacity planning graphs and operational summaries. Observe deployment health and service discovery mapping across distributed environments.",
+			descriptionShort: "Monitor alerts, logs, and flow analytics",
 			descriptionMedium:
-				"Access flow statistics and analytics, configure alert policies and receivers, view logs, generate reports and graphs, and monitor site status.",
+				"Configure alerting policies and notification receivers. Track service topology, build dashboards, and view site health summaries.",
 			aliases: ["stats", "metrics", "logs"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -923,11 +932,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "support",
 			displayName: "Support",
 			description:
-				"Manage the complete customer support ticket lifecycle including creation, commenting, priority adjustment, escalation, and closure. Submit specialized requests such as tax exemption verification. Access site-level diagnostic capabilities including TCP dump capture, listing, and management for network troubleshooting. Integrates with operational workflows to enable support teams to gather diagnostic data directly from distributed sites while maintaining ticket-based tracking of all customer...",
-			descriptionShort:
-				"Customer support ticket lifecycle and site diagnostics",
+				"Open new cases and assign severity ratings based on business impact. Append notes throughout resolution workflows. Mark items as closed or reinstate them if symptoms recur. Execute diagnostic packet captures on deployed sites for network troubleshooting. Handle tax exemption verification through certificate submission.",
+			descriptionShort: "Create and track customer tickets",
 			descriptionMedium:
-				"Create, track, and manage support tickets with escalation workflows. Includes site diagnostic tools for packet capture and troubleshooting.",
+				"Submit requests with file uploads and priority levels. Add comments and escalate critical incidents to engineering teams.",
 			aliases: ["tickets", "help-desk"],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -970,18 +978,22 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "tenant_and_identity",
 			displayName: "Tenant And Identity",
 			description:
-				"Comprehensive user and tenant identity management for F5 Distributed Cloud. Configure user settings including profile images, notification preferences (admin and combined), and view preferences. Manage user sessions with listing and control capabilities. Handle OTP (one-time password) administration including admin resets. Support identity management (IDM) enable/disable operations. Process initial access requests for new users. Manage customer support ticket attachments and interactions for...",
-			descriptionShort:
-				"User settings, notifications, sessions, and identity...",
+				"Set up granular alert routing for administrative and combined channels with personalized delivery options. Control active login sessions and enforce one-time password resets for security compliance. Define display layouts and avatar images for customized user experiences. Process onboarding access submissions and toggle account management features. Coordinate support ticket attachments and client relationship interactions across managed tenant hierarchies.",
+			descriptionShort: "Manage user profiles and session controls",
 			descriptionMedium:
-				"Manage user profiles, notification preferences, session controls, OTP settings, and customer support interactions. Configure identity management...",
-			aliases: [],
+				"Configure OTP resets and admin alert channels. Handle view settings and profile customization for platform participants.",
+			aliases: ["tenant-identity", "idm", "user-settings"],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
-			category: "Other",
-			useCases: [],
-			relatedDomains: [],
+			category: "Platform",
+			useCases: [
+				"Manage user profiles and notification preferences",
+				"Configure session controls and OTP settings",
+				"Handle identity management operations",
+				"Process initial user access requests",
+			],
+			relatedDomains: ["users", "authentication", "system"],
 		},
 	],
 	[
@@ -1013,10 +1025,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "users",
 			displayName: "Users",
 			description:
-				"Comprehensive user and identity management for the F5 XC platform. Create and manage registration tokens for site and node onboarding, including cloud-init configuration retrieval. Define known label keys and values to establish consistent resource tagging taxonomies across namespaces. Configure implicit labels for automatic resource classification. Supports full lifecycle management of user-related configuration objects with metadata tracking, state management, and condition monitoring for...",
-			descriptionShort: "User accounts, tokens, and label management",
+				"Deploy namespace-scoped access credentials with lifecycle state tracking for secure machine enrollment. Build hierarchical tagging frameworks that enable systematic organization of infrastructure elements. Retrieve automated provisioning payloads for streamlined node initialization. Enable system-level automatic tagging that applies predefined metadata to newly created objects without operator action.",
+			descriptionShort: "Manage account tokens and label settings",
 			descriptionMedium:
-				"Manage user accounts, registration tokens, and label systems. Configure known and implicit labels for resource organization and user identification.",
+				"Configure credential issuance and cloud-init provisioning. Establish key-value taxonomies for consistent resource categorization across deployments.",
 			aliases: ["user", "accounts", "iam"],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -1037,11 +1049,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "virtual",
 			displayName: "Virtual",
 			description:
-				"Comprehensive application delivery and traffic management capabilities including HTTP/HTTPS/TCP/UDP load balancers, origin pool configuration, virtual host management, and advanced routing rules. Supports rate limiting policies, service policy enforcement, geo-location-based routing, and proxy forwarding configurations. Integrates with security features including malware protection, threat campaign detection, and WAF policy attachment. Provides health check configuration, endpoint...",
-			descriptionShort:
-				"HTTP/HTTPS load balancing and traffic management",
+				"Deploy load balancers across protocols with origin pool management and service discovery. Set up geo-location routing to direct traffic based on client location. Define rate limiter policies to control request volume and protect services from abuse. Configure health checks for origin monitoring and automatic failover. Manage service policies for access control and traffic filtering. Enable malware protection and threat campaign blocking for security enforcement.",
+			descriptionShort: "Configure load balancers and origin pools",
 			descriptionMedium:
-				"Configure HTTP, TCP, and UDP load balancers with origin pools, virtual hosts, routing rules, rate limiting, and service policies for application...",
+				"Create HTTP, TCP, and UDP load balancers with origin pools. Define routing rules, health checks, and rate limiting policies.",
 			aliases: ["lb", "loadbalancer", "vhost"],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -1151,11 +1162,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "waf",
 			displayName: "Waf",
 			description:
-				"Web Application Firewall (WAF) configuration and management for protecting applications against common attacks and vulnerabilities. Define application firewall policies with attack type detection, bot protection settings, and custom blocking pages. Manage WAF exclusion policies for legitimate traffic patterns, configure signature staging and release workflows, and monitor security events with detailed rule hit metrics. Supports AI-powered risk-based blocking, anonymization settings for...",
+				"Set up firewall configurations with attack type settings and violation detection. Create exclusion policies to tune false positives and customize blocking responses. Deploy staged signatures before production release and monitor rule hits through security event metrics. Integrate with virtual hosts for layered protection using AI-based risk blocking and anonymization settings for sensitive data handling.",
 			descriptionShort:
-				"Web application firewall rules and security policies",
+				"Configure application firewall rules and bot protection",
 			descriptionMedium:
-				"Configure web application firewall rules, manage security policies, and enable attack detection with customizable blocking actions and signature...",
+				"Define security policies for web applications. Manage attack signatures, exclusion rules, and threat detection settings.",
 			aliases: ["firewall", "appfw"],
 			complexity: "advanced" as const,
 			isPreview: false,
