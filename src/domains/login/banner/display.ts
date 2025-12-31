@@ -12,6 +12,7 @@ import { successResult, errorResult, rawStdoutResult } from "../../registry.js";
 import {
 	CLI_FULL_NAME,
 	CLI_VERSION,
+	CLI_DESCRIPTION_MEDIUM,
 	F5_LOGO,
 	ENV_PREFIX,
 	colorRed,
@@ -89,6 +90,27 @@ function colorizeLogoLine(line: string): string {
 }
 
 /**
+ * Wrap text to fit within a maximum width.
+ * Splits on word boundaries and returns an array of lines.
+ */
+function wrapText(text: string, maxWidth: number): string[] {
+	const words = text.split(" ");
+	const lines: string[] = [];
+	let currentLine = "";
+
+	for (const word of words) {
+		if (currentLine.length + word.length + 1 <= maxWidth) {
+			currentLine += (currentLine ? " " : "") + word;
+		} else {
+			if (currentLine) lines.push(currentLine);
+			currentLine = word;
+		}
+	}
+	if (currentLine) lines.push(currentLine);
+	return lines;
+}
+
+/**
  * Print banner with inline image logo inside the box.
  * Image on left, help text on right - uses cursor positioning.
  */
@@ -114,12 +136,8 @@ function printImageBanner(
 	// Text column: remaining space
 	const TEXT_COL_WIDTH = INNER_WIDTH - IMAGE_COL_WIDTH;
 
-	// Help text - will be vertically centered
-	const HELP_LINES = [
-		"Type 'help' for commands",
-		"Run 'namespace <ns>' to set",
-		"Press Ctrl+C twice to exit",
-	];
+	// Help text - wrapped medium description, vertically centered
+	const HELP_LINES = wrapText(CLI_DESCRIPTION_MEDIUM, TEXT_COL_WIDTH - 2);
 
 	// Calculate vertical centering for help text
 	const helpStartRow = Math.floor((imageHeight - HELP_LINES.length) / 2);
@@ -221,12 +239,9 @@ function printAsciiBanner(): void {
 	const TOTAL_WIDTH = Math.max(80, logoWidth + 4);
 	const INNER_WIDTH = TOTAL_WIDTH - 2;
 
-	// Help text positioned on specific logo rows (vertically centered)
-	const HELP_LINES = [
-		"Type 'help' for commands",
-		"Run 'namespace <ns>' to set",
-		"Press Ctrl+C twice to exit",
-	];
+	// Calculate help column width and wrap medium description
+	const helpColumnWidth = INNER_WIDTH - logoWidth - 1;
+	const HELP_LINES = wrapText(CLI_DESCRIPTION_MEDIUM, helpColumnWidth - 2);
 	const HELP_START_ROW = 8;
 
 	// Build title line
@@ -258,8 +273,7 @@ function printAsciiBanner(): void {
 		const paddedLogo = logoLine.padEnd(logoWidth);
 		const coloredLogo = colorizeLogoLine(paddedLogo);
 
-		// Calculate remaining space for help column
-		const helpColumnWidth = INNER_WIDTH - logoWidth - 1;
+		// Pad help text to fill remaining space
 		const paddedHelp = helpText.padEnd(helpColumnWidth);
 
 		output.push(
@@ -317,12 +331,8 @@ function getBannerLines(
 	const TOTAL_WIDTH = Math.max(80, logoWidth + 4);
 	const INNER_WIDTH = TOTAL_WIDTH - 2;
 
-	// Help text
-	const HELP_LINES = [
-		"Type 'help' for commands",
-		"Run 'namespace <ns>' to set",
-		"Press Ctrl+C twice to exit",
-	];
+	// Calculate help column width for ASCII mode
+	const helpColumnWidth = INNER_WIDTH - logoWidth - 1;
 
 	// Build title line
 	const title = ` ${CLI_FULL_NAME} v${CLI_VERSION} `;
@@ -354,6 +364,12 @@ function getBannerLines(
 			const IMAGE_COL_WIDTH = 1 + imageWidth + 1;
 			// Text column: remaining space
 			const TEXT_COL_WIDTH = INNER_WIDTH - IMAGE_COL_WIDTH;
+
+			// Wrap medium description for image mode text column
+			const HELP_LINES = wrapText(
+				CLI_DESCRIPTION_MEDIUM,
+				TEXT_COL_WIDTH - 2,
+			);
 
 			// Calculate vertical centering for help text
 			const helpStartRow = Math.floor(
@@ -434,6 +450,9 @@ function getBannerLines(
 	// ASCII MODE: Traditional banner with ASCII logo
 	const HELP_START_ROW = 8;
 
+	// Wrap medium description for ASCII mode text column
+	const HELP_LINES = wrapText(CLI_DESCRIPTION_MEDIUM, helpColumnWidth - 2);
+
 	// Blank line for visual separation
 	output.push("");
 
@@ -459,8 +478,7 @@ function getBannerLines(
 		const paddedLogo = logoLine.padEnd(logoWidth);
 		const coloredLogo = colorizeLogoLine(paddedLogo);
 
-		// Calculate remaining space for help column
-		const helpColumnWidth = INNER_WIDTH - logoWidth - 1;
+		// Pad help text to fill remaining space
 		const paddedHelp = helpText.padEnd(helpColumnWidth);
 
 		output.push(
