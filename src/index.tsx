@@ -21,6 +21,7 @@ import { isValidLogoMode, type LogoDisplayMode } from "./config/index.js";
 import { renderBanner } from "./domains/login/banner/display.js";
 import { debugProtocol, emitSessionState } from "./debug/protocol.js";
 import { formatFullCLISpec } from "./output/spec.js";
+import { HeadlessController } from "./headless/index.js";
 
 const program = new Command();
 
@@ -37,6 +38,7 @@ program
 	.option("--logo <mode>", "Logo display mode: image, ascii, none")
 	.option("-o, --output <format>", "Output format (json, yaml, table)")
 	.option("--spec", "Output command specification as JSON (for AI)")
+	.option("--headless", "Run in headless JSON protocol mode (for AI agents)")
 	.option("-h, --help", "Show help") // Manual help option to prevent auto-exit
 	.argument("[command...]", "Command to execute non-interactively")
 	.allowUnknownOption(true) // Pass through unknown options to commands
@@ -49,6 +51,7 @@ program
 				logo?: string;
 				output?: string;
 				spec?: boolean;
+				headless?: boolean;
 			},
 		) => {
 			// Handle root-level help (xcsh --help or xcsh -h with no domain)
@@ -88,6 +91,14 @@ program
 				commandArgs.push("--spec");
 			}
 
+			// Handle headless mode (for AI agents)
+			// Headless mode uses JSON protocol on stdin/stdout
+			if (options.headless) {
+				const controller = new HeadlessController();
+				await controller.run();
+				return;
+			}
+
 			// If no command args, enter REPL mode
 			if (commandArgs.length === 0) {
 				// Check if stdin is a TTY (interactive terminal)
@@ -97,6 +108,9 @@ program
 					);
 					console.error(
 						"Use: xcsh <command> for non-interactive execution.",
+					);
+					console.error(
+						"Or use: xcsh --headless for AI agent JSON protocol mode.",
 					);
 					process.exit(1);
 				}

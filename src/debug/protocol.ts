@@ -22,7 +22,10 @@ export type DebugEventType =
 	| "ui" // UI rendering events
 	| "error" // Error events
 	| "profile" // Profile loading events
-	| "auth"; // Authentication/validation events
+	| "auth" // Authentication/validation events
+	| "headless" // Headless mode events
+	| "command" // Command execution events
+	| "completion"; // Completion events
 
 /**
  * Debug event structure
@@ -163,6 +166,27 @@ class DebugProtocolImpl {
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
 		});
+	}
+
+	/**
+	 * Emit headless mode event
+	 */
+	headless(event: string, data: Record<string, unknown> = {}): void {
+		this.emit("headless", event, data);
+	}
+
+	/**
+	 * Emit command execution event
+	 */
+	command(event: string, data: Record<string, unknown> = {}): void {
+		this.emit("command", event, data);
+	}
+
+	/**
+	 * Emit completion event
+	 */
+	completion(event: string, data: Record<string, unknown> = {}): void {
+		this.emit("completion", event, data);
 	}
 
 	/**
