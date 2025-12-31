@@ -58,7 +58,7 @@ function wrapText(text: string, width: number, indent: number): string[] {
 export function formatRootHelp(): string[] {
 	return [
 		"",
-		colorBoldWhite(`${CLI_NAME} - ${CLI_FULL_NAME} v${CLI_VERSION}`),
+		colorBoldWhite(`${CLI_NAME} - ${CLI_FULL_NAME} ${CLI_VERSION}`),
 		"",
 		"DESCRIPTION",
 		...wrapText(CLI_DESCRIPTION_LONG, 80, 2),

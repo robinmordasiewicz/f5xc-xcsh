@@ -143,7 +143,7 @@ function printImageBanner(
 	const helpStartRow = Math.floor((imageHeight - HELP_LINES.length) / 2);
 
 	// Build title line
-	const title = ` ${CLI_FULL_NAME} v${CLI_VERSION} `;
+	const title = ` ${CLI_FULL_NAME} ${CLI_VERSION} `;
 	const leftDashes = 3;
 	const rightDashes = TOTAL_WIDTH - 1 - leftDashes - title.length - 1;
 
@@ -245,7 +245,7 @@ function printAsciiBanner(): void {
 	const HELP_START_ROW = 8;
 
 	// Build title line
-	const title = ` ${CLI_FULL_NAME} v${CLI_VERSION} `;
+	const title = ` ${CLI_FULL_NAME} ${CLI_VERSION} `;
 	const leftDashes = 3;
 	const rightDashes = TOTAL_WIDTH - 1 - leftDashes - title.length - 1;
 
@@ -335,7 +335,7 @@ function getBannerLines(
 	const helpColumnWidth = INNER_WIDTH - logoWidth - 1;
 
 	// Build title line
-	const title = ` ${CLI_FULL_NAME} v${CLI_VERSION} `;
+	const title = ` ${CLI_FULL_NAME} ${CLI_VERSION} `;
 	const leftDashes = 3;
 	const rightDashes = TOTAL_WIDTH - 1 - leftDashes - title.length - 1;
 
