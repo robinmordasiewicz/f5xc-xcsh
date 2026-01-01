@@ -11,6 +11,7 @@ import type { Suggestion } from "./components/Suggestions.js";
 import { getGitInfo, type GitInfo } from "./components/StatusBar.js";
 import { REPLSession } from "./session.js";
 import { buildPlainPrompt } from "./prompt.js";
+import { colorBlue, colorBoldWhite } from "../branding/index.js";
 import { useDoubleCtrlC } from "./hooks/useDoubleCtrlC.js";
 import { useHistory } from "./hooks/useHistory.js";
 import { useCompletion } from "./hooks/useCompletion.js";
@@ -279,8 +280,10 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			const trimmed = cmd.trim();
 			if (!trimmed) return;
 
-			// Show command in output
-			addOutput(prompt + trimmed);
+			// Show command in scrollback with blue indicator and bright white command
+			// Format: ⏺ xcsh> command (blue ⏺, bright white command text)
+			const scrollbackCommand = `${colorBlue("⏺")} ${colorBoldWhite(prompt + trimmed)}`;
+			addOutput(scrollbackCommand);
 
 			// Execute via executor module
 			const result = await executeCommand(trimmed, session);

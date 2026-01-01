@@ -4,13 +4,14 @@
  */
 
 import type { REPLSession } from "./session.js";
+import { CLI_NAME } from "../branding/index.js";
 
 /**
  * Build a plain text prompt string.
- * Simple ">" prompt.
+ * Shows CLI name with ">" suffix (e.g., "xcsh> ")
  */
 export function buildPlainPrompt(_session: REPLSession): string {
-	return "> ";
+	return `${CLI_NAME}> `;
 }
 
 /**
