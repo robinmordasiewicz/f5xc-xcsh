@@ -139,16 +139,45 @@ program
 				// Use "startup" context for direct stdout with image support
 				renderBanner(cliLogoMode, "startup");
 
+				// Show info when profile fallback succeeded
+				if (session.getAuthSource() === "profile-fallback") {
+					const profileName = session.getActiveProfileName();
+					console.log("");
+					console.log(
+						`${colors.blue}Info: Using credentials from profile '${profileName}' (environment variables were invalid)${colors.reset}`,
+					);
+				}
+
 				// Show warning if token validation failed
 				if (
 					session.isAuthenticated() &&
 					!session.isTokenValidated() &&
 					session.getValidationError()
 				) {
+					const authSource = session.getAuthSource();
+					const fallbackReason = session.getFallbackReason();
+
 					console.log("");
-					console.log(
-						`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
-					);
+
+					if (authSource === "env" || authSource === "mixed") {
+						// Environment variable credentials failed
+						console.log(
+							`${colors.yellow}Warning: Environment variable credentials are invalid or expired${colors.reset}`,
+						);
+						if (fallbackReason) {
+							console.log(
+								`${colors.dim}  ${fallbackReason}${colors.reset}`,
+							);
+						}
+						console.log(
+							`${colors.dim}  Run 'login' to authenticate or update your F5XC_API_TOKEN environment variable${colors.reset}`,
+						);
+					} else {
+						// Profile credentials failed
+						console.log(
+							`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
+						);
+					}
 				}
 
 				// Check if user needs guidance on connecting
@@ -211,15 +240,42 @@ async function executeNonInteractive(args: string[]): Promise<void> {
 	});
 	emitSessionState(session);
 
+	// Show info when profile fallback succeeded
+	if (session.getAuthSource() === "profile-fallback") {
+		const profileName = session.getActiveProfileName();
+		console.error(
+			`${colors.blue}Info: Using credentials from profile '${profileName}' (environment variables were invalid)${colors.reset}`,
+		);
+	}
+
 	// Show warning if token validation failed
 	if (
 		session.isAuthenticated() &&
 		!session.isTokenValidated() &&
 		session.getValidationError()
 	) {
-		console.error(
-			`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
-		);
+		const authSource = session.getAuthSource();
+		const fallbackReason = session.getFallbackReason();
+
+		if (authSource === "env" || authSource === "mixed") {
+			// Environment variable credentials failed
+			console.error(
+				`${colors.yellow}Warning: Environment variable credentials are invalid or expired${colors.reset}`,
+			);
+			if (fallbackReason) {
+				console.error(
+					`${colors.dim}  ${fallbackReason}${colors.reset}`,
+				);
+			}
+			console.error(
+				`${colors.dim}  Run 'login' to authenticate or update your F5XC_API_TOKEN environment variable${colors.reset}`,
+			);
+		} else {
+			// Profile credentials failed
+			console.error(
+				`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
+			);
+		}
 	}
 
 	// Join args into a command string

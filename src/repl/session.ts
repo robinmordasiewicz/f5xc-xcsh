@@ -76,6 +76,10 @@ export class REPLSession {
 	// Authentication source tracking
 	private _authSource: AuthSource = "none";
 
+	// Fallback tracking for improved error messages
+	private _fallbackAttempted: boolean = false;
+	private _fallbackReason: string | null = null;
+
 	constructor(config: SessionConfig = {}) {
 		this._namespace = config.namespace ?? this.getDefaultNamespace();
 		this._contextPath = new ContextPath();
@@ -160,52 +164,88 @@ export class REPLSession {
 			// Fallback logic: If env var token is invalid, try profile token
 			if (
 				!result.valid &&
-				(this._authSource === "env" || this._authSource === "mixed") &&
-				this._activeProfile?.apiToken &&
-				this._activeProfile.apiToken !== this._apiToken
+				(this._authSource === "env" || this._authSource === "mixed")
 			) {
-				debugProtocol.auth("token_fallback_attempt", {
-					fromSource: this._authSource,
-					hasProfileToken: true,
-					profileName: this._activeProfileName,
-				});
-
-				// Try the profile token instead
-				this._apiToken = this._activeProfile.apiToken;
-
-				// Also use profile URL if we only had partial env vars (mixed mode)
+				// Check why fallback can or cannot happen
 				if (
-					this._authSource === "mixed" &&
-					!process.env[`${ENV_PREFIX}_API_URL`] &&
-					this._activeProfile.apiUrl
+					this._activeProfile?.apiToken &&
+					this._activeProfile.apiToken !== this._apiToken
 				) {
-					this._serverUrl = this._activeProfile.apiUrl;
-					this._tenant = this.extractTenant(
-						this._activeProfile.apiUrl,
-					);
-				}
+					// Fallback is possible - profile has different credentials
+					this._fallbackAttempted = true;
 
-				// Recreate API client with profile credentials
-				this._apiClient = new APIClient({
-					serverUrl: this._serverUrl,
-					apiToken: this._apiToken,
-					debug: this._debug,
-				});
-
-				// Re-validate with profile token
-				const fallbackResult = await this._apiClient.validateToken();
-				if (fallbackResult.valid) {
-					this._tokenValidated = true;
-					this._validationError = null;
-					this._authSource = "profile-fallback";
-
-					debugProtocol.auth("token_fallback_success", {
-						authSource: this._authSource,
+					debugProtocol.auth("token_fallback_attempt", {
+						fromSource: this._authSource,
+						hasProfileToken: true,
 						profileName: this._activeProfileName,
 					});
-				} else {
-					debugProtocol.auth("token_fallback_failed", {
-						error: fallbackResult.error,
+
+					// Try the profile token instead
+					this._apiToken = this._activeProfile.apiToken;
+
+					// Also use profile URL if we only had partial env vars (mixed mode)
+					if (
+						this._authSource === "mixed" &&
+						!process.env[`${ENV_PREFIX}_API_URL`] &&
+						this._activeProfile.apiUrl
+					) {
+						this._serverUrl = this._activeProfile.apiUrl;
+						this._tenant = this.extractTenant(
+							this._activeProfile.apiUrl,
+						);
+					}
+
+					// Recreate API client with profile credentials
+					this._apiClient = new APIClient({
+						serverUrl: this._serverUrl,
+						apiToken: this._apiToken,
+						debug: this._debug,
+					});
+
+					// Re-validate with profile token
+					const fallbackResult =
+						await this._apiClient.validateToken();
+					if (fallbackResult.valid) {
+						this._tokenValidated = true;
+						this._validationError = null;
+						this._authSource = "profile-fallback";
+						this._fallbackReason = null; // Fallback succeeded, no reason to show
+
+						debugProtocol.auth("token_fallback_success", {
+							authSource: this._authSource,
+							profileName: this._activeProfileName,
+						});
+					} else {
+						// Profile credentials also failed
+						this._fallbackReason = `Profile '${this._activeProfileName}' credentials are also invalid`;
+
+						debugProtocol.auth("token_fallback_failed", {
+							error: fallbackResult.error,
+							profileName: this._activeProfileName,
+						});
+					}
+				} else if (
+					this._activeProfile?.apiToken &&
+					this._activeProfile.apiToken === this._apiToken
+				) {
+					// Profile has same token as env var - can't fallback
+					this._fallbackReason = `Profile '${this._activeProfileName}' has the same credentials - please update`;
+
+					debugProtocol.auth("token_fallback_skipped", {
+						reason: "same_token",
+						profileName: this._activeProfileName,
+					});
+				} else if (!this._activeProfile?.apiToken) {
+					// No profile token available for fallback
+					if (this._activeProfileName) {
+						this._fallbackReason = `Profile '${this._activeProfileName}' has no saved credentials`;
+					} else {
+						this._fallbackReason =
+							"No saved profiles available for fallback";
+					}
+
+					debugProtocol.auth("token_fallback_skipped", {
+						reason: "no_profile_token",
 						profileName: this._activeProfileName,
 					});
 				}
@@ -458,6 +498,20 @@ export class REPLSession {
 	}
 
 	/**
+	 * Check if a credential fallback was attempted
+	 */
+	getFallbackAttempted(): boolean {
+		return this._fallbackAttempted;
+	}
+
+	/**
+	 * Get the reason why fallback failed or was skipped (for user messaging)
+	 */
+	getFallbackReason(): string | null {
+		return this._fallbackReason;
+	}
+
+	/**
 	 * Get the API client
 	 */
 	getAPIClient(): APIClient | null {
@@ -526,6 +580,8 @@ export class REPLSession {
 		// Clear validation state before switch
 		this._tokenValidated = false;
 		this._validationError = null;
+		this._fallbackAttempted = false;
+		this._fallbackReason = null;
 
 		// Update session with new profile settings
 		this._activeProfileName = profileName;
