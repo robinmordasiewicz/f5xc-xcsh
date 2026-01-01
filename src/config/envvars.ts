@@ -4,7 +4,8 @@
  * Used for dynamic help generation with column alignment and flag notation.
  */
 
-import { ENV_PREFIX, CONFIG_FILE_NAME, DOCS_URL } from "../branding/index.js";
+import { ENV_PREFIX, DOCS_URL } from "../branding/index.js";
+import { paths } from "./paths.js";
 
 export interface EnvVar {
 	name: string;
@@ -76,7 +77,7 @@ export function formatEnvVarsSection(): string[] {
 export function formatConfigSection(): string[] {
 	return [
 		"CONFIGURATION",
-		`  Config file:  ~/${CONFIG_FILE_NAME}`,
+		`  Config file:  ${paths.settings}`,
 		"  Priority:     CLI flags > environment variables > config file > defaults",
 		"",
 		"DOCUMENTATION",

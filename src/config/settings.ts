@@ -1,13 +1,13 @@
 /**
- * Application settings from .xcshconfig file.
+ * Application settings from config.yaml file.
  * Handles loading, parsing, and validation of user configuration.
+ *
+ * Location: ~/.config/xcsh/config.yaml (XDG Base Directory compliant)
  */
 
 import { promises as fs } from "fs";
-import { homedir } from "os";
-import { join } from "path";
 import YAML from "yaml";
-import { CONFIG_FILE_NAME } from "../branding/index.js";
+import { paths } from "./paths.js";
 
 /**
  * Logo display mode definition with descriptions.
@@ -86,10 +86,10 @@ function validateSettings(
 }
 
 /**
- * Load settings from .xcshconfig file.
+ * Load settings from config.yaml file.
  *
  * File format: YAML
- * Location: ~/.xcshconfig
+ * Location: ~/.config/xcsh/config.yaml (XDG Base Directory compliant)
  *
  * Example:
  * ```yaml
@@ -100,7 +100,7 @@ function validateSettings(
  * @returns Merged settings with defaults for missing values
  */
 export async function loadSettings(): Promise<AppSettings> {
-	const configPath = join(homedir(), CONFIG_FILE_NAME);
+	const configPath = paths.settings;
 
 	try {
 		const content = await fs.readFile(configPath, "utf-8");
@@ -121,7 +121,7 @@ export async function loadSettings(): Promise<AppSettings> {
  * Uses defaults if file doesn't exist or can't be read.
  */
 export function loadSettingsSync(): AppSettings {
-	const configPath = join(homedir(), CONFIG_FILE_NAME);
+	const configPath = paths.settings;
 
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -144,5 +144,5 @@ export function loadSettingsSync(): AppSettings {
  * Get the path to the config file.
  */
 export function getConfigPath(): string {
-	return join(homedir(), CONFIG_FILE_NAME);
+	return paths.settings;
 }

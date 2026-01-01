@@ -1,11 +1,13 @@
 /**
  * HistoryManager handles command history persistence.
  * Stores commands to disk and provides navigation through history.
+ *
+ * Location: ~/.local/state/xcsh/history (XDG Base Directory compliant)
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { homedir } from "node:os";
-import { join, dirname } from "node:path";
+import { dirname } from "node:path";
+import { paths } from "../config/paths.js";
 
 /**
  * Patterns for sensitive data that should be redacted from history
@@ -57,13 +59,10 @@ export function redactSensitive(cmd: string): string {
 
 /**
  * Get the default history file path
+ * Location: ~/.local/state/xcsh/history (XDG Base Directory compliant)
  */
 export function getHistoryFilePath(): string {
-	try {
-		return join(homedir(), ".xcsh_history");
-	} catch {
-		return ".xcsh_history";
-	}
+	return paths.history;
 }
 
 /**

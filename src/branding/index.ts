@@ -52,7 +52,6 @@ export const CLI_DESCRIPTION_MEDIUM = cliDescs?.medium ?? CLI_DESCRIPTION_SHORT;
 export const CLI_DESCRIPTION_LONG = cliDescs?.long ?? CLI_DESCRIPTION_MEDIUM;
 
 // Configuration
-export const CONFIG_FILE_NAME = ".xcshconfig";
 export const ENV_PREFIX = "F5XC";
 
 // F5 Logo - compact circular logo with F5 text

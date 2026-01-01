@@ -1,11 +1,13 @@
 /**
  * ProfileManager - XDG-compliant profile storage and management
+ *
+ * Profiles are stored in ~/.config/xcsh/profiles/ (XDG Base Directory compliant)
  */
 
 import { promises as fs } from "fs";
-import { homedir } from "os";
 import { join } from "path";
 import YAML from "yaml";
+import { paths } from "../config/paths.js";
 import type { Profile, ProfileConfig, ProfileResult } from "./types.js";
 
 /**
@@ -29,28 +31,16 @@ function convertKeysToCamelCase(
 }
 
 /**
- * Get XDG-compliant config directory
- */
-function getConfigDir(): string {
-	const xdgConfig = process.env.XDG_CONFIG_HOME;
-	if (xdgConfig) {
-		return join(xdgConfig, "xcsh");
-	}
-	return join(homedir(), ".config", "xcsh");
-}
-
-/**
  * ProfileManager handles profile CRUD operations with secure file storage
  */
 export class ProfileManager {
 	private config: ProfileConfig;
 
 	constructor() {
-		const configDir = getConfigDir();
 		this.config = {
-			configDir,
-			profilesDir: join(configDir, "profiles"),
-			activeProfileFile: join(configDir, "active_profile"),
+			configDir: paths.configDir,
+			profilesDir: paths.profilesDir,
+			activeProfileFile: paths.activeProfile,
 		};
 	}
 
