@@ -6,8 +6,14 @@
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
+import { homedir } from "node:os";
 import { paths } from "../config/paths.js";
+
+/**
+ * Legacy history file path (pre-XDG migration)
+ */
+const LEGACY_HISTORY_PATH = join(homedir(), ".xcsh_history");
 
 /**
  * Patterns for sensitive data that should be redacted from history
@@ -94,9 +100,29 @@ export class HistoryManager {
 
 	/**
 	 * Load reads history from the history file
+	 * Includes one-time migration from legacy ~/.xcsh_history location
 	 */
 	async load(): Promise<void> {
 		try {
+			// Migration: Check for legacy history file (pre-XDG)
+			const newPathExists = existsSync(this.path);
+			const legacyExists = existsSync(LEGACY_HISTORY_PATH);
+
+			// Migrate if old exists and new doesn't
+			if (!newPathExists && legacyExists) {
+				// Ensure directory exists
+				const dir = dirname(this.path);
+				mkdirSync(dir, { recursive: true });
+
+				// Copy legacy history to new location
+				const legacyContent = readFileSync(
+					LEGACY_HISTORY_PATH,
+					"utf-8",
+				);
+				writeFileSync(this.path, legacyContent, "utf-8");
+			}
+
+			// Now load from new path (which may have just been created)
 			if (!existsSync(this.path)) {
 				return;
 			}
