@@ -9,6 +9,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as yaml from "yaml";
+import { execSync } from "child_process";
 
 // Types matching the upstream spec structure
 interface SpecPrimaryResource {
@@ -384,6 +385,18 @@ export const DOMAIN_COUNT = ${domains.length};
 
 	// Write output file
 	fs.writeFileSync(outputPath, outputContent, "utf-8");
+
+	// Format with Prettier to ensure consistent output
+	try {
+		execSync(`npx prettier --write "${outputPath}"`, {
+			stdio: "pipe",
+			encoding: "utf-8",
+		});
+		console.log(`✓ Formatted: ${outputPath}`);
+	} catch {
+		console.warn(`⚠️  Prettier formatting skipped (not available)`);
+	}
+
 	console.log(`✓ Generated: ${outputPath}`);
 	console.log(`✅ Domain generation complete! (${domains.length} domains)`);
 }

@@ -12,9 +12,25 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { parse as parseYaml } from "yaml";
+import { execSync } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * Format file with Prettier for consistent output
+ */
+function formatWithPrettier(filePath: string): void {
+	try {
+		execSync(`npx prettier --write "${filePath}"`, {
+			stdio: "pipe",
+			encoding: "utf-8",
+		});
+		console.log(`  Formatted: ${filePath}`);
+	} catch {
+		console.warn(`  ⚠️  Prettier formatting skipped (not available)`);
+	}
+}
 
 interface SpecInfo {
 	title: string | null;
@@ -383,6 +399,7 @@ export function getCommandDescriptions(
 }
 `;
 		writeFileSync(outputPath, emptyModule, "utf-8");
+		formatWithPrettier(outputPath);
 		console.log(`  Generated empty module: ${outputPath}`);
 		return;
 	}
@@ -404,6 +421,7 @@ export function getCommandDescriptions(
 	// Write output
 	console.log(`Writing: ${outputPath}`);
 	writeFileSync(outputPath, tsModule, "utf-8");
+	formatWithPrettier(outputPath);
 
 	// Count what was generated
 	const cliCount = data.cli ? Object.keys(data.cli).length : 0;

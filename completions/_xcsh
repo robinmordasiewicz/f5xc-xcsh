@@ -27,6 +27,7 @@ _xcsh() {
             local -a domains builtins
             domains=(
             'admin_console_and_ui:Static UI components and console assets.'
+            'ai_services:AI assistant queries and feedback collection.'
             'api:Interface definitions, schema validation, and grouping.'
             'authentication:Authentication API'
             'bigip:iRules, data groups, and APM integration.'
@@ -70,6 +71,9 @@ _xcsh() {
             'console-ui:Alias for admin_console_and_ui'
             'ui-assets:Alias for admin_console_and_ui'
             'static-components:Alias for admin_console_and_ui'
+            'ai:Alias for ai_services'
+            'genai:Alias for ai_services'
+            'assistant:Alias for ai_services'
             'apisec:Alias for api'
             'api-discovery:Alias for api'
             'authn:Alias for authentication'

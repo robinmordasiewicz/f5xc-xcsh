@@ -9,6 +9,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import sharp from "sharp";
+import { execSync } from "child_process";
 
 // F5 Logo SVG URL
 const LOGO_SVG_URL =
@@ -26,6 +27,21 @@ const TARGET_HEIGHT = 240;
 // Matches visual size of ASCII art logo circle (accounting for leading whitespace)
 const DISPLAY_WIDTH = 45; // Character cells (matches ASCII logo visual width)
 const DISPLAY_HEIGHT = 18; // Character cells (adjusted to eliminate dead space below image)
+
+/**
+ * Format file with Prettier for consistent output
+ */
+function formatWithPrettier(filePath: string): void {
+	try {
+		execSync(`npx prettier --write "${filePath}"`, {
+			stdio: "pipe",
+			encoding: "utf-8",
+		});
+		console.log(`  Formatted: ${filePath}`);
+	} catch {
+		console.warn(`  ⚠️  Prettier formatting skipped (not available)`);
+	}
+}
 
 /**
  * Fetch the SVG from URL
@@ -128,6 +144,7 @@ async function main(): Promise<void> {
 
 		// Step 6: Write output file
 		fs.writeFileSync(OUTPUT_FILE, moduleContent, "utf-8");
+		formatWithPrettier(OUTPUT_FILE);
 		console.log(`\n  Generated: ${OUTPUT_FILE}`);
 
 		// Summary

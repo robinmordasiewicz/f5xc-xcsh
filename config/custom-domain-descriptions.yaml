@@ -9,34 +9,34 @@
 # Do not edit manually - regenerate with: npm run generate:descriptions
 
 version: "1.0.0"
-generated_at: "2026-01-02T08:07:08.466Z"
+generated_at: "2026-01-02T23:47:33.236Z"
 
 # NOTE: No cli: section - CLI description extracted from upstream spec at build time
 
 domains:
   login:
     source_patterns_hash: "62899679c74cb3b2"
-    short: "Manage authentication and session profiles"
-    medium: "Configure authentication credentials, manage named profiles for different environments, and control connection context for CLI sessions."
-    long: "Handle identity verification and persistent session state for CLI operations. Use 'show' to display current token status and credential validity. Create named profiles for distinct tenants or environments with the 'profile' command, enabling quick switching without re-entering passwords. Set active endpoint URLs and default namespaces using 'context'. View system announcements with 'banner'. Stored configurations persist securely across sessions."
+    short: "Configure authentication profiles and connection context"
+    medium: "Store named credential profiles for multiple tenants, switch active connection contexts, verify session state, and display environment banners."
+    long: "Manage authentication lifecycle and identity configuration for CLI operations. Define reusable credential sets targeting different tenants without repeated login prompts. Toggle between saved identities to execute commands against distinct environments. Inspect current session details including endpoint URL and token expiration status. Show informational banners reflecting active configuration. Supports environment variable injection for automated pipelines and scripted workflows requiring non-interactive authentication."
     subcommands:
       profile:
-        short: "Manage saved credential sets for tenant connections"
-        medium: "Store named authentication configurations with URLs and tokens. Switch between environments without re-entering credentials each time."
-        long: "Configure named credential sets that persist tenant URLs and access tokens for quick environment switching. Create entries for development, staging, and production tenants, then activate them as needed. List all saved entries, view their configuration details, set one as active for subsequent commands, or remove entries no longer needed. Credentials are stored securely in your local configuration directory and persist across sessions."
+        short: "Manage saved authentication credentials for tenants"
+        medium: "Store named credential sets for different environments, switch between active connections, and remove outdated entries."
+        long: "Organize authentication credentials across multiple tenants and environments. Create named entries for production, staging, or development contexts containing URLs and tokens. List available configurations, display stored details, designate which connection to use for subsequent commands, and delete obsolete records. Credentials persist locally, eliminating repeated entry when working across different tenants throughout the day."
       context:
-        short: "Manage default namespace for scoping operations"
-        medium: "Configure, display, and switch between namespace settings that scope subsequent commands to organizational boundaries."
-        long: "Manage namespace settings that determine the default scope for resource operations. The active namespace applies when commands do not explicitly provide one, reducing repetitive flags across multiple operations. Use 'show' to display the current active namespace, 'set' to change the default for future commands, and 'list' to view all available namespaces. Settings persist across sessions until explicitly changed, streamlining workflows within a single boundary."
+        short: "Set default namespace for scoped command execution"
+        medium: "Configure, display, and switch the active namespace scope. Commands automatically target this namespace when no explicit --namespace flag is provided."
+        long: "Manage persistent namespace selection that determines where CLI operations execute by default. Subcommands include 'show' to reveal the current setting, 'set' to designate a new active namespace, and 'list' to enumerate all available choices. After configuration, subsequent commands operate within the selected namespace without requiring repetitive flag usage. Settings persist across terminal sessions, reducing overhead during extended work within a single namespace. Remove the stored value to restore explicit per-command namespace specification."
 
   cloudstatus:
     source_patterns_hash: "4740377a4bac0565"
-    short: "Check platform status and service incidents"
-    medium: "View operational health, active incidents, component availability, and scheduled maintenance windows for infrastructure services."
-    long: "Monitor real-time service availability across infrastructure components. Query active incidents with severity classification and affected systems, inspect individual component states, and review upcoming maintenance schedules. Filter by component type, date range, or impact level. Generate human-readable summaries or structured JSON output for integration with alerting tools and automation pipelines. Designed for operations teams tracking system reliability and coordinating around planned outages."
+    short: "Check platform status and active incidents"
+    medium: "Query operational health, view active incidents, track scheduled maintenance windows, and verify component availability across deployment regions."
+    long: "Display real-time service health and infrastructure component status. Retrieve incident details including severity levels, affected systems, and resolution progress. List upcoming maintenance windows for service interruption planning. Verify regional component availability before deployments. Access historical incident records for post-mortem analysis and SLA tracking. Output supports both human-readable summaries and JSON format for monitoring integration."
 
   completion:
     source_patterns_hash: "796a6ae0ff3bdd05"
     short: "Generate tab-completion scripts for supported shells"
-    medium: "Create shell integration scripts for bash, zsh, and fish that provide intelligent tab-triggered suggestions for commands, flags, and arguments."
-    long: "Output scripts enabling your terminal to suggest valid options when pressing Tab. Supports bash, zsh, and fish with automatic command discovery, argument hints, and flag recommendations. Install the generated output in your shell's designated directory or source it directly in your configuration file (e.g., .bashrc, .zshrc). Once active, Tab displays available subcommands, recognized flags, and expected parameter values as you type, reducing errors and accelerating CLI usage through context-aware assistance."
+    medium: "Create shell-specific scripts enabling tab-assisted input for commands, subcommands, and flags in bash, zsh, or fish environments."
+    long: "Output completion scripts that integrate with native shell mechanisms for context-aware suggestions. Supports bash, zsh, and fish with format-specific output suitable for sourcing directly or saving to configuration files. After installation, pressing Tab auto-suggests partial command names, displays available options, and recommends valid flag values. Select the subcommand matching your environment to generate properly formatted output."
