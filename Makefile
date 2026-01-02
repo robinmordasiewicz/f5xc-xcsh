@@ -26,7 +26,7 @@ NPX?=npx
 .PHONY: all build build-all test clean lint fmt install help \
         docs docs-all docs-clean docs-serve docs-build \
         download-specs download-specs-force check-upstream \
-        generate generate-domains generate-completions validate-generated \
+        generate generate-domains generate-operations generate-completions validate-generated gap-analysis \
         ts ts-build ts-test ts-lint ts-check ts-install ts-generate \
         ci pre-commit pre-push version
 
@@ -214,11 +214,12 @@ check-upstream-json:
 # Code Generation
 # =============================================================================
 
-# Generate all code (domains + completions) from upstream specs
-generate: download-specs generate-domains generate-completions validate-generated
+# Generate all code (domains + operations + completions) from upstream specs
+generate: download-specs generate-domains generate-operations generate-completions validate-generated
 	@echo ""
 	@echo "✅ Code generation complete!"
 	@echo "   Domains: src/types/domains_generated.ts"
+	@echo "   Operations: src/types/operations_generated.ts"
 	@echo "   Completions: completions/"
 
 # Generate TypeScript domain registry from specs
@@ -227,16 +228,29 @@ generate-domains: download-specs
 	@$(NPX) tsx scripts/generate-domains.ts
 	@echo "✓ Generated: src/types/domains_generated.ts"
 
+# Generate TypeScript operations registry from OpenAPI specs
+generate-operations: download-specs
+	@echo "🏗️  Generating operations from OpenAPI specs..."
+	@$(NPX) tsx scripts/generate-operations.ts
+	@echo "✓ Generated: src/types/operations_generated.ts"
+
 # Generate shell completion scripts
 generate-completions: generate-domains
 	@echo "🔧 Generating shell completions..."
 	@$(NPX) tsx scripts/generate-completions.ts
 	@echo "✓ Generated: completions/"
 
+# Analyze description gaps for upstream issues
+gap-analysis: download-specs
+	@echo "🔍 Analyzing description gaps..."
+	@$(NPX) tsx scripts/analyze-description-gaps.ts
+	@echo "✓ Report: docs/description-gaps.md"
+
 # Validate generated files are present
 validate-generated:
 	@echo "🔍 Validating generated code..."
 	@test -f src/types/domains_generated.ts || (echo "❌ domains_generated.ts missing" && exit 1)
+	@test -f src/types/operations_generated.ts || (echo "❌ operations_generated.ts missing" && exit 1)
 	@test -d completions || (echo "❌ completions/ directory missing" && exit 1)
 	@test -f completions/xcsh.bash || (echo "❌ xcsh.bash completion missing" && exit 1)
 	@test -f completions/_xcsh || (echo "❌ _xcsh zsh completion missing" && exit 1)
@@ -405,10 +419,12 @@ help:
 	@echo "  make check-upstream     - Check if upstream specs have updates"
 	@echo ""
 	@echo "=== Code Generation ==="
-	@echo "  make generate             - Run full generation pipeline (domains + completions)"
+	@echo "  make generate             - Run full generation pipeline (domains + operations + completions)"
 	@echo "  make generate-domains     - Generate domain registry from specs"
+	@echo "  make generate-operations  - Generate operations registry from OpenAPI specs"
 	@echo "  make generate-completions - Generate shell completion scripts"
 	@echo "  make validate-generated   - Validate generated files are present"
+	@echo "  make gap-analysis         - Analyze description gaps for upstream issues"
 	@echo ""
 	@echo "=== Compatibility Aliases ==="
 	@echo "  make ts                 - Run all checks (alias for check + test + build)"

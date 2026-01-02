@@ -1,6 +1,10 @@
 /**
  * Multi-context help system for xcsh.
  * Provides context-aware help at root, domain, and action levels.
+ *
+ * Uses the unified description resolver to source descriptions from:
+ * - Upstream API specs (single source of truth for API domains)
+ * - Custom descriptions for CLI-only domains (login, cloudstatus, completion)
  */
 
 import {
@@ -22,6 +26,10 @@ import {
 	getDomainInfo,
 } from "../types/domains.js";
 import type { DomainDefinition, SubcommandGroup } from "../domains/registry.js";
+import {
+	descriptionResolver,
+	getOperationDescription,
+} from "../descriptions/index.js";
 
 /**
  * Wrap text to specified width with indentation.
@@ -125,12 +133,14 @@ export function formatEnvironmentVariables(): string[] {
 /**
  * Format domain-level help.
  * Shows domain-specific information WITHOUT global flags or environment variables.
+ * Uses the description resolver to source descriptions from upstream API specs.
  */
 export function formatDomainHelp(domain: DomainInfo): string[] {
 	const output: string[] = ["", colorBoldWhite(`${domain.displayName}`), ""];
 
-	// Description
-	output.push(`  ${domain.description}`);
+	// Get description from resolver (uses upstream specs for API domains)
+	const descriptions = descriptionResolver.getDomainDescription(domain.name);
+	output.push(`  ${descriptions.long}`);
 	output.push("");
 
 	// Category and complexity if available
@@ -147,23 +157,23 @@ export function formatDomainHelp(domain: DomainInfo): string[] {
 	output.push(`  ${CLI_NAME} ${domain.name} <action> [options]`);
 	output.push("");
 
-	// Actions
+	// Actions - use operation descriptions from OpenAPI when available
 	output.push("ACTIONS");
-	const actionDescriptions: Record<string, string> = {
-		list: "List resources",
-		get: "Get a specific resource by name",
-		create: "Create a new resource",
-		delete: "Delete a resource",
-		replace: "Replace a resource configuration",
-		apply: "Apply configuration from file",
-		status: "Get resource status",
-		patch: "Patch a resource",
-		"add-labels": "Add labels to a resource",
-		"remove-labels": "Remove labels from a resource",
-	};
 
 	for (const action of validActions) {
-		const desc = actionDescriptions[action] ?? action;
+		// Try to get description from upstream OpenAPI spec first
+		const opInfo = getOperationDescription(domain.name, action);
+		let desc: string;
+
+		if (opInfo) {
+			// Use upstream operation summary/description
+			desc = opInfo.summary || opInfo.description || action;
+		} else {
+			// Fallback to generic action description
+			const actionDesc = descriptionResolver.getActionDescription(action);
+			desc = actionDesc.short;
+		}
+
 		output.push(`  ${action.padEnd(16)} ${desc}`);
 	}
 	output.push("");
@@ -211,78 +221,79 @@ export function formatDomainHelp(domain: DomainInfo): string[] {
 /**
  * Format action-level help.
  * Shows action-specific usage within a domain context.
+ * Uses the description resolver to source descriptions from upstream OpenAPI specs.
  */
 export function formatActionHelp(domainName: string, action: string): string[] {
 	const domain = getDomainInfo(domainName);
 	const displayDomain = domain?.displayName ?? domainName;
 
-	const actionDescriptions: Record<string, { desc: string; usage: string }> =
-		{
-			list: {
-				desc: "List all resources in the namespace",
-				usage: `${CLI_NAME} ${domainName} list [--limit N] [--label key=value]`,
-			},
-			get: {
-				desc: "Get a specific resource by name",
-				usage: `${CLI_NAME} ${domainName} get <name> [-o json|yaml|table]`,
-			},
-			create: {
-				desc: "Create a new resource",
-				usage: `${CLI_NAME} ${domainName} create <name> -f <file.yaml>`,
-			},
-			delete: {
-				desc: "Delete a resource by name",
-				usage: `${CLI_NAME} ${domainName} delete <name>`,
-			},
-			replace: {
-				desc: "Replace an existing resource configuration",
-				usage: `${CLI_NAME} ${domainName} replace <name> -f <file.yaml>`,
-			},
-			apply: {
-				desc: "Apply configuration from a file (create or update)",
-				usage: `${CLI_NAME} ${domainName} apply -f <file.yaml>`,
-			},
-			status: {
-				desc: "Get the current status of a resource",
-				usage: `${CLI_NAME} ${domainName} status <name>`,
-			},
-			patch: {
-				desc: "Patch specific fields of a resource",
-				usage: `${CLI_NAME} ${domainName} patch <name> -f <patch.yaml>`,
-			},
-			"add-labels": {
-				desc: "Add labels to a resource",
-				usage: `${CLI_NAME} ${domainName} add-labels <name> key=value`,
-			},
-			"remove-labels": {
-				desc: "Remove labels from a resource",
-				usage: `${CLI_NAME} ${domainName} remove-labels <name> key`,
-			},
-		};
+	// Try to get operation description from upstream OpenAPI specs
+	const opInfo = getOperationDescription(domainName, action);
 
-	const actionInfo = actionDescriptions[action] ?? {
-		desc: `Execute ${action} operation`,
-		usage: `${CLI_NAME} ${domainName} ${action} [options]`,
+	// Get action description from resolver (fallback)
+	const actionDesc = descriptionResolver.getActionDescription(action);
+
+	// Determine description - prefer upstream OpenAPI if available
+	const desc = opInfo
+		? opInfo.description || opInfo.summary || actionDesc.medium
+		: actionDesc.medium;
+
+	// Default usage patterns
+	const usagePatterns: Record<string, string> = {
+		list: `${CLI_NAME} ${domainName} list [--limit N] [--label key=value]`,
+		get: `${CLI_NAME} ${domainName} get <name> [-o json|yaml|table]`,
+		create: `${CLI_NAME} ${domainName} create <name> -f <file.yaml>`,
+		delete: `${CLI_NAME} ${domainName} delete <name>`,
+		replace: `${CLI_NAME} ${domainName} replace <name> -f <file.yaml>`,
+		apply: `${CLI_NAME} ${domainName} apply -f <file.yaml>`,
+		status: `${CLI_NAME} ${domainName} status <name>`,
+		patch: `${CLI_NAME} ${domainName} patch <name> -f <patch.yaml>`,
+		"add-labels": `${CLI_NAME} ${domainName} add-labels <name> key=value`,
+		"remove-labels": `${CLI_NAME} ${domainName} remove-labels <name> key`,
 	};
 
-	return [
+	const usage =
+		usagePatterns[action] ??
+		`${CLI_NAME} ${domainName} ${action} [options]`;
+
+	const output = [
 		"",
 		colorBoldWhite(`${displayDomain} - ${action}`),
 		"",
-		`  ${actionInfo.desc}`,
-		"",
-		"USAGE",
-		`  ${actionInfo.usage}`,
-		"",
-		"OPTIONS",
-		"  -n, --name <name>     Resource name",
-		"  -ns, --namespace <ns> Target namespace",
-		"  -o, --output <fmt>    Output format (json, yaml, table)",
-		"  -f, --file <path>     Configuration file",
-		"",
-		colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
+		`  ${desc}`,
 		"",
 	];
+
+	// Add purpose from x-ves-operation-metadata if available
+	if (opInfo?.purpose) {
+		output.push("PURPOSE");
+		output.push(`  ${opInfo.purpose}`);
+		output.push("");
+	}
+
+	output.push("USAGE");
+	output.push(`  ${usage}`);
+	output.push("");
+
+	// Add resource type information if from upstream
+	if (opInfo?.resourceType) {
+		output.push("RESOURCE TYPE");
+		output.push(`  ${opInfo.resourceType}`);
+		output.push("");
+	}
+
+	output.push("OPTIONS");
+	output.push("  -n, --name <name>     Resource name");
+	output.push("  -ns, --namespace <ns> Target namespace");
+	output.push("  -o, --output <fmt>    Output format (json, yaml, table)");
+	output.push("  -f, --file <path>     Configuration file");
+	output.push("");
+	output.push(
+		colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
+	);
+	output.push("");
+
+	return output;
 }
 
 /**
