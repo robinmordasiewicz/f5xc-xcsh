@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v1.0.89
+ * Generated from .specs/index.json v1.0.91
  * Run: npx tsx scripts/generate-domains.ts
  */
 
@@ -16,7 +16,7 @@ export type { ResourceMetadata, SubscriptionTier };
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "1.0.89";
+export const SPEC_VERSION = "1.0.91";
 
 /**
  * Generated domain data from upstream API specifications
@@ -68,6 +68,60 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					category: "Other",
 					supportsLogs: false,
 					supportsMetrics: false,
+				},
+			],
+		},
+	],
+	[
+		"ai_services",
+		{
+			name: "ai_services",
+			displayName: "Ai Services",
+			description:
+				"Query handling through inference routing with production and test modes. Positive and negative quality markers with detailed categorization capture assistant performance. Streaming connections support authenticated access, subscription lifecycles, and feature flags. IP provisioning services allocate infrastructure resources for model workloads across distributed systems.",
+			descriptionShort: "AI assistant queries and feedback collection.",
+			descriptionMedium:
+				"Natural language processing with quality signals and anomaly monitoring. Token authentication for data stream subscriptions.",
+			aliases: ["ai", "genai", "assistant"],
+			complexity: "simple" as const,
+			isPreview: true,
+			requiresTier: "Advanced",
+			category: "AI",
+			useCases: [
+				"Access AI-powered features",
+				"Configure AI assistant policies",
+				"Enable flow anomaly detection",
+				"Manage AI data collection",
+			],
+			relatedDomains: [],
+			icon: "🤖",
+			logoSvg:
+				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366F1'%3E%3Cpath d='M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3v7.12zM12.5 8v4.25l3.5 2.08-.72 1.21L11 13V8h1.5z'/%3E%3C/svg%3E",
+			uiCategory: "AI & Automation",
+			primaryResources: [
+				{
+					name: "ai_policy",
+					description: "AI policy for generative AI traffic control",
+					descriptionShort: "AI policy",
+					tier: "Advanced" as const,
+					icon: "🤖",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: true,
+				},
+				{
+					name: "ai_gateway",
+					description: "AI gateway for LLM API management",
+					descriptionShort: "AI gateway",
+					tier: "Advanced" as const,
+					icon: "🚀",
+					category: "API Management",
+					supportsLogs: true,
+					supportsMetrics: true,
+					dependencies: { optional: ["ai_policy"] },
+					relationshipHints: [
+						"ai_policy: Policy for AI traffic control",
+					],
 				},
 			],
 		},
@@ -1104,60 +1158,6 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					dependencies: { required: ["dns_zone"] },
 					relationshipHints: [
 						"dns_zone: Parent zone for DNS records",
-					],
-				},
-			],
-		},
-	],
-	[
-		"generative_ai",
-		{
-			name: "generative_ai",
-			displayName: "Generative Ai",
-			description:
-				"Query handling through inference routing with production and test modes. Positive and negative quality markers with detailed categorization capture assistant performance. Streaming connections support authenticated access, subscription lifecycles, and feature flags. IP provisioning services allocate infrastructure resources for model workloads across distributed systems.",
-			descriptionShort: "AI assistant queries and feedback collection.",
-			descriptionMedium:
-				"Natural language processing with quality signals and anomaly monitoring. Token authentication for data stream subscriptions.",
-			aliases: ["ai", "genai", "assistant"],
-			complexity: "simple" as const,
-			isPreview: true,
-			requiresTier: "Advanced",
-			category: "AI",
-			useCases: [
-				"Access AI-powered features",
-				"Configure AI assistant policies",
-				"Enable flow anomaly detection",
-				"Manage AI data collection",
-			],
-			relatedDomains: [],
-			icon: "🤖",
-			logoSvg:
-				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366F1'%3E%3Cpath d='M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3v7.12zM12.5 8v4.25l3.5 2.08-.72 1.21L11 13V8h1.5z'/%3E%3C/svg%3E",
-			uiCategory: "AI & Automation",
-			primaryResources: [
-				{
-					name: "ai_policy",
-					description: "AI policy for generative AI traffic control",
-					descriptionShort: "AI policy",
-					tier: "Advanced" as const,
-					icon: "🤖",
-					category: "Security",
-					supportsLogs: true,
-					supportsMetrics: true,
-				},
-				{
-					name: "ai_gateway",
-					description: "AI gateway for LLM API management",
-					descriptionShort: "AI gateway",
-					tier: "Advanced" as const,
-					icon: "🚀",
-					category: "API Management",
-					supportsLogs: true,
-					supportsMetrics: true,
-					dependencies: { optional: ["ai_policy"] },
-					relationshipHints: [
-						"ai_policy: Policy for AI traffic control",
 					],
 				},
 			],
