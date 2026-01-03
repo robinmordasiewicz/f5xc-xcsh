@@ -614,7 +614,7 @@ download_and_install() {
   INSTALL_DIR="$4"
   SUDO_CMD="$5"
 
-  ARCHIVE_NAME="${BINARY_NAME}_${VERSION}_${OS}_${ARCH}.tar.gz"
+  ARCHIVE_NAME="${BINARY_NAME}_v${VERSION}_${OS}_${ARCH}.tar.gz"
   DOWNLOAD_URL="${GITHUB_RELEASES}/v${VERSION}/${ARCHIVE_NAME}"
   CHECKSUMS_URL="${GITHUB_RELEASES}/v${VERSION}/checksums.txt"
 
