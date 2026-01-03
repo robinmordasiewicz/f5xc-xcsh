@@ -14,6 +14,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -24,15 +25,19 @@ from naming import normalize_acronyms, to_human_readable, to_title_case
 def load_spec(cli_binary_path: str) -> dict:
     """Run xcsh --spec and return the full CLI spec."""
     try:
-        # Use --spec without --output-format json for compatibility with older binaries
-        # (--spec already outputs JSON by default)
-        result = subprocess.run(
-            [cli_binary_path, "--spec"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        return json.loads(result.stdout)
+        # Use a temporary file to handle large JSON output
+        # (subprocess.PIPE has 64KB buffer limitation)
+        with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=True) as tmp:
+            subprocess.run(
+                [cli_binary_path, "--spec"],
+                stdout=tmp,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+            tmp.flush()
+            tmp.seek(0)
+            return json.load(tmp)
     except subprocess.CalledProcessError as e:
         print(f"Error running xcsh --spec: {e.stderr}", file=sys.stderr)
         sys.exit(1)
@@ -44,14 +49,18 @@ def load_spec(cli_binary_path: str) -> dict:
 def load_cloudstatus_spec(cli_binary_path: str) -> dict:
     """Run xcsh cloudstatus --spec for extended cloudstatus-specific data."""
     try:
-        # Use --spec without --output-format json for compatibility with older binaries
-        result = subprocess.run(
-            [cli_binary_path, "cloudstatus", "--spec"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        return json.loads(result.stdout)
+        # Use a temporary file to handle large JSON output
+        with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=True) as tmp:
+            subprocess.run(
+                [cli_binary_path, "cloudstatus", "--spec"],
+                stdout=tmp,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+            tmp.flush()
+            tmp.seek(0)
+            return json.load(tmp)
     except subprocess.CalledProcessError as e:
         # cloudstatus --spec might not be available, return empty dict
         print(f"Note: xcsh cloudstatus --spec not available: {e.stderr}", file=sys.stderr)
