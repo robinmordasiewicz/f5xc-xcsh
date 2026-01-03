@@ -21,7 +21,7 @@ export const createCommand: CommandDefinition = {
 	usage: "<name> --url <api-url> --token <api-token> [--namespace <ns>]",
 	aliases: ["add", "new"],
 
-	async execute(args, _session) {
+	async execute(args, session) {
 		const manager = getProfileManager();
 
 		// Parse arguments
@@ -102,24 +102,26 @@ export const createCommand: CommandDefinition = {
 			return errorResult(result.message);
 		}
 
-		// Build connection info for display
+		// Auto-activate the new profile
+		await session.switchProfile(name);
+
+		// Build connection info for display (now reflecting activated state)
 		const connectionInfo = buildConnectionInfo(
 			name,
 			apiUrl,
 			true, // hasToken - we just saved it
-			defaultNamespace || "default",
-			false, // Not connected yet - profile just created
+			defaultNamespace || session.getNamespace(),
+			session.isAuthenticated(),
+			session.isTokenValidated(),
+			session.getValidationError() ?? undefined,
 		);
 
 		// Format connection table
 		const tableLines = formatConnectionTable(connectionInfo);
 
-		return successResult([
-			`Profile '${name}' created successfully.`,
-			``,
-			...tableLines,
-			``,
-			`Use 'login profile use ${name}' to activate this profile.`,
-		]);
+		return successResult(
+			[`Profile '${name}' created and activated.`, ``, ...tableLines],
+			true, // contextChanged - REPL prompt should update
+		);
 	},
 };
