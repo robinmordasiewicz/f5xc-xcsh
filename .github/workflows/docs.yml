@@ -822,17 +822,34 @@ jobs:
       - name: Generate subscription documentation
         id: generate-subscription-docs
         run: |
-          # Find xcsh binary
+          # Find xcsh binary (same search order as generate-command-docs)
           XCSH_PATH=""
-          for path in /opt/homebrew/bin/xcsh /usr/local/bin/xcsh "$HOME/.local/bin/xcsh"; do
-            if [ -x "$path" ]; then
-              XCSH_PATH="$path"
-              break
-            fi
-          done
 
+          # 1. Try Homebrew Caskroom (ARM Mac) - primary location
+          if [ -z "$XCSH_PATH" ]; then
+            XCSH_PATH=$(find /opt/homebrew/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
+          fi
+
+          # 2. Try Homebrew Caskroom (Intel Mac)
           if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            XCSH_PATH=$(find /opt/homebrew/Caskroom/xcsh /usr/local/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
+            XCSH_PATH=$(find /usr/local/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
+          fi
+
+          # 3. Try script install location
+          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
+            if [ -x "$HOME/.local/bin/xcsh" ]; then
+              XCSH_PATH="$HOME/.local/bin/xcsh"
+            fi
+          fi
+
+          # 4. Try Homebrew bin symlinks (last resort)
+          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
+            for path in /opt/homebrew/bin/xcsh /usr/local/bin/xcsh; do
+              if [ -x "$path" ]; then
+                XCSH_PATH="$path"
+                break
+              fi
+            done
           fi
 
           if [ -n "$XCSH_PATH" ] && [ -x "$XCSH_PATH" ]; then
