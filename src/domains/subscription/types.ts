@@ -336,6 +336,15 @@ export interface AddonUnsubscribeRequest {
 }
 
 /**
+ * API Error Information
+ */
+export interface APIError {
+	endpoint: string;
+	message: string;
+	statusCode?: number;
+}
+
+/**
  * Subscription Overview - Combined summary for default command
  */
 export interface SubscriptionOverview {
@@ -356,6 +365,8 @@ export interface SubscriptionOverview {
 		outstanding_balance?: number;
 		payment_method_status?: string;
 	};
+	/** API errors encountered during data retrieval */
+	errors?: APIError[];
 }
 
 /**

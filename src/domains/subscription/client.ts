@@ -28,6 +28,7 @@ import type {
 	AddonSubscribeRequest,
 	AddonUnsubscribeRequest,
 	SubscriptionOverview,
+	APIError,
 } from "./types.js";
 
 /**
@@ -451,6 +452,25 @@ export class SubscriptionClient {
 	// ============ Overview / Reports ============
 
 	/**
+	 * Parse error message from API error and create APIError object
+	 */
+	private createAPIError(endpoint: string, error: unknown): APIError {
+		if (error instanceof Error) {
+			// Parse "Failed to X: 404 - {...}" format
+			const match = error.message.match(/:\s*(\d+)\s*-\s*(.+)$/);
+			if (match && match[1] && match[2]) {
+				return {
+					endpoint,
+					statusCode: parseInt(match[1], 10),
+					message: match[2].trim(),
+				};
+			}
+			return { endpoint, message: error.message };
+		}
+		return { endpoint, message: String(error) };
+	}
+
+	/**
 	 * Get subscription overview (combines multiple API calls)
 	 */
 	async getOverview(): Promise<SubscriptionOverview> {
@@ -465,10 +485,15 @@ export class SubscriptionClient {
 			]);
 
 		const overview: SubscriptionOverview = {};
+		const errors: APIError[] = [];
 
 		// Plan
 		if (plan.status === "fulfilled") {
 			overview.plan = plan.value;
+		} else {
+			errors.push(
+				this.createAPIError("usage_plans/current", plan.reason),
+			);
 		}
 
 		// Addon summary
@@ -485,6 +510,8 @@ export class SubscriptionClient {
 					.length,
 				total: addonList.length,
 			};
+		} else {
+			errors.push(this.createAPIError("addon_services", addons.reason));
 		}
 
 		// Quota summary
@@ -498,11 +525,17 @@ export class SubscriptionClient {
 				total: usage.length,
 				critical_quotas: critical,
 			};
+		} else {
+			errors.push(this.createAPIError("quota/usage", quotaUsage.reason));
 		}
 
 		// Current usage
 		if (currentUsage.status === "fulfilled") {
 			overview.current_usage = currentUsage.value;
+		} else {
+			errors.push(
+				this.createAPIError("current_usage", currentUsage.reason),
+			);
 		}
 
 		// Billing status
@@ -512,6 +545,18 @@ export class SubscriptionClient {
 			overview.billing_status = {
 				payment_method_status: primary?.status ?? "NO_PAYMENT_METHOD",
 			};
+		} else {
+			errors.push(
+				this.createAPIError(
+					"billing/payment_methods",
+					paymentMethods.reason,
+				),
+			);
+		}
+
+		// Include errors if any occurred
+		if (errors.length > 0) {
+			overview.errors = errors;
 		}
 
 		return overview;

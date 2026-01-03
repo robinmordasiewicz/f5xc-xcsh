@@ -110,6 +110,15 @@ function progressBar(percentage: number, width = 10): string {
 	return "\u2588".repeat(filled) + "\u2591".repeat(empty);
 }
 
+/**
+ * Helper: truncate string in the middle with ellipsis
+ */
+function truncateMiddle(str: string, maxLen: number): string {
+	if (str.length <= maxLen) return str;
+	const half = Math.floor((maxLen - 3) / 2);
+	return str.slice(0, half) + "..." + str.slice(-(maxLen - half - 3));
+}
+
 // ============================================================================
 // DEFAULT SHOW COMMAND
 // ============================================================================
@@ -212,6 +221,28 @@ const showCommand: CommandDefinition = {
 				lines.push(
 					`\u2502 Payment Status: ${padEnd(pmStatus, 38)} \u2502`,
 				);
+			}
+
+			// API Errors (if any)
+			if (overview.errors && overview.errors.length > 0) {
+				lines.push(
+					"\u251C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+				);
+				lines.push(
+					`\u2502 \u26A0\uFE0F  API Errors (${overview.errors.length}):${padEnd("", 36)} \u2502`,
+				);
+				for (const error of overview.errors) {
+					const statusInfo = error.statusCode
+						? ` [${error.statusCode}]`
+						: "";
+					const errorMsg = truncateMiddle(
+						`${error.endpoint}${statusInfo}`,
+						52,
+					);
+					lines.push(
+						`\u2502   \u2022 ${padEnd(errorMsg, 50)} \u2502`,
+					);
+				}
 			}
 
 			lines.push(
