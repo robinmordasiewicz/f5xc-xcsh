@@ -301,18 +301,15 @@ nav:
       - Remove Labels: commands/dns/remove-labels/index.md
       - Replace: commands/dns/replace/index.md
       - Status: commands/dns/status/index.md
-    - Generative Ai:
-      - Generative Ai Overview: commands/generative_ai/index.md
-      - Add Labels: commands/generative_ai/add-labels/index.md
-      - Apply: commands/generative_ai/apply/index.md
-      - Create: commands/generative_ai/create/index.md
-      - Delete: commands/generative_ai/delete/index.md
-      - Get: commands/generative_ai/get/index.md
-      - List: commands/generative_ai/list/index.md
-      - Patch: commands/generative_ai/patch/index.md
-      - Remove Labels: commands/generative_ai/remove-labels/index.md
-      - Replace: commands/generative_ai/replace/index.md
-      - Status: commands/generative_ai/status/index.md
+    - AI Services:
+      - AI Services Overview: commands/ai_services/index.md
+      - Query: commands/ai_services/query/index.md
+      - Chat: commands/ai_services/chat/index.md
+      - Feedback: commands/ai_services/feedback/index.md
+      - Eval:
+        - Eval Overview: commands/ai_services/eval/index.md
+        - Query: commands/ai_services/eval/query.md
+        - Feedback: commands/ai_services/eval/feedback.md
     - Login:
       - Login Overview: commands/login/index.md
       - Banner: commands/login/banner/index.md

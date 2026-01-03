@@ -6,10 +6,7 @@ import { customDomains } from "./registry.js";
 import { loginDomain } from "./login/index.js";
 import { cloudstatusDomain, cloudstatusAliases } from "./cloudstatus/index.js";
 import { completionDomain } from "./completion/index.js";
-import {
-	generativeAiDomain,
-	generativeAiAliases,
-} from "./generative_ai/index.js";
+import { aiServicesDomain, aiServicesAliases } from "./ai_services/index.js";
 import { domainRegistry } from "../types/domains.js";
 import {
 	completionRegistry,
@@ -22,7 +19,7 @@ import {
 customDomains.register(loginDomain);
 customDomains.register(cloudstatusDomain);
 customDomains.register(completionDomain);
-customDomains.register(generativeAiDomain);
+customDomains.register(aiServicesDomain);
 
 // Populate unified completion registry
 // Custom domains first (higher priority)
@@ -31,9 +28,16 @@ for (const domain of customDomains.all()) {
 }
 
 // API-generated domains
+// Domains that are completely replaced by custom implementations (clean break)
+const excludedApiDomains = new Set(["generative_ai"]);
+
 for (const [, info] of domainRegistry) {
 	// Skip if already registered by custom domain (custom takes precedence)
-	if (!completionRegistry.has(info.name)) {
+	// Skip if explicitly excluded (replaced by custom domain with different name)
+	if (
+		!completionRegistry.has(info.name) &&
+		!excludedApiDomains.has(info.name)
+	) {
 		completionRegistry.registerDomain(fromApiDomain(info));
 	}
 }
@@ -46,9 +50,9 @@ for (const alias of cloudstatusAliases) {
 	domainAliases.set(alias, "cloudstatus");
 }
 
-// Register generative_ai aliases
-for (const alias of generativeAiAliases) {
-	domainAliases.set(alias, "generative_ai");
+// Register ai_services aliases
+for (const alias of aiServicesAliases) {
+	domainAliases.set(alias, "ai_services");
 }
 
 // Export registry and types
@@ -70,7 +74,7 @@ export { completionRegistry } from "../completion/index.js";
 export { loginDomain } from "./login/index.js";
 export { cloudstatusDomain } from "./cloudstatus/index.js";
 export { completionDomain } from "./completion/index.js";
-export { generativeAiDomain } from "./generative_ai/index.js";
+export { aiServicesDomain } from "./ai_services/index.js";
 
 /**
  * Resolve domain alias to canonical name

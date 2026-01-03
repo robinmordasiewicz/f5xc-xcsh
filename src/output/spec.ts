@@ -250,6 +250,194 @@ export function buildCloudstatusSpecs(): Record<string, CommandSpec> {
 }
 
 /**
+ * Build spec for ai_services domain commands
+ */
+export function buildAIServicesSpecs(): Record<string, CommandSpec> {
+	return {
+		query: buildCommandSpec({
+			command: "ai_services query",
+			description:
+				"Query the F5 Distributed Cloud AI assistant with a natural language question. Get intelligent responses about load balancers, WAF, sites, security events, and platform operations.",
+			usage: "xcsh ai_services query <question> [--namespace <ns>] [--output <format>]",
+			flags: [
+				{
+					name: "--namespace",
+					alias: "-ns",
+					description: "Namespace context for the query",
+					type: "string",
+				},
+			],
+			examples: [
+				{
+					command:
+						'xcsh ai_services query "What load balancers exist?"',
+					description: "Ask about load balancers in your tenant",
+				},
+				{
+					command:
+						'xcsh ai query "Show me all WAF policies" --output json',
+					description: "Get WAF policies as JSON using short alias",
+				},
+				{
+					command:
+						'xcsh genai query "Are there any security events?" --namespace production',
+					description:
+						"Query security events in a specific namespace",
+				},
+			],
+			category: "ai_services",
+			related: ["ai_services chat", "ai_services feedback"],
+		}),
+
+		chat: buildCommandSpec({
+			command: "ai_services chat",
+			description:
+				"Start an interactive multi-turn conversation with the AI assistant. Maintains context across exchanges for follow-up questions and complex troubleshooting.",
+			usage: "xcsh ai_services chat [--namespace <ns>]",
+			flags: [
+				{
+					name: "--namespace",
+					alias: "-ns",
+					description: "Default namespace context for the session",
+					type: "string",
+				},
+			],
+			examples: [
+				{
+					command: "xcsh ai_services chat",
+					description: "Start an interactive chat session",
+				},
+				{
+					command: "xcsh ai chat --namespace staging",
+					description: "Start chat with default namespace context",
+				},
+			],
+			category: "ai_services",
+			related: ["ai_services query", "ai_services feedback"],
+		}),
+
+		feedback: buildCommandSpec({
+			command: "ai_services feedback",
+			description:
+				"Submit feedback for AI responses to improve quality. Provide positive feedback for helpful responses or negative feedback with specific reasons.",
+			usage: "xcsh ai_services feedback [--positive | --negative <type>] [--comment <text>] [--query-id <id>]",
+			flags: [
+				{
+					name: "--positive",
+					description: "Mark the response as helpful",
+					type: "boolean",
+				},
+				{
+					name: "--negative",
+					description: "Mark response as needing improvement",
+					type: "string",
+					choices: [
+						"inaccurate",
+						"irrelevant",
+						"incomplete",
+						"poor_format",
+						"slow",
+						"other",
+					],
+				},
+				{
+					name: "--comment",
+					alias: "-c",
+					description: "Additional feedback comments",
+					type: "string",
+				},
+				{
+					name: "--query-id",
+					description: "Specific query ID to provide feedback for",
+					type: "string",
+				},
+			],
+			examples: [
+				{
+					command: "xcsh ai_services feedback --positive",
+					description: "Mark last response as helpful",
+				},
+				{
+					command:
+						"xcsh ai feedback --negative inaccurate --comment 'Response was outdated'",
+					description: "Submit negative feedback with reason",
+				},
+			],
+			category: "ai_services",
+			related: ["ai_services query", "ai_services chat"],
+		}),
+
+		"eval query": buildCommandSpec({
+			command: "ai_services eval query",
+			description:
+				"Test AI query access with RBAC evaluation. Evaluate whether a query would be permitted under current access control configuration.",
+			usage: "xcsh ai_services eval query <question> [--namespace <ns>]",
+			flags: [
+				{
+					name: "--namespace",
+					alias: "-ns",
+					description: "Namespace context for RBAC evaluation",
+					type: "string",
+				},
+			],
+			examples: [
+				{
+					command:
+						'xcsh ai_services eval query "List all namespaces"',
+					description: "Evaluate query access permissions",
+				},
+				{
+					command:
+						'xcsh ai eval query "Show security events" --namespace production',
+					description: "Test namespace-scoped access",
+				},
+			],
+			category: "ai_services",
+			related: ["ai_services eval feedback", "ai_services query"],
+		}),
+
+		"eval feedback": buildCommandSpec({
+			command: "ai_services eval feedback",
+			description:
+				"Test feedback submission access with RBAC evaluation. Verify feedback operations would be permitted without actually submitting.",
+			usage: "xcsh ai_services eval feedback [--positive | --negative <type>]",
+			flags: [
+				{
+					name: "--positive",
+					description: "Test positive feedback submission",
+					type: "boolean",
+				},
+				{
+					name: "--negative",
+					description: "Test negative feedback submission",
+					type: "string",
+					choices: [
+						"inaccurate",
+						"irrelevant",
+						"incomplete",
+						"poor_format",
+						"slow",
+						"other",
+					],
+				},
+			],
+			examples: [
+				{
+					command: "xcsh ai_services eval feedback --positive",
+					description: "Evaluate positive feedback access",
+				},
+				{
+					command: "xcsh ai eval feedback --negative incomplete",
+					description: "Test negative feedback permission",
+				},
+			],
+			category: "ai_services",
+			related: ["ai_services eval query", "ai_services feedback"],
+		}),
+	};
+}
+
+/**
  * Build spec for login domain commands
  */
 export function buildLoginSpecs(): Record<string, CommandSpec> {
@@ -407,6 +595,7 @@ export function buildLoginSpecs(): Record<string, CommandSpec> {
 export function getCommandSpec(commandPath: string): CommandSpec | undefined {
 	const cloudstatusSpecs = buildCloudstatusSpecs();
 	const loginSpecs = buildLoginSpecs();
+	const aiServicesSpecs = buildAIServicesSpecs();
 
 	// Normalize command path
 	const normalized = commandPath.toLowerCase().trim();
@@ -423,6 +612,15 @@ export function getCommandSpec(commandPath: string): CommandSpec | undefined {
 		return loginSpecs[subcommand];
 	}
 
+	// Check ai_services commands (including aliases: ai, genai, assistant)
+	const aiAliases = ["ai_services ", "ai ", "genai ", "assistant "];
+	for (const alias of aiAliases) {
+		if (normalized.startsWith(alias)) {
+			const subcommand = normalized.replace(alias, "");
+			return aiServicesSpecs[subcommand];
+		}
+	}
+
 	return undefined;
 }
 
@@ -433,6 +631,7 @@ export function listAllCommandSpecs(): CommandSpec[] {
 	return [
 		...Object.values(buildCloudstatusSpecs()),
 		...Object.values(buildLoginSpecs()),
+		...Object.values(buildAIServicesSpecs()),
 	];
 }
 

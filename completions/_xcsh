@@ -27,7 +27,7 @@ _xcsh() {
             local -a domains builtins
             domains=(
             'admin_console_and_ui:Static UI components and console assets.'
-            'ai_services:AI assistant queries and feedback collection.'
+            'ai_services:AI assistant queries and feedback'
             'api:Interface definitions, schema validation, and grouping.'
             'authentication:Authentication API'
             'bigip:iRules, data groups, and APM integration.'
@@ -45,7 +45,6 @@ _xcsh() {
             'data_intelligence:Data Intelligence API'
             'ddos:Volumetric attack mitigation and traffic scrubbing.'
             'dns:Zones, record types, and load balancing.'
-            'generative_ai:AI assistant queries and feedback'
             'login:Authentication and session management'
             'managed_kubernetes:Cluster RBAC, pod security, and container registries.'
             'marketplace:Add-on services, connectors, and TPM policies.'
@@ -71,9 +70,6 @@ _xcsh() {
             'console-ui:Alias for admin_console_and_ui'
             'ui-assets:Alias for admin_console_and_ui'
             'static-components:Alias for admin_console_and_ui'
-            'ai:Alias for ai_services'
-            'genai:Alias for ai_services'
-            'assistant:Alias for ai_services'
             'apisec:Alias for api'
             'api-discovery:Alias for api'
             'authn:Alias for authentication'
@@ -189,14 +185,14 @@ _xcsh() {
             ;;
         (action)
             case ${line[1]} in
+        (ai_services)
+            _values 'command' 'query:Query the AI assistant' 'chat:Interactive AI chat mode' 'feedback:Submit feedback for AI responses' 'eval:RBAC testing mode commands'
+            ;;
         (cloudstatus)
             _values 'command' 'status:Get overall cloud status indicator' 'summary:Get complete status summary' 'components:List all components and status' 'incidents:List active and recent incidents' 'maintenance:List scheduled maintenance windows'
             ;;
         (completion)
             _values 'command' 'bash:Generate bash completion script' 'zsh:Generate zsh completion script' 'fish:Generate fish completion script'
-            ;;
-        (generative_ai)
-            _values 'command' 'query:Query the AI assistant' 'chat:Interactive AI chat mode' 'feedback:Submit feedback for AI responses' 'eval:RBAC testing mode commands'
             ;;
         (login)
             _values 'command' 'banner:Display xcsh banner with logo' 'profile:Manage saved connection profiles' 'context:Manage default namespace context'
