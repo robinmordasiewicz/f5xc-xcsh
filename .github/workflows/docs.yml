@@ -857,7 +857,8 @@ jobs:
             python scripts/generate-subscription-docs.py \
               --cli-binary "$XCSH_PATH" \
               --output docs/commands/subscription \
-              --clean
+              --clean \
+              --update-nav
             echo "✅ Subscription documentation generated successfully"
           else
             echo "::warning::xcsh binary not found - skipping subscription documentation"

@@ -11,12 +11,14 @@ Usage:
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
+import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from naming import normalize_acronyms, to_human_readable, to_title_case
@@ -302,6 +304,65 @@ def generate_nav_structure(cloudstatus_cmd: dict) -> list:
     return nav
 
 
+def update_mkdocs_nav(nav: list, mkdocs_path: Path = None) -> None:
+    """Update mkdocs.yml with Cloud Status navigation.
+
+    Finds and replaces the Cloud Status section within the Commands nav.
+    Uses text-based replacement to preserve Python tags in mkdocs.yml.
+    """
+    if mkdocs_path is None:
+        mkdocs_path = Path("mkdocs.yml")
+
+    if not mkdocs_path.exists():
+        print(f"Warning: {mkdocs_path} not found, skipping mkdocs.yml update")
+        return
+
+    print(f"\nUpdating {mkdocs_path} with Cloud Status navigation...")
+
+    # Read current mkdocs.yml as text
+    content = mkdocs_path.read_text()
+
+    # Generate YAML for the Cloud Status section
+    cloudstatus_yaml = yaml.dump(
+        [{"Cloud Status": nav}],
+        default_flow_style=False,
+        sort_keys=False,
+        allow_unicode=True,
+        indent=2,
+    )
+
+    # Indent the cloudstatus section properly (4 spaces for nested nav items under Commands)
+    indented_cloudstatus = "\n".join(
+        "    " + line if line.strip() else line for line in cloudstatus_yaml.strip().split("\n")
+    )
+
+    # Pattern to find Cloud Status section in nav
+    # Matches "    - Cloud Status:" and everything until next "    - " at same level
+    pattern = (
+        r"(    - Cloud Status:.*?)(?=\n    - [A-Z]|\n  - [A-Z]|\ntheme:|\nextra:|\n[a-z_]+:|\Z)"
+    )
+
+    if re.search(pattern, content, re.DOTALL):
+        new_content = re.sub(pattern, indented_cloudstatus, content, flags=re.DOTALL)
+        mkdocs_path.write_text(new_content)
+        print(f"  Updated: {mkdocs_path}")
+    else:
+        # Cloud Status section not found - try to add it after the Commands section
+        # Find the position after "  - Commands:" section to insert Cloud Status
+        commands_pattern = r"(  - Commands:\n(?:    - [^\n]+\n)+)"
+        match = re.search(commands_pattern, content)
+
+        if match:
+            # Insert cloudstatus nav after the last item in Commands
+            insert_pos = match.end()
+            new_content = content[:insert_pos] + indented_cloudstatus + "\n" + content[insert_pos:]
+            mkdocs_path.write_text(new_content)
+            print(f"  Added Cloud Status section to: {mkdocs_path}")
+        else:
+            print("Warning: Could not find Commands section in mkdocs.yml nav")
+            print("  Run with --print-nav to see the navigation structure")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate cloudstatus documentation from CLI --spec"
@@ -324,6 +385,11 @@ def main():
     )
     parser.add_argument(
         "--print-nav", action="store_true", help="Print navigation structure for mkdocs.yml"
+    )
+    parser.add_argument(
+        "--update-nav",
+        action="store_true",
+        help="Update mkdocs.yml with generated Cloud Status navigation",
     )
 
     args = parser.parse_args()
@@ -356,7 +422,6 @@ def main():
     # Print nav structure if requested
     if args.print_nav:
         nav = generate_nav_structure(cloudstatus_cmd)
-        import yaml
 
         print("\n# Navigation structure for mkdocs.yml:")
         print("    - Cloud Status:")
@@ -393,8 +458,12 @@ def main():
 
     print("\nGenerated documentation for cloudstatus command group")
 
-    # Print nav structure hint
-    print("\nTo add to mkdocs.yml, run with --print-nav flag")
+    # Update mkdocs.yml if requested
+    if args.update_nav:
+        nav = generate_nav_structure(cloudstatus_cmd)
+        update_mkdocs_nav(nav)
+    else:
+        print("\nTo add to mkdocs.yml, run with --print-nav or --update-nav flag")
 
 
 if __name__ == "__main__":

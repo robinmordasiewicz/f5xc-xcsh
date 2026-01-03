@@ -11,12 +11,14 @@ Usage:
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
+import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from naming import normalize_acronyms, to_human_readable, to_title_case
@@ -314,6 +316,65 @@ def generate_nav_structure(subscription_cmd: dict) -> list:
     return nav
 
 
+def update_mkdocs_nav(nav: list, mkdocs_path: Path = None) -> None:
+    """Update mkdocs.yml with Subscription navigation.
+
+    Finds and replaces the Subscription section within the Commands nav.
+    Uses text-based replacement to preserve Python tags in mkdocs.yml.
+    """
+    if mkdocs_path is None:
+        mkdocs_path = Path("mkdocs.yml")
+
+    if not mkdocs_path.exists():
+        print(f"Warning: {mkdocs_path} not found, skipping mkdocs.yml update")
+        return
+
+    print(f"\nUpdating {mkdocs_path} with Subscription navigation...")
+
+    # Read current mkdocs.yml as text
+    content = mkdocs_path.read_text()
+
+    # Generate YAML for the Subscription section
+    subscription_yaml = yaml.dump(
+        [{"Subscription": nav}],
+        default_flow_style=False,
+        sort_keys=False,
+        allow_unicode=True,
+        indent=2,
+    )
+
+    # Indent the subscription section properly (4 spaces for nested nav items under Commands)
+    indented_subscription = "\n".join(
+        "    " + line if line.strip() else line for line in subscription_yaml.strip().split("\n")
+    )
+
+    # Pattern to find Subscription section in nav
+    # Matches "    - Subscription:" and everything until next "    - " at same level
+    pattern = (
+        r"(    - Subscription:.*?)(?=\n    - [A-Z]|\n  - [A-Z]|\ntheme:|\nextra:|\n[a-z_]+:|\Z)"
+    )
+
+    if re.search(pattern, content, re.DOTALL):
+        new_content = re.sub(pattern, indented_subscription, content, flags=re.DOTALL)
+        mkdocs_path.write_text(new_content)
+        print(f"  Updated: {mkdocs_path}")
+    else:
+        # Subscription section not found - try to add it after the Commands section
+        # Find the position after "  - Commands:" section to insert Subscription
+        commands_pattern = r"(  - Commands:\n(?:    - [^\n]+\n)+)"
+        match = re.search(commands_pattern, content)
+
+        if match:
+            # Insert subscription nav after the last item in Commands
+            insert_pos = match.end()
+            new_content = content[:insert_pos] + indented_subscription + "\n" + content[insert_pos:]
+            mkdocs_path.write_text(new_content)
+            print(f"  Added Subscription section to: {mkdocs_path}")
+        else:
+            print("Warning: Could not find Commands section in mkdocs.yml nav")
+            print("  Run with --print-nav to see the navigation structure")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate subscription documentation from CLI --spec"
@@ -336,6 +397,11 @@ def main():
     )
     parser.add_argument(
         "--print-nav", action="store_true", help="Print navigation structure for mkdocs.yml"
+    )
+    parser.add_argument(
+        "--update-nav",
+        action="store_true",
+        help="Update mkdocs.yml with generated Subscription navigation",
     )
 
     args = parser.parse_args()
@@ -363,7 +429,6 @@ def main():
 
     if args.print_nav:
         nav = generate_nav_structure(subscription_cmd)
-        import yaml
 
         print("\n# Navigation structure for mkdocs.yml:")
         print("- Subscription:")
@@ -392,7 +457,13 @@ def main():
             generate_standalone_command(env, cmd, output_dir)
 
     print("\nGenerated documentation for subscription command group")
-    print("\nTo add to mkdocs.yml, run with --print-nav flag")
+
+    # Update mkdocs.yml if requested
+    if args.update_nav:
+        nav = generate_nav_structure(subscription_cmd)
+        update_mkdocs_nav(nav)
+    else:
+        print("\nTo add to mkdocs.yml, run with --print-nav or --update-nav flag")
 
 
 if __name__ == "__main__":
