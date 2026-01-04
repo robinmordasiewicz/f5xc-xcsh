@@ -20,7 +20,10 @@ import {
 import { FEEDBACK_TYPE_MAP } from "./types.js";
 
 /**
- * Parse chat args for namespace and spec flag
+ * Parse chat args for namespace, spec flag, and output format
+ *
+ * Note: Chat is inherently interactive, so output formats have limited
+ * applicability. Only 'none' (suppress) and 'spec' are meaningful.
  */
 function parseChatArgs(
 	args: string[],
@@ -28,8 +31,9 @@ function parseChatArgs(
 ): {
 	spec: boolean;
 	namespace: string;
+	suppressOutput: boolean;
 } {
-	const { remainingArgs } = parseDomainOutputFlags(
+	const { options, remainingArgs } = parseDomainOutputFlags(
 		args,
 		session.getOutputFormat(),
 	);
@@ -51,7 +55,11 @@ function parseChatArgs(
 		i++;
 	}
 
-	return { spec, namespace };
+	return {
+		spec,
+		namespace,
+		suppressOutput: options.format === "none",
+	};
 }
 
 /**
@@ -342,7 +350,10 @@ export const chatCommand: CommandDefinition = {
 	aliases: ["interactive", "i"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
-		const { spec, namespace } = parseChatArgs(args, session);
+		const { spec, namespace, suppressOutput } = parseChatArgs(
+			args,
+			session,
+		);
 
 		// Handle --spec flag
 		if (spec) {
@@ -350,6 +361,11 @@ export const chatCommand: CommandDefinition = {
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}
+		}
+
+		// Handle --output none
+		if (suppressOutput) {
+			return successResult([]);
 		}
 
 		// Check if running in a TTY
