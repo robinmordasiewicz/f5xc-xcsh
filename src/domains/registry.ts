@@ -214,12 +214,34 @@ class DomainRegistry {
 			// Find command in subgroup
 			const cmd = subgroup.commands.get(cmdName);
 			if (cmd) {
+				// Validate args before executing
+				const commandPath = `${domainName} ${firstArg} ${cmdName}`;
+				const validationError = this.validateCommandArgs(
+					cmd,
+					cmdArgs,
+					subgroup.commands,
+					commandPath,
+				);
+				if (validationError) {
+					return validationError;
+				}
 				return cmd.execute(cmdArgs, session);
 			}
 
 			// Check aliases
 			for (const [, command] of subgroup.commands) {
 				if (command.aliases?.includes(cmdName)) {
+					// Validate args before executing
+					const commandPath = `${domainName} ${firstArg} ${command.name}`;
+					const validationError = this.validateCommandArgs(
+						command,
+						cmdArgs,
+						subgroup.commands,
+						commandPath,
+					);
+					if (validationError) {
+						return validationError;
+					}
 					return command.execute(cmdArgs, session);
 				}
 			}
@@ -240,12 +262,34 @@ class DomainRegistry {
 		// Check for direct command at domain level
 		const cmd = domain.commands.get(firstArg);
 		if (cmd) {
+			// Validate args before executing
+			const commandPath = `${domainName} ${firstArg}`;
+			const validationError = this.validateCommandArgs(
+				cmd,
+				restArgs,
+				domain.commands,
+				commandPath,
+			);
+			if (validationError) {
+				return validationError;
+			}
 			return cmd.execute(restArgs, session);
 		}
 
 		// Check aliases
 		for (const [, command] of domain.commands) {
 			if (command.aliases?.includes(firstArg)) {
+				// Validate args before executing
+				const commandPath = `${domainName} ${command.name}`;
+				const validationError = this.validateCommandArgs(
+					command,
+					restArgs,
+					domain.commands,
+					commandPath,
+				);
+				if (validationError) {
+					return validationError;
+				}
 				return command.execute(restArgs, session);
 			}
 		}
@@ -374,6 +418,87 @@ class DomainRegistry {
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,
+		};
+	}
+
+	/**
+	 * Validate command arguments and check for conflicts with sibling commands.
+	 * Returns an error result if validation fails, undefined if OK to proceed.
+	 */
+	private validateCommandArgs(
+		cmd: CommandDefinition,
+		cmdArgs: string[],
+		siblingCommands: Map<string, CommandDefinition>,
+		commandPath: string,
+	): DomainCommandResult | undefined {
+		// If no extra args, nothing to validate
+		if (cmdArgs.length === 0) {
+			return undefined;
+		}
+
+		// If command has a usage pattern expecting args, allow them
+		if (cmd.usage && cmd.usage.trim().length > 0) {
+			return undefined;
+		}
+
+		// Check if first extra arg is a sibling command (conflict)
+		const firstExtraArg = cmdArgs[0]?.toLowerCase() ?? "";
+
+		// Direct match with sibling command
+		const siblingCmd = siblingCommands.get(firstExtraArg);
+		if (siblingCmd) {
+			// Build the suggested command
+			const pathParts = commandPath.split(" ");
+			pathParts.pop(); // Remove the current command name
+			const suggestedPath = [...pathParts, ...cmdArgs].join(" ");
+
+			return {
+				output: [
+					`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}'.`,
+					``,
+					`Did you mean: ${suggestedPath}`,
+				],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: `Conflicting subcommands: '${cmd.name}' and '${firstExtraArg}'`,
+			};
+		}
+
+		// Check if first extra arg matches a sibling command alias
+		for (const [siblingName, sibling] of siblingCommands) {
+			if (sibling.aliases?.includes(firstExtraArg)) {
+				const pathParts = commandPath.split(" ");
+				pathParts.pop();
+				const suggestedPath = [...pathParts, ...cmdArgs].join(" ");
+
+				return {
+					output: [
+						`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}' (alias for '${siblingName}').`,
+						``,
+						`Did you mean: ${suggestedPath}`,
+					],
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+					error: `Conflicting subcommands: '${cmd.name}' and '${firstExtraArg}'`,
+				};
+			}
+		}
+
+		// Command has no usage pattern but received args - warn about unexpected args
+		return {
+			output: [
+				`Error: Unexpected arguments for '${cmd.name}': ${cmdArgs.join(" ")}`,
+				``,
+				`Usage: ${commandPath}`,
+				``,
+				`The '${cmd.name}' command does not accept additional arguments.`,
+			],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: `Unexpected arguments: ${cmdArgs.join(" ")}`,
 		};
 	}
 }
