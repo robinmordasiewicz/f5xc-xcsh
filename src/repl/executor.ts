@@ -873,7 +873,7 @@ function domainToResourcePath(domain: string): string {
 /**
  * Parsed command arguments
  */
-interface ParsedArgs {
+export interface ParsedArgs {
 	resourceType: string | undefined;
 	name: string | undefined;
 	namespace: string | undefined;
@@ -887,7 +887,7 @@ interface ParsedArgs {
  * @param args - Command arguments to parse
  * @param domainResourceTypes - Set of valid resource type names for the current domain
  */
-function parseCommandArgs(
+export function parseCommandArgs(
 	args: string[],
 	domainResourceTypes?: Set<string>,
 ): ParsedArgs {
@@ -898,6 +898,9 @@ function parseCommandArgs(
 	let spec = false;
 	let noColor = false;
 	let positionalIndex = 0;
+
+	// Track indices consumed as flag values to properly handle trailing positional args
+	const consumedAsValue = new Set<number>();
 
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i] ?? "";
@@ -910,15 +913,18 @@ function parseCommandArgs(
 				case "namespace":
 				case "ns":
 					namespace = nextArg;
+					consumedAsValue.add(i + 1);
 					i++;
 					break;
 				case "name":
 					name = nextArg;
+					consumedAsValue.add(i + 1);
 					i++;
 					break;
 				case "output":
 					if (nextArg) {
 						outputFormat = parseOutputFormat(nextArg);
+						consumedAsValue.add(i + 1);
 						i++;
 					}
 					break;
@@ -931,6 +937,7 @@ function parseCommandArgs(
 				default:
 					// Skip other flags with values
 					if (nextArg && !nextArg.startsWith("--")) {
+						consumedAsValue.add(i + 1);
 						i++;
 					}
 			}
@@ -942,17 +949,20 @@ function parseCommandArgs(
 				case "n":
 				case "ns":
 					namespace = nextArg;
+					consumedAsValue.add(i + 1);
 					i++;
 					break;
 				case "o":
 					if (nextArg) {
 						outputFormat = parseOutputFormat(nextArg);
+						consumedAsValue.add(i + 1);
 						i++;
 					}
 					break;
 				default:
 					// Skip other flags with values
 					if (nextArg && !nextArg.startsWith("-")) {
+						consumedAsValue.add(i + 1);
 						i++;
 					}
 			}
@@ -972,6 +982,28 @@ function parseCommandArgs(
 				name = arg;
 			}
 			positionalIndex++;
+		}
+	}
+
+	// After parsing, check for remaining positional args that weren't consumed as flag values
+	// This handles cases like: get http_loadbalancer --namespace foo resource-name
+	// where the resource name appears after flags
+	if (!name && resourceType) {
+		const remainingPositionals: string[] = [];
+		for (let i = 0; i < args.length; i++) {
+			const arg = args[i] ?? "";
+			// Skip flags, flag values, and the resourceType itself
+			if (
+				!arg.startsWith("-") &&
+				!consumedAsValue.has(i) &&
+				arg.toLowerCase() !== resourceType
+			) {
+				remainingPositionals.push(arg);
+			}
+		}
+		// Use the last remaining positional as the name
+		if (remainingPositionals.length > 0) {
+			name = remainingPositionals[remainingPositionals.length - 1];
 		}
 	}
 
@@ -1490,6 +1522,7 @@ function getBuiltinDescription(cmd: string): string {
 
 export default {
 	parseCommand,
+	parseCommandArgs,
 	executeCommand,
 	getCommandSuggestions,
 };
