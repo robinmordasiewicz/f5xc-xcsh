@@ -490,3 +490,173 @@ export function formatKeyValueBox(
 
 	return lines.join("\n");
 }
+
+/**
+ * Fields to exclude from resource details display
+ * These are internal/system fields not useful for users
+ */
+const EXCLUDED_FIELDS = new Set([
+	"system_metadata",
+	"get_spec",
+	"status",
+	"referring_objects",
+	"disabled_referred_objects",
+	"object_type",
+]);
+
+/**
+ * Fields to prioritize at the top of details display
+ */
+const PRIORITY_FIELDS = [
+	"name",
+	"namespace",
+	"labels",
+	"description",
+	"domains",
+];
+
+/**
+ * Format a value for display in details view
+ * Simple values: display directly
+ * Simple arrays of strings: show as [item1, item2, ...]
+ * Complex objects/arrays: show as compact JSON
+ */
+function formatDetailValue(value: unknown): string {
+	if (value === null || value === undefined) {
+		return "";
+	}
+
+	if (
+		typeof value === "string" ||
+		typeof value === "number" ||
+		typeof value === "boolean"
+	) {
+		return String(value);
+	}
+
+	if (Array.isArray(value)) {
+		// Check if it's a simple array of strings/numbers
+		const isSimple = value.every(
+			(v) => typeof v === "string" || typeof v === "number",
+		);
+		if (isSimple && value.length <= 5) {
+			return `[${value.join(", ")}]`;
+		}
+		// Complex array - show as JSON
+		return JSON.stringify(value);
+	}
+
+	if (typeof value === "object") {
+		// Check for labels - format specially
+		const obj = value as Record<string, unknown>;
+		const keys = Object.keys(obj);
+
+		// If it's a small object with only simple values, show inline
+		if (keys.length <= 3) {
+			const allSimple = keys.every((k) => {
+				const v = obj[k];
+				return (
+					typeof v === "string" ||
+					typeof v === "number" ||
+					typeof v === "boolean"
+				);
+			});
+			if (allSimple) {
+				return keys.map((k) => `${k}: ${obj[k]}`).join(", ");
+			}
+		}
+
+		// Complex object - show as JSON
+		return JSON.stringify(value);
+	}
+
+	return String(value);
+}
+
+/**
+ * Flatten resource data into key-value pairs for display
+ * Merges metadata and spec into a single flat structure
+ */
+function flattenResourceData(
+	data: Record<string, unknown>,
+): Array<{ key: string; value: string }> {
+	const result: Array<{ key: string; value: string }> = [];
+	const seen = new Set<string>();
+
+	// Helper to add a field
+	const addField = (key: string, value: unknown) => {
+		if (EXCLUDED_FIELDS.has(key) || seen.has(key)) return;
+		if (value === null || value === undefined) return;
+
+		seen.add(key);
+		const formatted = formatDetailValue(value);
+		if (formatted) {
+			result.push({ key, value: formatted });
+		}
+	};
+
+	// First pass: extract from metadata
+	const metadata = data.metadata as Record<string, unknown> | undefined;
+	if (metadata && typeof metadata === "object") {
+		for (const key of PRIORITY_FIELDS) {
+			if (key in metadata) {
+				addField(key, metadata[key]);
+			}
+		}
+		// Add remaining metadata fields
+		for (const [key, value] of Object.entries(metadata)) {
+			addField(key, value);
+		}
+	}
+
+	// Second pass: extract from spec
+	const spec = data.spec as Record<string, unknown> | undefined;
+	if (spec && typeof spec === "object") {
+		for (const [key, value] of Object.entries(spec)) {
+			addField(key, value);
+		}
+	}
+
+	// Third pass: top-level fields (for flat responses)
+	for (const key of PRIORITY_FIELDS) {
+		if (key in data && key !== "metadata" && key !== "spec") {
+			addField(key, data[key]);
+		}
+	}
+	for (const [key, value] of Object.entries(data)) {
+		if (key !== "metadata" && key !== "spec") {
+			addField(key, value);
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Format a single resource as a details table (key-value pairs)
+ * Similar to kubectl get <resource> <name> but with beautiful formatting
+ */
+export function formatResourceDetails(
+	data: Record<string, unknown>,
+	noColor: boolean = false,
+): string {
+	const fields = flattenResourceData(data);
+	if (fields.length === 0) {
+		return "";
+	}
+
+	// Get resource name for title
+	const metadata = data.metadata as Record<string, unknown> | undefined;
+	const name =
+		(metadata?.name as string) ||
+		(data.name as string) ||
+		"Resource Details";
+
+	// Convert to formatKeyValueBox format
+	const boxData = fields.map((f) => ({
+		label: f.key,
+		value: f.value,
+	}));
+
+	return formatKeyValueBox(boxData, name, noColor);
+}

@@ -542,6 +542,127 @@ describe("Acceptance: Get Action Argument Parsing", () => {
 			});
 		}
 	});
+
+	/**
+	 * DETAILS VIEW VS LIST VIEW
+	 *
+	 * Verify that single resource responses (get) show key-value details
+	 * while list responses show summary table format.
+	 */
+	describe("details view vs list view formatting", () => {
+		const mockListResponse = {
+			items: [
+				{
+					name: "canadian-http-lb",
+					namespace: "r-mordasiewicz",
+					labels: { env: "production" },
+				},
+				{
+					name: "us-http-lb",
+					namespace: "r-mordasiewicz",
+					labels: { env: "staging" },
+				},
+			],
+		};
+
+		it("get action (single resource) shows details view with key-value pairs", async () => {
+			mockAPIResponse(mockHTTPLoadBalancer, 200);
+			const session = createMockSession("table", "default", "virtual", "get");
+
+			const result = await executeCommand(
+				"http_loadbalancer --namespace r-mordasiewicz canadian-http-lb",
+				session,
+			);
+
+			expect(result.error).toBeUndefined();
+			const output = result.output.join("\n");
+
+			// Details view should show resource name as title
+			expect(output).toContain("canadian-http-lb");
+
+			// Should show spec fields (not just NAMESPACE/NAME/LABELS columns)
+			expect(output).toContain("domains");
+			expect(output).toContain("canada.example.com");
+
+			// Should not show summary table headers
+			expect(output).not.toContain("NAMESPACE");
+			expect(output).not.toContain("LABELS");
+		});
+
+		it("list action shows summary table with NAMESPACE/NAME/LABELS columns", async () => {
+			mockAPIResponse(mockListResponse, 200);
+			const session = createMockSession("table", "default", "virtual", "list");
+
+			const result = await executeCommand(
+				"http_loadbalancer --namespace r-mordasiewicz",
+				session,
+			);
+
+			expect(result.error).toBeUndefined();
+			const output = result.output.join("\n");
+
+			// Summary table should show column headers
+			expect(output).toContain("NAMESPACE");
+			expect(output).toContain("NAME");
+			expect(output).toContain("LABELS");
+
+			// Should show both items
+			expect(output).toContain("canadian-http-lb");
+			expect(output).toContain("us-http-lb");
+		});
+
+		it("get action with json format returns raw json (not details view)", async () => {
+			mockAPIResponse(mockHTTPLoadBalancer, 200);
+			const session = createMockSession("json", "default", "virtual", "get");
+
+			const result = await executeCommand(
+				"http_loadbalancer --namespace r-mordasiewicz canadian-http-lb",
+				session,
+			);
+
+			expect(result.error).toBeUndefined();
+			const output = result.output.join("\n");
+
+			// Should be valid JSON
+			expect(() => JSON.parse(output)).not.toThrow();
+			const parsed = JSON.parse(output);
+			expect(parsed.metadata?.name).toBe("canadian-http-lb");
+		});
+
+		it("get action with yaml format returns yaml (not details view)", async () => {
+			mockAPIResponse(mockHTTPLoadBalancer, 200);
+			const session = createMockSession("yaml", "default", "virtual", "get");
+
+			const result = await executeCommand(
+				"http_loadbalancer --namespace r-mordasiewicz canadian-http-lb",
+				session,
+			);
+
+			expect(result.error).toBeUndefined();
+			const output = result.output.join("\n");
+
+			// Should be YAML format
+			expect(output).toContain("metadata:");
+			expect(output).toContain("name: canadian-http-lb");
+		});
+
+		it("details view excludes internal fields like system_metadata", async () => {
+			mockAPIResponse(mockHTTPLoadBalancer, 200);
+			const session = createMockSession("table", "default", "virtual", "get");
+
+			const result = await executeCommand(
+				"http_loadbalancer --namespace r-mordasiewicz canadian-http-lb",
+				session,
+			);
+
+			expect(result.error).toBeUndefined();
+			const output = result.output.join("\n");
+
+			// Should not show internal fields
+			expect(output).not.toContain("system_metadata");
+			expect(output).not.toContain("get_spec");
+		});
+	});
 });
 
 /**

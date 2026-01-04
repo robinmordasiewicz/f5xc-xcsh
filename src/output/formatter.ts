@@ -5,7 +5,7 @@
  */
 
 import YAML from "yaml";
-import { formatResourceTable } from "./table.js";
+import { formatResourceTable, formatResourceDetails } from "./table.js";
 import { shouldUseColors } from "./resolver.js";
 
 // Re-export types from types.ts for backward compatibility
@@ -111,10 +111,38 @@ function extractItems(data: unknown): Record<string, unknown>[] {
 // have been moved to table.ts for direct use in beautiful table formatting.
 
 /**
+ * Check if data represents a single resource response (not a list)
+ * Single resources have metadata/spec structure without items array
+ */
+function isSingleResourceResponse(data: unknown): boolean {
+	if (!data || typeof data !== "object") return false;
+	// List responses have "items" array
+	if ("items" in data) return false;
+	// Array is a list
+	if (Array.isArray(data)) return false;
+	// Single object with metadata or spec is a single resource
+	// Also check for object_type which F5 XC uses
+	const obj = data as Record<string, unknown>;
+	return (
+		"metadata" in obj ||
+		"spec" in obj ||
+		("name" in obj && "namespace" in obj) ||
+		"object_type" in obj
+	);
+}
+
+/**
  * Format as beautiful Unicode table with F5 red borders
  * Falls back to plain ASCII when colors are disabled
+ * For single resources (get action), shows detailed key-value view
+ * For lists, shows summary table
  */
 export function formatTable(data: unknown, noColor: boolean = false): string {
+	// Is this a single resource response?
+	if (isSingleResourceResponse(data)) {
+		return formatResourceDetails(data as Record<string, unknown>, noColor);
+	}
+	// Otherwise, format as list table
 	return formatResourceTable(data, noColor);
 }
 
