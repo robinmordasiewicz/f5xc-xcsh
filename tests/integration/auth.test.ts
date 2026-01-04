@@ -139,16 +139,19 @@ describeIf("Authentication Integration Tests", () => {
 				serverUrl: config!.apiUrl,
 				apiToken: config!.apiToken,
 				timeout: 100, // Very short timeout
+				retry: { maxRetries: 0 }, // Disable retries to test timeout handling directly
 			});
 
-			// This may or may not timeout depending on network speed
-			// Just verify it handles the request without crashing
+			// With retries disabled and 100ms timeout, this should timeout quickly
 			try {
 				await slowClient.get("/api/web/namespaces");
+				// If we get here without error, the network was very fast
 			} catch (error) {
+				// Timeout or network error is expected
+				expect(error).toBeInstanceOf(APIError);
 				if (error instanceof APIError) {
-					// Timeout or network error is acceptable
-					expect(error).toBeInstanceOf(APIError);
+					// Should be a timeout-related error
+					expect(["FETCH_ERROR", "TIMEOUT"]).toContain(error.code);
 				}
 			}
 		});
