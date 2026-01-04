@@ -42,7 +42,21 @@ import { getDomainInfo } from "../types/domains.js";
 import {
 	validateNamespaceScope,
 	checkOperationSafety,
+	validateResourceName,
 } from "../validation/index.js";
+
+/**
+ * Write operations that require resource name validation.
+ * Read operations (list, get, delete) skip validation to support legacy resources.
+ */
+const WRITE_OPERATIONS = new Set([
+	"create",
+	"replace",
+	"apply",
+	"patch",
+	"add-labels",
+	"remove-labels",
+]);
 
 /**
  * Command execution result
@@ -1044,6 +1058,55 @@ async function executeAPICommand(
 	const { resourceType, name, namespace, outputFormat, spec, noColor } =
 		parseCommandArgs(args, domainResourceTypes);
 	const effectiveNamespace = namespace ?? session.getNamespace();
+
+	// Validate namespace name for CLI safety (security: prevent injection attacks)
+	if (effectiveNamespace) {
+		const nsNameValidation = validateResourceName(effectiveNamespace, {
+			resourceType: "namespace",
+		});
+		if (!nsNameValidation.valid) {
+			const lines = [
+				`Error: Invalid namespace name '${effectiveNamespace}'`,
+				"",
+				nsNameValidation.message ?? "Invalid namespace name",
+			];
+			if (nsNameValidation.suggestion) {
+				lines.push("", `Suggested: ${nsNameValidation.suggestion}`);
+			}
+			return {
+				output: lines,
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: nsNameValidation.message ?? "Invalid namespace name",
+			};
+		}
+	}
+
+	// Validate resource name for write operations only
+	// Read operations (list, get, delete) skip validation to support legacy resources
+	if (WRITE_OPERATIONS.has(action) && name) {
+		const nameValidation = validateResourceName(name, {
+			resourceType: resourceType ?? canonicalDomain,
+		});
+		if (!nameValidation.valid) {
+			const lines = [
+				`Error: Invalid resource name '${name}'`,
+				"",
+				nameValidation.message ?? "Invalid resource name",
+			];
+			if (nameValidation.suggestion) {
+				lines.push("", `Suggested: ${nameValidation.suggestion}`);
+			}
+			return {
+				output: lines,
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: nameValidation.message ?? "Invalid resource name",
+			};
+		}
+	}
 
 	// Determine which resource to use for the API path
 	// If a resource type was specified (e.g., "list http_loadbalancer"), use it

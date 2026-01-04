@@ -10,6 +10,7 @@ import {
 	formatConnectionTable,
 	buildConnectionInfo,
 } from "./connection-table.js";
+import { validateResourceName } from "../../../validation/index.js";
 
 export const createCommand: CommandDefinition = {
 	name: "create",
@@ -40,6 +41,19 @@ export const createCommand: CommandDefinition = {
 					"  login profile create myprofile --url https://myco.console.ves.volterra.io --token abc123",
 				].join("\n"),
 			);
+		}
+
+		// Validate profile name for CLI safety
+		const nameValidation = validateResourceName(name, {
+			maxLength: 128, // Profiles can have longer names than API resources
+			resourceType: "profile",
+		});
+		if (!nameValidation.valid) {
+			const lines = [`Invalid profile name: ${nameValidation.message}`];
+			if (nameValidation.suggestion) {
+				lines.push("", `Suggested: ${nameValidation.suggestion}`);
+			}
+			return errorResult(lines.join("\n"));
 		}
 
 		// Check if profile already exists

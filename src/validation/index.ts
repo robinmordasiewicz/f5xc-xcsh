@@ -25,3 +25,24 @@ export {
 	type SideEffects,
 	type SafetyCheckResult,
 } from "./safety.js";
+
+export {
+	validateResourceName,
+	sanitizeName,
+	isReservedAction,
+	containsShellMetacharacters,
+	isDangerousCommand,
+	type NameValidationResult,
+	type NameValidationOptions,
+	type NameValidationCategory,
+} from "./resource-name.js";
+
+export {
+	RESERVED_ACTIONS,
+	SHELL_METACHARACTERS,
+	DANGEROUS_PATTERNS,
+	DANGEROUS_COMMANDS,
+	CONTROL_CHARS,
+	RFC1035_PATTERN,
+	RFC1123_PATTERN,
+} from "./reserved-words.js";
