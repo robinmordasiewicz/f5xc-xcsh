@@ -7,8 +7,12 @@
 import type { CommandDefinition, DomainCommandResult } from "../registry.js";
 import { successResult, errorResult } from "../registry.js";
 import type { REPLSession } from "../../repl/session.js";
+import type { OutputFormat } from "../../output/index.js";
 import { getCommandSpec, formatSpec } from "../../output/index.js";
-import { parseDomainOutputFlags } from "../../output/domain-formatter.js";
+import {
+	parseDomainOutputFlags,
+	formatDomainOutput,
+} from "../../output/domain-formatter.js";
 import { getGenAIClient } from "./client.js";
 import { getLastQueryState } from "./query.js";
 import { FEEDBACK_TYPE_MAP, getValidFeedbackTypes } from "./types.js";
@@ -21,6 +25,8 @@ function parseFeedbackArgs(
 	args: string[],
 	session: REPLSession,
 ): {
+	format: OutputFormat;
+	noColor: boolean;
 	spec: boolean;
 	namespace: string;
 	positive: boolean;
@@ -28,7 +34,7 @@ function parseFeedbackArgs(
 	comment: string | null;
 	queryId: string | null;
 } {
-	const { remainingArgs } = parseDomainOutputFlags(
+	const { options, remainingArgs } = parseDomainOutputFlags(
 		args,
 		session.getOutputFormat(),
 	);
@@ -81,6 +87,8 @@ function parseFeedbackArgs(
 	}
 
 	return {
+		format: options.format,
+		noColor: options.noColor,
 		spec,
 		namespace,
 		positive,
@@ -104,8 +112,16 @@ export const feedbackCommand: CommandDefinition = {
 	aliases: ["fb", "rate"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
-		const { spec, namespace, positive, negativeType, comment, queryId } =
-			parseFeedbackArgs(args, session);
+		const {
+			format,
+			noColor,
+			spec,
+			namespace,
+			positive,
+			negativeType,
+			comment,
+			queryId,
+		} = parseFeedbackArgs(args, session);
 
 		// Handle --spec flag
 		if (spec) {
@@ -113,6 +129,11 @@ export const feedbackCommand: CommandDefinition = {
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}
+		}
+
+		// Handle --output none
+		if (format === "none") {
+			return successResult([]);
 		}
 
 		// Validate we have feedback type
@@ -168,6 +189,26 @@ export const feedbackCommand: CommandDefinition = {
 					positive_feedback: {},
 					comment: comment ?? undefined,
 				});
+
+				const result = {
+					status: "success",
+					type: "positive",
+					query_id: targetQueryId,
+					message: "Positive feedback submitted successfully.",
+				};
+
+				// Use unified formatter for json/yaml/tsv
+				if (
+					format === "json" ||
+					format === "yaml" ||
+					format === "tsv"
+				) {
+					return successResult(
+						formatDomainOutput(result, { format, noColor }),
+					);
+				}
+
+				// Table/text format
 				return successResult([
 					"Positive feedback submitted successfully.",
 					`Query ID: ${targetQueryId}`,
@@ -185,6 +226,23 @@ export const feedbackCommand: CommandDefinition = {
 				comment: comment ?? undefined,
 			});
 
+			const result = {
+				status: "success",
+				type: "negative",
+				query_id: targetQueryId,
+				reason: negativeType ?? "OTHER",
+				...(comment ? { comment } : {}),
+				message: "Negative feedback submitted successfully.",
+			};
+
+			// Use unified formatter for json/yaml/tsv
+			if (format === "json" || format === "yaml" || format === "tsv") {
+				return successResult(
+					formatDomainOutput(result, { format, noColor }),
+				);
+			}
+
+			// Table/text format
 			return successResult([
 				"Negative feedback submitted successfully.",
 				`Query ID: ${targetQueryId}`,
