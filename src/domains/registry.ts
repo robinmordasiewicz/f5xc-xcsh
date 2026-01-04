@@ -422,6 +422,37 @@ class DomainRegistry {
 	}
 
 	/**
+	 * Filter out global flags from command arguments.
+	 * Returns args without global flags like --output/-o.
+	 */
+	private filterGlobalFlags(args: string[]): string[] {
+		const filtered: string[] = [];
+		let i = 0;
+
+		while (i < args.length) {
+			const arg = args[i] ?? "";
+
+			// --output <value> or -o <value>
+			if (arg === "--output" || arg === "-o") {
+				// Skip the flag and its value
+				i += 2;
+				continue;
+			}
+
+			// --output=<value> or -o=<value>
+			if (arg.startsWith("--output=") || arg.startsWith("-o=")) {
+				i++;
+				continue;
+			}
+
+			filtered.push(arg);
+			i++;
+		}
+
+		return filtered;
+	}
+
+	/**
 	 * Validate command arguments and check for conflicts with sibling commands.
 	 * Returns an error result if validation fails, undefined if OK to proceed.
 	 */
@@ -431,8 +462,12 @@ class DomainRegistry {
 		siblingCommands: Map<string, CommandDefinition>,
 		commandPath: string,
 	): DomainCommandResult | undefined {
-		// If no extra args, nothing to validate
-		if (cmdArgs.length === 0) {
+		// Filter out global flags (--output, -o) before validation
+		// These flags are handled by parseDomainOutputFlags in commands
+		const filteredArgs = this.filterGlobalFlags(cmdArgs);
+
+		// If no extra args after filtering global flags, nothing to validate
+		if (filteredArgs.length === 0) {
 			return undefined;
 		}
 
@@ -442,7 +477,7 @@ class DomainRegistry {
 		}
 
 		// Check if first extra arg is a sibling command (conflict)
-		const firstExtraArg = cmdArgs[0]?.toLowerCase() ?? "";
+		const firstExtraArg = filteredArgs[0]?.toLowerCase() ?? "";
 
 		// Direct match with sibling command
 		const siblingCmd = siblingCommands.get(firstExtraArg);
@@ -450,7 +485,7 @@ class DomainRegistry {
 			// Build the suggested command
 			const pathParts = commandPath.split(" ");
 			pathParts.pop(); // Remove the current command name
-			const suggestedPath = [...pathParts, ...cmdArgs].join(" ");
+			const suggestedPath = [...pathParts, ...filteredArgs].join(" ");
 
 			return {
 				output: [
@@ -470,7 +505,7 @@ class DomainRegistry {
 			if (sibling.aliases?.includes(firstExtraArg)) {
 				const pathParts = commandPath.split(" ");
 				pathParts.pop();
-				const suggestedPath = [...pathParts, ...cmdArgs].join(" ");
+				const suggestedPath = [...pathParts, ...filteredArgs].join(" ");
 
 				return {
 					output: [
@@ -489,7 +524,7 @@ class DomainRegistry {
 		// Command has no usage pattern but received args - warn about unexpected args
 		return {
 			output: [
-				`Error: Unexpected arguments for '${cmd.name}': ${cmdArgs.join(" ")}`,
+				`Error: Unexpected arguments for '${cmd.name}': ${filteredArgs.join(" ")}`,
 				``,
 				`Usage: ${commandPath}`,
 				``,
@@ -498,7 +533,7 @@ class DomainRegistry {
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,
-			error: `Unexpected arguments: ${cmdArgs.join(" ")}`,
+			error: `Unexpected arguments: ${filteredArgs.join(" ")}`,
 		};
 	}
 }
