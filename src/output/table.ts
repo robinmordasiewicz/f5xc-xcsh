@@ -101,6 +101,8 @@ export function wrapText(text: string, maxWidth: number): string[] {
 
 /**
  * Get value from object using accessor
+ * Supports both top-level properties (for list responses)
+ * and metadata.* nested properties (for get responses)
  */
 function getValue(
 	row: Record<string, unknown>,
@@ -110,7 +112,17 @@ function getValue(
 		return accessor(row);
 	}
 
-	const value = row[accessor];
+	// First try direct access
+	let value = row[accessor];
+
+	// If not found, try metadata.* path (for get responses)
+	if (value === null || value === undefined) {
+		const metadata = row["metadata"] as Record<string, unknown> | undefined;
+		if (metadata && typeof metadata === "object") {
+			value = metadata[accessor];
+		}
+	}
+
 	if (value === null || value === undefined) {
 		return "";
 	}
