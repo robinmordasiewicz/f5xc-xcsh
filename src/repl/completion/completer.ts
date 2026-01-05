@@ -201,6 +201,7 @@ export class Completer {
 			return await this.getFlagValueCompletions(
 				parsed.currentFlag,
 				parsed.currentWord,
+				parsed,
 			);
 		}
 
@@ -835,11 +836,30 @@ export class Completer {
 	}
 
 	/**
+	 * Extract a flag value from args array
+	 * @param args - Array of command arguments
+	 * @param flagNames - Flag names to look for (e.g., ["--namespace", "-ns"])
+	 * @returns The flag value or undefined if not found
+	 */
+	private extractFlagValue(
+		args: string[],
+		flagNames: string[],
+	): string | undefined {
+		for (let i = 0; i < args.length - 1; i++) {
+			if (flagNames.includes(args[i] ?? "")) {
+				return args[i + 1];
+			}
+		}
+		return undefined;
+	}
+
+	/**
 	 * Get flag value completions based on the flag being completed
 	 */
 	async getFlagValueCompletions(
 		flag: string,
 		partial: string,
+		parsed: ParsedInput,
 	): Promise<CompletionSuggestion[]> {
 		// Extract partial after "=" if present
 		let valuePartial = partial;
@@ -865,19 +885,37 @@ export class Completer {
 				return this.completeNamespace(valuePartial);
 
 			case "--name":
-			case "-n":
-				// Resource name completion - requires domain context
-				if (this.session) {
-					const ctx = this.session.getContextPath();
-					if (ctx.domain) {
-						return this.completeResourceName(
-							ctx.domain,
-							ctx.domain,
-							valuePartial,
-						);
-					}
+			case "-n": {
+				// Resource name completion - use command context for resource type
+				if (!this.session) {
+					return [];
+				}
+
+				// Get resource type from command args (e.g., "get http_loadbalancer" → "http_loadbalancer")
+				const resourceCtx = this.parseResourceContext(parsed);
+				const navCtx = this.session.getContextPath();
+
+				// Prefer resource type from command, fall back to navigation domain
+				const resourceType =
+					resourceCtx.resourceType || navCtx.domain || null;
+
+				// Get namespace from --namespace flag in args, or session default
+				const nsFromFlag = this.extractFlagValue(parsed.args, [
+					"--namespace",
+					"-ns",
+				]);
+				const namespace = nsFromFlag || this.session.getNamespace();
+
+				if (resourceType && namespace) {
+					return this.completeResourceName(
+						resourceType,
+						resourceType,
+						valuePartial,
+						namespace,
+					);
 				}
 				return [];
+			}
 
 			case "--limit":
 				// Common limit values
@@ -960,8 +998,10 @@ export class Completer {
 		domain: string,
 		_resourceType: string,
 		partial: string,
+		namespaceOverride?: string,
 	): Promise<CompletionSuggestion[]> {
-		const namespace = this.session?.getNamespace() ?? "default";
+		const namespace =
+			namespaceOverride || this.session?.getNamespace() || "default";
 		const cacheKey = `${domain}:${namespace}`;
 		const names = await this.cache.getResourceNames(cacheKey, async () => {
 			// Fetch from API client if available
