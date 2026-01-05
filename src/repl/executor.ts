@@ -95,6 +95,8 @@ const BUILTIN_COMMANDS = new Set([
 	"ctx",
 	"history",
 	"version",
+	"--version",
+	"-v",
 	"domains",
 	"whoami",
 	"refresh",
@@ -177,11 +179,16 @@ export function parseCommand(input: string): ParsedCommand {
 		BUILTIN_COMMANDS.has(firstWord) ||
 		BUILTIN_COMMANDS.has(normalizedFirst)
 	) {
-		// Map --help and -h to help for execution
-		const effectiveCommand =
-			normalizedFirst === "--help" || normalizedFirst === "-h"
-				? "help"
-				: normalizedFirst;
+		// Map --help/-h to help and --version/-v to version for execution
+		let effectiveCommand = normalizedFirst;
+		if (normalizedFirst === "--help" || normalizedFirst === "-h") {
+			effectiveCommand = "help";
+		} else if (
+			normalizedFirst === "--version" ||
+			normalizedFirst === "-v"
+		) {
+			effectiveCommand = "version";
+		}
 		return {
 			raw: effectiveCommand,
 			isDirectNavigation: false,
