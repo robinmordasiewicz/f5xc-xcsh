@@ -2,6 +2,7 @@
  * AUTO-GENERATED FILE - DO NOT EDIT
  * Generated from .specs/index.json v2.0.3
  * Run: npx tsx scripts/generate-domains.ts
+ * Synced: 2026-01-05
  */
 
 import type {
