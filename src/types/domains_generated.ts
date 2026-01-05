@@ -1,8 +1,7 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.3
+ * Generated from .specs/index.json v2.0.4
  * Run: npx tsx scripts/generate-domains.ts
- * Synced: 2026-01-05
  */
 
 import type {
@@ -17,7 +16,7 @@ export type { ResourceMetadata, SubscriptionTier };
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.3";
+export const SPEC_VERSION = "2.0.4";
 
 /**
  * Generated domain data from upstream API specifications
@@ -33,7 +32,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Static UI components and console assets.",
 			descriptionMedium:
 				"Namespace-scoped visual elements with versioning. Custom widget deployment and catalog management for portal surfaces.",
-			aliases: ["console-ui", "ui-assets", "static-components"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -82,7 +81,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "AI assistant queries and feedback collection.",
 			descriptionMedium:
 				"Natural language processing with quality signals and anomaly monitoring. Token authentication for data stream subscriptions.",
-			aliases: ["ai", "genai", "assistant"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: true,
 			requiresTier: "Advanced",
@@ -136,7 +135,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Interface definitions, schema validation, and grouping.",
 			descriptionMedium:
 				"Resource cataloging with automatic classification and security profiling. Organizational hierarchies segment access by function or protection policy.",
-			aliases: ["apisec", "api-discovery"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -263,7 +262,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Authentication API",
 			descriptionMedium:
 				"F5 Distributed Cloud Authentication API specifications",
-			aliases: ["authn", "oidc", "sso"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -324,7 +323,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "iRules, data groups, and APM integration.",
 			descriptionMedium:
 				"Legacy device orchestration with iRule scripts and data group synchronization. Virtual server bindings and metrics collection.",
-			aliases: ["f5-bigip", "irule", "ltm"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -374,7 +373,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Subscription plans, payment methods, and quotas.",
 			descriptionMedium:
 				"Plan transitions, invoicing, and resource consumption. Namespace-level quota limits and usage tracking.",
-			aliases: ["billing-usage", "quotas", "usage-tracking"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -434,7 +433,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Secret encryption, key policies, and audit trails.",
 			descriptionMedium:
 				"Encryption key management with policy-based access controls. Audit logging and secure data protection.",
-			aliases: ["bf", "encrypt", "secrets"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -494,7 +493,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Bot detection, threat categories, and defense instances.",
 			descriptionMedium:
 				"Threat classification with behavioral analysis and signature matching. Automated blocking for malicious traffic patterns.",
-			aliases: ["threat-defense", "tpm", "shape-bot"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -544,7 +543,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Edge caching, content delivery, and distribution rules.",
 			descriptionMedium:
 				"Path-based policies with TTL controls and header conditions. Purge operations, access logs, and cache eligibility for multi-region deployments.",
-			aliases: ["cache", "content"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -599,7 +598,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Network interfaces, fleets, and site registration.",
 			descriptionMedium:
 				"Token-based provisioning with image downloads and pre-upgrade validation. Fleet grouping enables bulk operations across distributed locations.",
-			aliases: ["ce-mgmt", "edge-management", "ce-lifecycle"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -660,7 +659,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"SSL/TLS chains, trusted CAs, and revocation lists.",
 			descriptionMedium:
 				"Certificate chains and trusted CA bundles. Revocation list management and manifest configuration for PKI operations.",
-			aliases: ["cert", "certs", "ssl", "tls"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -721,7 +720,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "AWS, Azure, GCP connectors and VPC attachments.",
 			descriptionMedium:
 				"Multi-cloud provider connections with gateway peering and network path configuration. Credential vault integration and subnet enumeration.",
-			aliases: ["cloud", "infra", "provider"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -807,7 +806,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Containerized workloads and virtual Kubernetes clusters.",
 			descriptionMedium:
 				"Pod orchestration without full cluster complexity. Edge site execution, quota enforcement, and standardized compute profiles for distributed apps.",
-			aliases: ["vk8s", "containers", "workloads"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -877,7 +876,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"PII detection, data types, and regional compliance.",
 			descriptionMedium:
 				"Sensitive data policies with custom classification rules. LMA region configuration and geo-based compliance controls.",
-			aliases: ["data-privacy", "pii", "sensitive-data", "lma"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -927,7 +926,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Data Intelligence API",
 			descriptionMedium:
 				"F5 Distributed Cloud Data Intelligence API specifications",
-			aliases: ["di", "intelligence", "insights"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -976,7 +975,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Volumetric attack mitigation and traffic scrubbing.",
 			descriptionMedium:
 				"Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and pattern analysis for network perimeter security.",
-			aliases: ["dos", "ddos-protect"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1029,7 +1028,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Zones, record types, and load balancing.",
 			descriptionMedium:
 				"Authoritative zone hosting with BIND and AXFR imports. Health checks, failover policies, and request logging.",
-			aliases: ["dns-zone", "zones"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -1158,7 +1157,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Cluster RBAC, pod security, and container registries.",
 			descriptionMedium:
 				"Kubernetes role bindings and admission policies. Registry integration for EKS, AKS, and GKE workloads.",
-			aliases: ["mk8s", "appstack", "k8s-mgmt"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1221,7 +1220,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Add-on services, connectors, and TPM policies.",
 			descriptionMedium:
 				"Third-party GRE and IPSec tunnel provisioning with DPD timers. Shared resource allocation across namespaces with tile placement controls.",
-			aliases: ["market", "addons", "extensions"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1271,7 +1270,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"BGP peering, IPsec tunnels, and segment policies.",
 			descriptionMedium:
 				"Border gateway protocol with ASN management and autonomous system relationships. Site-to-site VPN linking datacenters through encrypted channels.",
-			aliases: ["net", "routing", "bgp"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1346,7 +1345,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"NAT policies, firewalls, and segment connections.",
 			descriptionMedium:
 				"Firewall rules with routing decisions based on source, destination, or protocol. Segmentation isolates workloads while outbound proxies govern access.",
-			aliases: ["netsec", "nfw"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1409,7 +1408,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "NGINX Plus instances and dataplane servers.",
 			descriptionMedium:
 				"Instance discovery, WAF integration, and service mesh connectivity. Subscription lifecycle and configuration synchronization.",
-			aliases: ["nginx", "nms", "nginx-plus"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1462,7 +1461,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Mobile SDK assets, versioned binaries, and app shield files.",
 			descriptionMedium:
 				"Versioned library distribution for mobile app integrators. Presigned URLs enable secure downloads with OS-specific builds for iOS and Android.",
-			aliases: ["storage", "s3", "buckets"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1517,7 +1516,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Synthetic health checks and DNS resolution validation.",
 			descriptionMedium:
 				"HTTP availability probes with latency measurement. Certificate expiration alerts and global status dashboards for infrastructure health.",
-			aliases: ["obs", "monitoring", "synth"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -1576,7 +1575,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Request throttling, quotas, and policer rules.",
 			descriptionMedium:
 				"Time-based quota enforcement with configurable windows in hours, minutes, or seconds. Protocol-specific controls for traffic shaping.",
-			aliases: ["ratelimit", "throttle", "policer"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1642,7 +1641,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Threat detection, user risk scoring, and automated blocking.",
 			descriptionMedium:
 				"Malicious user mitigation with threat level classification. Automated response actions for suspicious behavior patterns.",
-			aliases: ["secops", "incident-response", "mitigation"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1691,7 +1690,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Microservice routing and sidecar configuration.",
 			descriptionMedium:
 				"Application type definitions with discovery and learned schema analysis. Traffic pattern inference for intelligent request handling.",
-			aliases: ["mesh", "svc-mesh"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1761,7 +1760,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Bot defense, fraud prevention, and client integrity.",
 			descriptionMedium:
 				"Threat recognition with behavioral analysis and device fingerprinting. Mobile SDK integration for application shielding.",
-			aliases: ["shape-sec", "safeap"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -1812,7 +1811,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Cloud and edge node deployments.",
 			descriptionMedium:
 				"AWS, Azure, GCP VPC integration with transit gateways. Label-based selection for policy application across regions.",
-			aliases: ["site", "deployment"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -1949,7 +1948,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Alerts, logs, flow analytics, and reporting.",
 			descriptionMedium:
 				"Alerting policies with receiver integrations. Log aggregation, topology views, and site health tracking.",
-			aliases: ["stats", "metrics", "logs"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2004,7 +2003,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Tickets, escalations, and network diagnostics.",
 			descriptionMedium:
 				"Issue lifecycle with comments, severity changes, and resolution tracking. Packet capture for connection analysis.",
-			aliases: ["tickets", "help-desk"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2064,7 +2063,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Telemetry And Insights API",
 			descriptionMedium:
 				"F5 Distributed Cloud Telemetry And Insights API specifications",
-			aliases: ["telemetry", "ti"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2112,7 +2111,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "User profiles, sessions, and OTP settings.",
 			descriptionMedium:
 				"Account view configurations and admin alert channels. One-time password resets, provisioning flows, and active connection monitoring.",
-			aliases: ["tenant-identity", "idm", "user-settings"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2171,7 +2170,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Threat Campaign API",
 			descriptionMedium:
 				"F5 Distributed Cloud Threat Campaign API specifications",
-			aliases: ["threats", "campaigns", "threat-intel"],
+			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2210,7 +2209,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Account tokens, labels, and cloud-init config.",
 			descriptionMedium:
 				"Site enrollment credentials with automatic expiration. Taxonomy keys define allowed categorization while auto-derived tags apply dynamically.",
-			aliases: ["user", "accounts", "iam"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2274,7 +2273,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "HTTP, TCP, UDP load balancers and origin pools.",
 			descriptionMedium:
 				"Layer 7 routing rules with health checks and failover. Rate limiting, geo-routing, and service policy enforcement.",
-			aliases: ["lb", "loadbalancer", "vhost"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
@@ -2443,7 +2442,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionShort: "Vpm And Node Management API",
 			descriptionMedium:
 				"F5 Distributed Cloud Vpm And Node Management API specifications",
-			aliases: ["vpm", "nodes", "node-mgmt"],
+			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
 			requiresTier: "Standard",
@@ -2493,7 +2492,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Request inspection, attack signatures, and bot mitigation.",
 			descriptionMedium:
 				"Application firewall rules with signature-based detection. Exclusion policies, blocking pages, and anomaly prevention.",
-			aliases: ["firewall", "appfw"],
+			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
 			requiresTier: "Advanced",
