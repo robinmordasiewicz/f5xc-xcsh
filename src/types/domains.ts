@@ -78,51 +78,17 @@ export interface DomainInfo {
  */
 export type DomainRegistry = Map<string, DomainInfo>;
 
-/**
- * Alias registry mapping aliases/canonical names to canonical names
- */
-export type AliasRegistry = Map<string, string>;
-
 // Global registries - populated from generated data
 export const domainRegistry: DomainRegistry = new Map(generatedDomains);
-export const aliasRegistry: AliasRegistry = new Map();
 
 // Export spec metadata
 export { SPEC_VERSION, DOMAIN_COUNT };
 
 /**
- * Initialize the alias registry from domain registry
+ * Get domain info by canonical name
  */
-export function initializeAliasRegistry(): void {
-	aliasRegistry.clear();
-
-	for (const [canonical, info] of domainRegistry) {
-		// Map canonical name to itself
-		aliasRegistry.set(canonical, canonical);
-
-		// Map all aliases to canonical name
-		for (const alias of info.aliases) {
-			aliasRegistry.set(alias, canonical);
-		}
-	}
-}
-
-/**
- * Resolve an alias or canonical name to the canonical domain name
- */
-export function resolveDomain(nameOrAlias: string): string | undefined {
-	return aliasRegistry.get(nameOrAlias);
-}
-
-/**
- * Get domain info by canonical name or alias
- */
-export function getDomainInfo(nameOrAlias: string): DomainInfo | undefined {
-	const canonical = resolveDomain(nameOrAlias);
-	if (!canonical) {
-		return undefined;
-	}
-	return domainRegistry.get(canonical);
+export function getDomainInfo(name: string): DomainInfo | undefined {
+	return domainRegistry.get(name);
 }
 
 /**
@@ -133,10 +99,10 @@ export function allDomains(): string[] {
 }
 
 /**
- * Check if a name is a valid domain (canonical or alias)
+ * Check if a name is a valid domain
  */
 export function isValidDomain(name: string): boolean {
-	return aliasRegistry.has(name);
+	return domainRegistry.has(name);
 }
 
 /**
@@ -161,6 +127,3 @@ export const validActions = new Set([
 export function isValidAction(name: string): boolean {
 	return validActions.has(name);
 }
-
-// Initialize alias registry at module load
-initializeAliasRegistry();

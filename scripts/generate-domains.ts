@@ -44,7 +44,6 @@ interface SpecIndexEntry {
 	"x-f5xc-category"?: string;
 	"x-f5xc-use-cases"?: string[];
 	"x-f5xc-related-domains"?: string[];
-	"x-f5xc-aliases"?: string[];
 	"x-f5xc-cli-metadata"?: Record<string, unknown>;
 	// Visual identity fields (from upstream enrichment)
 	"x-f5xc-icon"?: string; // Emoji icon
@@ -61,7 +60,6 @@ interface SpecIndex {
 
 interface DomainConfig {
 	version?: string;
-	aliases?: Record<string, string[]>;
 	deprecated_domains?: Record<
 		string,
 		{
@@ -256,28 +254,12 @@ async function main(): Promise<void> {
 		`✓ Loaded spec index v${specIndex.version} with ${specIndex.specifications.length} domains`,
 	);
 
-	// Read domain config (optional fallback for aliases)
-	let config: DomainConfig = { aliases: {}, deprecated_domains: {} };
+	// Read domain config (optional, for deprecated domains)
+	let config: DomainConfig = { deprecated_domains: {} };
 	if (fs.existsSync(configPath)) {
 		const configData = fs.readFileSync(configPath, "utf-8");
 		config = yaml.parse(configData) || config;
-		console.log(
-			`✓ Loaded domain config with ${Object.keys(config.aliases || {}).length} alias mappings (fallback)`,
-		);
-	}
-
-	// Check if upstream specs include aliases
-	const hasUpstreamAliases = specIndex.specifications.some(
-		(spec) => spec["x-f5xc-aliases"] && spec["x-f5xc-aliases"].length > 0,
-	);
-	if (hasUpstreamAliases) {
-		console.log("✓ Using aliases from upstream specs");
-	} else if (Object.keys(config.aliases || {}).length > 0) {
-		console.log(
-			"⚠️  Upstream specs have no aliases, using local domain_config.yaml fallback",
-		);
-	} else {
-		console.log("ℹ️  No aliases configured (upstream or local)");
+		console.log(`✓ Loaded domain config`);
 	}
 
 	// Build domain registry
@@ -289,11 +271,6 @@ async function main(): Promise<void> {
 			console.log(`⊘ Skipping empty domain: ${spec.domain}`);
 			continue;
 		}
-
-		// Prefer upstream aliases, fallback to local config
-		const aliases = spec["x-f5xc-aliases"]?.length
-			? spec["x-f5xc-aliases"]
-			: config.aliases?.[spec.domain] || [];
 
 		// Transform primary_resources from upstream format to internal format
 		const primaryResources: ResourceMetadata[] | undefined =
@@ -316,7 +293,7 @@ async function main(): Promise<void> {
 			description: spec.description,
 			descriptionShort: spec["x-f5xc-description-short"] || "",
 			descriptionMedium: spec["x-f5xc-description-medium"] || "",
-			aliases,
+			aliases: [], // Aliases removed from upstream v2.0.4 (Issue #306)
 			complexity: spec["x-f5xc-complexity"] || "moderate",
 			isPreview: spec["x-f5xc-is-preview"] || false,
 			requiresTier: spec["x-f5xc-requires-tier"] || "Standard",

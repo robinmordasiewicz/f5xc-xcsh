@@ -16,11 +16,7 @@ import type {
 	CommandDefinition,
 	SubcommandGroup,
 } from "../domains/registry.js";
-import {
-	domainRegistry,
-	aliasRegistry,
-	type DomainInfo,
-} from "../types/domains.js";
+import { domainRegistry, type DomainInfo } from "../types/domains.js";
 
 /**
  * Registry for domain extensions
@@ -81,8 +77,8 @@ export class ExtensionRegistry {
 	 * @returns Merged domain view or undefined if neither exists
 	 */
 	getMergedDomain(domain: string): MergedDomain | undefined {
-		// Resolve alias to canonical name
-		const canonical = aliasRegistry.get(domain) ?? domain;
+		// Use domain directly (aliases removed in v2.0.4)
+		const canonical = domain;
 
 		// Check cache first
 		const cached = this.mergedCache.get(canonical);

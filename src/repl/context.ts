@@ -6,8 +6,6 @@
 import {
 	isValidDomain as checkDomain,
 	isValidAction as checkAction,
-	resolveDomain,
-	aliasRegistry,
 	domainRegistry,
 } from "../types/domains.js";
 
@@ -123,11 +121,6 @@ export class ContextValidator {
 		for (const domain of domainRegistry.keys()) {
 			this.domains.add(domain);
 		}
-
-		// Also include aliases
-		for (const alias of aliasRegistry.keys()) {
-			this.domains.add(alias);
-		}
 	}
 
 	/**
@@ -145,9 +138,10 @@ export class ContextValidator {
 	}
 
 	/**
-	 * Resolve an alias to its canonical domain name
+	 * Resolve a domain name (aliases removed in v2.0.4)
+	 * Returns the name if it's a valid domain, undefined otherwise
 	 */
 	resolveDomain(name: string): string | undefined {
-		return resolveDomain(name);
+		return this.domains.has(name) ? name : undefined;
 	}
 }

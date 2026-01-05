@@ -5,13 +5,7 @@
 
 import type { REPLSession } from "./session.js";
 import type { ContextPath } from "./context.js";
-import {
-	allDomains,
-	isValidDomain,
-	resolveDomain,
-	validActions,
-	aliasRegistry,
-} from "../types/domains.js";
+import { allDomains, isValidDomain, validActions } from "../types/domains.js";
 import {
 	customDomains,
 	isCustomDomain,
@@ -554,8 +548,7 @@ async function handleDirectNavigation(
 
 	// Check for extension commands
 	// Extensions augment API domains with xcsh-specific functionality
-	const extensionDomain =
-		aliasRegistry.get(cmd.targetDomain) ?? cmd.targetDomain;
+	const extensionDomain = cmd.targetDomain;
 	const merged = extensionRegistry.getMergedDomain(extensionDomain);
 
 	if (merged?.hasExtension && cmd.targetAction) {
@@ -862,12 +855,9 @@ export async function executeCommand(
  * Convert domain name to API resource path
  */
 function domainToResourcePath(domain: string): string {
-	// Resolve alias to canonical name
-	const canonical = resolveDomain(domain) ?? domain;
-
 	// F5 XC API uses snake_case for resource paths (not kebab-case)
 	// e.g., http_loadbalancer → http_loadbalancers (plural)
-	const resourceName = canonical;
+	const resourceName = domain;
 
 	// Add 's' for plural form (most F5 XC resources are plural in API)
 	return resourceName.endsWith("s") ? resourceName : `${resourceName}s`;
@@ -1080,8 +1070,8 @@ async function executeAPICommand(
 		}
 	}
 
-	// Resolve domain alias
-	const canonicalDomain = resolveDomain(domain) ?? domain;
+	// Use domain directly (aliases removed in v2.0.4)
+	const canonicalDomain = domain;
 
 	// Get valid resource types for this domain
 	const domainInfo = getDomainInfo(canonicalDomain);
