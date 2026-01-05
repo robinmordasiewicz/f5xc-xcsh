@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { existsSync, unlinkSync, readFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, unlinkSync, readFileSync, renameSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { HistoryManager, redactSensitive } from '../../src/repl/history.js';
 
@@ -180,9 +180,30 @@ describe('HistoryManager - File Persistence', () => {
   });
 
   it('should handle non-existent history file gracefully', async () => {
-    const nonExistentPath = join(tmpdir(), `xcsh-nonexistent-${Date.now()}`);
-    const manager = await HistoryManager.create(nonExistentPath, 100);
-    expect(manager.length).toBe(0);
+    // Temporarily rename legacy history file if it exists to prevent migration
+    const legacyPath = join(homedir(), '.xcsh_history');
+    const backupPath = join(homedir(), '.xcsh_history.backup');
+    const legacyExists = existsSync(legacyPath);
+
+    if (legacyExists) {
+      renameSync(legacyPath, backupPath);
+    }
+
+    try {
+      const nonExistentPath = join(tmpdir(), `xcsh-nonexistent-${Date.now()}`);
+      const manager = await HistoryManager.create(nonExistentPath, 100);
+      expect(manager.length).toBe(0);
+
+      // Cleanup the created file if it exists
+      if (existsSync(nonExistentPath)) {
+        unlinkSync(nonExistentPath);
+      }
+    } finally {
+      // Restore legacy file if we backed it up
+      if (legacyExists && existsSync(backupPath)) {
+        renameSync(backupPath, legacyPath);
+      }
+    }
   });
 });
 

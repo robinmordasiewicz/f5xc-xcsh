@@ -150,8 +150,9 @@ describeIf("Authentication Integration Tests", () => {
 				// Timeout or network error is expected
 				expect(error).toBeInstanceOf(APIError);
 				if (error instanceof APIError) {
-					// Should be a timeout-related error
-					expect(["FETCH_ERROR", "TIMEOUT"]).toContain(error.code);
+					// Timeout = statusCode 408, Network error = statusCode 0
+					expect([0, 408]).toContain(error.statusCode);
+					expect(error.message).toMatch(/timed out|network error/i);
 				}
 			}
 		});
