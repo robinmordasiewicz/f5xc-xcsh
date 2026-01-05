@@ -191,6 +191,15 @@ jobs:
             --delete-branch
           echo "✅ Auto-merge enabled - PR will merge automatically when CI passes"
 
+      - name: Trigger CI on PR Branch
+        if: steps.create-pr.outputs.pull-request-number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔄 Triggering CI workflow on branch: sync/upstream-${{ needs.check-upstream.outputs.new_version }}"
+          gh workflow run ci.yml --ref "sync/upstream-${{ needs.check-upstream.outputs.new_version }}"
+          echo "✅ CI workflow triggered - PR will auto-merge when checks pass"
+
   # Step 3: Report if no updates
   no-updates:
     name: Report Status
