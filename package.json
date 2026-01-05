@@ -41,6 +41,7 @@
     "generate:logo": "tsx scripts/generate-logo-asset.ts",
     "generate:descriptions": "tsx scripts/generate-descriptions.ts",
     "generate:description-loader": "tsx scripts/generate-description-loader.ts",
+    "generate:docs": "tsx scripts/generate-docs.ts",
     "generate": "npm run generate:domains && npm run generate:completions && npm run generate:logo && npm run generate:description-loader",
     "reconcile:specs": "./scripts/download-specs.sh",
     "prebuild": "node -e \"const fs=require('fs');if(!fs.existsSync('.specs/index.json')){console.log('Specs missing, run: npm run reconcile:specs');process.exit(1)}\" && npm run generate"
