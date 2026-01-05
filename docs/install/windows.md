@@ -1,41 +1,36 @@
 # Windows
 
-Install xcsh on Windows by downloading the binary directly.
+xcsh can be run on Windows using npm or Windows Subsystem for Linux (WSL).
 
-## Download
+## Option 1: npm (Recommended)
 
-1. Go to the [GitHub Releases](https://github.com/robinmordasiewicz/f5xc-xcsh/releases) page
-2. Download `xcsh_windows_amd64.zip` (or `xcsh_windows_arm64.zip` for ARM)
-3. Extract the archive
+Install xcsh globally using npm:
 
-## Installation
+```powershell
+npm install -g @robinmordasiewicz/f5xc-xcsh
+```
 
-### Option 1: Add to User PATH
-
-1. Create a directory for the binary:
-
-   ```powershell
-   mkdir $env:USERPROFILE\bin
-   ```
-
-2. Move the extracted `xcsh.exe` to this directory
-
-3. Add to your PATH:
-
-   ```powershell
-   $env:PATH += ";$env:USERPROFILE\bin"
-   [Environment]::SetEnvironmentVariable("PATH", $env:PATH, [EnvironmentVariableTarget]::User)
-   ```
-
-### Option 2: System-Wide Installation
-
-Move `xcsh.exe` to a directory already in your system PATH, such as `C:\Windows\System32`.
-
-## Verify Installation
+Then run:
 
 ```powershell
 xcsh version
 ```
+
+## Option 2: WSL
+
+For the best experience on Windows, use Windows Subsystem for Linux (WSL):
+
+1. Install WSL with Ubuntu:
+
+   ```powershell
+   wsl --install
+   ```
+
+2. Open Ubuntu and follow the [Script](script.md) installation method:
+
+   ```bash
+   curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | sh
+   ```
 
 ## PowerShell Completions
 
@@ -55,27 +50,21 @@ notepad $PROFILE
 xcsh completion powershell | Out-String | Invoke-Expression
 ```
 
-## WSL Alternative
-
-If you prefer a Unix-like environment, you can use Windows Subsystem for Linux (WSL) and follow the [Script](script.md) installation method:
-
-```bash
-curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | sh
-```
-
 ## Troubleshooting
 
 ### Command Not Found
 
-Ensure the directory containing `xcsh.exe` is in your PATH:
+Ensure npm's global bin directory is in your PATH:
 
 ```powershell
-echo $env:PATH
+npm config get prefix
 ```
+
+Add the `\bin` subdirectory of that path to your system PATH.
 
 ### Execution Policy
 
-If PowerShell blocks the script, adjust the execution policy:
+If PowerShell blocks scripts, adjust the execution policy:
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser

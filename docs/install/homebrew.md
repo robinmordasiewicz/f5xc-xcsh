@@ -81,9 +81,5 @@ xcsh version
 Expected output:
 
 ```text
-xcsh version 5.20.0
-  commit:   83f05ac
-  built:    2025-12-24T23:47:31Z
-  go:       go1.25.5
-  platform: darwin/arm64 [Possible values: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64]
+xcsh version v2.0.7
 ```

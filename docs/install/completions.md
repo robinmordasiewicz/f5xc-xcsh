@@ -4,9 +4,9 @@ Enable comprehensive tab completion for all xcsh commands, including domain name
 
 ## Features
 
-- **Domain Completion**: Complete all 22 domain names and their aliases (e.g., `lb`, `infra`, `sec`)
+- **Domain Completion**: Complete all domain names (e.g., `virtual`, `dns`, `waf`)
 - **Operation Completion**: Complete all operations (`list`, `get`, `create`, `delete`, `status`, `patch`, `add-labels`, `remove-labels`)
-- **Resource Type Completion**: Complete 268 resource types within each domain
+- **Resource Type Completion**: Complete resource types within each domain
 - **Namespace Completion**: Dynamic completion of available namespaces from your API
 - **Resource Name Completion**: Dynamic completion of resource names for `get`, `delete`, and `status` operations
 - **Label Key Completion**: Common label key suggestions for `add-labels` and `remove-labels` operations
@@ -55,20 +55,20 @@ Once completion is installed, use `<TAB>` to complete commands:
 
 ```bash
 # Complete domain names
-xcsh l<TAB>              # Completes to: load_balancer
-xcsh lb<TAB>             # Completes to: load_balancer (alias)
-xcsh in<TAB>             # Completes to: infrastructure
-xcsh sec<TAB>            # Completes to: security
+xcsh v<TAB>              # Completes to: virtual, vpm_and_node_management
+xcsh vi<TAB>             # Completes to: virtual
+xcsh dn<TAB>             # Completes to: dns
+xcsh wa<TAB>             # Completes to: waf
 ```
 
 ### Operation Completion
 
 ```bash
 # Complete operations
-xcsh load_balancer <TAB>
+xcsh virtual <TAB>
 # Suggests: list, get, create, delete, replace, apply, status, patch, add-labels, remove-labels
 
-xcsh infrastructure <TAB>
+xcsh dns <TAB>
 # Shows available operations
 ```
 
@@ -76,21 +76,21 @@ xcsh infrastructure <TAB>
 
 ```bash
 # Complete resource types
-xcsh load_balancer list <TAB>
+xcsh virtual list <TAB>
 # Completes to: http_loadbalancer, origin_pool, tcp_loadbalancer, udp_loadbalancer, etc.
 
-xcsh infrastructure get <TAB>
-# Shows infrastructure resource types
+xcsh dns get <TAB>
+# Shows dns resource types like dns_zone, dns_domain
 ```
 
 ### Namespace Completion
 
 ```bash
 # Complete namespaces (requires API access)
-xcsh load_balancer list http_loadbalancer -n <TAB>
+xcsh virtual list http_loadbalancer -ns <TAB>
 # Suggests: default, production, staging, etc. (from your F5 XC tenant)
 
-xcsh lb get origin_pool example-pool -n <TAB>
+xcsh virtual get origin_pool example-pool -ns <TAB>
 # Dynamic namespace completion for your specific namespace
 ```
 
@@ -98,10 +98,10 @@ xcsh lb get origin_pool example-pool -n <TAB>
 
 ```bash
 # Complete resource names (requires API access)
-xcsh load_balancer get http_loadbalancer <TAB>
+xcsh virtual get http_loadbalancer <TAB>
 # Suggests: example-lb-1, prod-lb, staging-lb, etc. (from your namespace)
 
-xcsh infrastructure delete origin_pool <TAB>
+xcsh virtual delete origin_pool <TAB>
 # Shows available origin pools to delete
 ```
 
@@ -109,10 +109,10 @@ xcsh infrastructure delete origin_pool <TAB>
 
 ```bash
 # Complete label keys
-xcsh load_balancer add-labels http_loadbalancer example-lb --label-key <TAB>
+xcsh virtual add-labels http_loadbalancer example-lb --label-key <TAB>
 # Suggests: environment, application, owner, cost-center, tier, version
 
-xcsh lb add-labels http_loadbalancer example-lb -n production --label-key <TAB>
+xcsh virtual add-labels http_loadbalancer example-lb -ns production --label-key <TAB>
 # Common F5 XC label keys
 ```
 
@@ -126,8 +126,8 @@ export F5XC_API_URL="https://your-tenant.console.ves.volterra.io"
 export F5XC_API_TOKEN="your-api-token"
 
 # Now namespace and resource name completion will work
-xcsh lb list http_loadbalancer -n <TAB>  # Shows your namespaces
-xcsh lb get http_loadbalancer <TAB>      # Shows your resources
+xcsh virtual list http_loadbalancer -ns <TAB>  # Shows your namespaces
+xcsh virtual get http_loadbalancer <TAB>       # Shows your resources
 ```
 
 ## Troubleshooting

@@ -51,7 +51,7 @@ Get up and running with the F5 Distributed Cloud CLI in minutes.
 The fastest way to get started on macOS:
 
 ```bash
-brew tap robinmordasiewicz/xcsh
+brew tap robinmordasiewicz/tap
 brew install --cask xcsh
 ```
 

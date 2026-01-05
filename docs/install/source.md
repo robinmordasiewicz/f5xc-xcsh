@@ -8,54 +8,75 @@ Building from source requires:
 
 | Requirement | Version | Check Command |
 |-------------|---------|---------------|
-| Go | go1.25.5 | `go version` |
+| Node.js | 20+ | `node --version` |
+| npm | 10+ | `npm --version` |
 | Git | any | `git --version` |
 
 ## Clone Repository
 
 ```bash
 git clone https://github.com/robinmordasiewicz/f5xc-xcsh.git
-cd xcsh
+cd f5xc-xcsh
+```
+
+## Install Dependencies
+
+```bash
+npm install
 ```
 
 ## Build
 
 ```bash
-go build -o xcsh .
+npm run build
 ```
+
+This compiles TypeScript to JavaScript and outputs to the `dist/` directory.
 
 ## Verify Build
 
 ```bash
-./xcsh version
+./dist/index.js version
 ```
 
-Expected output shows version, commit hash, build timestamp, Go version, and platform.
+Expected output:
+
+```text
+xcsh version v2.0.7
+```
+
+## Run Locally
+
+After building, run the CLI directly:
+
+```bash
+./dist/index.js --help
+```
+
+Or enter interactive mode:
+
+```bash
+./dist/index.js
+```
+
+## Development Mode
+
+For development with hot reload:
+
+```bash
+npm run dev
+```
 
 ## Install (Optional)
 
-Move the binary to your PATH:
-
-=== "User Install"
-
-    ```bash
-    mkdir -p ~/.local/bin
-    mv xcsh ~/.local/bin/
-    ```
-
-=== "System Install"
-
-    ```bash
-    sudo mv xcsh /usr/local/bin/
-    ```
-
-## Build with Version Info
-
-For release-quality builds with embedded version information:
+To install globally on your system:
 
 ```bash
-go build -ldflags="-X github.com/robinmordasiewicz/f5xc-xcsh/cmd.Version=dev \
-  -X github.com/robinmordasiewicz/f5xc-xcsh/cmd.GitCommit=$(git rev-parse --short HEAD) \
-  -X github.com/robinmordasiewicz/f5xc-xcsh/cmd.BuildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-  -o xcsh .
+npm link
+```
+
+Then run from anywhere:
+
+```bash
+xcsh --help
 ```
