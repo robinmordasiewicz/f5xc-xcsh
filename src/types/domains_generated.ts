@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.12
+ * Generated from .specs/index.json v2.0.13
  * Run: npx tsx scripts/generate-domains.ts
  */
 
@@ -16,7 +16,7 @@ export type { ResourceMetadata, SubscriptionTier };
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.12";
+export const SPEC_VERSION = "2.0.13";
 
 /**
  * Generated domain data from upstream API specifications
