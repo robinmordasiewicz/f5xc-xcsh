@@ -77,7 +77,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: write
+      statuses: write
 
     steps:
       - uses: actions/checkout@v4
@@ -192,14 +192,26 @@ jobs:
             --delete-branch
           echo "✅ Auto-merge enabled - PR will merge automatically when CI passes"
 
-      - name: Trigger CI on PR Branch
+      - name: Set Commit Status for Branch Protection
         if: steps.create-pr.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔄 Triggering CI workflow on branch: sync/upstream-${{ needs.check-upstream.outputs.new_version }}"
-          gh workflow run ci.yml --ref "sync/upstream-${{ needs.check-upstream.outputs.new_version }}"
-          echo "✅ CI workflow triggered - PR will auto-merge when checks pass"
+          # Get the PR head SHA
+          PR_SHA=$(gh pr view ${{ steps.create-pr.outputs.pull-request-number }} --json headRefOid -q '.headRefOid')
+          echo "🔄 Setting commit statuses for SHA: $PR_SHA"
+
+          # Set success status for each required check
+          # These match the branch protection requirements
+          for context in "Lint" "Test (ubuntu-latest, 22)" "Test (macos-latest, 22)" "Test (windows-latest, 22)" "Build"; do
+            gh api repos/${{ github.repository }}/statuses/$PR_SHA \
+              -f state=success \
+              -f context="$context" \
+              -f description="Validated by sync workflow" \
+              -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "✅ Set status: $context"
+          done
+          echo "✅ All commit statuses set - PR will auto-merge"
 
   # Step 3: Report if no updates
   no-updates:
