@@ -25,7 +25,7 @@ Application type definitions with discovery and learned schema analysis. Traffic
 |--------|-------------|
 | [Managed Kubernetes](managed_kubernetes.md) | Cluster RBAC, pod security, and container registries. |
 | [Container Services](container_services.md) | Containerized workloads and virtual Kubernetes clusters. |
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 
 ---
 

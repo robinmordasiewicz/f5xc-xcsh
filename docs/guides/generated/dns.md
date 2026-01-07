@@ -1,6 +1,6 @@
 # 🌐 Dns
 
-Authoritative zone hosting with BIND and AXFR imports. Health checks, failover policies, and request logging.
+Name resolution with zone transfers and health checks. Record types and delegation support.
 
 **Category:** Networking
 
@@ -23,7 +23,7 @@ Authoritative zone hosting with BIND and AXFR imports. Health checks, failover p
 
 | Domain | Description |
 |--------|-------------|
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 | [Network](network.md) | BGP peering, IPsec tunnels, and segment policies. |
 
 ---

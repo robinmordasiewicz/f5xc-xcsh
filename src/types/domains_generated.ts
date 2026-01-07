@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.15
+ * Generated from .specs/index.json v2.0.16
  * Run: npx tsx scripts/generate-domains.ts
  */
 
@@ -16,7 +16,7 @@ export type { ResourceMetadata, SubscriptionTier };
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.15";
+export const SPEC_VERSION = "2.0.16";
 
 /**
  * Generated domain data from upstream API specifications
@@ -538,11 +538,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "cdn",
 			displayName: "Cdn",
 			description:
-				"Content distribution through global edge networks with rule-based eligibility. Path matchers, cookie patterns, and query parameter filters control caching behavior. Expression-based rules enable fine-grained targeting by request attributes. Load balancer integration provides throughput aggregation, request log queries, and on-demand cache clearing across worldwide distribution points.",
-			descriptionShort:
-				"Edge caching, content delivery, and distribution rules.",
+				"Content delivery networks with edge caching, geographic distribution, and cache management. Supports custom rules, asset purge operations, and performance analytics. Enables worldwide asset distribution, optimization, and delivery monitoring across regions and protocols.",
+			descriptionShort: "Content delivery and edge caching networks.",
 			descriptionMedium:
-				"Path-based policies with TTL controls and header conditions. Purge operations, access logs, and cache eligibility for multi-region deployments.",
+				"Global distribution with cache rules and purge operations. Performance monitoring and analytics.",
 			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -599,7 +598,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			descriptionMedium:
 				"Token-based provisioning with image downloads and pre-upgrade validation. Fleet grouping enables bulk operations across distributed locations.",
 			aliases: [],
-			complexity: "advanced" as const,
+			complexity: "moderate" as const,
 			isPreview: false,
 			requiresTier: "Standard",
 			category: "Infrastructure",
@@ -1024,10 +1023,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "dns",
 			displayName: "Dns",
 			description:
-				"Primary and secondary zone configuration with support for A, AAAA, CNAME, CAA, CERT, and AFSDB record types. Zone cloning, BIND file imports, and AXFR transfers for migration. Load balancer health checks with metrics collection and request log analysis. Compliance policies and RRSet management for enterprise name resolution.",
-			descriptionShort: "Zones, record types, and load balancing.",
+				"Name infrastructure with authoritative zones, A/AAAA/CNAME record types, and zone management. Supports zone transfers, security extensions, health-based routing, and delegation. Enables reliable name resolution, geographic load balancing, and name-based traffic steering across distributed environments.",
+			descriptionShort: "Authoritative zones and record management.",
 			descriptionMedium:
-				"Authoritative zone hosting with BIND and AXFR imports. Health checks, failover policies, and request logging.",
+				"Name resolution with zone transfers and health checks. Record types and delegation support.",
 			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,
@@ -2269,10 +2268,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "virtual",
 			displayName: "Virtual",
 			description:
-				"Traffic distribution across origin pools with weighted routing and session persistence. Malware protection integration, threat campaign blocking, and request inspection. Proxy forwarding policies, server monitoring, and latency-based routing decisions. Service policy sets for fine-grained access control and rate limiter policies for traffic shaping.",
-			descriptionShort: "HTTP, TCP, UDP load balancers and origin pools.",
+				"Load balancing for HTTP, TCP, and UDP traffic with configurable routing rules and origin pool management. Supports health checks, session persistence, and automatic failover. Enables geographic distribution, rate limiting, and service policy enforcement across load balancers and routes.",
+			descriptionShort:
+				"HTTP, TCP, UDP load balancing with origin pools.",
 			descriptionMedium:
-				"Layer 7 routing rules with health checks and failover. Rate limiting, geo-routing, and service policy enforcement.",
+				"Traffic distribution across regions with routing rules. Health checks and failover policies.",
 			aliases: [],
 			complexity: "advanced" as const,
 			isPreview: false,

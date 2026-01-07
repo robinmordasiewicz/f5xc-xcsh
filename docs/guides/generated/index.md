@@ -1,6 +1,6 @@
 # Domain Reference
 
-Generated from enriched API specifications v2.0.15.
+Generated from enriched API specifications v2.0.16.
 
 ## AI
 
@@ -23,11 +23,11 @@ Generated from enriched API specifications v2.0.15.
 
 | Domain | Description |
 |--------|-------------|
-| [🚀 Cdn](cdn.md) | Edge caching, content delivery, and distribution rules. |
-| [🌐 Dns](dns.md) | Zones, record types, and load balancing. |
+| [🚀 Cdn](cdn.md) | Content delivery and edge caching networks. |
+| [🌐 Dns](dns.md) | Authoritative zones and record management. |
 | [🔌 Network](network.md) | BGP peering, IPsec tunnels, and segment policies. |
 | [⏱️ Rate Limiting](rate_limiting.md) | Request throttling, quotas, and policer rules. |
-| [⚖️ Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [⚖️ Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 
 ## Operations
 

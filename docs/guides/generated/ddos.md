@@ -22,7 +22,7 @@ Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and
 | Domain | Description |
 |--------|-------------|
 | [Network Security](network_security.md) | NAT policies, firewalls, and segment connections. |
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 
 ---
 
