@@ -22,7 +22,7 @@ Time-based quota enforcement with configurable windows in hours, minutes, or sec
 
 | Domain | Description |
 |--------|-------------|
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 | [Network Security](network_security.md) | NAT policies, firewalls, and segment connections. |
 
 ---

@@ -1,6 +1,6 @@
 # ⚖️ Virtual
 
-Layer 7 routing rules with health checks and failover. Rate limiting, geo-routing, and service policy enforcement.
+Traffic distribution across regions with routing rules. Health checks and failover policies.
 
 **Category:** Networking
 
@@ -115,7 +115,7 @@ xcsh virtual get http_loadbalancer example-lb -ns default
 
 | Domain | Description |
 |--------|-------------|
-| [Dns](dns.md) | Zones, record types, and load balancing. |
+| [Dns](dns.md) | Authoritative zones and record management. |
 | [Service Policy](service_policy.md) |  |
 | [Network](network.md) | BGP peering, IPsec tunnels, and segment policies. |
 

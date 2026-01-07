@@ -25,9 +25,9 @@ Border gateway protocol with ASN management and autonomous system relationships.
 
 | Domain | Description |
 |--------|-------------|
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 | [Network Security](network_security.md) | NAT policies, firewalls, and segment connections. |
-| [Dns](dns.md) | Zones, record types, and load balancing. |
+| [Dns](dns.md) | Authoritative zones and record management. |
 
 ---
 

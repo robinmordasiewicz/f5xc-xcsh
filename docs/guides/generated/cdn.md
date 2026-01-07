@@ -1,6 +1,6 @@
 # 🚀 Cdn
 
-Path-based policies with TTL controls and header conditions. Purge operations, access logs, and cache eligibility for multi-region deployments.
+Global distribution with cache rules and purge operations. Performance monitoring and analytics.
 
 **Category:** Networking
 
@@ -22,7 +22,7 @@ Path-based policies with TTL controls and header conditions. Purge operations, a
 
 | Domain | Description |
 |--------|-------------|
-| [Virtual](virtual.md) | HTTP, TCP, UDP load balancers and origin pools. |
+| [Virtual](virtual.md) | HTTP, TCP, UDP load balancing with origin pools. |
 
 ---
 
