@@ -1,6 +1,6 @@
 # 🧠 Data Intelligence
 
-F5 Distributed Cloud Data Intelligence API specifications
+F5 Distributed Cloud Data Intelligence
 
 **Category:** Operations
 

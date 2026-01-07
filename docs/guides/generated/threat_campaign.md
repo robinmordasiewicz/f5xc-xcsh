@@ -1,6 +1,6 @@
 # ⚠️ Threat Campaign
 
-F5 Distributed Cloud Threat Campaign API specifications
+F5 Distributed Cloud Threat Campaign
 
 **Category:** Security
 
