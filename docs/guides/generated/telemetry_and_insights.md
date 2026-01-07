@@ -1,6 +1,6 @@
 # 📉 Telemetry And Insights
 
-F5 Distributed Cloud Telemetry And Insights API specifications
+F5 Distributed Cloud Telemetry And Insights
 
 **Category:** Operations
 

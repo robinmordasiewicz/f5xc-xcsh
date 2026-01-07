@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.17
+ * Generated from .specs/index.json v2.0.19
  * Run: npx tsx scripts/generate-domains.ts
  */
 
@@ -16,7 +16,7 @@ export type { ResourceMetadata, SubscriptionTier };
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.17";
+export const SPEC_VERSION = "2.0.19";
 
 /**
  * Generated domain data from upstream API specifications
@@ -259,9 +259,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			displayName: "Authentication",
 			description:
 				"F5 Distributed Cloud Authentication API specifications",
-			descriptionShort: "Authentication API",
-			descriptionMedium:
-				"F5 Distributed Cloud Authentication API specifications",
+			descriptionShort: "Authentication",
+			descriptionMedium: "F5 Distributed Cloud Authentication",
 			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -922,9 +921,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			displayName: "Data Intelligence",
 			description:
 				"F5 Distributed Cloud Data Intelligence API specifications",
-			descriptionShort: "Data Intelligence API",
-			descriptionMedium:
-				"F5 Distributed Cloud Data Intelligence API specifications",
+			descriptionShort: "Data Intelligence",
+			descriptionMedium: "F5 Distributed Cloud Data Intelligence",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -2059,9 +2057,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			displayName: "Telemetry And Insights",
 			description:
 				"F5 Distributed Cloud Telemetry And Insights API specifications",
-			descriptionShort: "Telemetry And Insights API",
-			descriptionMedium:
-				"F5 Distributed Cloud Telemetry And Insights API specifications",
+			descriptionShort: "Telemetry And Insights",
+			descriptionMedium: "F5 Distributed Cloud Telemetry And Insights",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -2166,9 +2163,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			displayName: "Threat Campaign",
 			description:
 				"F5 Distributed Cloud Threat Campaign API specifications",
-			descriptionShort: "Threat Campaign API",
-			descriptionMedium:
-				"F5 Distributed Cloud Threat Campaign API specifications",
+			descriptionShort: "Threat Campaign",
+			descriptionMedium: "F5 Distributed Cloud Threat Campaign",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -2439,9 +2435,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			displayName: "Vpm And Node Management",
 			description:
 				"F5 Distributed Cloud Vpm And Node Management API specifications",
-			descriptionShort: "Vpm And Node Management API",
-			descriptionMedium:
-				"F5 Distributed Cloud Vpm And Node Management API specifications",
+			descriptionShort: "Vpm And Node Management",
+			descriptionMedium: "F5 Distributed Cloud Vpm And Node Management",
 			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,

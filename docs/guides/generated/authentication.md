@@ -1,6 +1,6 @@
 # 🔑 Authentication
 
-F5 Distributed Cloud Authentication API specifications
+F5 Distributed Cloud Authentication
 
 **Category:** Platform
 

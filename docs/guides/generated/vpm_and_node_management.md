@@ -1,6 +1,6 @@
 # 🖥️ Vpm And Node Management
 
-F5 Distributed Cloud Vpm And Node Management API specifications
+F5 Distributed Cloud Vpm And Node Management
 
 **Category:** Platform
 
