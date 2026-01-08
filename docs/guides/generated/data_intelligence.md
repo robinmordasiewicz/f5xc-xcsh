@@ -1,6 +1,6 @@
 # 🧠 Data Intelligence
 
-F5 Distributed Cloud Data Intelligence
+Configure and manage data intelligence settings, policies, and resources across your F5 Distributed Cloud deployment.
 
 **Category:** Operations
 

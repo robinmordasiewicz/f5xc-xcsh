@@ -1,6 +1,6 @@
 # 🔑 Authentication
 
-F5 Distributed Cloud Authentication
+Configure and manage authentication settings, policies, and resources across your F5 Distributed Cloud deployment.
 
 **Category:** Platform
 

@@ -1,6 +1,6 @@
 # Domain Reference
 
-Generated from enriched API specifications v2.0.20.
+Generated from enriched API specifications v2.0.21.
 
 ## AI
 
@@ -33,18 +33,18 @@ Generated from enriched API specifications v2.0.20.
 
 | Domain | Description |
 |--------|-------------|
-| [🧠 Data Intelligence](data_intelligence.md) | Data Intelligence |
+| [🧠 Data Intelligence](data_intelligence.md) | Data Intelligence management and configuration |
 | [📊 Observability](observability.md) | Synthetic health checks and DNS resolution validation. |
 | [📈 Statistics](statistics.md) | Alerts, logs, flow analytics, and reporting. |
 | [🎫 Support](support.md) | Tickets, escalations, and network diagnostics. |
-| [📉 Telemetry And Insights](telemetry_and_insights.md) | Telemetry And Insights |
+| [📉 Telemetry And Insights](telemetry_and_insights.md) | Telemetry And Insights management and configuration |
 
 ## Platform
 
 | Domain | Description |
 |--------|-------------|
 | [🖥️ Admin Console And Ui](admin_console_and_ui.md) | Static UI components and console assets. |
-| [🔑 Authentication](authentication.md) | Authentication |
+| [🔑 Authentication](authentication.md) | Authentication management and configuration |
 | [🏢 Bigip](bigip.md) | iRules, data groups, and APM integration. |
 | [💳 Billing And Usage](billing_and_usage.md) | Subscription plans, payment methods, and quotas. |
 | [🏪 Marketplace](marketplace.md) | Add-on services, connectors, and TPM policies. |
@@ -52,7 +52,7 @@ Generated from enriched API specifications v2.0.20.
 | [🗄️ Object Storage](object_storage.md) | Mobile SDK assets, versioned binaries, and app shield files. |
 | [🪪 Tenant And Identity](tenant_and_identity.md) | User profiles, sessions, and OTP settings. |
 | [👥 Users](users.md) | Account tokens, labels, and cloud-init config. |
-| [🖥️ Vpm And Node Management](vpm_and_node_management.md) | Vpm And Node Management |
+| [🖥️ Vpm And Node Management](vpm_and_node_management.md) | Vpm And Node Management management and configuration |
 
 ## Security
 
@@ -67,6 +67,6 @@ Generated from enriched API specifications v2.0.20.
 | [🔒 Network Security](network_security.md) | NAT policies, firewalls, and segment connections. |
 | [🚨 Secops And Incident Response](secops_and_incident_response.md) | Threat detection, user risk scoring, and automated blocking. |
 | [🎭 Shape](shape.md) | Bot defense, fraud prevention, and client integrity. |
-| [⚠️ Threat Campaign](threat_campaign.md) | Threat Campaign |
+| [⚠️ Threat Campaign](threat_campaign.md) | Threat Campaign management and configuration |
 | [🛡️ Waf](waf.md) | Request inspection, attack signatures, and bot mitigation. |
 

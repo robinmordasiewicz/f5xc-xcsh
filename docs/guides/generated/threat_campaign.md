@@ -1,6 +1,6 @@
 # ⚠️ Threat Campaign
 
-F5 Distributed Cloud Threat Campaign
+Configure and manage threat campaign settings, policies, and resources across your F5 Distributed Cloud deployment.
 
 **Category:** Security
 
