@@ -5,7 +5,7 @@
 # Environment variables:
 #   F5XC_VERSION      - Specific version to install (default: latest)
 #   F5XC_INSTALL_DIR  - Installation directory (default: /usr/local/bin)
-#   F5XC_NO_SUDO      - Skip sudo if set to any value
+#   F5XC_USE_SUDO     - Use sudo for system install (default: install to ~/.local/bin)
 #   F5XC_NO_VERIFY    - Skip checksum verification if set
 #   GITHUB_TOKEN     - Optional: GitHub token for authenticated API requests (CI/CD use)
 
@@ -309,7 +309,7 @@ determine_install_strategy() {
       echo "custom:"
       return
     fi
-    if [ -z "${F5XC_NO_SUDO:-}" ] && command_exists sudo; then
+    if [ -n "${F5XC_USE_SUDO:-}" ] && command_exists sudo; then
       echo "custom:sudo"
       return
     fi
@@ -323,18 +323,18 @@ Try one of:
     sudo sh install.sh"
   fi
 
-  # Default behavior: try /usr/local/bin with sudo, fall back to ~/.local/bin
+  # Default behavior: install to ~/.local/bin (no sudo), opt-in to /usr/local/bin with sudo
   if [ -w "$DEFAULT_INSTALL_DIR" ] || [ "$(id -u)" -eq 0 ]; then
     echo "system:"
     return
   fi
 
-  if [ -z "${F5XC_NO_SUDO:-}" ] && command_exists sudo; then
+  if [ -n "${F5XC_USE_SUDO:-}" ] && command_exists sudo; then
     echo "system:sudo"
     return
   fi
 
-  # Fall back to user directory (no sudo available)
+  # Default to user directory (no sudo)
   echo "user:"
 }
 
@@ -828,7 +828,7 @@ If installed elsewhere, set F5XC_INSTALL_DIR:
   # Determine if sudo is needed for uninstall
   SUDO_CMD=""
   if [ ! -w "$INSTALL_DIR" ] && [ "$(id -u)" -ne 0 ]; then
-    if [ -z "${F5XC_NO_SUDO:-}" ] && command_exists sudo; then
+    if [ -n "${F5XC_USE_SUDO:-}" ] && command_exists sudo; then
       SUDO_CMD="sudo"
     fi
   fi
@@ -888,8 +888,8 @@ OPTIONS
 
 ENVIRONMENT VARIABLES
     F5XC_VERSION      Specific version to install (default: latest)
-    F5XC_INSTALL_DIR  Installation directory (default: /usr/local/bin)
-    F5XC_NO_SUDO      Skip sudo even if needed (for custom install dirs)
+    F5XC_INSTALL_DIR  Installation directory (default: ~/.local/bin)
+    F5XC_USE_SUDO     Use sudo to install to /usr/local/bin instead
     F5XC_NO_VERIFY    Skip checksum verification
 
 SUPPORTED PLATFORMS

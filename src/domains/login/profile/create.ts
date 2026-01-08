@@ -38,7 +38,7 @@ export const createCommand: CommandDefinition = {
 					"  --namespace Default namespace (optional)",
 					"",
 					"Example:",
-					"  login profile create myprofile --url https://myco.console.ves.volterra.io --token abc123",
+					"  login profile create myprofile --url https://tenant.console.ves.volterra.io --token abc123",
 				].join("\n"),
 			);
 		}
