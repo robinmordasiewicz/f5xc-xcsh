@@ -6,6 +6,8 @@ F5 Distributed Cloud Shell - A command-line interface for managing F5 Distribute
 
 Built with F5 Distributed Cloud API specifications.
 
+Version v2.0.21 includes updated API specifications for enhanced functionality.
+
 ## Documentation
 
 Full documentation is available at **[robinmordasiewicz.github.io/f5xc-xcsh](https://robinmordasiewicz.github.io/f5xc-xcsh)**
