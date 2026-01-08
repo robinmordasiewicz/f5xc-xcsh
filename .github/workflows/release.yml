@@ -214,6 +214,7 @@ jobs:
         run: ./scripts/download-specs.sh
 
       - name: Build TypeScript
+        shell: bash
         run: npm run build
         env:
           XCSH_VERSION: ${{ needs.version.outputs.version }}
