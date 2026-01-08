@@ -31,13 +31,13 @@ Install xcsh with automatic platform detection and shell configuration.
 ## Specific Version
 
 ```bash
-curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | VES_VERSION={{ version or 'X.Y.Z' }} sh
+curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | F5XC_VERSION={{ version or 'X.Y.Z' }} sh
 ```
 
-## Custom Install Directory
+## System Install (with sudo)
 
 ```bash
-curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | VES_INSTALL_DIR=$HOME/.local/bin sh
+curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | F5XC_USE_SUDO=1 sh
 ```
 
 ## Uninstall
@@ -50,10 +50,10 @@ curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | sh -s -- -
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VES_VERSION` | latest | Specific version to install |
-| `VES_INSTALL_DIR` | `/usr/local/bin` | Installation directory |
-| `VES_NO_SUDO` | unset | Skip sudo usage |
-| `VES_NO_VERIFY` | unset | Skip checksum verification |
+| `F5XC_VERSION` | latest | Specific version to install |
+| `F5XC_INSTALL_DIR` | `~/.local/bin` | Installation directory |
+| `F5XC_USE_SUDO` | unset | Use sudo to install to `/usr/local/bin` |
+| `F5XC_NO_VERIFY` | unset | Skip checksum verification |
 
 ## Features
 

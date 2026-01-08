@@ -139,7 +139,7 @@ run_integration_tests() {
     echo -e "${YELLOW}Skipping integration tests - environment not configured${NC}"
     echo ""
     echo "To run integration tests, set these environment variables:"
-    echo "  export F5XC_API_URL=\"https://your-tenant.staging.volterra.us\""
+    echo "  export F5XC_API_URL=\"https://tenant.staging.volterra.us\""
     echo "  export F5XC_API_P12_FILE=\"/path/to/cert.p12\""
     echo "  export F5XC_P12_PASSWORD=\"your-password\""
     return 0

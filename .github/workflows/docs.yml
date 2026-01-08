@@ -584,8 +584,8 @@ jobs:
             rm -rf $HOME/.local/bin/xcsh 2>/dev/null || true
             rm -f install-output.txt 2>/dev/null || true
 
-            # Run the install script and capture output
-            GITHUB_TOKEN=${{ github.token }} VES_NO_SUDO=1 VES_INSTALL_DIR=$HOME/.local/bin sh /tmp/install.sh > install-output.txt 2>&1
+            # Run the install script and capture output (defaults to ~/.local/bin without sudo)
+            GITHUB_TOKEN=${{ github.token }} sh /tmp/install.sh > install-output.txt 2>&1
             INSTALL_EXIT_CODE=$?
 
             echo "Install output:"
