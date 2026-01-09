@@ -54,6 +54,8 @@ export interface APIRequestOptions {
 	headers?: Record<string, string>;
 	/** Query parameters */
 	query?: Record<string, string>;
+	/** Request timeout in milliseconds (overrides client default) */
+	timeout?: number;
 }
 
 /**

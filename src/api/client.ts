@@ -255,7 +255,8 @@ export class APIClient {
 		body: string | null,
 	): Promise<APIResponse<T>> {
 		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+		const requestTimeout = options.timeout ?? this.timeout;
+		const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
 
 		try {
 			const response = await fetch(url, {
@@ -319,7 +320,7 @@ export class APIClient {
 			// Handle abort/timeout
 			if (error instanceof Error && error.name === "AbortError") {
 				throw new APIError(
-					`Request timed out after ${this.timeout}ms`,
+					`Request timed out after ${requestTimeout}ms`,
 					408,
 					undefined,
 					`${options.method} ${options.path}`,
@@ -448,6 +449,7 @@ export class APIClient {
 	async post<T = unknown>(
 		path: string,
 		body?: Record<string, unknown>,
+		timeout?: number,
 	): Promise<APIResponse<T>> {
 		const options: APIRequestOptions = {
 			method: "POST",
@@ -455,6 +457,9 @@ export class APIClient {
 		};
 		if (body) {
 			options.body = body;
+		}
+		if (timeout !== undefined) {
+			options.timeout = timeout;
 		}
 		return this.request<T>(options);
 	}
