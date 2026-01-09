@@ -92,7 +92,6 @@ const statusCommand: CommandDefinition = {
 	descriptionMedium:
 		"Check overall service health status. Use --quiet for exit code suitable for scripts.",
 	usage: "[--quiet]",
-	aliases: ["st"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -165,7 +164,6 @@ const summaryCommand: CommandDefinition = {
 	descriptionMedium:
 		"Show combined overview of health, components, incidents, and maintenance windows.",
 	usage: "[--brief]",
-	aliases: ["sum"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -224,7 +222,6 @@ const componentsCommand: CommandDefinition = {
 	descriptionMedium:
 		"Display service component health. Use --degraded-only to show only affected components.",
 	usage: "[--degraded-only]",
-	aliases: ["comp"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -305,7 +302,6 @@ const incidentsCommand: CommandDefinition = {
 	descriptionMedium:
 		"Display incidents with impact levels and updates. Use --active-only for ongoing issues.",
 	usage: "[--active-only]",
-	aliases: ["inc"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -383,7 +379,6 @@ const maintenanceCommand: CommandDefinition = {
 	descriptionMedium:
 		"Show maintenance schedules and timing. Use --upcoming for future windows only.",
 	usage: "[--upcoming]",
-	aliases: ["maint"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -602,5 +597,5 @@ export const cloudstatusDomain: DomainDefinition = {
 	subcommands: new Map(),
 };
 
-// Aliases for the domain
-export const cloudstatusAliases = ["cs", "status"];
+// Aliases for the domain (empty - use canonical name 'cloudstatus')
+export const cloudstatusAliases: string[] = [];
