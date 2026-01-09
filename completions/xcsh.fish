@@ -90,6 +90,7 @@ complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcomma
 complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from profile" -a "show" -d 'Show profile details (masked credentials)'
 complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from profile" -a "create" -d 'Create a new connection profile'
 complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from profile" -a "use" -d 'Switch to a different profile'
+complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from profile" -a "edit" -d 'Edit profile in $EDITOR'
 complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from profile" -a "delete" -d 'Delete a saved profile'
 complete -c xcsh -n "__fish_seen_subcommand_from login" -a "context" -d 'Manage default namespace context'
 complete -c xcsh -n "__fish_seen_subcommand_from login; and __fish_seen_subcommand_from context" -a "show" -d 'Show current default namespace'

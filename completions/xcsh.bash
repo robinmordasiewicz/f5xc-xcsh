@@ -47,7 +47,7 @@ _xcsh_completions() {
           return 0
           ;;
         login/profile)
-          COMPREPLY=($(compgen -W "list show create use delete" -- "${cur}"))
+          COMPREPLY=($(compgen -W "list show create use edit delete" -- "${cur}"))
           return 0
           ;;
         login/context)

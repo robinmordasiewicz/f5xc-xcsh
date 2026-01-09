@@ -8,6 +8,7 @@ import { showCommand } from "./profile/show.js";
 import { createCommand } from "./profile/create.js";
 import { useCommand } from "./profile/use.js";
 import { deleteCommand } from "./profile/delete.js";
+import { editCommand } from "./profile/edit.js";
 import { activeCommand } from "./profile/active.js";
 import { contextSubcommands } from "./context/index.js";
 import { bannerCommand } from "./banner/index.js";
@@ -28,6 +29,7 @@ const profileSubcommands: SubcommandGroup = {
 		["show", showCommand],
 		["create", createCommand],
 		["use", useCommand],
+		["edit", editCommand],
 		["delete", deleteCommand],
 	]),
 	defaultCommand: activeCommand,
