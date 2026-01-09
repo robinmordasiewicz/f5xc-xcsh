@@ -131,7 +131,6 @@ const showCommand: CommandDefinition = {
 	descriptionMedium:
 		"Show subscription tier, active addons, quota usage summary, and current billing status.",
 	usage: "",
-	aliases: ["overview", "info"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -430,7 +429,6 @@ const addonListCommand: CommandDefinition = {
 	descriptionMedium:
 		"Display all addon services with status and access information. Use --subscribed for active only.",
 	usage: "[--subscribed]",
-	aliases: ["ls"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -1288,7 +1286,6 @@ const reportSummaryCommand: CommandDefinition = {
 	descriptionMedium:
 		"Create comprehensive report with plan, addons, quotas, usage, and billing data.",
 	usage: "",
-	aliases: ["full"],
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -1531,5 +1528,5 @@ export const subscriptionDomain: DomainDefinition = {
 	]),
 };
 
-// Domain aliases
-export const subscriptionAliases = ["sub", "billing", "quota"];
+// Domain aliases (empty - use canonical name 'subscription')
+export const subscriptionAliases: string[] = [];

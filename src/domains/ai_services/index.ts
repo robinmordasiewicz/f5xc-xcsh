@@ -94,17 +94,9 @@ export const aiServicesDomain: DomainDefinition = {
 };
 
 /**
- * Domain aliases
+ * Domain aliases (empty - use canonical name 'ai_services')
  */
-export const aiServicesAliases = [
-	"ai",
-	"genai",
-	"assistant",
-	"query",
-	"ask",
-	"q",
-	"chat",
-];
+export const aiServicesAliases: string[] = [];
 
 // Re-export types and utilities for external use
 export type {

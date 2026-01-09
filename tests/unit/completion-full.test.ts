@@ -32,7 +32,7 @@ describe("Completer with trailing spaces", () => {
 	});
 });
 
-describe("Completer with domain alias prefix", () => {
+describe("Completer with domain name prefix", () => {
 	let completer: Completer;
 
 	beforeEach(() => {
@@ -47,9 +47,9 @@ describe("Completer with domain alias prefix", () => {
 		expect(texts).toContain("ai_services");
 	});
 
-	it("should show domain-specific completions for '/ai ' (with trailing space)", async () => {
-		// When typing "/ai " WITH trailing space, should delegate to ai_services domain completions
-		const suggestions = await completer.complete("/ai ");
+	it("should show domain-specific completions for '/ai_services ' (with trailing space)", async () => {
+		// When typing "/ai_services " WITH trailing space, should delegate to ai_services domain completions
+		const suggestions = await completer.complete("/ai_services ");
 		const texts = suggestions.map((s) => s.text);
 		// Should show ai_services commands like query, chat, etc.
 		expect(texts).toContain("query");
