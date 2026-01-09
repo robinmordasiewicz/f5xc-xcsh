@@ -94,6 +94,8 @@ jobs:
         run: npm ci
 
       - name: Download enriched API specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Regenerate domains
@@ -169,6 +171,8 @@ jobs:
         run: npm ci
 
       - name: Download enriched API specifications
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Build package

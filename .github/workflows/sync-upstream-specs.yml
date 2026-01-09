@@ -96,6 +96,8 @@ jobs:
         run: npm ci
 
       - name: Download latest specs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Generate domains
