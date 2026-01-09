@@ -669,7 +669,34 @@ async function handleDomainNavigation(
 	// Custom domains handle their own --help
 	if (isCustomDomain(domain)) {
 		const canonicalDomain = resolveDomainAlias(domain);
-		return customDomains.execute(canonicalDomain, args, session);
+
+		// If the alias is a command name (or command alias) in the canonical domain,
+		// prepend it to args. This allows "query 'question'" to work as
+		// "ai_services query 'question'" and "ask 'question'" to work similarly.
+		let effectiveArgs = args;
+		if (domain !== canonicalDomain) {
+			const domainDef = customDomains.get(canonicalDomain);
+			if (domainDef) {
+				// Check if it's a direct command name
+				let isCommand = domainDef.commands.has(domain);
+
+				// Also check if it's a command alias
+				if (!isCommand) {
+					for (const cmd of domainDef.commands.values()) {
+						if (cmd.aliases?.includes(domain)) {
+							isCommand = true;
+							break;
+						}
+					}
+				}
+
+				if (isCommand) {
+					effectiveArgs = [domain, ...args];
+				}
+			}
+		}
+
+		return customDomains.execute(canonicalDomain, effectiveArgs, session);
 	}
 
 	// Check for --help or -h flag on API/extension domains - show domain-specific help
