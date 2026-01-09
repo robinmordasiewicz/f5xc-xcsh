@@ -2,7 +2,7 @@
  * login profile edit - Edit profile configuration in EDITOR
  */
 
-import { spawn } from "child_process";
+import { spawnSync } from "child_process";
 import { promises as fs } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
@@ -24,32 +24,29 @@ function getEditor(): string {
 
 /**
  * Open a file in the user's editor and wait for it to close
+ * Uses spawnSync to block the entire process, allowing the editor
+ * to have full control of the terminal (avoiding Ink conflicts)
  */
-async function openInEditor(filePath: string): Promise<void> {
+function openInEditor(filePath: string): void {
 	const editor = getEditor();
 
-	return new Promise((resolve, reject) => {
-		const child = spawn(editor, [filePath], {
-			stdio: "inherit",
-			shell: true,
-		});
-
-		child.on("error", (error) => {
-			reject(
-				new Error(
-					`Failed to launch editor '${editor}': ${error.message}`,
-				),
-			);
-		});
-
-		child.on("exit", (code) => {
-			if (code === 0) {
-				resolve();
-			} else {
-				reject(new Error(`Editor exited with code ${code}`));
-			}
-		});
+	// Use spawnSync to block the entire Node process
+	// This allows the editor to have full terminal control
+	// without conflicts from Ink's terminal management
+	const result = spawnSync(editor, [filePath], {
+		stdio: "inherit",
+		shell: true,
 	});
+
+	if (result.error) {
+		throw new Error(
+			`Failed to launch editor '${editor}': ${result.error.message}`,
+		);
+	}
+
+	if (result.status !== 0) {
+		throw new Error(`Editor exited with code ${result.status}`);
+	}
 }
 
 /**
@@ -234,7 +231,7 @@ export const editCommand: CommandDefinition = {
 				`Opening profile '${profileName}' in ${editor}...`,
 			];
 
-			await openInEditor(tempFile);
+			openInEditor(tempFile);
 
 			// Get file stats after editing
 			const statsAfter = await fs.stat(tempFile);
