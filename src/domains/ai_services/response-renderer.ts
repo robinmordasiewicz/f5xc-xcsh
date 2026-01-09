@@ -63,19 +63,70 @@ export function renderResponse(response: GenAIQueryResponse): string[] {
 }
 
 /**
+ * Strip HTML tags and convert to plain text
+ */
+function stripHtml(html: string): string {
+	return (
+		html
+			// Convert HTML entities
+			.replace(/&amp;/g, "&")
+			.replace(/&lt;/g, "<")
+			.replace(/&gt;/g, ">")
+			.replace(/&quot;/g, '"')
+			.replace(/&#39;/g, "'")
+			.replace(/&nbsp;/g, " ")
+			// Convert common HTML elements to text equivalents
+			.replace(/<br\s*\/?>/gi, "\n")
+			.replace(/<\/p>/gi, "\n\n")
+			.replace(/<\/li>/gi, "\n")
+			.replace(/<\/h[1-6]>/gi, "\n\n")
+			.replace(/<hr\s*\/?>/gi, "\n---\n")
+			// Handle links - extract text and URL
+			.replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, "$2 ($1)")
+			// Handle code blocks
+			.replace(/<code>([^<]*)<\/code>/gi, "`$1`")
+			// Handle list items with bullets
+			.replace(/<li[^>]*>/gi, "  • ")
+			// Handle headings
+			.replace(/<h3[^>]*>/gi, "\n### ")
+			.replace(/<h[1-6][^>]*>/gi, "\n")
+			// Handle ordered list items (numbered)
+			.replace(/<ol[^>]*>/gi, "")
+			.replace(/<\/ol>/gi, "")
+			.replace(/<ul[^>]*>/gi, "")
+			.replace(/<\/ul>/gi, "")
+			// Handle bold/strong
+			.replace(/<strong>([^<]*)<\/strong>/gi, "**$1**")
+			.replace(/<b>([^<]*)<\/b>/gi, "**$1**")
+			// Handle emphasis
+			.replace(/<em>([^<]*)<\/em>/gi, "*$1*")
+			.replace(/<i>([^<]*)<\/i>/gi, "*$1*")
+			// Remove remaining HTML tags
+			.replace(/<[^>]+>/g, "")
+			// Clean up excessive newlines
+			.replace(/\n{3,}/g, "\n\n")
+			.trim()
+	);
+}
+
+/**
  * Render a generic text response
  */
 function renderGenericResponse(response: GenericResponse): string[] {
 	const lines: string[] = [];
 
-	if (response.error) {
-		lines.push(`Error: ${response.error}`);
+	// Check for error (handle both string and null)
+	if (response.is_error || (response.error && response.error !== null)) {
+		lines.push(`Error: ${response.error ?? "Unknown error"}`);
 		return lines;
 	}
 
-	if (response.text) {
-		// Split text by newlines for proper rendering
-		lines.push(...response.text.split("\n"));
+	// Use summary (from API) or text (legacy) field
+	const content = response.summary ?? response.text;
+	if (content) {
+		// Strip HTML and split by newlines for proper rendering
+		const plainText = stripHtml(content);
+		lines.push(...plainText.split("\n"));
 	}
 
 	if (response.links && response.links.length > 0) {
@@ -267,12 +318,18 @@ export function renderResponseCompact(response: GenAIQueryResponse): string {
 	const responseType = getResponseType(response);
 
 	switch (responseType) {
-		case "generic_response":
-			if (response.generic_response?.text) {
-				const text = response.generic_response.text;
-				return text.length > 100 ? text.slice(0, 100) + "..." : text;
+		case "generic_response": {
+			const content =
+				response.generic_response?.summary ??
+				response.generic_response?.text;
+			if (content) {
+				const plainText = stripHtml(content);
+				return plainText.length > 100
+					? plainText.slice(0, 100) + "..."
+					: plainText;
 			}
 			return response.generic_response?.error ?? "No content";
+		}
 
 		case "explain_log":
 			return (
@@ -307,12 +364,15 @@ export function extractResponseText(response: GenAIQueryResponse): string {
 	const responseType = getResponseType(response);
 
 	switch (responseType) {
-		case "generic_response":
-			return (
-				response.generic_response?.text ??
-				response.generic_response?.error ??
-				""
-			);
+		case "generic_response": {
+			const content =
+				response.generic_response?.summary ??
+				response.generic_response?.text;
+			if (content) {
+				return stripHtml(content);
+			}
+			return response.generic_response?.error ?? "";
+		}
 
 		case "explain_log":
 			return response.explain_log?.summary ?? "";

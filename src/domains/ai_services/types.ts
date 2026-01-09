@@ -32,14 +32,17 @@ export interface GenAIQueryRequest {
 
 /**
  * Generic text response
+ * Note: API returns 'summary' field with HTML content, 'text' is for backwards compatibility
  */
 export interface GenericResponse {
 	text?: string;
+	summary?: string;
+	is_error?: boolean;
 	links?: Array<{
 		title: string;
 		url: string;
 	}>;
-	error?: string;
+	error?: string | null;
 }
 
 /**
