@@ -54,6 +54,14 @@ const WRITE_OPERATIONS = new Set([
 ]);
 
 /**
+ * Configuration for entering chat mode
+ */
+export interface ChatModeConfig {
+	/** Namespace for AI queries */
+	namespace: string;
+}
+
+/**
  * Command execution result
  */
 export interface ExecutionResult {
@@ -76,6 +84,15 @@ export interface ExecutionResult {
 	rawStdout?: string;
 	/** Whether to trigger git status refresh */
 	refreshGit?: boolean;
+	/**
+	 * Signal to enter interactive chat mode.
+	 * When set, App.tsx will switch to ChatMode component.
+	 */
+	enterChatMode?: boolean;
+	/**
+	 * Configuration for chat mode (required when enterChatMode is true)
+	 */
+	chatConfig?: ChatModeConfig;
 }
 
 /**

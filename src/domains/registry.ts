@@ -6,6 +6,14 @@ import type { REPLSession } from "../repl/session.js";
 import { formatCustomDomainHelp, formatSubcommandHelp } from "../repl/help.js";
 
 /**
+ * Configuration for entering chat mode
+ */
+export interface ChatModeConfig {
+	/** Namespace for AI queries */
+	namespace: string;
+}
+
+/**
  * Result from domain command execution
  * Compatible with ExecutionResult from executor
  */
@@ -27,6 +35,15 @@ export interface DomainCommandResult {
 	 * like the image banner.
 	 */
 	rawStdout?: string;
+	/**
+	 * Signal to enter interactive chat mode.
+	 * When set, App.tsx will switch to ChatMode component.
+	 */
+	enterChatMode?: boolean;
+	/**
+	 * Configuration for chat mode (required when enterChatMode is true)
+	 */
+	chatConfig?: ChatModeConfig;
 }
 
 /**
