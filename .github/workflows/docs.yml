@@ -30,12 +30,10 @@ on:
       - '.github/workflows/docs.yml'
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: "pages"
+  group: "docs-deployment"
   cancel-in-progress: true
 
 env:
@@ -922,29 +920,29 @@ jobs:
       - name: Copy install script to site
         run: cp install.sh site/install.sh
 
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: site/
+      - name: Deploy to gh-pages branch
+        if: |
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          github.event_name == 'release' ||
+          github.event_name == 'workflow_run' ||
+          github.event_name == 'workflow_dispatch'
+        run: |
+          cd site
 
-  deploy:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
-    needs: build
-    # Use always() to evaluate condition even when upstream jobs in chain were skipped
-    if: |
-      always() &&
-      needs.build.result == 'success' &&
-      (
-        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-        github.event_name == 'release' ||
-        github.event_name == 'workflow_run' ||
-        github.event_name == 'workflow_dispatch'
-      )
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Initialize new git repo in site directory
+          git init
+          git add -A
+          git commit -m "Deploy documentation to gh-pages
+
+          Generated from commit: ${{ github.sha }}
+          Workflow run: ${{ github.run_id }}
+          Event: ${{ github.event_name }}"
+
+          # Force push to gh-pages branch
+          git push -f https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:gh-pages
+
+          echo "✅ Documentation deployed to gh-pages branch"
