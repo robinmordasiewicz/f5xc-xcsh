@@ -1,6 +1,6 @@
 # 🔑 Authentication
 
-Configure and manage authentication settings, policies, and resources across your F5 Distributed Cloud deployment.
+F5 Distributed Cloud Authentication API specifications
 
 **Category:** Platform
 
@@ -24,7 +24,6 @@ Configure and manage authentication settings, policies, and resources across you
 
 | Domain | Description |
 |--------|-------------|
-| [System](system.md) |  |
 | [Users](users.md) | Account tokens, labels, and cloud-init config. |
 
 ---

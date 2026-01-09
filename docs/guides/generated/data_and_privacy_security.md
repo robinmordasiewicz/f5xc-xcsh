@@ -23,7 +23,6 @@ Sensitive data policies with custom classification rules. LMA region configurati
 | Domain | Description |
 |--------|-------------|
 | [Blindfold](blindfold.md) | Secret encryption, key policies, and audit trails. |
-| [Client Side Defense](client_side_defense.md) |  |
 
 ---
 

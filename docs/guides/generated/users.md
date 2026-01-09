@@ -19,13 +19,6 @@ Site enrollment credentials with automatic expiration. Taxonomy keys define allo
 | `user_role` | User role | Standard | None |
 | `namespace_role` | Namespace role | Standard | None |
 
-## Related Domains
-
-| Domain | Description |
-|--------|-------------|
-| [System](system.md) |  |
-| [Admin](admin.md) |  |
-
 ---
 
 *Generated from enriched API specs and local xcsh examples.*

@@ -33,8 +33,8 @@ for (const domain of customDomains.all()) {
 }
 
 // API-generated domains
-// Domains that are completely replaced by custom implementations (clean break)
-const excludedApiDomains = new Set(["generative_ai"]);
+// Domains that have custom implementations (custom domain takes full precedence)
+const excludedApiDomains = new Set(["ai_services"]);
 
 for (const [, info] of domainRegistry) {
 	// Skip if already registered by custom domain (custom takes precedence)

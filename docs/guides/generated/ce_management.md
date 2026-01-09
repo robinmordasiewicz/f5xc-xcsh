@@ -23,7 +23,6 @@ Token-based provisioning with image downloads and pre-upgrade validation. Fleet 
 
 | Domain | Description |
 |--------|-------------|
-| [Customer Edge](customer_edge.md) |  |
 | [Sites](sites.md) | Cloud and edge node deployments. |
 
 ---

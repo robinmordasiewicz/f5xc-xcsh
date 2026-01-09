@@ -23,7 +23,6 @@ Third-party GRE and IPSec tunnel provisioning with DPD timers. Shared resource a
 | Domain | Description |
 |--------|-------------|
 | [Bigip](bigip.md) | iRules, data groups, and APM integration. |
-| [Admin](admin.md) |  |
 
 ---
 

@@ -1,6 +1,6 @@
 # 🖥️ Vpm And Node Management
 
-Configure and manage vpm and node management settings, policies, and resources across your F5 Distributed Cloud deployment.
+F5 Distributed Cloud Vpm And Node Management API specifications
 
 **Category:** Platform
 
@@ -22,7 +22,6 @@ Configure and manage vpm and node management settings, policies, and resources a
 | Domain | Description |
 |--------|-------------|
 | [Sites](sites.md) | Cloud and edge node deployments. |
-| [System](system.md) |  |
 
 ---
 

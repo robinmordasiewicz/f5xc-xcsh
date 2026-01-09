@@ -23,7 +23,6 @@ Plan transitions, invoicing, and resource consumption. Namespace-level quota lim
 
 | Domain | Description |
 |--------|-------------|
-| [System](system.md) |  |
 | [Users](users.md) | Account tokens, labels, and cloud-init config. |
 
 ---

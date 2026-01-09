@@ -22,7 +22,6 @@ Threat classification with behavioral analysis and signature matching. Automated
 
 | Domain | Description |
 |--------|-------------|
-| [Bot Defense](bot_defense.md) |  |
 | [Shape](shape.md) | Bot defense, fraud prevention, and client integrity. |
 | [Waf](waf.md) | Request inspection, attack signatures, and bot mitigation. |
 

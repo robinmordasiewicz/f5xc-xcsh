@@ -52,7 +52,6 @@ xcsh sites list azure_vnet_site
 | Domain | Description |
 |--------|-------------|
 | [Cloud Infrastructure](cloud_infrastructure.md) | AWS, Azure, GCP connectors and VPC attachments. |
-| [Customer Edge](customer_edge.md) |  |
 | [Managed Kubernetes](managed_kubernetes.md) | Cluster RBAC, pod security, and container registries. |
 
 ---

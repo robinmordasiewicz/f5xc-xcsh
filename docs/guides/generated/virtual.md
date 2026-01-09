@@ -116,7 +116,6 @@ xcsh virtual get http_loadbalancer example-lb -ns default
 | Domain | Description |
 |--------|-------------|
 | [Dns](dns.md) | Authoritative zones and record management. |
-| [Service Policy](service_policy.md) |  |
 | [Network](network.md) | BGP peering, IPsec tunnels, and segment policies. |
 
 ---

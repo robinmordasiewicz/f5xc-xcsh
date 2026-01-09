@@ -125,7 +125,7 @@ export const feedbackCommand: CommandDefinition = {
 
 		// Handle --spec flag
 		if (spec) {
-			const cmdSpec = getCommandSpec("generative_ai feedback");
+			const cmdSpec = getCommandSpec("ai_services feedback");
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}

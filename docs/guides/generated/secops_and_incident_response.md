@@ -22,7 +22,6 @@ Malicious user mitigation with threat level classification. Automated response a
 
 | Domain | Description |
 |--------|-------------|
-| [Bot Defense](bot_defense.md) |  |
 | [Waf](waf.md) | Request inspection, attack signatures, and bot mitigation. |
 | [Network Security](network_security.md) | NAT policies, firewalls, and segment connections. |
 

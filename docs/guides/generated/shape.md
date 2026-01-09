@@ -22,7 +22,6 @@ Threat recognition with behavioral analysis and device fingerprinting. Mobile SD
 
 | Domain | Description |
 |--------|-------------|
-| [Bot Defense](bot_defense.md) |  |
 | [Waf](waf.md) | Request inspection, attack signatures, and bot mitigation. |
 
 ---

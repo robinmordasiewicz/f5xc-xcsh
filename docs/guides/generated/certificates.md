@@ -24,7 +24,6 @@ Certificate chains and trusted CA bundles. Revocation list management and manife
 | Domain | Description |
 |--------|-------------|
 | [Blindfold](blindfold.md) | Secret encryption, key policies, and audit trails. |
-| [System](system.md) |  |
 
 ---
 

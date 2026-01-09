@@ -1,6 +1,6 @@
 # ⚠️ Threat Campaign
 
-Configure and manage threat campaign settings, policies, and resources across your F5 Distributed Cloud deployment.
+F5 Distributed Cloud Threat Campaign API specifications
 
 **Category:** Security
 
@@ -20,7 +20,6 @@ Configure and manage threat campaign settings, policies, and resources across yo
 
 | Domain | Description |
 |--------|-------------|
-| [Bot Defense](bot_defense.md) |  |
 | [Ddos](ddos.md) | Volumetric attack mitigation and traffic scrubbing. |
 
 ---
