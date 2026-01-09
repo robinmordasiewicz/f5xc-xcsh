@@ -117,6 +117,7 @@ export class CompletionRegistry {
 	getDomainSuggestions(prefix = ""): CompletionSuggestion[] {
 		const suggestions: CompletionSuggestion[] = [];
 		const lowerPrefix = prefix.toLowerCase();
+		const addedAliases = new Set<string>(); // Track added aliases to avoid duplicates
 
 		for (const node of this.tree.values()) {
 			if (node.hidden) continue;
@@ -129,7 +130,7 @@ export class CompletionRegistry {
 				});
 			}
 
-			// Also include aliases
+			// Also include aliases defined in the node
 			if (node.aliases) {
 				for (const alias of node.aliases) {
 					if (
@@ -141,8 +142,22 @@ export class CompletionRegistry {
 							description: `Alias for ${node.name}`,
 							category: "domain",
 						});
+						addedAliases.add(alias);
 					}
 				}
+			}
+		}
+
+		// Also include aliases registered via registerAlias()
+		for (const [alias, canonicalName] of this.aliases.entries()) {
+			if (addedAliases.has(alias)) continue; // Skip if already added from node.aliases
+
+			if (!prefix || alias.toLowerCase().startsWith(lowerPrefix)) {
+				suggestions.push({
+					text: alias,
+					description: `Alias for ${canonicalName}`,
+					category: "domain",
+				});
 			}
 		}
 

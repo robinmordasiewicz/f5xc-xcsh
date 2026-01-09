@@ -31,3 +31,27 @@ describe("Completer with trailing spaces", () => {
 		expect(texts).toContain("delete");
 	});
 });
+
+describe("Completer with domain alias prefix", () => {
+	let completer: Completer;
+
+	beforeEach(() => {
+		completer = new Completer();
+	});
+
+	it("should show domain suggestions when typing '/ai' (still typing domain)", async () => {
+		// When typing "/ai" without a trailing space, should show domains matching "ai"
+		const suggestions = await completer.complete("/ai");
+		const texts = suggestions.map((s) => s.text);
+		// Should show ai_services as a suggestion (filtered by "ai" prefix)
+		expect(texts).toContain("ai_services");
+	});
+
+	it("should show domain-specific completions for '/ai ' (with trailing space)", async () => {
+		// When typing "/ai " WITH trailing space, should delegate to ai_services domain completions
+		const suggestions = await completer.complete("/ai ");
+		const texts = suggestions.map((s) => s.text);
+		// Should show ai_services commands like query, chat, etc.
+		expect(texts).toContain("query");
+	});
+});

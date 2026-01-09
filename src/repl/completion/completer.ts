@@ -184,8 +184,15 @@ export class Completer {
 		}
 
 		// Check if first arg is a custom domain - delegate to domain completion
+		// But only if user has finished typing the domain name (not still typing it)
 		const firstArg = parsed.args[0]?.toLowerCase() ?? "";
-		if (isCustomDomain(firstArg) && parsed.args.length >= 1) {
+		const isStillTypingDomain =
+			parsed.args.length === 1 && parsed.currentWord === firstArg;
+		if (
+			isCustomDomain(firstArg) &&
+			parsed.args.length >= 1 &&
+			!isStillTypingDomain
+		) {
 			return await this.getCustomDomainCompletions(
 				firstArg,
 				parsed.args.slice(1),
@@ -262,8 +269,9 @@ export class Completer {
 		let suggestions: CompletionSuggestion[];
 		if (parsed.isEscapedToRoot) {
 			const firstArg = parsed.args[0];
-			if (parsed.args.length > 0 && firstArg) {
+			if (parsed.args.length > 0 && firstArg && !isStillTypingDomain) {
 				// /domain - navigating to a specific domain, show its children
+				// Only if user has finished typing the domain name (not still typing it)
 				const targetDomain = firstArg.toLowerCase();
 
 				// Check if domain exists in registry
@@ -284,7 +292,7 @@ export class Completer {
 					suggestions = this.getRootContextSuggestions();
 				}
 			} else {
-				// Just "/" - show all domains
+				// Just "/" or still typing domain name - show all domains
 				suggestions = this.getRootContextSuggestions();
 			}
 		} else {
