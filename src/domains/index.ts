@@ -53,16 +53,19 @@ const domainAliases = new Map<string, string>();
 // Register cloudstatus aliases
 for (const alias of cloudstatusAliases) {
 	domainAliases.set(alias, "cloudstatus");
+	completionRegistry.registerAlias(alias, "cloudstatus");
 }
 
 // Register ai_services aliases
 for (const alias of aiServicesAliases) {
 	domainAliases.set(alias, "ai_services");
+	completionRegistry.registerAlias(alias, "ai_services");
 }
 
 // Register subscription aliases
 for (const alias of subscriptionAliases) {
 	domainAliases.set(alias, "subscription");
+	completionRegistry.registerAlias(alias, "subscription");
 }
 
 // Export registry and types
