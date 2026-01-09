@@ -6,7 +6,13 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Box, Text, useApp, useInput, useStdout, Static } from "ink";
 
-import { InputBox, StatusBar, Suggestions } from "./components/index.js";
+import {
+	InputBox,
+	StatusBar,
+	Suggestions,
+	ChatMode,
+} from "./components/index.js";
+import type { ChatModeConfig } from "./executor.js";
 import type { Suggestion } from "./components/Suggestions.js";
 import { REPLSession } from "./session.js";
 import { buildPlainPrompt } from "./prompt.js";
@@ -105,6 +111,10 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	const [pendingRawStdout, setPendingRawStdout] = useState<string | null>(
 		null,
 	);
+
+	// Chat mode state
+	const [mode, setMode] = useState<"repl" | "chat">("repl");
+	const [chatConfig, setChatConfig] = useState<ChatModeConfig | null>(null);
 
 	// Effect to handle raw stdout writing when status bar is hidden
 	// This ensures the status bar is removed from render BEFORE we write content
@@ -286,6 +296,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 
 			// Execute via executor module
 			const result = await executeCommand(trimmed, session);
+
+			// Handle entering chat mode
+			if (result.enterChatMode && result.chatConfig) {
+				setMode("chat");
+				setChatConfig(result.chatConfig);
+				return;
+			}
 
 			// Handle raw stdout content (e.g., image banner with cursor positioning)
 			// This bypasses Ink's rendering to avoid status bar in scrollback
@@ -527,6 +544,18 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 		[applyCompletion, completion],
 	);
 
+	// Handle chat mode exit
+	const handleChatExit = useCallback(
+		(chatMessages: string[]) => {
+			// Add chat messages to scrollback
+			chatMessages.forEach((msg) => addOutput(msg));
+			// Return to REPL mode
+			setMode("repl");
+			setChatConfig(null);
+		},
+		[addOutput],
+	);
+
 	// Always mount Static from start to prevent tree restructure issues
 	// This keeps the component tree stable and prevents Ink's screen clearing
 	return (
@@ -539,40 +568,49 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			{/* Conditionally render active UI or loading state */}
 			{/* Hide entire active UI when writing raw stdout to prevent it appearing in scrollback */}
 			{isInitialized && !hideStatusBar ? (
-				<>
-					{/* Input box */}
-					<InputBox
-						prompt={prompt}
-						value={input}
-						onChange={handleInputChange}
-						onSubmit={handleSubmit}
+				mode === "chat" && chatConfig ? (
+					<ChatMode
+						session={session}
+						namespace={chatConfig.namespace}
 						width={width}
-						isActive={true}
-						inputKey={inputKey}
+						onExit={handleChatExit}
 					/>
-
-					{/* Suggestions popup OR Status bar - mutually exclusive to conserve space */}
-					{completion.isShowing &&
-					completion.suggestions.length > 0 ? (
-						<Suggestions
-							suggestions={toUISuggestions(
-								completion.suggestions,
-							)}
-							selectedIndex={completion.selectedIndex}
-							onSelect={handleSuggestionSelect}
-							onNavigate={handleSuggestionNavigate}
-							onCancel={completion.hide}
-							maxVisible={20}
-							isActive={false} // Let App handle keyboard
-						/>
-					) : (
-						<StatusBar
-							gitInfo={gitStatus.gitInfo}
+				) : (
+					<>
+						{/* Input box */}
+						<InputBox
+							prompt={prompt}
+							value={input}
+							onChange={handleInputChange}
+							onSubmit={handleSubmit}
 							width={width}
-							hint={statusHint}
+							isActive={true}
+							inputKey={inputKey}
 						/>
-					)}
-				</>
+
+						{/* Suggestions popup OR Status bar - mutually exclusive to conserve space */}
+						{completion.isShowing &&
+						completion.suggestions.length > 0 ? (
+							<Suggestions
+								suggestions={toUISuggestions(
+									completion.suggestions,
+								)}
+								selectedIndex={completion.selectedIndex}
+								onSelect={handleSuggestionSelect}
+								onNavigate={handleSuggestionNavigate}
+								onCancel={completion.hide}
+								maxVisible={20}
+								isActive={false} // Let App handle keyboard
+							/>
+						) : (
+							<StatusBar
+								gitInfo={gitStatus.gitInfo}
+								width={width}
+								hint={statusHint}
+							/>
+						)}
+					</>
+				)
 			) : !isInitialized ? (
 				<Text>Initializing...</Text>
 			) : null}
