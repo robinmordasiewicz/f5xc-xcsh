@@ -36,6 +36,14 @@ export class CompletionRegistry {
 	}
 
 	/**
+	 * Register an alias for a domain
+	 * Used for domain aliases that aren't part of the domain definition
+	 */
+	registerAlias(alias: string, canonicalName: string): void {
+		this.aliases.set(alias, canonicalName);
+	}
+
+	/**
 	 * Add or merge children into an existing domain
 	 * Used for extensions that augment API domains
 	 */

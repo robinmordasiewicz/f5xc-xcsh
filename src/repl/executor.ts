@@ -32,6 +32,7 @@ import {
 	formatActionHelp,
 	formatTopicHelp,
 } from "./help.js";
+import { parseInputArgs } from "./completion/completer.js";
 import { getDomainInfo } from "../types/domains.js";
 import {
 	validateNamespaceScope,
@@ -138,7 +139,7 @@ export function parseCommand(input: string): ParsedCommand {
 
 	// Handle "/" prefix for direct domain navigation
 	if (trimmed.startsWith("/") && trimmed.length > 1) {
-		const parts = trimmed.slice(1).split(/\s+/);
+		const parts = parseInputArgs(trimmed.slice(1));
 		const domainPart = parts[0] ?? "";
 
 		// Check if it's a valid domain (custom, extension, or API-generated)
@@ -193,12 +194,12 @@ export function parseCommand(input: string): ParsedCommand {
 			raw: effectiveCommand,
 			isDirectNavigation: false,
 			isBuiltin: true,
-			args: trimmed.split(/\s+/).slice(1),
+			args: parseInputArgs(trimmed).slice(1),
 		};
 	}
 
-	// Regular command - split into parts
-	const parts = trimmed.split(/\s+/);
+	// Regular command - parse with quote handling
+	const parts = parseInputArgs(trimmed);
 	return {
 		raw: trimmed,
 		isDirectNavigation: false,
@@ -345,8 +346,8 @@ function executeBuiltin(
 
 	// Show current user and connection info
 	if (command === "whoami" || command.startsWith("whoami ")) {
-		// Parse flags from command
-		const parts = command.split(/\s+/).slice(1); // Skip "whoami"
+		// Parse flags from command with quote handling
+		const parts = parseInputArgs(command).slice(1); // Skip "whoami"
 		const options: {
 			includeQuotas?: boolean;
 			includeAddons?: boolean;
@@ -1092,8 +1093,8 @@ async function executeAPICommand(
 			args = cmd.args;
 		}
 	} else {
-		// At root, parse domain/action from command
-		const parts = cmd.raw.split(/\s+/);
+		// At root, parse domain/action from command with quote handling
+		const parts = parseInputArgs(cmd.raw);
 		domain = parts[0] ?? "";
 		action = parts[1]?.toLowerCase() ?? "list";
 		args = parts.slice(validActions.has(action) ? 2 : 1);
