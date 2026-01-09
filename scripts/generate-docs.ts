@@ -313,11 +313,15 @@ function generateRelatedSection(
 ): string {
 	if (relatedDomains.length === 0) return "";
 
+	// Filter to only include domains that have documentation
+	const validDomains = relatedDomains.filter((domain) => allDomains.has(domain));
+	if (validDomains.length === 0) return "";
+
 	let content = "## Related Domains\n\n";
 	content += "| Domain | Description |\n";
 	content += "|--------|-------------|\n";
 
-	for (const related of relatedDomains) {
+	for (const related of validDomains) {
 		const relatedSpec = allDomains.get(related);
 		const desc = relatedSpec?.["x-f5xc-description-short"] || relatedSpec?.description || "";
 		content += `| [${titleCase(related)}](${related}.md) | ${desc} |\n`;

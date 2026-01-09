@@ -124,7 +124,7 @@ export const queryCommand: CommandDefinition = {
 
 		// Handle --spec flag
 		if (spec) {
-			const cmdSpec = getCommandSpec("generative_ai query");
+			const cmdSpec = getCommandSpec("ai_services query");
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}

@@ -90,7 +90,7 @@ const evalQueryCommand: CommandDefinition = {
 
 		// Handle --spec flag
 		if (spec) {
-			const cmdSpec = getCommandSpec("generative_ai eval query");
+			const cmdSpec = getCommandSpec("ai_services eval query");
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}
@@ -247,7 +247,7 @@ const evalFeedbackCommand: CommandDefinition = {
 
 		// Handle --spec flag
 		if (spec) {
-			const cmdSpec = getCommandSpec("generative_ai eval feedback");
+			const cmdSpec = getCommandSpec("ai_services eval feedback");
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}

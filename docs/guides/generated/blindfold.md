@@ -22,7 +22,6 @@ Encryption key management with policy-based access controls. Audit logging and s
 
 | Domain | Description |
 |--------|-------------|
-| [Client Side Defense](client_side_defense.md) |  |
 | [Certificates](certificates.md) | SSL/TLS chains, trusted CAs, and revocation lists. |
 
 ---

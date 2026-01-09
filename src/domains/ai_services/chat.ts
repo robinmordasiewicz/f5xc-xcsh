@@ -357,7 +357,7 @@ export const chatCommand: CommandDefinition = {
 
 		// Handle --spec flag
 		if (spec) {
-			const cmdSpec = getCommandSpec("generative_ai chat");
+			const cmdSpec = getCommandSpec("ai_services chat");
 			if (cmdSpec) {
 				return successResult([formatSpec(cmdSpec)]);
 			}

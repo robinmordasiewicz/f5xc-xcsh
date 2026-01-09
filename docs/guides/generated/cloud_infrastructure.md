@@ -25,7 +25,6 @@ Multi-cloud provider connections with gateway peering and network path configura
 | Domain | Description |
 |--------|-------------|
 | [Sites](sites.md) | Cloud and edge node deployments. |
-| [Customer Edge](customer_edge.md) |  |
 
 ---
 

@@ -43,8 +43,7 @@ system         System namespace
 | Domain | Description |
 |--------|-------------|
 | [Users](users.md) | Account tokens, labels, and cloud-init config. |
-| [Authentication](authentication.md) | Authentication management and configuration |
-| [System](system.md) |  |
+| [Authentication](authentication.md) | Authentication API |
 
 ---
 

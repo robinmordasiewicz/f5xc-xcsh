@@ -18,13 +18,6 @@ Namespace-scoped visual elements with versioning. Custom widget deployment and c
 | `ui_component` | UI component | Standard | None |
 | `static_asset` | Static asset | Standard | None |
 
-## Related Domains
-
-| Domain | Description |
-|--------|-------------|
-| [Admin](admin.md) |  |
-| [System](system.md) |  |
-
 ---
 
 *Generated from enriched API specs and local xcsh examples.*
