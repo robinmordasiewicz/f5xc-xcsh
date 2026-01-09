@@ -6,7 +6,7 @@
 import React from "react";
 import { Box, Text, Spacer } from "ink";
 import { execSync } from "child_process";
-import { CLI_NAME } from "../../branding/index.js";
+import { homedir } from "os";
 
 /**
  * Git repository status information
@@ -59,6 +59,22 @@ function getStatusColor(gitInfo: GitInfo): string {
 }
 
 /**
+ * Get formatted current working directory with ~ substitution for home
+ */
+function getFormattedCwd(): string {
+	const cwd = process.cwd();
+	const home = homedir();
+
+	if (cwd === home) {
+		return "~";
+	}
+	if (cwd.startsWith(home + "/")) {
+		return "~" + cwd.slice(home.length);
+	}
+	return cwd;
+}
+
+/**
  * StatusBar component
  * Displays CLI name, git status, and keyboard hints
  */
@@ -67,7 +83,7 @@ export function StatusBar({
 	width = 80,
 	hint = "Ctrl+C: quit",
 }: StatusBarProps): React.ReactElement {
-	// Left side: repo/branch or CLI name
+	// Left side: repo/branch or current working directory
 	const renderLeft = (): React.ReactElement => {
 		if (gitInfo?.inRepo) {
 			const icon = getStatusIcon(gitInfo);
@@ -84,7 +100,8 @@ export function StatusBar({
 			);
 		}
 
-		return <Text color="#ffffff">{CLI_NAME}</Text>;
+		// Show current working directory when not in a git repo
+		return <Text color="#666666">{getFormattedCwd()}</Text>;
 	};
 
 	// Right side: keyboard hints
