@@ -1,0 +1,510 @@
+nav:
+- Commands: commands/index.md
+- Admin Console And Ui:
+  - Admin Console And Ui Overview: commands/admin_console_and_ui/index.md
+  - Add Labels: commands/admin_console_and_ui/add-labels/index.md
+  - Apply: commands/admin_console_and_ui/apply/index.md
+  - Create: commands/admin_console_and_ui/create/index.md
+  - Delete: commands/admin_console_and_ui/delete/index.md
+  - Get: commands/admin_console_and_ui/get/index.md
+  - List: commands/admin_console_and_ui/list/index.md
+  - Patch: commands/admin_console_and_ui/patch/index.md
+  - Remove Labels: commands/admin_console_and_ui/remove-labels/index.md
+  - Replace: commands/admin_console_and_ui/replace/index.md
+  - Status: commands/admin_console_and_ui/status/index.md
+- Ai Services:
+  - Ai Services Overview: commands/ai_services/index.md
+  - Chat: commands/ai_services/chat/index.md
+  - Eval:
+    - Eval Overview: commands/ai_services/eval/index.md
+    - Feedback: commands/ai_services/eval/feedback.md
+    - Query: commands/ai_services/eval/query.md
+  - Feedback: commands/ai_services/feedback/index.md
+  - Query: commands/ai_services/query/index.md
+- API:
+  - API Overview: commands/api/index.md
+  - Add Labels: commands/api/add-labels/index.md
+  - Apply: commands/api/apply/index.md
+  - Create: commands/api/create/index.md
+  - Delete: commands/api/delete/index.md
+  - Get: commands/api/get/index.md
+  - List: commands/api/list/index.md
+  - Patch: commands/api/patch/index.md
+  - Remove Labels: commands/api/remove-labels/index.md
+  - Replace: commands/api/replace/index.md
+  - Status: commands/api/status/index.md
+- Authentication:
+  - Authentication Overview: commands/authentication/index.md
+  - Add Labels: commands/authentication/add-labels/index.md
+  - Apply: commands/authentication/apply/index.md
+  - Create: commands/authentication/create/index.md
+  - Delete: commands/authentication/delete/index.md
+  - Get: commands/authentication/get/index.md
+  - List: commands/authentication/list/index.md
+  - Patch: commands/authentication/patch/index.md
+  - Remove Labels: commands/authentication/remove-labels/index.md
+  - Replace: commands/authentication/replace/index.md
+  - Status: commands/authentication/status/index.md
+- BIG-IP:
+  - BIG-IP Overview: commands/bigip/index.md
+  - Add Labels: commands/bigip/add-labels/index.md
+  - Apply: commands/bigip/apply/index.md
+  - Create: commands/bigip/create/index.md
+  - Delete: commands/bigip/delete/index.md
+  - Get: commands/bigip/get/index.md
+  - List: commands/bigip/list/index.md
+  - Patch: commands/bigip/patch/index.md
+  - Remove Labels: commands/bigip/remove-labels/index.md
+  - Replace: commands/bigip/replace/index.md
+  - Status: commands/bigip/status/index.md
+- Billing And Usage:
+  - Billing And Usage Overview: commands/billing_and_usage/index.md
+  - Add Labels: commands/billing_and_usage/add-labels/index.md
+  - Apply: commands/billing_and_usage/apply/index.md
+  - Create: commands/billing_and_usage/create/index.md
+  - Delete: commands/billing_and_usage/delete/index.md
+  - Get: commands/billing_and_usage/get/index.md
+  - List: commands/billing_and_usage/list/index.md
+  - Patch: commands/billing_and_usage/patch/index.md
+  - Remove Labels: commands/billing_and_usage/remove-labels/index.md
+  - Replace: commands/billing_and_usage/replace/index.md
+  - Status: commands/billing_and_usage/status/index.md
+- Blindfold:
+  - Blindfold Overview: commands/blindfold/index.md
+  - Add Labels: commands/blindfold/add-labels/index.md
+  - Apply: commands/blindfold/apply/index.md
+  - Create: commands/blindfold/create/index.md
+  - Delete: commands/blindfold/delete/index.md
+  - Get: commands/blindfold/get/index.md
+  - List: commands/blindfold/list/index.md
+  - Patch: commands/blindfold/patch/index.md
+  - Remove Labels: commands/blindfold/remove-labels/index.md
+  - Replace: commands/blindfold/replace/index.md
+  - Status: commands/blindfold/status/index.md
+- Bot And Threat Defense:
+  - Bot And Threat Defense Overview: commands/bot_and_threat_defense/index.md
+  - Add Labels: commands/bot_and_threat_defense/add-labels/index.md
+  - Apply: commands/bot_and_threat_defense/apply/index.md
+  - Create: commands/bot_and_threat_defense/create/index.md
+  - Delete: commands/bot_and_threat_defense/delete/index.md
+  - Get: commands/bot_and_threat_defense/get/index.md
+  - List: commands/bot_and_threat_defense/list/index.md
+  - Patch: commands/bot_and_threat_defense/patch/index.md
+  - Remove Labels: commands/bot_and_threat_defense/remove-labels/index.md
+  - Replace: commands/bot_and_threat_defense/replace/index.md
+  - Status: commands/bot_and_threat_defense/status/index.md
+- CDN:
+  - CDN Overview: commands/cdn/index.md
+  - Add Labels: commands/cdn/add-labels/index.md
+  - Apply: commands/cdn/apply/index.md
+  - Create: commands/cdn/create/index.md
+  - Delete: commands/cdn/delete/index.md
+  - Get: commands/cdn/get/index.md
+  - List: commands/cdn/list/index.md
+  - Patch: commands/cdn/patch/index.md
+  - Remove Labels: commands/cdn/remove-labels/index.md
+  - Replace: commands/cdn/replace/index.md
+  - Status: commands/cdn/status/index.md
+- CE Management:
+  - CE Management Overview: commands/ce_management/index.md
+  - Add Labels: commands/ce_management/add-labels/index.md
+  - Apply: commands/ce_management/apply/index.md
+  - Create: commands/ce_management/create/index.md
+  - Delete: commands/ce_management/delete/index.md
+  - Get: commands/ce_management/get/index.md
+  - List: commands/ce_management/list/index.md
+  - Patch: commands/ce_management/patch/index.md
+  - Remove Labels: commands/ce_management/remove-labels/index.md
+  - Replace: commands/ce_management/replace/index.md
+  - Status: commands/ce_management/status/index.md
+- Certificates:
+  - Certificates Overview: commands/certificates/index.md
+  - Add Labels: commands/certificates/add-labels/index.md
+  - Apply: commands/certificates/apply/index.md
+  - Create: commands/certificates/create/index.md
+  - Delete: commands/certificates/delete/index.md
+  - Get: commands/certificates/get/index.md
+  - List: commands/certificates/list/index.md
+  - Patch: commands/certificates/patch/index.md
+  - Remove Labels: commands/certificates/remove-labels/index.md
+  - Replace: commands/certificates/replace/index.md
+  - Status: commands/certificates/status/index.md
+- Cloud Infrastructure:
+  - Cloud Infrastructure Overview: commands/cloud_infrastructure/index.md
+  - Add Labels: commands/cloud_infrastructure/add-labels/index.md
+  - Apply: commands/cloud_infrastructure/apply/index.md
+  - Create: commands/cloud_infrastructure/create/index.md
+  - Delete: commands/cloud_infrastructure/delete/index.md
+  - Get: commands/cloud_infrastructure/get/index.md
+  - List: commands/cloud_infrastructure/list/index.md
+  - Patch: commands/cloud_infrastructure/patch/index.md
+  - Remove Labels: commands/cloud_infrastructure/remove-labels/index.md
+  - Replace: commands/cloud_infrastructure/replace/index.md
+  - Status: commands/cloud_infrastructure/status/index.md
+- Cloudstatus:
+  - Cloudstatus Overview: commands/cloudstatus/index.md
+  - Components: commands/cloudstatus/components/index.md
+  - Incidents: commands/cloudstatus/incidents/index.md
+  - Maintenance: commands/cloudstatus/maintenance/index.md
+  - Status: commands/cloudstatus/status/index.md
+  - Summary: commands/cloudstatus/summary/index.md
+- Completion:
+  - Completion Overview: commands/completion/index.md
+  - Bash: commands/completion/bash/index.md
+  - Fish: commands/completion/fish/index.md
+  - Zsh: commands/completion/zsh/index.md
+- Container Services:
+  - Container Services Overview: commands/container_services/index.md
+  - Add Labels: commands/container_services/add-labels/index.md
+  - Apply: commands/container_services/apply/index.md
+  - Create: commands/container_services/create/index.md
+  - Delete: commands/container_services/delete/index.md
+  - Get: commands/container_services/get/index.md
+  - List: commands/container_services/list/index.md
+  - Patch: commands/container_services/patch/index.md
+  - Remove Labels: commands/container_services/remove-labels/index.md
+  - Replace: commands/container_services/replace/index.md
+  - Status: commands/container_services/status/index.md
+- Data And Privacy Security:
+  - Data And Privacy Security Overview: commands/data_and_privacy_security/index.md
+  - Add Labels: commands/data_and_privacy_security/add-labels/index.md
+  - Apply: commands/data_and_privacy_security/apply/index.md
+  - Create: commands/data_and_privacy_security/create/index.md
+  - Delete: commands/data_and_privacy_security/delete/index.md
+  - Get: commands/data_and_privacy_security/get/index.md
+  - List: commands/data_and_privacy_security/list/index.md
+  - Patch: commands/data_and_privacy_security/patch/index.md
+  - Remove Labels: commands/data_and_privacy_security/remove-labels/index.md
+  - Replace: commands/data_and_privacy_security/replace/index.md
+  - Status: commands/data_and_privacy_security/status/index.md
+- Data Intelligence:
+  - Data Intelligence Overview: commands/data_intelligence/index.md
+  - Add Labels: commands/data_intelligence/add-labels/index.md
+  - Apply: commands/data_intelligence/apply/index.md
+  - Create: commands/data_intelligence/create/index.md
+  - Delete: commands/data_intelligence/delete/index.md
+  - Get: commands/data_intelligence/get/index.md
+  - List: commands/data_intelligence/list/index.md
+  - Patch: commands/data_intelligence/patch/index.md
+  - Remove Labels: commands/data_intelligence/remove-labels/index.md
+  - Replace: commands/data_intelligence/replace/index.md
+  - Status: commands/data_intelligence/status/index.md
+- DDOS:
+  - DDOS Overview: commands/ddos/index.md
+  - Add Labels: commands/ddos/add-labels/index.md
+  - Apply: commands/ddos/apply/index.md
+  - Create: commands/ddos/create/index.md
+  - Delete: commands/ddos/delete/index.md
+  - Get: commands/ddos/get/index.md
+  - List: commands/ddos/list/index.md
+  - Patch: commands/ddos/patch/index.md
+  - Remove Labels: commands/ddos/remove-labels/index.md
+  - Replace: commands/ddos/replace/index.md
+  - Status: commands/ddos/status/index.md
+- DNS:
+  - DNS Overview: commands/dns/index.md
+  - Add Labels: commands/dns/add-labels/index.md
+  - Apply: commands/dns/apply/index.md
+  - Create: commands/dns/create/index.md
+  - Delete: commands/dns/delete/index.md
+  - Get: commands/dns/get/index.md
+  - List: commands/dns/list/index.md
+  - Patch: commands/dns/patch/index.md
+  - Remove Labels: commands/dns/remove-labels/index.md
+  - Replace: commands/dns/replace/index.md
+  - Status: commands/dns/status/index.md
+- Login:
+  - Login Overview: commands/login/index.md
+  - Banner: commands/login/banner/index.md
+  - Context:
+    - Context Overview: commands/login/context/index.md
+    - List: commands/login/context/list.md
+    - Set: commands/login/context/set.md
+    - Show: commands/login/context/show.md
+  - Profile:
+    - Profile Overview: commands/login/profile/index.md
+    - Create: commands/login/profile/create.md
+    - Delete: commands/login/profile/delete.md
+    - Edit: commands/login/profile/edit.md
+    - List: commands/login/profile/list.md
+    - Show: commands/login/profile/show.md
+    - Use: commands/login/profile/use.md
+- Managed Kubernetes:
+  - Managed Kubernetes Overview: commands/managed_kubernetes/index.md
+  - Add Labels: commands/managed_kubernetes/add-labels/index.md
+  - Apply: commands/managed_kubernetes/apply/index.md
+  - Create: commands/managed_kubernetes/create/index.md
+  - Delete: commands/managed_kubernetes/delete/index.md
+  - Get: commands/managed_kubernetes/get/index.md
+  - List: commands/managed_kubernetes/list/index.md
+  - Patch: commands/managed_kubernetes/patch/index.md
+  - Remove Labels: commands/managed_kubernetes/remove-labels/index.md
+  - Replace: commands/managed_kubernetes/replace/index.md
+  - Status: commands/managed_kubernetes/status/index.md
+- Marketplace:
+  - Marketplace Overview: commands/marketplace/index.md
+  - Add Labels: commands/marketplace/add-labels/index.md
+  - Apply: commands/marketplace/apply/index.md
+  - Create: commands/marketplace/create/index.md
+  - Delete: commands/marketplace/delete/index.md
+  - Get: commands/marketplace/get/index.md
+  - List: commands/marketplace/list/index.md
+  - Patch: commands/marketplace/patch/index.md
+  - Remove Labels: commands/marketplace/remove-labels/index.md
+  - Replace: commands/marketplace/replace/index.md
+  - Status: commands/marketplace/status/index.md
+- Network:
+  - Network Overview: commands/network/index.md
+  - Add Labels: commands/network/add-labels/index.md
+  - Apply: commands/network/apply/index.md
+  - Create: commands/network/create/index.md
+  - Delete: commands/network/delete/index.md
+  - Get: commands/network/get/index.md
+  - List: commands/network/list/index.md
+  - Patch: commands/network/patch/index.md
+  - Remove Labels: commands/network/remove-labels/index.md
+  - Replace: commands/network/replace/index.md
+  - Status: commands/network/status/index.md
+- Network Security:
+  - Network Security Overview: commands/network_security/index.md
+  - Add Labels: commands/network_security/add-labels/index.md
+  - Apply: commands/network_security/apply/index.md
+  - Create: commands/network_security/create/index.md
+  - Delete: commands/network_security/delete/index.md
+  - Get: commands/network_security/get/index.md
+  - List: commands/network_security/list/index.md
+  - Patch: commands/network_security/patch/index.md
+  - Remove Labels: commands/network_security/remove-labels/index.md
+  - Replace: commands/network_security/replace/index.md
+  - Status: commands/network_security/status/index.md
+- Nginx One:
+  - Nginx One Overview: commands/nginx_one/index.md
+  - Add Labels: commands/nginx_one/add-labels/index.md
+  - Apply: commands/nginx_one/apply/index.md
+  - Create: commands/nginx_one/create/index.md
+  - Delete: commands/nginx_one/delete/index.md
+  - Get: commands/nginx_one/get/index.md
+  - List: commands/nginx_one/list/index.md
+  - Patch: commands/nginx_one/patch/index.md
+  - Remove Labels: commands/nginx_one/remove-labels/index.md
+  - Replace: commands/nginx_one/replace/index.md
+  - Status: commands/nginx_one/status/index.md
+- Object Storage:
+  - Object Storage Overview: commands/object_storage/index.md
+  - Add Labels: commands/object_storage/add-labels/index.md
+  - Apply: commands/object_storage/apply/index.md
+  - Create: commands/object_storage/create/index.md
+  - Delete: commands/object_storage/delete/index.md
+  - Get: commands/object_storage/get/index.md
+  - List: commands/object_storage/list/index.md
+  - Patch: commands/object_storage/patch/index.md
+  - Remove Labels: commands/object_storage/remove-labels/index.md
+  - Replace: commands/object_storage/replace/index.md
+  - Status: commands/object_storage/status/index.md
+- Observability:
+  - Observability Overview: commands/observability/index.md
+  - Add Labels: commands/observability/add-labels/index.md
+  - Apply: commands/observability/apply/index.md
+  - Create: commands/observability/create/index.md
+  - Delete: commands/observability/delete/index.md
+  - Get: commands/observability/get/index.md
+  - List: commands/observability/list/index.md
+  - Patch: commands/observability/patch/index.md
+  - Remove Labels: commands/observability/remove-labels/index.md
+  - Replace: commands/observability/replace/index.md
+  - Status: commands/observability/status/index.md
+- Rate Limiting:
+  - Rate Limiting Overview: commands/rate_limiting/index.md
+  - Add Labels: commands/rate_limiting/add-labels/index.md
+  - Apply: commands/rate_limiting/apply/index.md
+  - Create: commands/rate_limiting/create/index.md
+  - Delete: commands/rate_limiting/delete/index.md
+  - Get: commands/rate_limiting/get/index.md
+  - List: commands/rate_limiting/list/index.md
+  - Patch: commands/rate_limiting/patch/index.md
+  - Remove Labels: commands/rate_limiting/remove-labels/index.md
+  - Replace: commands/rate_limiting/replace/index.md
+  - Status: commands/rate_limiting/status/index.md
+- Secops And Incident Response:
+  - Secops And Incident Response Overview: commands/secops_and_incident_response/index.md
+  - Add Labels: commands/secops_and_incident_response/add-labels/index.md
+  - Apply: commands/secops_and_incident_response/apply/index.md
+  - Create: commands/secops_and_incident_response/create/index.md
+  - Delete: commands/secops_and_incident_response/delete/index.md
+  - Get: commands/secops_and_incident_response/get/index.md
+  - List: commands/secops_and_incident_response/list/index.md
+  - Patch: commands/secops_and_incident_response/patch/index.md
+  - Remove Labels: commands/secops_and_incident_response/remove-labels/index.md
+  - Replace: commands/secops_and_incident_response/replace/index.md
+  - Status: commands/secops_and_incident_response/status/index.md
+- Service Mesh:
+  - Service Mesh Overview: commands/service_mesh/index.md
+  - Add Labels: commands/service_mesh/add-labels/index.md
+  - Apply: commands/service_mesh/apply/index.md
+  - Create: commands/service_mesh/create/index.md
+  - Delete: commands/service_mesh/delete/index.md
+  - Get: commands/service_mesh/get/index.md
+  - List: commands/service_mesh/list/index.md
+  - Patch: commands/service_mesh/patch/index.md
+  - Remove Labels: commands/service_mesh/remove-labels/index.md
+  - Replace: commands/service_mesh/replace/index.md
+  - Status: commands/service_mesh/status/index.md
+- Shape:
+  - Shape Overview: commands/shape/index.md
+  - Add Labels: commands/shape/add-labels/index.md
+  - Apply: commands/shape/apply/index.md
+  - Create: commands/shape/create/index.md
+  - Delete: commands/shape/delete/index.md
+  - Get: commands/shape/get/index.md
+  - List: commands/shape/list/index.md
+  - Patch: commands/shape/patch/index.md
+  - Remove Labels: commands/shape/remove-labels/index.md
+  - Replace: commands/shape/replace/index.md
+  - Status: commands/shape/status/index.md
+- Sites:
+  - Sites Overview: commands/sites/index.md
+  - Add Labels: commands/sites/add-labels/index.md
+  - Apply: commands/sites/apply/index.md
+  - Create: commands/sites/create/index.md
+  - Delete: commands/sites/delete/index.md
+  - Get: commands/sites/get/index.md
+  - List: commands/sites/list/index.md
+  - Patch: commands/sites/patch/index.md
+  - Remove Labels: commands/sites/remove-labels/index.md
+  - Replace: commands/sites/replace/index.md
+  - Status: commands/sites/status/index.md
+- Statistics:
+  - Statistics Overview: commands/statistics/index.md
+  - Add Labels: commands/statistics/add-labels/index.md
+  - Apply: commands/statistics/apply/index.md
+  - Create: commands/statistics/create/index.md
+  - Delete: commands/statistics/delete/index.md
+  - Get: commands/statistics/get/index.md
+  - List: commands/statistics/list/index.md
+  - Patch: commands/statistics/patch/index.md
+  - Remove Labels: commands/statistics/remove-labels/index.md
+  - Replace: commands/statistics/replace/index.md
+  - Status: commands/statistics/status/index.md
+- Subscription:
+  - Subscription Overview: commands/subscription/index.md
+  - Addon:
+    - Addon Overview: commands/subscription/addon/index.md
+    - List: commands/subscription/addon/list.md
+    - Show: commands/subscription/addon/show.md
+    - Status: commands/subscription/addon/status.md
+  - Billing:
+    - Billing Overview: commands/subscription/billing/index.md
+    - Invoice: commands/subscription/billing/invoice.md
+    - Payment: commands/subscription/billing/payment.md
+  - Plan:
+    - Plan Overview: commands/subscription/plan/index.md
+    - List: commands/subscription/plan/list.md
+    - Show: commands/subscription/plan/show.md
+  - Quota:
+    - Quota Overview: commands/subscription/quota/index.md
+    - Limits: commands/subscription/quota/limits.md
+    - Usage: commands/subscription/quota/usage.md
+  - Report:
+    - Report Overview: commands/subscription/report/index.md
+    - Summary: commands/subscription/report/summary.md
+  - Show: commands/subscription/show/index.md
+  - Usage:
+    - Usage Overview: commands/subscription/usage/index.md
+    - Current: commands/subscription/usage/current.md
+    - Monthly: commands/subscription/usage/monthly.md
+- Support:
+  - Support Overview: commands/support/index.md
+  - Add Labels: commands/support/add-labels/index.md
+  - Apply: commands/support/apply/index.md
+  - Create: commands/support/create/index.md
+  - Delete: commands/support/delete/index.md
+  - Get: commands/support/get/index.md
+  - List: commands/support/list/index.md
+  - Patch: commands/support/patch/index.md
+  - Remove Labels: commands/support/remove-labels/index.md
+  - Replace: commands/support/replace/index.md
+  - Status: commands/support/status/index.md
+- Telemetry And Insights:
+  - Telemetry And Insights Overview: commands/telemetry_and_insights/index.md
+  - Add Labels: commands/telemetry_and_insights/add-labels/index.md
+  - Apply: commands/telemetry_and_insights/apply/index.md
+  - Create: commands/telemetry_and_insights/create/index.md
+  - Delete: commands/telemetry_and_insights/delete/index.md
+  - Get: commands/telemetry_and_insights/get/index.md
+  - List: commands/telemetry_and_insights/list/index.md
+  - Patch: commands/telemetry_and_insights/patch/index.md
+  - Remove Labels: commands/telemetry_and_insights/remove-labels/index.md
+  - Replace: commands/telemetry_and_insights/replace/index.md
+  - Status: commands/telemetry_and_insights/status/index.md
+- Tenant And Identity:
+  - Tenant And Identity Overview: commands/tenant_and_identity/index.md
+  - Add Labels: commands/tenant_and_identity/add-labels/index.md
+  - Apply: commands/tenant_and_identity/apply/index.md
+  - Create: commands/tenant_and_identity/create/index.md
+  - Delete: commands/tenant_and_identity/delete/index.md
+  - Get: commands/tenant_and_identity/get/index.md
+  - List: commands/tenant_and_identity/list/index.md
+  - Patch: commands/tenant_and_identity/patch/index.md
+  - Remove Labels: commands/tenant_and_identity/remove-labels/index.md
+  - Replace: commands/tenant_and_identity/replace/index.md
+  - Status: commands/tenant_and_identity/status/index.md
+- Threat Campaign:
+  - Threat Campaign Overview: commands/threat_campaign/index.md
+  - Add Labels: commands/threat_campaign/add-labels/index.md
+  - Apply: commands/threat_campaign/apply/index.md
+  - Create: commands/threat_campaign/create/index.md
+  - Delete: commands/threat_campaign/delete/index.md
+  - Get: commands/threat_campaign/get/index.md
+  - List: commands/threat_campaign/list/index.md
+  - Patch: commands/threat_campaign/patch/index.md
+  - Remove Labels: commands/threat_campaign/remove-labels/index.md
+  - Replace: commands/threat_campaign/replace/index.md
+  - Status: commands/threat_campaign/status/index.md
+- Users:
+  - Users Overview: commands/users/index.md
+  - Add Labels: commands/users/add-labels/index.md
+  - Apply: commands/users/apply/index.md
+  - Create: commands/users/create/index.md
+  - Delete: commands/users/delete/index.md
+  - Get: commands/users/get/index.md
+  - List: commands/users/list/index.md
+  - Patch: commands/users/patch/index.md
+  - Remove Labels: commands/users/remove-labels/index.md
+  - Replace: commands/users/replace/index.md
+  - Status: commands/users/status/index.md
+- Virtual:
+  - Virtual Overview: commands/virtual/index.md
+  - Add Labels: commands/virtual/add-labels/index.md
+  - Apply: commands/virtual/apply/index.md
+  - Create: commands/virtual/create/index.md
+  - Delete: commands/virtual/delete/index.md
+  - Get: commands/virtual/get/index.md
+  - List: commands/virtual/list/index.md
+  - Patch: commands/virtual/patch/index.md
+  - Remove Labels: commands/virtual/remove-labels/index.md
+  - Replace: commands/virtual/replace/index.md
+  - Status: commands/virtual/status/index.md
+- Vpm And Node Management:
+  - Vpm And Node Management Overview: commands/vpm_and_node_management/index.md
+  - Add Labels: commands/vpm_and_node_management/add-labels/index.md
+  - Apply: commands/vpm_and_node_management/apply/index.md
+  - Create: commands/vpm_and_node_management/create/index.md
+  - Delete: commands/vpm_and_node_management/delete/index.md
+  - Get: commands/vpm_and_node_management/get/index.md
+  - List: commands/vpm_and_node_management/list/index.md
+  - Patch: commands/vpm_and_node_management/patch/index.md
+  - Remove Labels: commands/vpm_and_node_management/remove-labels/index.md
+  - Replace: commands/vpm_and_node_management/replace/index.md
+  - Status: commands/vpm_and_node_management/status/index.md
+- WAF:
+  - WAF Overview: commands/waf/index.md
+  - Add Labels: commands/waf/add-labels/index.md
+  - Apply: commands/waf/apply/index.md
+  - Create: commands/waf/create/index.md
+  - Delete: commands/waf/delete/index.md
+  - Get: commands/waf/get/index.md
+  - List: commands/waf/list/index.md
+  - Patch: commands/waf/patch/index.md
+  - Remove Labels: commands/waf/remove-labels/index.md
+  - Replace: commands/waf/replace/index.md
+  - Status: commands/waf/status/index.md

@@ -1,0 +1,142 @@
+# xcsh CLI Examples Configuration
+# This file contains implementation-specific examples for xcsh CLI
+# These examples are NOT pushed upstream - they are specific to this project
+#
+# Upstream API specs provide: resource descriptions, best practices, field docs
+# This file provides: CLI command syntax, xcsh-specific workflows, output examples
+
+version: "1.0.0"
+
+# Common CLI patterns
+cli_patterns:
+  list: "xcsh {domain} list {resource}"
+  get: "xcsh {domain} get {resource} {name} -ns {namespace}"
+  create: "xcsh {domain} create {resource} -f {file}"
+  delete: "xcsh {domain} delete {resource} {name} -ns {namespace}"
+  replace: "xcsh {domain} replace {resource} {name} -ns {namespace} -f {file}"
+
+# Domain-specific examples
+# NOTE: Domain keys must match upstream API domain names (e.g., "virtual", not "http_loadbalancer")
+# Resources within a domain are specified in the examples
+domains:
+  virtual:
+    display_name: "Virtual (Load Balancers)"
+    cli_domain: "virtual"
+    examples:
+      list:
+        description: "List all HTTP load balancers"
+        command: "xcsh virtual list http_loadbalancer"
+        output: |
+          NAME           NAMESPACE    DOMAINS              STATUS
+          example-lb     default      example.com          ACTIVE
+          api-lb         production   api.example.com      ACTIVE
+
+      get:
+        description: "Get HTTP load balancer details"
+        command: "xcsh virtual get http_loadbalancer example-lb -ns default -o yaml"
+        output: |
+          metadata:
+            name: example-lb
+            namespace: default
+          spec:
+            domains:
+              - example.com
+            default_route_pools:
+              - pool:
+                  name: my-origin-pool
+                  namespace: default
+
+      create:
+        description: "Create HTTP load balancer from file"
+        command: "xcsh virtual create http_loadbalancer -f lb.yaml"
+
+      delete:
+        description: "Delete HTTP load balancer"
+        command: "xcsh virtual delete http_loadbalancer example-lb -ns default"
+
+    workflows:
+      deploy_basic_lb:
+        title: "Deploy Basic HTTP Load Balancer"
+        description: "Step-by-step guide to deploy a basic HTTP load balancer"
+        steps:
+          - order: 1
+            description: "Create an origin pool pointing to backend servers"
+            command: "xcsh virtual create origin_pool -f origin-pool.yaml"
+          - order: 2
+            description: "Create a health check (optional)"
+            command: "xcsh virtual create healthcheck -f healthcheck.yaml"
+          - order: 3
+            description: "Create the HTTP load balancer"
+            command: "xcsh virtual create http_loadbalancer -f lb.yaml"
+          - order: 4
+            description: "Verify deployment"
+            command: "xcsh virtual get http_loadbalancer example-lb -ns default"
+
+  tenant_and_identity:
+    display_name: "Tenant and Identity"
+    cli_domain: "tenant_and_identity"
+    examples:
+      list_namespaces:
+        description: "List all namespaces"
+        command: "xcsh tenant_and_identity list namespace"
+        output: |
+          NAME           DESCRIPTION
+          default        Default namespace
+          shared         Shared namespace
+          system         System namespace
+
+  sites:
+    display_name: "Sites"
+    cli_domain: "sites"
+    examples:
+      list_aws:
+        description: "List all AWS VPC sites"
+        command: "xcsh sites list aws_vpc_site"
+      get_aws:
+        description: "Get AWS VPC site details"
+        command: "xcsh sites get aws_vpc_site my-aws-site -o yaml"
+      list_azure:
+        description: "List all Azure VNet sites"
+        command: "xcsh sites list azure_vnet_site"
+
+# Quick reference commands (domain-agnostic)
+quick_reference:
+  - category: "Resource Management"
+    commands:
+      - description: "List resources in a domain"
+        command: "xcsh {domain} list {resource}"
+      - description: "Get resource as YAML"
+        command: "xcsh {domain} get {resource} {name} -o yaml"
+      - description: "Create resource from file"
+        command: "xcsh {domain} create {resource} -f {file}.yaml"
+      - description: "Delete resource"
+        command: "xcsh {domain} delete {resource} {name} -ns {namespace}"
+      - description: "Replace/update resource"
+        command: "xcsh {domain} replace {resource} {name} -f {file}.yaml"
+
+  - category: "Output Formats"
+    commands:
+      - description: "Output as YAML"
+        command: "xcsh {domain} get {resource} {name} -o yaml"
+      - description: "Output as JSON"
+        command: "xcsh {domain} get {resource} {name} -o json"
+      - description: "Wide output with more columns"
+        command: "xcsh {domain} list {resource} -o wide"
+
+  - category: "Namespace Operations"
+    commands:
+      - description: "Specify namespace"
+        command: "xcsh {domain} get {resource} {name} -ns {namespace}"
+      - description: "List in all namespaces"
+        command: "xcsh {domain} list {resource} --all-namespaces"
+
+# AI assistant specific examples
+ai_assistant:
+  description: "Using the xcsh AI assistant for natural language queries"
+  examples:
+    - query: "list all load balancers"
+      interpretation: "Lists HTTP load balancers in the current namespace"
+    - query: "create a load balancer for api.example.com"
+      interpretation: "Generates configuration and creates HTTP LB"
+    - query: "show me the origin pools"
+      interpretation: "Lists origin pools with details"
