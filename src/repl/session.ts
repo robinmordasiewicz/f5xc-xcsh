@@ -15,6 +15,7 @@ import { APIClient } from "../api/index.js";
 import type { OutputFormat } from "../output/index.js";
 import { getOutputFormatFromEnv } from "../output/index.js";
 import { debugProtocol } from "../debug/protocol.js";
+import { getProfiler } from "../profiling/index.js";
 
 /**
  * Authentication source tracking
@@ -30,6 +31,15 @@ export type AuthSource =
 	| "mixed"
 	| "profile-fallback"
 	| "none";
+
+/**
+ * Connection status tracking for graceful offline handling
+ * - 'connected': API is reachable and authenticated
+ * - 'offline': API endpoint is unreachable (timeout/network error)
+ * - 'error': API reachable but authentication failed
+ * - 'unknown': Connection status not yet determined
+ */
+export type ConnectionStatus = "connected" | "offline" | "error" | "unknown";
 
 /**
  * Configuration for creating a REPL session
@@ -80,6 +90,9 @@ export class REPLSession {
 	private _fallbackAttempted: boolean = false;
 	private _fallbackReason: string | null = null;
 
+	// Connection status for graceful offline handling
+	private _connectionStatus: ConnectionStatus = "unknown";
+
 	constructor(config: SessionConfig = {}) {
 		this._namespace = config.namespace ?? this.getDefaultNamespace();
 		this._contextPath = new ContextPath();
@@ -125,49 +138,99 @@ export class REPLSession {
 
 	/**
 	 * Initialize the session (async operations)
+	 * Uses fast-fail connectivity check to avoid long waits when API is unreachable.
 	 */
 	async initialize(): Promise<void> {
-		const startTime = Date.now();
-		const profile = (label: string) => {
-			if (this._debug || process.env.XCSH_PROFILE === "true") {
-				console.error(
-					`[PROFILE] ${label}: ${Date.now() - startTime}ms`,
-				);
-			}
-		};
-
-		profile("initialize:start");
+		const profiler = getProfiler();
 
 		// Initialize history manager
+		const historySpan = profiler.startSpan(
+			"history_load",
+			"History Loading",
+		);
 		try {
 			this._history = await HistoryManager.create(
 				getHistoryFilePath(),
 				1000,
 			);
-			profile("history:loaded");
+			profiler.endSpan(historySpan, { status: "loaded" });
 		} catch (error) {
 			console.error("Warning: could not initialize history:", error);
 			this._history = new HistoryManager(getHistoryFilePath(), 1000);
-			profile("history:fallback");
+			profiler.endSpan(historySpan, {
+				status: "fallback",
+				error: String(error),
+			});
 		}
 
 		// Load active profile if one is set
+		const profileSpan = profiler.startSpan(
+			"profile_load",
+			"Profile Loading",
+		);
 		await this.loadActiveProfile();
-		profile("profile:loaded");
+		profiler.endSpan(profileSpan, { profileName: this._activeProfileName });
 
 		// Validate token and fetch user info if connected and authenticated
 		if (this._apiClient?.isAuthenticated()) {
-			profile("token_validation:start");
+			// Fast connectivity check to detect offline mode early
+			const connectivitySpan = profiler.startSpan(
+				"connectivity_check",
+				"Connectivity Check",
+			);
+			const connectivity = await this._apiClient.checkConnectivity();
+			profiler.endSpan(connectivitySpan, {
+				reachable: connectivity.reachable,
+				latencyMs: connectivity.latencyMs,
+			});
+
+			if (!connectivity.reachable) {
+				// API is unreachable - enter offline mode immediately
+				this._connectionStatus = "offline";
+				this._validationError =
+					"API endpoint unreachable - running in offline mode";
+				debugProtocol.auth("connectivity_failed", {
+					serverUrl: this._serverUrl,
+					status: "offline",
+				});
+				return; // Fast exit - don't block startup
+			}
+
+			// API is reachable - validate token with startup mode (fast timeout, no retries)
+			const tokenSpan = profiler.startSpan(
+				"token_validation",
+				"Token Validation",
+			);
 			debugProtocol.auth("token_validation_start", {
 				serverUrl: this._serverUrl,
 				hasApiClient: true,
 				authSource: this._authSource,
+				startupMode: true,
 			});
 
-			const result = await this._apiClient.validateToken();
+			const result = await this._apiClient.validateToken({
+				startupMode: true,
+			});
 			this._tokenValidated = result.valid;
 			this._validationError = result.error ?? null;
-			profile("token_validation:complete");
+
+			// Update connection status based on validation result
+			if (result.valid) {
+				this._connectionStatus = "connected";
+			} else if (
+				result.error?.includes("unreachable") ||
+				result.error?.includes("timed out")
+			) {
+				this._connectionStatus = "offline";
+			} else {
+				this._connectionStatus = "error";
+			}
+
+			profiler.endSpan(tokenSpan, {
+				valid: result.valid,
+				error: result.error,
+				connectionStatus: this._connectionStatus,
+			});
 
 			debugProtocol.auth("token_validation_complete", {
 				valid: result.valid,
@@ -175,7 +238,13 @@ export class REPLSession {
 				tokenValidated: this._tokenValidated,
 				validationError: this._validationError,
 				authSource: this._authSource,
+				connectionStatus: this._connectionStatus,
 			});
+
+			// Skip fallback if in offline mode - no point trying other credentials
+			if (this._connectionStatus === "offline") {
+				return;
+			}
 
 			// Fallback logic: If env var token is invalid, try profile token
 			if (
@@ -218,16 +287,23 @@ export class REPLSession {
 						debug: this._debug,
 					});
 
-					// Re-validate with profile token
-					profile("fallback_validation:start");
-					const fallbackResult =
-						await this._apiClient.validateToken();
-					profile("fallback_validation:complete");
+					// Re-validate with profile token (also use startup mode)
+					const fallbackSpan = profiler.startSpan(
+						"fallback_validation",
+						"Fallback Token Validation",
+					);
+					const fallbackResult = await this._apiClient.validateToken({
+						startupMode: true,
+					});
+					profiler.endSpan(fallbackSpan, {
+						valid: fallbackResult.valid,
+					});
 					if (fallbackResult.valid) {
 						this._tokenValidated = true;
 						this._validationError = null;
 						this._authSource = "profile-fallback";
-						this._fallbackReason = null; // Fallback succeeded, no reason to show
+						this._fallbackReason = null; // Fallback succeeded
+						this._connectionStatus = "connected";
 
 						debugProtocol.auth("token_fallback_success", {
 							authSource: this._authSource,
@@ -236,6 +312,7 @@ export class REPLSession {
 					} else {
 						// Profile credentials also failed
 						this._fallbackReason = `Profile '${this._activeProfileName}' credentials are also invalid`;
+						this._connectionStatus = "error";
 
 						debugProtocol.auth("token_fallback_failed", {
 							error: fallbackResult.error,
@@ -269,14 +346,19 @@ export class REPLSession {
 				}
 			}
 
-			// Only fetch user info if token is valid
-			if (this._tokenValidated) {
-				profile("user_info:start");
+			// Only fetch user info if connected and token is valid
+			if (
+				this._tokenValidated &&
+				this._connectionStatus === "connected"
+			) {
+				const userInfoSpan = profiler.startSpan(
+					"user_info",
+					"User Info Fetch",
+				);
 				await this.fetchUserInfo();
-				profile("user_info:complete");
+				profiler.endSpan(userInfoSpan, { username: this._username });
 			}
 		}
-		profile("initialize:complete");
 	}
 
 	/**
@@ -530,6 +612,20 @@ export class REPLSession {
 	 */
 	getFallbackReason(): string | null {
 		return this._fallbackReason;
+	}
+
+	/**
+	 * Get the current connection status
+	 */
+	getConnectionStatus(): ConnectionStatus {
+		return this._connectionStatus;
+	}
+
+	/**
+	 * Check if running in offline mode (API unreachable)
+	 */
+	isOfflineMode(): boolean {
+		return this._connectionStatus === "offline";
 	}
 
 	/**

@@ -70,9 +70,13 @@ describe("App Headless Rendering", () => {
 			// Create and initialize session
 			const session = new REPLSession();
 
-			// Mock valid token
+			// Mock connectivity check and valid token
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -93,6 +97,10 @@ describe("App Headless Rendering", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -115,6 +123,10 @@ describe("App Headless Rendering", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -145,6 +157,10 @@ describe("App Headless Rendering", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
 					error: "Invalid token",
@@ -182,6 +198,10 @@ describe("App Headless Rendering", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -206,6 +226,10 @@ describe("App Headless Rendering", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -233,6 +257,10 @@ describe("App Headless Rendering", () => {
 			[replSession, nonIntSession].forEach((session) => {
 				const apiClient = session.getAPIClient();
 				if (apiClient) {
+					vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+						reachable: true,
+						latencyMs: 50,
+					});
 					vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 						valid: true,
 						error: undefined,

@@ -12,6 +12,7 @@ import type {
 	RetryConfig,
 } from "./types.js";
 import { APIError } from "./types.js";
+import { getProfiler } from "../profiling/index.js";
 
 /**
  * Default retry configuration
@@ -23,6 +24,13 @@ const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
 	backoffMultiplier: 2,
 	jitter: true,
 };
+
+/**
+ * Startup mode configuration - aggressive timeouts for fast-fail
+ */
+const STARTUP_TIMEOUT = 3000; // 3 second timeout (vs 15s default)
+const STARTUP_MAX_RETRIES = 0; // No retries during startup
+const CONNECTIVITY_TIMEOUT = 2000; // 2 second connectivity check
 
 /**
  * Status codes that should trigger a retry
@@ -100,8 +108,14 @@ export class APIClient {
 	/**
 	 * Validate the API token by making a lightweight API call.
 	 * Returns true if token is valid, false otherwise.
+	 *
+	 * @param options.startupMode - Use aggressive timeouts for fast-fail during startup
 	 */
-	async validateToken(): Promise<{ valid: boolean; error?: string }> {
+	async validateToken(options?: {
+		startupMode?: boolean;
+	}): Promise<{ valid: boolean; error?: string }> {
+		const startupMode = options?.startupMode ?? false;
+
 		// Skip if no token configured
 		if (!this.apiToken) {
 			this._isValidated = false;
@@ -110,12 +124,26 @@ export class APIClient {
 		}
 
 		if (this.debug) {
-			console.error(`DEBUG: Validating token against ${this.serverUrl}`);
+			console.error(
+				`DEBUG: Validating token against ${this.serverUrl}${startupMode ? " (startup mode)" : ""}`,
+			);
 		}
 
 		try {
 			// Use namespaces endpoint for token validation (lightweight, universal)
-			await this.get<{ items?: unknown[] }>("/api/web/namespaces");
+			// In startup mode, use aggressive timeout and no retries
+			const requestOptions: APIRequestOptions = {
+				method: "GET",
+				path: "/api/web/namespaces",
+			};
+			if (startupMode) {
+				requestOptions.timeout = STARTUP_TIMEOUT;
+			}
+
+			await this.requestWithOptions<{ items?: unknown[] }>(
+				requestOptions,
+				startupMode ? { maxRetries: STARTUP_MAX_RETRIES } : undefined,
+			);
 			this._isValidated = true;
 			this._validationError = null;
 			return { valid: true };
@@ -131,9 +159,25 @@ export class APIClient {
 					this._isValidated = false;
 					this._validationError = "Token lacks required permissions";
 					return { valid: false, error: this._validationError };
+				} else if (error.statusCode === 408 || error.statusCode === 0) {
+					// Timeout or network error - in startup mode, report as connectivity issue
+					if (startupMode) {
+						this._isValidated = false;
+						this._validationError =
+							"API endpoint unreachable - request timed out";
+						return { valid: false, error: this._validationError };
+					}
+					// In normal mode, assume token is OK (don't block user)
+					if (this.debug) {
+						console.error(
+							`DEBUG: Validation timed out, assuming token is valid`,
+						);
+					}
+					this._isValidated = true;
+					this._validationError = null;
+					return { valid: true };
 				} else {
-					// Non-auth error (404, 500, network) - assume token is OK
-					// Don't show warning for server-side issues
+					// Non-auth error (404, 500, etc) - assume token is OK
 					if (this.debug) {
 						console.error(
 							`DEBUG: Validation endpoint returned ${error.statusCode}, assuming token is valid`,
@@ -144,7 +188,13 @@ export class APIClient {
 					return { valid: true };
 				}
 			} else {
-				// Unknown error - assume token is OK, don't block user
+				// Unknown error - in startup mode, report as connectivity issue
+				if (startupMode) {
+					this._isValidated = false;
+					this._validationError = `API endpoint unreachable - ${error instanceof Error ? error.message : "Unknown error"}`;
+					return { valid: false, error: this._validationError };
+				}
+				// In normal mode, assume token is OK, don't block user
 				if (this.debug) {
 					console.error(
 						`DEBUG: Validation error: ${error instanceof Error ? error.message : "Unknown"}, assuming token is valid`,
@@ -184,6 +234,35 @@ export class APIClient {
 	 */
 	getServerUrl(): string {
 		return this.serverUrl;
+	}
+
+	/**
+	 * Check connectivity to the API server.
+	 * Uses a lightweight HEAD request with aggressive timeout for fast-fail.
+	 * This is used during startup to quickly detect if API is unreachable.
+	 */
+	async checkConnectivity(): Promise<{
+		reachable: boolean;
+		latencyMs?: number;
+	}> {
+		const start = Date.now();
+		const controller = new AbortController();
+		const timeoutId = setTimeout(
+			() => controller.abort(),
+			CONNECTIVITY_TIMEOUT,
+		);
+
+		try {
+			await fetch(this.serverUrl, {
+				method: "HEAD",
+				signal: controller.signal,
+			});
+			clearTimeout(timeoutId);
+			return { reachable: true, latencyMs: Date.now() - start };
+		} catch {
+			clearTimeout(timeoutId);
+			return { reachable: false };
+		}
 	}
 
 	/**
@@ -342,12 +421,36 @@ export class APIClient {
 	}
 
 	/**
+	 * Execute an HTTP request with retry logic and optional retry override
+	 */
+	private async requestWithOptions<T = unknown>(
+		options: APIRequestOptions,
+		retryOverride?: { maxRetries: number },
+	): Promise<APIResponse<T>> {
+		return this.requestInternal<T>(options, retryOverride);
+	}
+
+	/**
 	 * Execute an HTTP request with retry logic
 	 */
 	async request<T = unknown>(
 		options: APIRequestOptions,
 	): Promise<APIResponse<T>> {
+		return this.requestInternal<T>(options);
+	}
+
+	/**
+	 * Internal request implementation with optional retry override
+	 */
+	private async requestInternal<T = unknown>(
+		options: APIRequestOptions,
+		retryOverride?: { maxRetries: number },
+	): Promise<APIResponse<T>> {
 		const url = this.buildUrl(options.path, options.query);
+		const profiler = getProfiler();
+
+		// Start network profiling span
+		const networkSpan = profiler.startNetworkSpan(url, options.method);
 
 		// Prepare headers
 		const headers: Record<string, string> = {
@@ -375,29 +478,40 @@ export class APIClient {
 		}
 
 		let lastError: Error | undefined;
+		let retryCount = 0;
+
+		// Use override if provided, otherwise use default config
+		const maxRetries =
+			retryOverride?.maxRetries ?? this.retryConfig.maxRetries;
 
 		// Retry loop
-		for (
-			let attempt = 0;
-			attempt <= this.retryConfig.maxRetries;
-			attempt++
-		) {
+		for (let attempt = 0; attempt <= maxRetries; attempt++) {
 			try {
-				return await this.executeRequest<T>(
+				const result = await this.executeRequest<T>(
 					options,
 					url,
 					headers,
 					body,
 				);
+
+				// End network span on success
+				profiler.endNetworkSpan(networkSpan, {
+					statusCode: result.statusCode,
+					responseSize: JSON.stringify(result.data).length,
+					retryCount,
+				});
+
+				return result;
 			} catch (error) {
 				lastError =
 					error instanceof Error ? error : new Error(String(error));
 
 				// Check if we should retry
 				const isRetryable = this.isRetryableError(error);
-				const hasRetriesLeft = attempt < this.retryConfig.maxRetries;
+				const hasRetriesLeft = attempt < maxRetries;
 
 				if (isRetryable && hasRetriesLeft) {
+					retryCount++;
 					const delay = calculateBackoffDelay(
 						attempt,
 						this.retryConfig,
@@ -409,13 +523,21 @@ export class APIClient {
 								? ` (${error.statusCode})`
 								: "";
 						console.error(
-							`DEBUG: Request failed${statusInfo}, retrying in ${delay}ms (attempt ${attempt + 1}/${this.retryConfig.maxRetries})`,
+							`DEBUG: Request failed${statusInfo}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`,
 						);
 					}
 
 					await sleep(delay);
 					continue;
 				}
+
+				// End network span on final failure
+				profiler.endNetworkSpan(networkSpan, {
+					statusCode:
+						error instanceof APIError ? error.statusCode : 0,
+					retryCount,
+					error: lastError.message,
+				});
 
 				// Not retryable or no retries left - throw the error
 				throw error;

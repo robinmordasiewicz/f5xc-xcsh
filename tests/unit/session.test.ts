@@ -71,9 +71,13 @@ describe("REPLSession Token Validation", () => {
 		it("should set tokenValidated=true when API returns valid", async () => {
 			const session = new REPLSession();
 
-			// Mock the validateToken method to return valid
+			// Mock connectivity check and validateToken
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -89,9 +93,13 @@ describe("REPLSession Token Validation", () => {
 		it("should set tokenValidated=false with error when API returns invalid", async () => {
 			const session = new REPLSession();
 
-			// Mock the validateToken method to return invalid
+			// Mock connectivity check and validateToken
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
 					error: "Invalid or expired API token",
@@ -113,6 +121,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -135,6 +147,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
 					error: "Invalid or expired API token",
@@ -157,6 +173,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
 					error: undefined, // No error message
@@ -197,6 +217,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,
 					error: undefined,
@@ -218,6 +242,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
 					error: "Token expired",
@@ -240,6 +268,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				// Simulate what the API client does on 401
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
@@ -260,6 +292,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				// Simulate what the API client does on 403
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: false,
@@ -278,6 +314,10 @@ describe("REPLSession Token Validation", () => {
 
 			const apiClient = session.getAPIClient();
 			if (apiClient) {
+				vi.spyOn(apiClient, "checkConnectivity").mockResolvedValue({
+					reachable: true,
+					latencyMs: 50,
+				});
 				// Simulate what the API client does on 200
 				vi.spyOn(apiClient, "validateToken").mockResolvedValue({
 					valid: true,

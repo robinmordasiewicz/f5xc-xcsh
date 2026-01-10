@@ -176,6 +176,8 @@ jobs:
         run: ./scripts/download-specs.sh
 
       - name: Build package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
 
       - name: Upload build artifacts

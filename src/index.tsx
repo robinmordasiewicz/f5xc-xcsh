@@ -8,52 +8,56 @@
  *   xcsh <command> [args]   # Execute command non-interactively
  *   xcsh --help             # Show help
  *   xcsh --version          # Show version
+ *
+ * Profiling:
+ *   XCSH_PROFILE=true xcsh           # Basic timing output
+ *   XCSH_PROFILE_LEVEL=detailed xcsh # With memory and phase breakdown
+ *   XCSH_PROFILE_LEVEL=full xcsh     # Full waterfall visualization
  */
 
-// Startup profiling - capture the very first moment
-const _startupTime = Date.now();
-const _profile = (label: string) => {
-	if (process.env.XCSH_PROFILE === "true") {
-		console.error(`[STARTUP] ${label}: ${Date.now() - _startupTime}ms`);
-	}
-};
-_profile("script:start");
+// Startup profiling - initialize profiler at the very first moment
+import { initProfiler, printProfileReport } from "./profiling/index.js";
+
+const profiler = initProfiler();
+const importsSpan = profiler.startSpan("imports", "Module Imports");
+profiler.memorySnapshot("script_start");
 
 import { render } from "ink";
-_profile("import:ink");
+profiler.checkpoint("import:ink");
 import { Command } from "commander";
-_profile("import:commander");
+profiler.checkpoint("import:commander");
 import { App, type AppProps } from "./repl/index.js";
-_profile("import:repl");
+profiler.checkpoint("import:repl");
 import { CLI_NAME, CLI_VERSION, colors, ENV_PREFIX } from "./branding/index.js";
-_profile("import:branding");
+profiler.checkpoint("import:branding");
 import { executeCommand } from "./repl/executor.js";
-_profile("import:executor");
+profiler.checkpoint("import:executor");
 import { REPLSession } from "./repl/session.js";
-_profile("import:session");
+profiler.checkpoint("import:session");
 import { formatRootHelp } from "./repl/help.js";
-_profile("import:help");
+profiler.checkpoint("import:help");
 import {
 	isValidLogoMode,
 	type LogoDisplayMode,
 	LOGO_MODE_HELP,
 } from "./config/index.js";
-_profile("import:config");
+profiler.checkpoint("import:config");
 import { OUTPUT_FORMAT_HELP } from "./output/types.js";
-_profile("import:output-types");
+profiler.checkpoint("import:output-types");
 import { renderBanner } from "./domains/login/banner/display.js";
-_profile("import:banner");
+profiler.checkpoint("import:banner");
 import { debugProtocol, emitSessionState } from "./debug/protocol.js";
-_profile("import:debug");
+profiler.checkpoint("import:debug");
 import { formatFullCLISpec } from "./output/spec.js";
-_profile("import:spec");
+profiler.checkpoint("import:spec");
 import { HeadlessController } from "./headless/index.js";
-_profile("import:headless");
+profiler.checkpoint("import:headless");
 
-_profile("imports:complete");
+profiler.endSpan(importsSpan);
+profiler.memorySnapshot("imports_complete");
 
 const program = new Command();
-_profile("commander:created");
+profiler.checkpoint("commander:created");
 
 // Custom help: override default help to show comprehensive root help
 program.configureHelp({
@@ -155,8 +159,13 @@ program
 				process.stdout.write("Initializing...");
 
 				// Initialize session BEFORE Ink takes over
+				const sessionInitSpan = profiler.startSpan(
+					"session_init",
+					"Session Initialization",
+				);
 				const session = new REPLSession();
 				await session.initialize();
+				profiler.endSpan(sessionInitSpan);
 
 				// Emit debug event for session state (helps AI/PTY debugging)
 				debugProtocol.session("init", { mode: "repl" });
@@ -165,9 +174,24 @@ program
 				// Clear the "Initializing..." message
 				process.stdout.write("\r\x1b[K");
 
+				// Print profile report (before banner, to stderr)
+				profiler.memorySnapshot("pre_banner");
+				printProfileReport();
+
 				// Print banner to scrollback BEFORE Ink takes over
 				// Use "startup" context for direct stdout with image support
 				renderBanner(cliLogoMode, "startup");
+
+				// Show offline mode warning if API is unreachable
+				if (session.isOfflineMode()) {
+					console.log("");
+					console.log(
+						`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+					);
+					console.log(
+						`${colors.dim}  Commands requiring API access will fail. Check network and try again.${colors.reset}`,
+					);
+				}
 
 				// Show info when profile fallback succeeded
 				if (session.getAuthSource() === "profile-fallback") {
@@ -260,8 +284,16 @@ program
  * Execute a command non-interactively
  */
 async function executeNonInteractive(args: string[]): Promise<void> {
+	const sessionInitSpan = profiler.startSpan(
+		"session_init",
+		"Session Initialization",
+	);
 	const session = new REPLSession();
 	await session.initialize();
+	profiler.endSpan(sessionInitSpan);
+
+	// Print profile report for non-interactive mode
+	printProfileReport();
 
 	// Emit debug event for session state (helps AI/PTY debugging)
 	debugProtocol.session("init", {
@@ -269,6 +301,16 @@ async function executeNonInteractive(args: string[]): Promise<void> {
 		command: args.join(" "),
 	});
 	emitSessionState(session);
+
+	// Show offline mode warning if API is unreachable
+	if (session.isOfflineMode()) {
+		console.error(
+			`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+		);
+		console.error(
+			`${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
+		);
+	}
 
 	// Show info when profile fallback succeeded
 	if (session.getAuthSource() === "profile-fallback") {

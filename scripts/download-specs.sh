@@ -56,14 +56,88 @@ log_debug() {
 }
 
 # GitHub authentication (optional, but recommended for CI to avoid rate limits)
-# In GitHub Actions, GITHUB_TOKEN is automatically available
+# Priority: GITHUB_TOKEN env var > GH CLI token > unauthenticated
 GITHUB_AUTH_HEADER=""
+AUTH_SOURCE=""
+
 if [ -n "$GITHUB_TOKEN" ]; then
   GITHUB_AUTH_HEADER="Authorization: Bearer $GITHUB_TOKEN"
-  log_debug "Using authenticated GitHub API requests"
-else
-  log_warn "GITHUB_TOKEN not set - API requests may be rate limited"
+  AUTH_SOURCE="GITHUB_TOKEN"
+elif command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+  # Try to get token from GitHub CLI if available and logged in
+  GH_TOKEN=$(gh auth token 2>/dev/null)
+  if [ -n "$GH_TOKEN" ]; then
+    GITHUB_AUTH_HEADER="Authorization: Bearer $GH_TOKEN"
+    AUTH_SOURCE="gh auth"
+  fi
 fi
+
+if [ -n "$AUTH_SOURCE" ]; then
+  log_debug "Using authenticated GitHub API requests ($AUTH_SOURCE)"
+else
+  # Only warn if we don't have cached specs - new downloads need more API calls
+  if [ -f "$SPECS_DIR/.version" ] && [ -f "$SPECS_DIR/index.json" ]; then
+    log_debug "No GitHub auth - using unauthenticated requests (cached specs available)"
+  else
+    log_warn "No GitHub auth - API requests may be rate limited (60/hour)"
+    log_debug "Set GITHUB_TOKEN or run 'gh auth login' for higher rate limits"
+  fi
+fi
+
+# Pre-flight check: verify we're not rate limited before making requests
+# This prevents wasted time on retries when we know we're blocked
+check_rate_limit_status() {
+  local rate_url="https://api.github.com/rate_limit"
+  local curl_opts=(-s --max-time 10 --connect-timeout 5)
+  if [ -n "$GITHUB_AUTH_HEADER" ]; then
+    curl_opts+=(-H "$GITHUB_AUTH_HEADER")
+  fi
+
+  local response
+  response=$(curl "${curl_opts[@]}" "$rate_url" 2>/dev/null)
+  if [ -z "$response" ]; then
+    return 0 # Can't check, proceed anyway
+  fi
+
+  # Extract core rate limit remaining (handle both compact and pretty-printed JSON)
+  # Flatten JSON to single line for reliable parsing
+  local flat_response
+  flat_response=$(echo "$response" | tr -d '\n' | tr -s ' ')
+
+  local remaining
+  remaining=$(echo "$flat_response" | sed -n 's/.*"core"[^}]*"remaining"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p')
+  if [ -z "$remaining" ]; then
+    return 0 # Couldn't parse, proceed anyway
+  fi
+
+  if [ "$remaining" -eq 0 ]; then
+    local reset_time
+    reset_time=$(echo "$flat_response" | sed -n 's/.*"core"[^}]*"reset"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p')
+    local now
+    now=$(date +%s)
+    local wait_secs=$((reset_time - now))
+    if [ "$wait_secs" -gt 0 ] && [ "$wait_secs" -lt 3600 ]; then
+      log_warn "GitHub API rate limit exhausted"
+      log_warn "Reset in $((wait_secs / 60)) minutes"
+      if [ -n "$AUTH_SOURCE" ]; then
+        log_error "Even authenticated requests are rate limited - this is unusual"
+        return 1
+      else
+        log_info "Tip: Set GITHUB_TOKEN or run 'gh auth login' for 5000 requests/hour"
+      fi
+      # If we have cached specs, we can continue with them
+      if [ -f "$SPECS_DIR/.version" ] && [ -f "$SPECS_DIR/index.json" ]; then
+        log_info "Using cached specs (may be outdated)"
+        return 2 # Special return code: use cache
+      fi
+      return 1
+    fi
+  else
+    log_debug "Rate limit remaining: $remaining requests"
+  fi
+
+  return 0
+}
 
 # Check if error is specifically a rate limit error (requires longer backoff)
 # Returns 0 if rate limited, 1 otherwise
@@ -319,6 +393,21 @@ fetch_file_with_retry() {
   local output_file="$3"
   retry_download_with_backoff "$name" "$url" "$output_file"
 }
+
+# Pre-flight rate limit check
+log_debug "Checking GitHub API rate limit status..."
+check_rate_limit_status
+RATE_LIMIT_STATUS=$?
+
+if [ $RATE_LIMIT_STATUS -eq 2 ]; then
+  # Rate limited but have cached specs - use them
+  log_success "Using cached specs (rate limited)"
+  exit 0
+elif [ $RATE_LIMIT_STATUS -eq 1 ]; then
+  # Rate limited and no cache - fail
+  log_error "Cannot proceed: rate limited with no cached specs"
+  exit 1
+fi
 
 # Fetch latest release information
 log_info "Fetching latest enriched spec release..."
