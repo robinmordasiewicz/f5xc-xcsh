@@ -424,6 +424,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.create-release.outputs.version }}
 
       - name: Set package version
