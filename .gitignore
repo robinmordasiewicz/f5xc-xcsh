@@ -90,3 +90,6 @@ xcsh-*
 
 # Claude development documentation (internal planning artifacts)
 claudedocs/
+
+# Workflow-generated reports (transient CI artifacts)
+validation-report.md

@@ -115,25 +115,6 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Create validation report
-        id: validate
-        run: |
-          echo "## ✅ Validation Results" >> validation-report.md
-          echo "" >> validation-report.md
-          echo "- **Build:** SUCCESS" >> validation-report.md
-          echo "- **Tests:** PASSED" >> validation-report.md
-          echo "- **Generated Files:** domains_generated.ts, docs/guides/generated/" >> validation-report.md
-          echo "" >> validation-report.md
-          echo "### Domain Summary" >> validation-report.md
-          DOMAIN_COUNT=$(grep -c 'name:' src/types/domains_generated.ts || echo "0")
-          echo "- **Total Domains:** $DOMAIN_COUNT" >> validation-report.md
-          DOC_COUNT=$(ls -1 docs/guides/generated/*.md 2>/dev/null | wc -l | tr -d ' ')
-          echo "- **Generated Docs:** $DOC_COUNT" >> validation-report.md
-          echo "" >> validation-report.md
-          echo "### Upstream Version" >> validation-report.md
-          echo "- **Previous:** ${{ needs.check-upstream.outputs.current_version }}" >> validation-report.md
-          echo "- **New:** ${{ needs.check-upstream.outputs.new_version }}" >> validation-report.md
-
       - name: Create Pull Request
         id: create-pr
         uses: peter-evans/create-pull-request@v6
