@@ -12,6 +12,12 @@ import type {
 } from "./types.js";
 
 /**
+ * GenAI query timeout (60 seconds)
+ * AI queries can take longer to process than typical API calls
+ */
+const GENAI_QUERY_TIMEOUT = 60000;
+
+/**
  * GenAI API Client
  *
  * Provides methods for querying the AI assistant and submitting feedback
@@ -35,6 +41,7 @@ export class GenAIClient {
 		const response = await this.apiClient.post<GenAIQueryResponse>(
 			`/api/gen-ai/namespaces/${namespace}/query`,
 			request,
+			GENAI_QUERY_TIMEOUT,
 		);
 
 		if (!response.ok) {
@@ -83,6 +90,7 @@ export class GenAIClient {
 		const response = await this.apiClient.post<GenAIQueryResponse>(
 			`/api/gen-ai/namespaces/${namespace}/eval_query`,
 			request,
+			GENAI_QUERY_TIMEOUT,
 		);
 
 		if (!response.ok) {
