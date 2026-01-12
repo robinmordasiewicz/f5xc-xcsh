@@ -93,6 +93,9 @@ export class REPLSession {
 	// Connection status for graceful offline handling
 	private _connectionStatus: ConnectionStatus = "unknown";
 
+	// Track if environment variables are present (for display purposes)
+	private _envVarsPresent: boolean = false;
+
 	constructor(config: SessionConfig = {}) {
 		this._namespace = config.namespace ?? this.getDefaultNamespace();
 		this._contextPath = new ContextPath();
@@ -103,6 +106,10 @@ export class REPLSession {
 		const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
 		const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
 
+		// Track if env vars are present (for display purposes)
+		this._envVarsPresent = !!(envUrl || envToken);
+
+		// Set initial values from env vars (may be overridden by profile in loadActiveProfile)
 		this._serverUrl = config.serverUrl ?? envUrl ?? "";
 		this._apiToken = config.apiToken ?? envToken ?? "";
 
@@ -388,8 +395,9 @@ export class REPLSession {
 
 	/**
 	 * Load the active profile from profile manager
-	 * Note: Environment variables take priority over profile settings
-	 * If no active profile is set but exactly one profile exists, auto-activate it
+	 * Profile credentials ALWAYS take priority when a profile is active.
+	 * Environment variables are only used when NO profile is active (fallback for scripts/CI).
+	 * If no active profile is set but exactly one profile exists, auto-activate it.
 	 */
 	async loadActiveProfile(): Promise<void> {
 		try {
@@ -411,39 +419,26 @@ export class REPLSession {
 					this._activeProfileName = activeName;
 					this._activeProfile = profile;
 
-					// Check if env vars were provided (they take priority over profile)
-					const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
-					const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
-					const envNamespace = process.env[`${ENV_PREFIX}_NAMESPACE`];
-
-					// Track whether we're using profile credentials
-					let usingProfileUrl = false;
-					let usingProfileToken = false;
-
-					// Apply profile settings ONLY if env vars are not set
-					if (!envUrl && profile.apiUrl) {
+					// Profile credentials ALWAYS take priority when profile is active
+					// Environment variables are only used as fallback for scripts/CI when no profile is active
+					if (profile.apiUrl) {
 						this._serverUrl = profile.apiUrl;
 						this._tenant = this.extractTenant(profile.apiUrl);
-						usingProfileUrl = true;
 					}
-					if (!envToken && profile.apiToken) {
+					if (profile.apiToken) {
 						this._apiToken = profile.apiToken;
-						usingProfileToken = true;
 					}
+
+					// Use profile namespace (env var can still override if set)
+					const envNamespace = process.env[`${ENV_PREFIX}_NAMESPACE`];
 					if (!envNamespace && profile.defaultNamespace) {
 						this._namespace = profile.defaultNamespace;
 					}
 
-					// Update auth source based on what we're using
-					if (usingProfileUrl && usingProfileToken) {
-						this._authSource = "profile";
-					} else if (usingProfileUrl || usingProfileToken) {
-						// Mixed: some from env, some from profile
-						this._authSource = "mixed";
-					}
-					// If neither, keep existing auth source (env or none)
+					// Set auth source to profile since profile is active
+					this._authSource = "profile";
 
-					// Recreate API client with final settings (env vars or profile)
+					// Recreate API client with profile settings
 					if (this._serverUrl) {
 						this._apiClient = new APIClient({
 							serverUrl: this._serverUrl,
@@ -453,6 +448,8 @@ export class REPLSession {
 					}
 				}
 			}
+			// If no profile is active, the constructor already set up env vars
+			// and _authSource will remain "env", "mixed", or "none"
 		} catch (error) {
 			// Log profile loading errors in debug mode, but don't fail
 			debugProtocol.error("profile_load_failed", error, {
@@ -601,6 +598,14 @@ export class REPLSession {
 	}
 
 	/**
+	 * Check if environment variables are present
+	 * Used for display purposes to show when env vars are being ignored
+	 */
+	getEnvVarsPresent(): boolean {
+		return this._envVarsPresent;
+	}
+
+	/**
 	 * Check if a credential fallback was attempted
 	 */
 	getFallbackAttempted(): boolean {
@@ -679,6 +684,7 @@ export class REPLSession {
 
 	/**
 	 * Switch to a different profile
+	 * Profile credentials always take priority over environment variables.
 	 */
 	async switchProfile(profileName: string): Promise<boolean> {
 		const profile = await this._profileManager.get(profileName);
@@ -704,6 +710,7 @@ export class REPLSession {
 		this._activeProfileName = profileName;
 		this._activeProfile = profile;
 
+		// Profile credentials ALWAYS take priority when profile is active
 		if (profile.apiUrl) {
 			this._serverUrl = profile.apiUrl;
 			this._tenant = this.extractTenant(profile.apiUrl);
@@ -714,6 +721,12 @@ export class REPLSession {
 		if (profile.defaultNamespace) {
 			this._namespace = profile.defaultNamespace;
 		}
+
+		// Set auth source to profile and track env vars presence
+		this._authSource = "profile";
+		const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
+		const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
+		this._envVarsPresent = !!(envUrl || envToken);
 
 		// Recreate API client with new profile settings
 		if (this._serverUrl) {

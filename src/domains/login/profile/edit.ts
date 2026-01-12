@@ -284,6 +284,8 @@ export const editCommand: CommandDefinition = {
 						session.isAuthenticated(),
 						session.isTokenValidated(),
 						session.getValidationError() ?? undefined,
+						session.getAuthSource(),
+						session.getEnvVarsPresent(),
 					);
 
 					// Format and add connection table

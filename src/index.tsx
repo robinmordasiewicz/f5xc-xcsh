@@ -45,6 +45,10 @@ profiler.checkpoint("import:config");
 import { OUTPUT_FORMAT_HELP } from "./output/types.js";
 profiler.checkpoint("import:output-types");
 import { renderBanner } from "./domains/login/banner/display.js";
+import {
+	formatConnectionTable,
+	buildConnectionInfo,
+} from "./domains/login/profile/connection-table.js";
 profiler.checkpoint("import:banner");
 import { debugProtocol, emitSessionState } from "./debug/protocol.js";
 profiler.checkpoint("import:debug");
@@ -182,65 +186,92 @@ program
 				// Use "startup" context for direct stdout with image support
 				renderBanner(cliLogoMode, "startup");
 
-				// Show offline mode warning if API is unreachable
-				if (session.isOfflineMode()) {
-					console.log("");
-					console.log(
-						`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+				// Get profile and authentication state for startup display
+				const activeProfile = session.getActiveProfile();
+				const envConfigured =
+					process.env[`${ENV_PREFIX}_API_URL`] &&
+					process.env[`${ENV_PREFIX}_API_TOKEN`];
+
+				// FLOW 1: Active profile exists - show connection summary table
+				if (activeProfile) {
+					console.log(""); // blank line after banner
+
+					const connectionInfo = buildConnectionInfo(
+						session.getActiveProfileName() ||
+							activeProfile.name ||
+							"default",
+						activeProfile.apiUrl || session.getServerUrl() || "",
+						!!activeProfile.apiToken || session.isAuthenticated(),
+						activeProfile.defaultNamespace ||
+							session.getNamespace(),
+						session.isAuthenticated() && !session.isOfflineMode(),
+						session.isTokenValidated(),
+						session.getValidationError() ?? undefined,
+						session.getAuthSource(),
+						session.getEnvVarsPresent(),
 					);
-					console.log(
-						`${colors.dim}  Commands requiring API access will fail. Check network and try again.${colors.reset}`,
-					);
-				}
 
-				// Show info when profile fallback succeeded
-				if (session.getAuthSource() === "profile-fallback") {
-					const profileName = session.getActiveProfileName();
-					console.log("");
-					console.log(
-						`${colors.blue}Info: Using credentials from profile '${profileName}' (environment variables were invalid)${colors.reset}`,
-					);
-				}
+					const tableLines = formatConnectionTable(connectionInfo);
+					tableLines.forEach((line) => console.log(line));
 
-				// Show warning if token validation failed
-				if (
-					session.isAuthenticated() &&
-					!session.isTokenValidated() &&
-					session.getValidationError()
-				) {
-					const authSource = session.getAuthSource();
-					const fallbackReason = session.getFallbackReason();
-
-					console.log("");
-
-					if (authSource === "env" || authSource === "mixed") {
-						// Environment variable credentials failed
+					// Show offline warning if applicable
+					if (session.isOfflineMode()) {
+						console.log("");
 						console.log(
-							`${colors.yellow}Warning: Environment variable credentials are invalid or expired${colors.reset}`,
+							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
 						);
-						if (fallbackReason) {
-							console.log(
-								`${colors.dim}  ${fallbackReason}${colors.reset}`,
-							);
-						}
 						console.log(
-							`${colors.dim}  Run 'login' to authenticate or update your F5XC_API_TOKEN environment variable${colors.reset}`,
+							`${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
 						);
-					} else {
-						// Profile credentials failed
+					}
+
+					// Show profile fallback info if applicable
+					if (session.getAuthSource() === "profile-fallback") {
+						console.log("");
+						console.log(
+							`${colors.blue}Info: Using credentials from profile '${session.getActiveProfileName()}' (environment variables were invalid)${colors.reset}`,
+						);
+					}
+				}
+				// FLOW 2: No profiles, but env vars configured - show connection info
+				else if (envConfigured) {
+					console.log(""); // blank line after banner
+
+					const connectionInfo = buildConnectionInfo(
+						"(environment)",
+						process.env[`${ENV_PREFIX}_API_URL`] || "",
+						!!process.env[`${ENV_PREFIX}_API_TOKEN`],
+						session.getNamespace(),
+						session.isAuthenticated() && !session.isOfflineMode(),
+						session.isTokenValidated(),
+						session.getValidationError() ?? undefined,
+						"env", // authSource - using environment variables
+						true, // envVarsPresent - by definition, this flow means env vars exist
+					);
+
+					const tableLines = formatConnectionTable(connectionInfo);
+					tableLines.forEach((line) => console.log(line));
+
+					// Show warnings if applicable
+					if (session.isOfflineMode()) {
+						console.log("");
+						console.log(
+							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+						);
+					}
+
+					if (
+						!session.isTokenValidated() &&
+						session.getValidationError()
+					) {
+						console.log("");
 						console.log(
 							`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
 						);
 					}
 				}
-
-				// Check if user needs guidance on connecting
-				const profiles = await session.getProfileManager().list();
-				const envConfigured =
-					process.env[`${ENV_PREFIX}_API_URL`] &&
-					process.env[`${ENV_PREFIX}_API_TOKEN`];
-
-				if (profiles.length === 0 && !envConfigured) {
+				// FLOW 3: No profiles and no env vars - show login wizard guidance
+				else {
 					console.log("");
 					console.log(
 						`${colors.yellow}No connection profiles found.${colors.reset}`,

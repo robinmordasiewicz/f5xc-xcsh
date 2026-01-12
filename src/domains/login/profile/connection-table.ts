@@ -35,6 +35,16 @@ const ASCII_BOX = {
 };
 
 /**
+ * Authentication source type
+ */
+export type AuthSource =
+	| "env"
+	| "profile"
+	| "mixed"
+	| "profile-fallback"
+	| "none";
+
+/**
  * Connection info for display
  */
 export interface ConnectionInfo {
@@ -46,6 +56,8 @@ export interface ConnectionInfo {
 	isConnected: boolean;
 	isValidated?: boolean;
 	validationError?: string;
+	authSource?: AuthSource;
+	envVarsPresent?: boolean;
 }
 
 /**
@@ -66,22 +78,44 @@ export function extractTenantFromUrl(url: string): string {
 }
 
 /**
- * Get auth status display value based on validation state
+ * Get auth source display value
  */
-function getAuthStatusValue(
+function getAuthSourceDisplay(info: ConnectionInfo): string {
+	if (info.authSource === "env") {
+		return "Environment variables";
+	}
+	if (info.authSource === "profile") {
+		if (info.envVarsPresent) {
+			return "Profile (env vars ignored)";
+		}
+		return "Profile";
+	}
+	if (info.authSource === "profile-fallback") {
+		return "Profile (fallback)";
+	}
+	if (info.authSource === "mixed") {
+		return "Mixed (env + profile)";
+	}
+	return "Not configured";
+}
+
+/**
+ * Get combined status display value based on connection and validation state
+ */
+function getStatusValue(
 	info: ConnectionInfo,
 	colorStatus: (text: string, isGood: boolean) => string,
 ): string {
-	if (!info.hasToken) {
-		return colorStatus("\u2717 No token", false);
+	// Connected and authenticated - best case
+	if (info.isConnected && info.isValidated) {
+		return colorStatus("\u25CF Connected & Authenticated", true);
 	}
-	if (info.isValidated) {
-		return colorStatus("\u2713 Authenticated", true);
+	// Have token but offline - can't verify
+	if (info.hasToken && !info.isConnected) {
+		return colorStatus("\u25CB Offline (token not verified)", false);
 	}
-	if (info.validationError) {
-		return colorStatus(`\u2717 ${info.validationError}`, false);
-	}
-	return colorStatus("\u26A0 Token not verified", false);
+	// No token or validation failed
+	return colorStatus("\u25CB Not authenticated", false);
 }
 
 /**
@@ -109,19 +143,14 @@ export function formatConnectionTable(
 
 	// Build rows
 	const rows = [
-		{ label: "Profile", value: info.profileName },
+		{ label: "Login Profile", value: info.profileName },
 		{ label: "Tenant", value: info.tenant },
 		{ label: "API URL", value: info.apiUrl },
-		{
-			label: "Auth",
-			value: getAuthStatusValue(info, colorStatus),
-		},
-		{ label: "Namespace", value: info.namespace || "default" },
+		{ label: "Default Namespace", value: info.namespace || "default" },
+		{ label: "Auth Source", value: getAuthSourceDisplay(info) },
 		{
 			label: "Status",
-			value: info.isConnected
-				? colorStatus("\u25CF Connected", true)
-				: colorStatus("\u25CB Not connected", false),
+			value: getStatusValue(info, colorStatus),
 		},
 	];
 
@@ -191,6 +220,8 @@ export function buildConnectionInfo(
 	isConnected: boolean,
 	isValidated?: boolean,
 	validationError?: string,
+	authSource?: AuthSource,
+	envVarsPresent?: boolean,
 ): ConnectionInfo {
 	const info: ConnectionInfo = {
 		profileName,
@@ -207,6 +238,12 @@ export function buildConnectionInfo(
 	}
 	if (validationError) {
 		info.validationError = validationError;
+	}
+	if (authSource !== undefined) {
+		info.authSource = authSource;
+	}
+	if (envVarsPresent !== undefined) {
+		info.envVarsPresent = envVarsPresent;
 	}
 
 	return info;
