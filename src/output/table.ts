@@ -569,7 +569,7 @@ export function formatBeautifulTable(
 }
 
 /**
- * Default columns for F5 XC resources
+ * Default columns for F5 XC resources (with namespace)
  */
 export const DEFAULT_RESOURCE_COLUMNS: ColumnDefinition[] = [
 	{ header: "NAMESPACE", accessor: "namespace", minWidth: 9 },
@@ -578,8 +578,37 @@ export const DEFAULT_RESOURCE_COLUMNS: ColumnDefinition[] = [
 ];
 
 /**
+ * Columns for top-level resources without namespace (e.g., namespaces themselves)
+ */
+export const TOP_LEVEL_RESOURCE_COLUMNS: ColumnDefinition[] = [
+	{ header: "NAME", accessor: "name", minWidth: 10, maxWidth: 30 },
+	{
+		header: "DESCRIPTION",
+		accessor: "description",
+		minWidth: 15,
+		maxWidth: 50,
+	},
+	{ header: "LABELS", accessor: "labels", minWidth: 10, maxWidth: 35 },
+];
+
+/**
+ * Detect if items are top-level resources (no namespace)
+ * Returns true if all items have empty or missing namespace field
+ */
+function isTopLevelResource(items: Record<string, unknown>[]): boolean {
+	if (items.length === 0) return false;
+
+	// Check if all items have empty/missing namespace
+	return items.every((item) => {
+		const ns = item.namespace;
+		return ns === "" || ns === null || ns === undefined;
+	});
+}
+
+/**
  * Format F5 XC resource list as beautiful table
  * Convenience function for common use case
+ * Automatically detects top-level resources and adjusts columns
  */
 export function formatResourceTable(
 	data: unknown,
@@ -590,10 +619,15 @@ export function formatResourceTable(
 		return "";
 	}
 
+	// Choose columns based on whether resources have namespaces
+	const columns = isTopLevelResource(items)
+		? TOP_LEVEL_RESOURCE_COLUMNS
+		: DEFAULT_RESOURCE_COLUMNS;
+
 	return formatBeautifulTable(
 		items,
 		{
-			columns: DEFAULT_RESOURCE_COLUMNS,
+			columns,
 			wrapText: true,
 		},
 		noColor,

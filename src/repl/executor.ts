@@ -39,6 +39,11 @@ import {
 	checkOperationSafety,
 	validateResourceName,
 } from "../validation/index.js";
+import {
+	getOperationDefinition,
+	substitutePathParams,
+	hasUnsubstitutedParams,
+} from "../operations/index.js";
 
 /**
  * Write operations that require resource name validation.
@@ -646,11 +651,29 @@ async function handleDirectNavigation(
 		};
 	}
 
+	// If we have domain + action + args, execute the command directly
+	// e.g., /tenant_and_identity list namespace -> execute, don't just navigate
+	if (cmd.targetAction && cmd.args.length > 0) {
+		// Set context for the execution
+		ctx.reset();
+		ctx.setDomain(cmd.targetDomain);
+		ctx.setAction(cmd.targetAction);
+
+		// Build a ParsedCommand for executeAPICommand
+		const apiCmd: ParsedCommand = {
+			raw: [cmd.targetDomain, cmd.targetAction, ...cmd.args].join(" "),
+			args: cmd.args,
+			isBuiltin: false,
+			isDirectNavigation: false,
+		};
+		return await executeAPICommand(session, ctx, apiCmd);
+	}
+
 	// Navigate to domain (API domain or merged domain with API support)
 	ctx.reset();
 	ctx.setDomain(cmd.targetDomain);
 
-	// If action was also specified, set it
+	// If action was also specified (but no args), just navigate
 	if (cmd.targetAction) {
 		ctx.setAction(cmd.targetAction);
 		return {
@@ -1265,9 +1288,50 @@ async function executeAPICommand(
 		};
 	}
 
-	// Build API path using the effective resource (explicit resource type or domain)
-	const resourcePath = domainToResourcePath(effectiveResource);
-	let apiPath = `/api/config/namespaces/${effectiveNamespace}/${resourcePath}`;
+	// Look up the operation definition from generated specs
+	// This gives us the actual API path from the OpenAPI spec
+	// If resourceType wasn't detected from primaryResources, try using the first arg
+	// as it might be a valid resourceType defined in operations
+	let effectiveResourceType = resourceType;
+	if (!effectiveResourceType && args.length > 0) {
+		// The first positional arg might be a resource type
+		effectiveResourceType = args[0]?.toLowerCase();
+	}
+
+	const operation = getOperationDefinition(
+		canonicalDomain,
+		action,
+		effectiveResourceType,
+	);
+
+	// Build API path - prefer operation path from spec, fall back to generic
+	let apiPath: string;
+	let usedOperationPath = false;
+
+	if (operation?.path) {
+		// Use the actual path from the OpenAPI spec
+		const pathParams: { namespace?: string; name?: string; site?: string } =
+			{
+				namespace: effectiveNamespace,
+			};
+		if (name) {
+			pathParams.name = name;
+		}
+		apiPath = substitutePathParams(operation.path, pathParams);
+		usedOperationPath = true;
+
+		// Check if path still has unsubstituted placeholders
+		if (hasUnsubstitutedParams(apiPath)) {
+			// Some placeholders couldn't be substituted - fall back to generic
+			const resourcePath = domainToResourcePath(effectiveResource);
+			apiPath = `/api/config/namespaces/${effectiveNamespace}/${resourcePath}`;
+			usedOperationPath = false;
+		}
+	} else {
+		// Fallback to generic path construction (backwards compatibility)
+		const resourcePath = domainToResourcePath(effectiveResource);
+		apiPath = `/api/config/namespaces/${effectiveNamespace}/${resourcePath}`;
+	}
 
 	// Execute based on action
 	try {
@@ -1292,7 +1356,10 @@ async function executeAPICommand(
 						error: "Usage: get <name>",
 					};
 				}
-				apiPath += `/${name}`;
+				// Only append name if we didn't use operation path (which includes {name})
+				if (!usedOperationPath) {
+					apiPath += `/${name}`;
+				}
 				const response = await client.get(apiPath);
 				result = response.data;
 				break;
@@ -1310,7 +1377,10 @@ async function executeAPICommand(
 						error: "Usage: delete <name>",
 					};
 				}
-				apiPath += `/${name}`;
+				// Only append name if we didn't use operation path (which includes {name})
+				if (!usedOperationPath) {
+					apiPath += `/${name}`;
+				}
 				await client.delete(apiPath);
 				result = { message: `Deleted ${canonicalDomain} '${name}'` };
 				break;
@@ -1344,8 +1414,10 @@ async function executeAPICommand(
 						error: "Usage: status <name>",
 					};
 				}
-				// Status typically comes from a different endpoint
-				apiPath += `/${name}/status`;
+				// Only append name/status if we didn't use operation path
+				if (!usedOperationPath) {
+					apiPath += `/${name}/status`;
+				}
 				const response = await client.get(apiPath);
 				result = response.data;
 				break;

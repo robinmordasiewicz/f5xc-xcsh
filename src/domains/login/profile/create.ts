@@ -128,6 +128,8 @@ export const createCommand: CommandDefinition = {
 			session.isAuthenticated(),
 			session.isTokenValidated(),
 			session.getValidationError() ?? undefined,
+			session.getAuthSource(),
+			session.getEnvVarsPresent(),
 		);
 
 		// Format connection table
