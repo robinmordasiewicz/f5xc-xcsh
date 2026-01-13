@@ -356,8 +356,18 @@ export class Completer {
 			if (args.length >= 2 && this.session) {
 				const cmdName = args[1]?.toLowerCase() ?? "";
 				const domain = customDomains.get(domainName);
-				const subgroup = domain?.subcommands.get(subgroupName);
-				const cmd = subgroup?.commands.get(cmdName);
+
+				// Try to find the command - first check if it's from an action group resource
+				let cmd = domain?.actions
+					?.get(subgroupName)
+					?.resources.get(cmdName);
+
+				// Fall back to old subcommand structure for legacy compatibility
+				if (!cmd) {
+					const subgroup = domain?.subcommands.get(subgroupName);
+					cmd = subgroup?.commands.get(cmdName);
+				}
+
 				if (cmd?.completion) {
 					try {
 						const completions = await cmd.completion(
