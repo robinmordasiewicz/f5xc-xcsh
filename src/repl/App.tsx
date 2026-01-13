@@ -11,6 +11,7 @@ import {
 	StatusBar,
 	Suggestions,
 	ChatMode,
+	ProfileDeleteWizard,
 } from "./components/index.js";
 import type { ChatModeConfig } from "./executor.js";
 import type { Suggestion } from "./components/Suggestions.js";
@@ -26,6 +27,13 @@ import { isCustomDomain } from "../domains/index.js";
 import { domainRegistry } from "../types/domains.js";
 import { extensionRegistry } from "../extensions/index.js";
 import { setTerminalWidth } from "../output/terminal.js";
+import {
+	debugOutput,
+	debugRender,
+	debugTerminal,
+	debugBuffer,
+	debugSeparator,
+} from "../debug/logger.js";
 
 /**
  * Props for the App component
@@ -97,10 +105,12 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	);
 
 	// Output items with unique IDs for Static component (goes to scrollback)
+	// Each item tracks which command it belongs to for intelligent truncation
 	const [outputItems, setOutputItems] = useState<
-		Array<{ id: number; content: string }>
+		Array<{ id: number; content: string; commandId: number }>
 	>([]);
 	const outputIdRef = useRef(0);
+	const commandIdRef = useRef(0);
 	const [prompt, setPrompt] = useState("> ");
 	const [width, setWidth] = useState(stdout?.columns ?? 80);
 	const [statusHint, setStatusHint] = useState("Ctrl+C twice to exit");
@@ -112,9 +122,15 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 		null,
 	);
 
-	// Chat mode state
-	const [mode, setMode] = useState<"repl" | "chat">("repl");
+	// Mode state (repl, chat, profile-delete)
+	const [mode, setMode] = useState<"repl" | "chat" | "profile-delete">(
+		"repl",
+	);
 	const [chatConfig, setChatConfig] = useState<ChatModeConfig | null>(null);
+	const [profileDeleteConfig, setProfileDeleteConfig] = useState<{
+		profileName: string;
+		isActive: boolean;
+	} | null>(null);
 
 	// Effect to handle raw stdout writing when status bar is hidden
 	// This ensures the status bar is removed from render BEFORE we write content
@@ -193,6 +209,12 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 		const handleResize = () => {
 			if (stdout) {
 				const newWidth = stdout.columns ?? 80;
+				const newHeight = stdout.rows ?? 24;
+				debugTerminal("Terminal resized", {
+					width: newWidth,
+					height: newHeight,
+					previousWidth: width,
+				});
 				setWidth(newWidth);
 				setTerminalWidth(newWidth);
 			}
@@ -200,28 +222,85 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 
 		// Initialize terminal width context on mount
 		if (stdout) {
-			setTerminalWidth(stdout.columns ?? 80);
+			const initialWidth = stdout.columns ?? 80;
+			const initialHeight = stdout.rows ?? 24;
+			debugTerminal("Terminal initialized", {
+				width: initialWidth,
+				height: initialHeight,
+			});
+			setTerminalWidth(initialWidth);
 		}
 
 		stdout?.on("resize", handleResize);
 		return () => {
 			stdout?.off("resize", handleResize);
 		};
-	}, [stdout]);
+	}, [stdout, width]);
 
-	// Add output line(s) - each line gets unique ID for Static component
+	// Add output line(s) - each line gets unique ID and commandId for Static component
 	const addOutput = useCallback((line: string) => {
 		const lines = line.split("\n");
+		const currentCommandId = commandIdRef.current;
 		const newItems = lines.map((content) => ({
 			id: outputIdRef.current++,
 			content,
+			commandId: currentCommandId,
 		}));
+
+		debugOutput("Adding output lines", {
+			inputLineCount: 1,
+			splitLineCount: lines.length,
+			newItemsCount: newItems.length,
+			commandId: currentCommandId,
+			firstLineLength: lines[0]?.length,
+			firstLinePreview: lines[0]?.slice(0, 80),
+		});
+
 		setOutputItems((prev) => {
 			const combined = [...prev, ...newItems];
-			// Keep buffer under 1000 items
-			if (combined.length > 1000) {
-				return combined.slice(combined.length - 1000);
+
+			// Count unique commands in buffer
+			const uniqueCommands = new Set(
+				combined.map((item) => item.commandId),
+			);
+			const commandCount = uniqueCommands.size;
+
+			debugBuffer("Buffer state before truncation", {
+				previousItemCount: prev.length,
+				newItemsCount: newItems.length,
+				combinedItemCount: combined.length,
+				commandCount: commandCount,
+				willTruncate: commandCount > 3,
+			});
+
+			// Keep only last 3 commands worth of output
+			// This prevents memory bloat while preserving complete command outputs
+			if (commandCount > 3) {
+				// Find the 3 most recent command IDs
+				const recentCommandIds = Array.from(uniqueCommands)
+					.sort((a, b) => b - a)
+					.slice(0, 3);
+
+				const truncated = combined.filter((item) =>
+					recentCommandIds.includes(item.commandId),
+				);
+
+				debugBuffer("Buffer truncated by command boundary", {
+					beforeCount: combined.length,
+					afterCount: truncated.length,
+					itemsRemoved: combined.length - truncated.length,
+					commandsRemoved: commandCount - 3,
+					keptCommandIds: recentCommandIds,
+				});
+
+				return truncated;
 			}
+
+			debugBuffer("Buffer updated without truncation", {
+				finalItemCount: combined.length,
+				commandCount: commandCount,
+			});
+
 			return combined;
 		});
 	}, []);
@@ -289,18 +368,45 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			const trimmed = cmd.trim();
 			if (!trimmed) return;
 
+			debugSeparator();
+			debugOutput("Command execution started", {
+				command: trimmed,
+				timestamp: new Date().toISOString(),
+				currentBufferSize: outputItems.length,
+			});
+
 			// Show command in scrollback with blue indicator and bright white command
 			// Format: ⏺ xcsh> command (blue ⏺, bright white command text)
+			// Increment command ID for new command - marks boundary for truncation
+			commandIdRef.current++;
+
 			const scrollbackCommand = `${colorBlue("⏺")} ${colorBoldWhite(prompt + trimmed)}`;
 			addOutput(scrollbackCommand);
 
 			// Execute via executor module
 			const result = await executeCommand(trimmed, session);
 
+			debugOutput("Command execution completed", {
+				command: trimmed,
+				outputLineCount: result.output.length,
+				shouldExit: result.shouldExit,
+				shouldClear: result.shouldClear,
+				hasRawStdout: !!result.rawStdout,
+				enterChatMode: result.enterChatMode,
+				enterProfileDeleteMode: result.enterProfileDeleteMode,
+			});
+
 			// Handle entering chat mode
 			if (result.enterChatMode && result.chatConfig) {
 				setMode("chat");
 				setChatConfig(result.chatConfig);
+				return;
+			}
+
+			// Handle entering profile delete mode
+			if (result.enterProfileDeleteMode && result.profileDeleteConfig) {
+				setMode("profile-delete");
+				setProfileDeleteConfig(result.profileDeleteConfig);
 				return;
 			}
 
@@ -314,9 +420,18 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 				// Don't process normal output - rawStdout is the complete output
 			} else if (result.shouldClear) {
 				// Handle clear
+				debugOutput("Clearing output buffer");
 				setOutputItems([]);
 			} else {
 				// Add output lines
+				debugOutput("Processing output lines", {
+					totalLines: result.output.length,
+					firstLine: result.output[0]?.slice(0, 100),
+					lastLine: result.output[result.output.length - 1]?.slice(
+						0,
+						100,
+					),
+				});
 				result.output.forEach((line) => addOutput(line));
 			}
 
@@ -556,6 +671,48 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 		[addOutput],
 	);
 
+	const handleProfileDeleteExit = useCallback(
+		(success: boolean, messages: string[]) => {
+			// Add output messages to scrollback
+			messages.forEach((msg) => addOutput(msg));
+
+			// If active profile was deleted, refresh prompt
+			if (success && profileDeleteConfig?.isActive) {
+				setPrompt(buildPlainPrompt(session));
+			}
+
+			// Return to REPL mode
+			setMode("repl");
+			setProfileDeleteConfig(null);
+
+			// Reset input
+			setInput("");
+			setInputKey((prev) => prev + 1);
+		},
+		[addOutput, session, profileDeleteConfig, setInput],
+	);
+
+	// Track Static component rendering
+	useEffect(() => {
+		const uniqueCommands = new Set(
+			outputItems.map((item) => item.commandId),
+		);
+		debugRender("Static component render triggered", {
+			itemCount: outputItems.length,
+			commandCount: uniqueCommands.size,
+			terminalWidth: width,
+			terminalHeight: stdout?.rows ?? "unknown",
+			firstItemId: outputItems[0]?.id,
+			firstCommandId: outputItems[0]?.commandId,
+			lastItemId: outputItems[outputItems.length - 1]?.id,
+			lastCommandId: outputItems[outputItems.length - 1]?.commandId,
+			lastItemContent: outputItems[outputItems.length - 1]?.content.slice(
+				0,
+				100,
+			),
+		});
+	}, [outputItems, width, stdout]);
+
 	// Always mount Static from start to prevent tree restructure issues
 	// This keeps the component tree stable and prevents Ink's screen clearing
 	return (
@@ -574,6 +731,14 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 						namespace={chatConfig.namespace}
 						width={width}
 						onExit={handleChatExit}
+					/>
+				) : mode === "profile-delete" && profileDeleteConfig ? (
+					<ProfileDeleteWizard
+						profileToDelete={profileDeleteConfig.profileName}
+						isActive={profileDeleteConfig.isActive}
+						session={session}
+						width={width}
+						onExit={handleProfileDeleteExit}
 					/>
 				) : (
 					<>

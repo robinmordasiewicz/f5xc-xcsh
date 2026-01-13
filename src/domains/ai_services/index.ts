@@ -7,13 +7,14 @@
 
 import type {
 	DomainDefinition,
+	ActionGroup,
 	CommandDefinition,
 	DomainCommandResult,
 } from "../registry.js";
 import { queryCommand } from "./query.js";
 import { chatCommand } from "./chat.js";
 import { feedbackCommand } from "./feedback.js";
-import { evalSubcommands } from "./eval.js";
+import { evalQueryCommand, evalFeedbackCommand } from "./eval.js";
 import { formatDomainOverview } from "../domain-overview.js";
 
 /**
@@ -75,7 +76,24 @@ const entryCommand: CommandDefinition = {
 };
 
 /**
- * AI Services domain definition
+ * Eval action - RBAC testing mode commands
+ */
+const evalAction: ActionGroup = {
+	name: "eval",
+	description:
+		"Execute AI commands in eval mode for RBAC testing and permission validation. Provides testing endpoints that don't affect production analytics.",
+	descriptionShort: "RBAC testing mode",
+	descriptionMedium:
+		"Query and feedback in eval mode for RBAC testing without affecting analytics.",
+	resources: new Map([
+		["query", evalQueryCommand],
+		["feedback", evalFeedbackCommand],
+	]),
+	defaultResource: "query",
+};
+
+/**
+ * AI Services domain definition - Verb-first structure
  */
 export const aiServicesDomain: DomainDefinition = {
 	name: "ai_services",
@@ -90,7 +108,8 @@ export const aiServicesDomain: DomainDefinition = {
 		["chat", chatCommand],
 		["feedback", feedbackCommand],
 	]),
-	subcommands: new Map([["eval", evalSubcommands]]),
+	actions: new Map([["eval", evalAction]]),
+	subcommands: new Map(), // Clean break - no backward compatibility
 };
 
 /**

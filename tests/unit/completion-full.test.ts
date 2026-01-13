@@ -8,27 +8,28 @@ describe("Completer with trailing spaces", () => {
 		completer = new Completer();
 	});
 
-	it("should return profile subcommand for '/login ' (trailing space)", async () => {
+	it("should return list action for '/login ' (trailing space)", async () => {
 		const suggestions = await completer.complete("/login ");
-		const texts = suggestions.map((s) => s.text);
-		expect(texts).toContain("profile");
-	});
-
-	it("should return profile subcommand for '/login p' (partial match)", async () => {
-		const suggestions = await completer.complete("/login p");
-		const texts = suggestions.map((s) => s.text);
-		expect(texts).toContain("profile");
-		expect(texts).toHaveLength(1); // Only profile matches 'p'
-	});
-
-	it("should return profile commands for '/login profile ' (trailing space)", async () => {
-		const suggestions = await completer.complete("/login profile ");
 		const texts = suggestions.map((s) => s.text);
 		expect(texts).toContain("list");
 		expect(texts).toContain("show");
 		expect(texts).toContain("create");
 		expect(texts).toContain("use");
+		expect(texts).toContain("edit");
 		expect(texts).toContain("delete");
+	});
+
+	it("should return list action for '/login l' (partial match)", async () => {
+		const suggestions = await completer.complete("/login l");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("list");
+		expect(texts).toHaveLength(1); // Only list matches 'l'
+	});
+
+	it("should return suggestions for '/login list ' (trailing space)", async () => {
+		const suggestions = await completer.complete("/login list ");
+		// Verify we get some suggestions for the list action resources
+		expect(suggestions.length).toBeGreaterThan(0);
 	});
 });
 

@@ -74,7 +74,7 @@ function parseEvalQueryArgs(
 /**
  * Eval Query command - Query using eval endpoint (for RBAC testing)
  */
-const evalQueryCommand: CommandDefinition = {
+export const evalQueryCommand: CommandDefinition = {
 	name: "query",
 	description:
 		"Send a query to the AI assistant using the eval endpoint. This endpoint is used for RBAC testing and validation purposes, allowing administrators to test permission scenarios without affecting production query analytics.",
@@ -231,7 +231,7 @@ function parseEvalFeedbackArgs(
 /**
  * Eval Feedback command - Submit feedback using eval endpoint
  */
-const evalFeedbackCommand: CommandDefinition = {
+export const evalFeedbackCommand: CommandDefinition = {
 	name: "feedback",
 	description:
 		"Submit feedback for an eval mode query. Use this endpoint when providing feedback for queries made through the eval endpoint, ensuring proper RBAC testing analytics separation.",

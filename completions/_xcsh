@@ -86,7 +86,7 @@ _xcsh() {
         (action)
             case ${line[1]} in
         (ai_services)
-            _values 'command' 'query:Query the AI assistant' 'chat:Interactive AI chat mode' 'feedback:Submit feedback for AI responses' 'eval:RBAC testing mode commands'
+            _values 'command' 'eval:RBAC testing mode' 'query:Query the AI assistant' 'chat:Interactive AI chat mode' 'feedback:Submit feedback for AI responses'
             ;;
         (cloudstatus)
             _values 'command' 'status:Get overall cloud status indicator' 'summary:Get complete status summary' 'components:List all components and status' 'incidents:List active and recent incidents' 'maintenance:List scheduled maintenance windows'
@@ -95,10 +95,10 @@ _xcsh() {
             _values 'command' 'bash:Generate bash completion script' 'zsh:Generate zsh completion script' 'fish:Generate fish completion script'
             ;;
         (login)
-            _values 'command' 'banner:Display xcsh banner with logo' 'profile:Manage saved connection profiles' 'context:Manage default namespace context'
+            _values 'command' 'list:List profiles or namespaces' 'show:Show profile or context details' 'create:Create new profiles' 'use:Switch active profile or context' 'edit:Edit profile configuration' 'delete:Delete profiles' 'banner:Display xcsh banner with logo'
             ;;
         (subscription)
-            _values 'command' 'show:Display subscription overview' 'plan:Manage subscription plans' 'addon:Manage addon services' 'quota:View quota limits and usage' 'usage:View usage metrics' 'billing:Manage billing' 'report:Generate reports'
+            _values 'command' 'show:Display subscription overview' 'list:List subscription resources' 'status:Show resource status'
             ;;
                 (help|quit|exit|clear|history|refresh|context|ctx)
                     ;;
