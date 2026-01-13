@@ -117,11 +117,13 @@ find_existing_installations() {
 check_homebrew_installation() {
   # Check for Homebrew cask installation
   if command_exists brew; then
-    if brew list --cask xcsh >/dev/null 2>&1; then
+    # Check cask installation - suppress all errors
+    if (brew list --cask xcsh 2>&1 | grep -q "xcsh") 2>/dev/null; then
       echo "homebrew-cask"
       return 0
     fi
-    if brew list xcsh >/dev/null 2>&1; then
+    # Check formula installation - suppress all errors
+    if (brew list xcsh 2>&1 | grep -q "xcsh") 2>/dev/null; then
       echo "homebrew-formula"
       return 0
     fi
