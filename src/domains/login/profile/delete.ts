@@ -3,17 +3,17 @@
  */
 
 import type { CommandDefinition } from "../../registry.js";
-import { successResult, errorResult } from "../../registry.js";
+import { errorResult } from "../../registry.js";
 import { getProfileManager } from "../../../profile/index.js";
 
 export const deleteCommand: CommandDefinition = {
 	name: "delete",
 	description:
-		"Delete a saved connection profile permanently. Requires --force flag to delete the currently active profile to prevent accidental disconnection from active tenant.",
-	descriptionShort: "Delete a saved profile",
+		"Delete a saved connection profile permanently. For active profiles, you'll be guided through selecting a replacement profile before deletion. All deletions require typing 'yes' to confirm.",
+	descriptionShort: "Delete a saved profile with confirmation",
 	descriptionMedium:
-		"Remove a saved profile permanently. Use --force to delete active profile.",
-	usage: "<name> [--force]",
+		"Remove a profile permanently with interactive confirmation and profile switching.",
+	usage: "<name>",
 	aliases: ["rm", "remove"],
 
 	async execute(args, _session) {
@@ -21,10 +21,9 @@ export const deleteCommand: CommandDefinition = {
 
 		// Parse arguments
 		const name = args.find((arg) => !arg.startsWith("-"));
-		const force = args.includes("--force") || args.includes("-f");
 
 		if (!name) {
-			return errorResult("Usage: login profile delete <name> [--force]");
+			return errorResult("Usage: login profile delete <name>");
 		}
 
 		try {
@@ -36,33 +35,23 @@ export const deleteCommand: CommandDefinition = {
 
 			// Check if it's the active profile
 			const activeProfile = await manager.getActive();
-			if (profile.name === activeProfile) {
-				if (!force) {
-					return errorResult(
-						[
-							`Cannot delete active profile '${name}'.`,
-							``,
-							`Either:`,
-							`  - Switch to another profile first: login profile use <other>`,
-							`  - Force delete with: login profile delete ${name} --force`,
-						].join("\n"),
-					);
-				}
-				// Force delete - clear the active profile file first
-				await manager.clearActive();
-			}
+			const isActive = profile.name === activeProfile;
 
-			// Delete the profile
-			const result = await manager.delete(name);
-
-			if (!result.success) {
-				return errorResult(result.message);
-			}
-
-			return successResult([`Profile '${name}' deleted successfully.`]);
+			// Trigger interactive deletion wizard
+			return {
+				output: [],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				enterProfileDeleteMode: true,
+				profileDeleteConfig: {
+					profileName: name,
+					isActive: isActive,
+				},
+			};
 		} catch (error) {
 			return errorResult(
-				`Failed to delete profile: ${error instanceof Error ? error.message : "Unknown error"}`,
+				`Failed to initiate profile deletion: ${error instanceof Error ? error.message : "Unknown error"}`,
 			);
 		}
 	},

@@ -7,7 +7,7 @@
 
 import type {
 	DomainDefinition,
-	SubcommandGroup,
+	ActionGroup,
 	CommandDefinition,
 	DomainCommandResult,
 } from "../registry.js";
@@ -403,20 +403,6 @@ const planListCommand: CommandDefinition = {
 	},
 };
 
-const planSubcommands: SubcommandGroup = {
-	name: "plan",
-	description:
-		"View and manage subscription plan information. Show current plan details, list available plans, and initiate plan transitions.",
-	descriptionShort: "Manage subscription plans",
-	descriptionMedium:
-		"View current plan, list available options, and manage plan transitions.",
-	commands: new Map([
-		["show", planShowCommand],
-		["list", planListCommand],
-	]),
-	defaultCommand: planShowCommand,
-};
-
 // ============================================================================
 // ADDON COMMANDS
 // ============================================================================
@@ -671,21 +657,6 @@ const addonStatusCommand: CommandDefinition = {
 	},
 };
 
-const addonSubcommands: SubcommandGroup = {
-	name: "addon",
-	description:
-		"Manage addon services for your subscription. List available addons, view details, check activation status, and manage subscriptions.",
-	descriptionShort: "Manage addon services",
-	descriptionMedium:
-		"List, view, and manage addon service subscriptions and activation status.",
-	commands: new Map([
-		["list", addonListCommand],
-		["show", addonShowCommand],
-		["status", addonStatusCommand],
-	]),
-	defaultCommand: addonListCommand,
-};
-
 // ============================================================================
 // QUOTA COMMANDS
 // ============================================================================
@@ -856,20 +827,6 @@ const quotaUsageCommand: CommandDefinition = {
 	},
 };
 
-const quotaSubcommands: SubcommandGroup = {
-	name: "quota",
-	description:
-		"View tenant-level quota limits and current usage. Monitor resource utilization to avoid quota exhaustion.",
-	descriptionShort: "View quota limits and usage",
-	descriptionMedium:
-		"Display tenant-level quota limits and current usage with utilization metrics.",
-	commands: new Map([
-		["limits", quotaLimitsCommand],
-		["usage", quotaUsageCommand],
-	]),
-	defaultCommand: quotaUsageCommand,
-};
-
 // ============================================================================
 // USAGE COMMANDS
 // ============================================================================
@@ -1031,20 +988,6 @@ const usageMonthlyCommand: CommandDefinition = {
 			return errorResult(`Failed to get monthly usage: ${message}`);
 		}
 	},
-};
-
-const usageSubcommands: SubcommandGroup = {
-	name: "usage",
-	description:
-		"View usage metrics and cost data for current and historical billing periods.",
-	descriptionShort: "View usage metrics",
-	descriptionMedium:
-		"Display usage metrics, cost breakdowns, and historical billing data.",
-	commands: new Map([
-		["current", usageCurrentCommand],
-		["monthly", usageMonthlyCommand],
-	]),
-	defaultCommand: usageCurrentCommand,
 };
 
 // ============================================================================
@@ -1210,68 +1153,6 @@ const billingInvoiceListCommand: CommandDefinition = {
 			return errorResult(`Failed to list invoices: ${message}`);
 		}
 	},
-};
-
-// Payment subcommand group
-const billingPaymentSubcommands: SubcommandGroup = {
-	name: "payment",
-	description: "Manage payment methods for your subscription billing.",
-	descriptionShort: "Manage payment methods",
-	descriptionMedium:
-		"List, view, and manage payment methods for subscription billing.",
-	commands: new Map([["list", billingPaymentListCommand]]),
-	defaultCommand: billingPaymentListCommand,
-};
-
-// Invoice subcommand group
-const billingInvoiceSubcommands: SubcommandGroup = {
-	name: "invoice",
-	description: "View and download invoices for your subscription.",
-	descriptionShort: "Manage invoices",
-	descriptionMedium:
-		"List invoices and download invoice PDFs for billing records.",
-	commands: new Map([["list", billingInvoiceListCommand]]),
-	defaultCommand: billingInvoiceListCommand,
-};
-
-// Billing commands that wrap subcommand groups
-const billingPaymentCommand: CommandDefinition = {
-	name: "payment",
-	description: billingPaymentSubcommands.description,
-	descriptionShort: billingPaymentSubcommands.descriptionShort,
-	descriptionMedium: billingPaymentSubcommands.descriptionMedium,
-	usage: "<list>",
-
-	async execute(args, session): Promise<DomainCommandResult> {
-		// Default to list
-		return billingPaymentListCommand.execute(args, session);
-	},
-};
-
-const billingInvoiceCommand: CommandDefinition = {
-	name: "invoice",
-	description: billingInvoiceSubcommands.description,
-	descriptionShort: billingInvoiceSubcommands.descriptionShort,
-	descriptionMedium: billingInvoiceSubcommands.descriptionMedium,
-	usage: "<list>",
-
-	async execute(args, session): Promise<DomainCommandResult> {
-		// Default to list
-		return billingInvoiceListCommand.execute(args, session);
-	},
-};
-
-const billingSubcommands: SubcommandGroup = {
-	name: "billing",
-	description:
-		"Manage billing information including payment methods and invoices.",
-	descriptionShort: "Manage billing",
-	descriptionMedium:
-		"View and manage payment methods, invoices, and billing details.",
-	commands: new Map([
-		["payment", billingPaymentCommand],
-		["invoice", billingInvoiceCommand],
-	]),
 };
 
 // ============================================================================
@@ -1491,19 +1372,64 @@ const reportSummaryCommand: CommandDefinition = {
 	},
 };
 
-const reportSubcommands: SubcommandGroup = {
-	name: "report",
+// ============================================================================
+// ACTION GROUPS - VERB-FIRST STRUCTURE
+// ============================================================================
+
+/**
+ * Show action - display detailed information
+ */
+const showAction: ActionGroup = {
+	name: "show",
 	description:
-		"Generate comprehensive subscription reports for analysis and planning.",
-	descriptionShort: "Generate reports",
+		"Display detailed information about subscription resources. Show plan details, addon information, quota limits, usage metrics, or generate reports.",
+	descriptionShort: "Show subscription resource details",
 	descriptionMedium:
-		"Create detailed subscription reports combining multiple data sources.",
-	commands: new Map([["summary", reportSummaryCommand]]),
-	defaultCommand: reportSummaryCommand,
+		"Display detailed information for plans, addons, quotas, usage, or reports.",
+	resources: new Map([
+		["plan", planShowCommand],
+		["addon", addonShowCommand],
+		["quota-limits", quotaLimitsCommand],
+		["quota-usage", quotaUsageCommand],
+		["usage-current", usageCurrentCommand],
+		["usage-monthly", usageMonthlyCommand],
+		["report-summary", reportSummaryCommand],
+	]),
+	defaultResource: "plan",
+};
+
+/**
+ * List action - enumerate multiple items
+ */
+const listAction: ActionGroup = {
+	name: "list",
+	description:
+		"List subscription resources. Display available plans, addon services, billing payment methods, or invoices.",
+	descriptionShort: "List subscription resources",
+	descriptionMedium:
+		"Enumerate plans, addons, payment methods, or invoices with status information.",
+	resources: new Map([
+		["plan", planListCommand],
+		["addon", addonListCommand],
+		["billing-payment", billingPaymentListCommand],
+		["billing-invoice", billingInvoiceListCommand],
+	]),
+};
+
+/**
+ * Status action - show activation status
+ */
+const statusAction: ActionGroup = {
+	name: "status",
+	description:
+		"Display activation status for subscription resources. Show addon activation status and details.",
+	descriptionShort: "Show resource status",
+	descriptionMedium: "Display activation status for addon services.",
+	resources: new Map([["addon", addonStatusCommand]]),
 };
 
 // ============================================================================
-// DOMAIN DEFINITION
+// DOMAIN DEFINITION - VERB-FIRST STRUCTURE
 // ============================================================================
 
 /**
@@ -1518,14 +1444,12 @@ export const subscriptionDomain: DomainDefinition = {
 		"Manage subscription tier, addon services, quota limits, usage metrics, and billing information.",
 	defaultCommand: showCommand,
 	commands: new Map([["show", showCommand]]),
-	subcommands: new Map([
-		["plan", planSubcommands],
-		["addon", addonSubcommands],
-		["quota", quotaSubcommands],
-		["usage", usageSubcommands],
-		["billing", billingSubcommands],
-		["report", reportSubcommands],
+	actions: new Map([
+		["show", showAction],
+		["list", listAction],
+		["status", statusAction],
 	]),
+	subcommands: new Map(), // Clean break - no backward compatibility
 };
 
 // Domain aliases (empty - use canonical name 'subscription')

@@ -18,7 +18,7 @@ import {
 /**
  * Show command - Display current default namespace
  */
-const showCommand: CommandDefinition = {
+export const showCommand: CommandDefinition = {
 	name: "show",
 	description:
 		"Display the currently active namespace context used for scoping operations. Shows both the namespace value and its source (environment variable, profile default, or session configuration).",
@@ -91,7 +91,7 @@ function determineNamespaceSource(namespace: string): string {
 /**
  * Set command - Change default namespace
  */
-const setCommand: CommandDefinition = {
+export const setCommand: CommandDefinition = {
 	name: "set",
 	description:
 		"Change the default namespace context for all subsequent operations. Updates the session scope so operations target the specified namespace unless explicitly overridden.",
@@ -169,7 +169,7 @@ const setCommand: CommandDefinition = {
 /**
  * List command - Show available namespaces
  */
-const listCommand: CommandDefinition = {
+export const listCommand: CommandDefinition = {
 	name: "list",
 	description:
 		"Fetch and display all available namespaces from the tenant. Requires authenticated connection. Shows current namespace indicator and provides switch command guidance.",

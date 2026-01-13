@@ -98,6 +98,18 @@ export interface ExecutionResult {
 	 * Configuration for chat mode (required when enterChatMode is true)
 	 */
 	chatConfig?: ChatModeConfig;
+	/**
+	 * Signal to enter profile deletion wizard mode.
+	 * When set, App.tsx will switch to ProfileDeleteWizard component.
+	 */
+	enterProfileDeleteMode?: boolean;
+	/**
+	 * Configuration for profile deletion wizard (required when enterProfileDeleteMode is true)
+	 */
+	profileDeleteConfig?: {
+		profileName: string;
+		isActive: boolean;
+	};
 }
 
 /**

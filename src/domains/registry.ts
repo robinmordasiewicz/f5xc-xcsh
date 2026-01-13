@@ -3,7 +3,7 @@
  */
 
 import type { REPLSession } from "../repl/session.js";
-import { formatCustomDomainHelp, formatSubcommandHelp } from "../repl/help.js";
+import { formatCustomDomainHelp } from "../repl/help.js";
 
 /**
  * Configuration for entering chat mode
@@ -44,6 +44,18 @@ export interface DomainCommandResult {
 	 * Configuration for chat mode (required when enterChatMode is true)
 	 */
 	chatConfig?: ChatModeConfig;
+	/**
+	 * Signal to enter profile deletion wizard mode.
+	 * When set, App.tsx will switch to ProfileDeleteWizard component.
+	 */
+	enterProfileDeleteMode?: boolean;
+	/**
+	 * Configuration for profile deletion wizard (required when enterProfileDeleteMode is true)
+	 */
+	profileDeleteConfig?: {
+		profileName: string;
+		isActive: boolean;
+	};
 }
 
 /**
@@ -104,6 +116,25 @@ export interface SubcommandGroup {
 }
 
 /**
+ * Definition of an action group (e.g., "list" action)
+ * Groups all resources that support a common action (verb-first routing)
+ */
+export interface ActionGroup {
+	/** Action name (e.g., "list", "show", "create") */
+	name: string;
+	/** Long description (~500 chars) for detailed help */
+	description: string;
+	/** Short description (~60 chars) for completions, badges */
+	descriptionShort: string;
+	/** Medium description (~150 chars) for tooltips, summaries */
+	descriptionMedium: string;
+	/** Resource handlers for this action */
+	resources: Map<string, CommandDefinition>;
+	/** Default resource when action invoked with no args */
+	defaultResource?: string;
+}
+
+/**
  * Definition of a custom domain
  */
 export interface DomainDefinition {
@@ -115,9 +146,11 @@ export interface DomainDefinition {
 	descriptionShort: string;
 	/** Medium description (~150 chars) for tooltips, summaries */
 	descriptionMedium: string;
+	/** Verb-first action groups (PRIMARY - e.g., "list" action for "login list profile") */
+	actions?: Map<string, ActionGroup>;
 	/** Direct commands at domain level (e.g., "login" itself) */
 	commands: Map<string, CommandDefinition>;
-	/** Subcommand groups (e.g., "login profile") */
+	/** Subcommand groups (LEGACY - backward compatibility for "login profile list") */
 	subcommands: Map<string, SubcommandGroup>;
 	/** Default command to run when domain is invoked with no args */
 	defaultCommand?: CommandDefinition;
@@ -205,78 +238,23 @@ class DomainRegistry {
 			return this.showDomainHelp(domain);
 		}
 
-		// Check for subcommand group first (e.g., "profile" in "login profile list")
-		const subgroup = domain.subcommands.get(firstArg);
-		if (subgroup) {
-			// No args in subgroup - run default command if set, otherwise show help
-			if (restArgs.length === 0) {
-				if (subgroup.defaultCommand) {
-					return subgroup.defaultCommand.execute([], session);
-				}
-				return this.showSubcommandHelp(domain, subgroup);
-			}
+		// ROUTING ORDER:
+		// 1. Check actions (verb-first: "login list profile")
+		// 2. Check direct commands (domain-level: "cloudstatus status")
 
-			const cmdName = restArgs[0]?.toLowerCase() ?? "";
-
-			// Handle --help, -h, or help as first arg in subgroup - show subgroup help
-			if (
-				cmdName === "--help" ||
-				cmdName === "-h" ||
-				cmdName === "help"
-			) {
-				return this.showSubcommandHelp(domain, subgroup);
-			}
-			const cmdArgs = restArgs.slice(1);
-
-			// Find command in subgroup
-			const cmd = subgroup.commands.get(cmdName);
-			if (cmd) {
-				// Validate args before executing
-				const commandPath = `${domainName} ${firstArg} ${cmdName}`;
-				const validationError = this.validateCommandArgs(
-					cmd,
-					cmdArgs,
-					subgroup.commands,
-					commandPath,
-				);
-				if (validationError) {
-					return validationError;
-				}
-				return cmd.execute(cmdArgs, session);
-			}
-
-			// Check aliases
-			for (const [, command] of subgroup.commands) {
-				if (command.aliases?.includes(cmdName)) {
-					// Validate args before executing
-					const commandPath = `${domainName} ${firstArg} ${command.name}`;
-					const validationError = this.validateCommandArgs(
-						command,
-						cmdArgs,
-						subgroup.commands,
-						commandPath,
-					);
-					if (validationError) {
-						return validationError;
-					}
-					return command.execute(cmdArgs, session);
-				}
-			}
-
-			return {
-				output: [
-					`Unknown command: ${domainName} ${firstArg} ${cmdName}`,
-					``,
-					`Run '${domainName} ${firstArg}' for available commands.`,
-				],
-				shouldExit: false,
-				shouldClear: false,
-				contextChanged: false,
-				error: "Unknown command",
-			};
+		// 1. Check for action group first (verb-first routing)
+		const actionGroup = domain.actions?.get(firstArg);
+		if (actionGroup) {
+			return this.executeActionCommand(
+				domain,
+				domainName,
+				firstArg,
+				restArgs,
+				session,
+			);
 		}
 
-		// Check for direct command at domain level
+		// 2. Check for direct command at domain level
 		const cmd = domain.commands.get(firstArg);
 		if (cmd) {
 			// Validate args before executing
@@ -293,7 +271,7 @@ class DomainRegistry {
 			return cmd.execute(restArgs, session);
 		}
 
-		// Check aliases
+		// Check aliases for direct commands
 		for (const [, command] of domain.commands) {
 			if (command.aliases?.includes(firstArg)) {
 				// Validate args before executing
@@ -311,6 +289,7 @@ class DomainRegistry {
 			}
 		}
 
+		// If we get here, nothing matched
 		return {
 			output: [
 				`Unknown command: ${domainName} ${firstArg}`,
@@ -321,6 +300,121 @@ class DomainRegistry {
 			shouldClear: false,
 			contextChanged: false,
 			error: "Unknown command",
+		};
+	}
+
+	/**
+	 * Execute an action-based command (verb-first routing)
+	 * E.g., "login list profile" → action="list", resource="profile"
+	 */
+	private async executeActionCommand(
+		domain: DomainDefinition,
+		domainName: string,
+		actionName: string,
+		args: string[],
+		session: REPLSession,
+	): Promise<DomainCommandResult> {
+		const actionGroup = domain.actions?.get(actionName);
+		if (!actionGroup) {
+			return {
+				output: [
+					`Unknown action: ${domainName} ${actionName}`,
+					``,
+					`Run '${domainName}' for available commands.`,
+				],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: "Unknown action",
+			};
+		}
+
+		// No resource specified - use default or show help
+		if (args.length === 0) {
+			if (actionGroup.defaultResource) {
+				const cmd = actionGroup.resources.get(
+					actionGroup.defaultResource,
+				);
+				if (cmd) {
+					return cmd.execute([], session);
+				}
+			}
+			return this.showActionGroupHelp(domain, domainName, actionGroup);
+		}
+
+		const resourceName = args[0]?.toLowerCase() ?? "";
+		const resourceArgs = args.slice(1);
+
+		// Handle --help, -h, or help as first arg - show action group help
+		if (
+			resourceName === "--help" ||
+			resourceName === "-h" ||
+			resourceName === "help"
+		) {
+			return this.showActionGroupHelp(domain, domainName, actionGroup);
+		}
+
+		// Find resource handler
+		const cmd = actionGroup.resources.get(resourceName);
+		if (cmd) {
+			// Validate args before executing
+			const commandPath = `${domainName} ${actionName} ${resourceName}`;
+			const validationError = this.validateCommandArgs(
+				cmd,
+				resourceArgs,
+				actionGroup.resources,
+				commandPath,
+			);
+			if (validationError) {
+				return validationError;
+			}
+			return cmd.execute(resourceArgs, session);
+		}
+
+		return {
+			output: [
+				`Unknown resource: ${domainName} ${actionName} ${resourceName}`,
+				``,
+				`Run '${domainName} ${actionName}' for available resources.`,
+			],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: "Unknown resource",
+		};
+	}
+
+	/**
+	 * Show help for an action group
+	 */
+	private showActionGroupHelp(
+		_domain: DomainDefinition,
+		domainName: string,
+		actionGroup: ActionGroup,
+	): DomainCommandResult {
+		const output: string[] = [];
+
+		// Header
+		output.push(`${domainName} ${actionGroup.name}`);
+		output.push(actionGroup.description);
+		output.push(``);
+
+		// Available resources
+		output.push(`Available resources:`);
+		for (const [resourceName, cmd] of actionGroup.resources) {
+			output.push(`  ${resourceName.padEnd(20)} ${cmd.descriptionShort}`);
+		}
+
+		output.push(``);
+		output.push(
+			`Usage: ${domainName} ${actionGroup.name} <resource> [options]`,
+		);
+
+		return {
+			output,
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
 		};
 	}
 
@@ -344,16 +438,18 @@ class DomainRegistry {
 			category: string;
 		}> = [];
 
-		// No args yet - suggest subcommands and commands
+		// No args yet - suggest actions and commands (action-first priority)
 		if (args.length === 0) {
-			// Add subcommand groups
-			for (const [name, group] of domain.subcommands) {
-				if (name.toLowerCase().startsWith(partial.toLowerCase())) {
-					suggestions.push({
-						text: name,
-						description: group.descriptionShort,
-						category: "subcommand",
-					});
+			// Add action groups first (verb-first priority)
+			if (domain.actions) {
+				for (const [name, group] of domain.actions) {
+					if (name.toLowerCase().startsWith(partial.toLowerCase())) {
+						suggestions.push({
+							text: name,
+							description: group.descriptionShort,
+							category: "action",
+						});
+					}
 				}
 			}
 
@@ -371,27 +467,27 @@ class DomainRegistry {
 			return suggestions;
 		}
 
-		// First arg is a subcommand group
+		// First arg might be an action group
 		const firstArg = args[0]?.toLowerCase() ?? "";
-		const subgroup = domain.subcommands.get(firstArg);
-		if (subgroup && args.length === 1) {
-			// Suggest commands within the subgroup
-			for (const [name, cmd] of subgroup.commands) {
+		const actionGroup = domain.actions?.get(firstArg);
+		if (actionGroup && args.length === 1) {
+			// Suggest resources within the action group
+			for (const [name, cmd] of actionGroup.resources) {
 				if (name.toLowerCase().startsWith(partial.toLowerCase())) {
 					suggestions.push({
 						text: name,
 						description: cmd.descriptionShort,
-						category: "command",
+						category: "resource",
 					});
 				}
 			}
 			return suggestions;
 		}
 
-		// Delegate to command's completion handler if available
-		if (subgroup && args.length >= 2) {
-			const cmdName = args[1]?.toLowerCase() ?? "";
-			const cmd = subgroup.commands.get(cmdName);
+		// Delegate to resource command's completion handler if available
+		if (actionGroup && args.length >= 2) {
+			const resourceName = args[1]?.toLowerCase() ?? "";
+			const cmd = actionGroup.resources.get(resourceName);
 			if (cmd?.completion) {
 				const completions = await cmd.completion(
 					partial,
@@ -406,6 +502,21 @@ class DomainRegistry {
 			}
 		}
 
+		// First arg might be a direct command
+		const directCmd = domain.commands.get(firstArg);
+		if (directCmd?.completion && args.length >= 1) {
+			const completions = await directCmd.completion(
+				partial,
+				args.slice(1),
+				session,
+			);
+			return completions.map((text) => ({
+				text,
+				description: "",
+				category: "argument",
+			}));
+		}
+
 		return suggestions;
 	}
 
@@ -416,22 +527,6 @@ class DomainRegistry {
 	private showDomainHelp(domain: DomainDefinition): DomainCommandResult {
 		return {
 			output: formatCustomDomainHelp(domain),
-			shouldExit: false,
-			shouldClear: false,
-			contextChanged: false,
-		};
-	}
-
-	/**
-	 * Show help for a subcommand group using the unified help formatter.
-	 * This ensures consistent professional formatting across all subcommands.
-	 */
-	private showSubcommandHelp(
-		domain: DomainDefinition,
-		subgroup: SubcommandGroup,
-	): DomainCommandResult {
-		return {
-			output: formatSubcommandHelp(domain.name, subgroup),
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,

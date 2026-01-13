@@ -9,6 +9,7 @@ import type {
 	DomainDefinition,
 	CommandDefinition,
 	SubcommandGroup,
+	ActionGroup,
 } from "../domains/registry.js";
 import type { DomainInfo } from "../types/domains.js";
 import { validActions } from "../types/domains.js";
@@ -67,21 +68,50 @@ function fromSubcommandGroup(group: SubcommandGroup): CompletionNode {
 }
 
 /**
+ * Convert an ActionGroup to CompletionNode with resources as children
+ */
+function fromActionGroup(group: ActionGroup): CompletionNode {
+	const children = new Map<string, CompletionNode>();
+
+	for (const [name, cmd] of group.resources) {
+		children.set(name, fromCommand(cmd));
+	}
+
+	const node: CompletionNode = {
+		name: group.name,
+		description: group.descriptionShort,
+		source: "custom",
+	};
+	if (children.size > 0) {
+		node.children = children;
+	}
+	return node;
+}
+
+/**
  * Convert a custom DomainDefinition to CompletionNode
  *
  * Custom domains have hierarchical structure:
+ * - Action groups with resources (e.g., `login list profile`) - VERB-FIRST
  * - Direct commands (e.g., `login banner`)
- * - Subcommand groups with nested commands (e.g., `login profile list`)
+ * - Subcommand groups with nested commands (LEGACY - only for clean break compatibility)
  */
 export function fromCustomDomain(domain: DomainDefinition): CompletionNode {
 	const children = new Map<string, CompletionNode>();
+
+	// Add action groups first (verb-first priority)
+	if (domain.actions) {
+		for (const [name, group] of domain.actions) {
+			children.set(name, fromActionGroup(group));
+		}
+	}
 
 	// Add direct commands
 	for (const [name, cmd] of domain.commands) {
 		children.set(name, fromCommand(cmd));
 	}
 
-	// Add subcommand groups
+	// Add subcommand groups (LEGACY - should be empty for clean break)
 	for (const [name, group] of domain.subcommands) {
 		children.set(name, fromSubcommandGroup(group));
 	}

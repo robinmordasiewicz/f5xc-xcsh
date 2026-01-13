@@ -27,7 +27,7 @@ _xcsh_completions() {
       local domain="${words[1]}"
       case "${domain}" in
         ai_services)
-          COMPREPLY=($(compgen -W "query chat feedback eval" -- "${cur}"))
+          COMPREPLY=($(compgen -W "eval query chat feedback" -- "${cur}"))
           return 0
           ;;
         ai_services/eval)
@@ -43,43 +43,43 @@ _xcsh_completions() {
           return 0
           ;;
         login)
-          COMPREPLY=($(compgen -W "banner profile context" -- "${cur}"))
+          COMPREPLY=($(compgen -W "list show create use edit delete banner" -- "${cur}"))
           return 0
           ;;
-        login/profile)
-          COMPREPLY=($(compgen -W "list show create use edit delete" -- "${cur}"))
+        login/list)
+          COMPREPLY=($(compgen -W "profile context" -- "${cur}"))
           return 0
           ;;
-        login/context)
-          COMPREPLY=($(compgen -W "show set list" -- "${cur}"))
+        login/show)
+          COMPREPLY=($(compgen -W "profile context" -- "${cur}"))
+          return 0
+          ;;
+        login/create)
+          COMPREPLY=($(compgen -W "profile" -- "${cur}"))
+          return 0
+          ;;
+        login/use)
+          COMPREPLY=($(compgen -W "profile context" -- "${cur}"))
+          return 0
+          ;;
+        login/edit)
+          COMPREPLY=($(compgen -W "profile" -- "${cur}"))
+          return 0
+          ;;
+        login/delete)
+          COMPREPLY=($(compgen -W "profile" -- "${cur}"))
           return 0
           ;;
         subscription)
-          COMPREPLY=($(compgen -W "show plan addon quota usage billing report" -- "${cur}"))
+          COMPREPLY=($(compgen -W "show list status" -- "${cur}"))
           return 0
           ;;
-        subscription/plan)
-          COMPREPLY=($(compgen -W "show list" -- "${cur}"))
+        subscription/list)
+          COMPREPLY=($(compgen -W "plan addon billing-payment billing-invoice" -- "${cur}"))
           return 0
           ;;
-        subscription/addon)
-          COMPREPLY=($(compgen -W "list show status" -- "${cur}"))
-          return 0
-          ;;
-        subscription/quota)
-          COMPREPLY=($(compgen -W "limits usage" -- "${cur}"))
-          return 0
-          ;;
-        subscription/usage)
-          COMPREPLY=($(compgen -W "current monthly" -- "${cur}"))
-          return 0
-          ;;
-        subscription/billing)
-          COMPREPLY=($(compgen -W "payment invoice" -- "${cur}"))
-          return 0
-          ;;
-        subscription/report)
-          COMPREPLY=($(compgen -W "summary" -- "${cur}"))
+        subscription/status)
+          COMPREPLY=($(compgen -W "addon" -- "${cur}"))
           return 0
           ;;
         help | quit | exit | clear | history | refresh | context | ctx)
