@@ -246,8 +246,12 @@ export class Completer {
 				resourceCtx.domain,
 			);
 			if (resourceTypes.length > 0) {
-				// If typing a word, filter resource types
-				if (parsed.currentWord && !parsed.currentWord.startsWith("-")) {
+				// If typing a word, filter resource types (unless word is the action itself)
+				if (
+					parsed.currentWord &&
+					!parsed.currentWord.startsWith("-") &&
+					parsed.currentWord.toLowerCase() !== resourceCtx.action
+				) {
 					const filtered = this.filterSuggestions(
 						resourceTypes,
 						parsed.currentWord,
@@ -255,8 +259,11 @@ export class Completer {
 					if (filtered.length > 0) {
 						return filtered;
 					}
-				} else if (!parsed.currentWord) {
-					// Just typed action + space, show all resource types plus flags
+				} else if (
+					!parsed.currentWord ||
+					parsed.currentWord.toLowerCase() === resourceCtx.action
+				) {
+					// Just typed action + space (or typing action itself), show all resource types plus flags
 					return [
 						...resourceTypes,
 						...this.getActionFlagSuggestions(resourceCtx.action),
@@ -274,12 +281,33 @@ export class Completer {
 				// Only if user has finished typing the domain name (not still typing it)
 				const targetDomain = firstArg.toLowerCase();
 
-				// Check if domain exists in registry
-				if (completionRegistry.has(targetDomain)) {
-					const domainNode = completionRegistry.get(targetDomain);
-					if (domainNode?.source === "api") {
-						// API domain - show actions
-						suggestions = this.getActionSuggestions();
+				// Check if domain exists in completion registry (custom domains)
+				const domainNode = completionRegistry.get(targetDomain);
+				// Or check if it's an API domain
+				const apiDomainInfo = getDomainInfo(targetDomain);
+
+				if (domainNode || apiDomainInfo) {
+					// Check if this is an API domain or a custom domain marked as API
+					const isApiDomain =
+						domainNode?.source === "api" || apiDomainInfo !== null;
+
+					if (isApiDomain) {
+						// API domain - check if action already typed (e.g., "/domain action")
+						const hasAction =
+							parsed.args.length > 1 &&
+							RESOURCE_ACTIONS.has(
+								parsed.args[1]?.toLowerCase() ?? "",
+							);
+						if (!hasAction) {
+							// No action yet - show actions
+							suggestions = this.getActionSuggestions();
+						} else {
+							// Action already typed - resource context logic above should have
+							// handled showing resource types. If we got here, show flags.
+							suggestions = this.getActionFlagSuggestions(
+								parsed.args[1]?.toLowerCase(),
+							);
+						}
 					} else {
 						// Custom domain with children - show child suggestions
 						suggestions = completionRegistry.getChildSuggestions(
@@ -698,14 +726,34 @@ export class Completer {
 
 		const navCtx = this.session.getContextPath();
 
-		// Only domain from navigation context - actions are detected from input
-		ctx.domain = navCtx.domain || null;
+		// Detect domain and action from input args
+		// Two patterns:
+		// 1. Navigation-based: IN domain context, typing action → domain from navCtx, action from args[0]
+		// 2. Command-based: Full command on one line → domain from args[0], action from args[1]
 
-		// Check if first arg is an action (actions are always from input, not navigation)
-		if (parsed.args.length > 0) {
+		let argOffset = 0; // Offset to find the action
+
+		// Check if we're in navigation context (already in a domain)
+		if (navCtx.domain) {
+			// Pattern 1: Navigation-based
+			ctx.domain = navCtx.domain;
+			argOffset = 0; // Action is at args[0]
+		} else if (parsed.args.length > 0) {
+			// Pattern 2: Command-based - check if first arg is an API domain
 			const firstArg = parsed.args[0]?.toLowerCase() ?? "";
-			if (RESOURCE_ACTIONS.has(firstArg)) {
-				ctx.action = firstArg;
+			const domainInfo = getDomainInfo(firstArg);
+			if (domainInfo) {
+				// First arg is an API domain
+				ctx.domain = firstArg;
+				argOffset = 1; // Action is at args[1]
+			}
+		}
+
+		// Check for action at the detected offset
+		if (parsed.args.length > argOffset) {
+			const actionArg = parsed.args[argOffset]?.toLowerCase() ?? "";
+			if (RESOURCE_ACTIONS.has(actionArg)) {
+				ctx.action = actionArg;
 			}
 		}
 
@@ -716,8 +764,10 @@ export class Completer {
 				domainInfo?.primaryResources?.map((r) => r.name) ?? [],
 			);
 
-			// Find which arg might be a resource type (skip first arg which is the action)
-			for (let i = 1; i < parsed.args.length; i++) {
+			// Find which arg might be a resource type (start after the action position)
+			// argOffset is 0 for navigation-based, 1 for command-based
+			// Resource type is at argOffset + 1 (after domain and/or action)
+			for (let i = argOffset + 1; i < parsed.args.length; i++) {
 				const arg = parsed.args[i]?.toLowerCase() ?? "";
 				if (resourceNames.has(arg)) {
 					// Check if this is the last arg AND equals currentWord (user still typing)
@@ -926,7 +976,7 @@ export class Completer {
 
 				if (resourceType && namespace) {
 					return this.completeResourceName(
-						resourceType,
+						resourceType, // Will be pluralized for API path (e.g., 'http_loadbalancer' → 'http_loadbalancers')
 						resourceType,
 						valuePartial,
 						namespace,
@@ -1000,13 +1050,14 @@ export class Completer {
 	}
 
 	/**
-	 * Convert domain name to API resource path
+	 * Convert resource type to API resource path
+	 * F5 XC API paths keep underscores and use plural form
+	 * Example: http_loadbalancer → http_loadbalancers
 	 */
-	private domainToResourcePath(domain: string): string {
-		// Convert snake_case to kebab-case for API paths
-		const resourceName = domain.replace(/_/g, "-");
-		// Add 's' for plural form (most F5 XC resources are plural in API)
-		return resourceName.endsWith("s") ? resourceName : `${resourceName}s`;
+	private domainToResourcePath(resourceType: string): string {
+		// F5 XC API paths keep underscores (not kebab-case)
+		// Just add 's' for plural form
+		return resourceType.endsWith("s") ? resourceType : `${resourceType}s`;
 	}
 
 	/**
