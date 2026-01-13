@@ -1172,7 +1172,7 @@ On Alpine:        apk add curl"
 
   # Check for existing installation in target directory
   if [ -f "${INSTALL_DIR}/${BINARY_NAME}" ]; then
-    EXISTING_VERSION=$("${INSTALL_DIR}/${BINARY_NAME}" version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
+    EXISTING_VERSION=$("${INSTALL_DIR}/${BINARY_NAME}" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
     if [ "$EXISTING_VERSION" = "$VERSION" ]; then
       success "xcsh v${VERSION} is already installed"
       printf "\n"
@@ -1185,7 +1185,7 @@ On Alpine:        apk add curl"
   download_and_install "$VERSION" "$OS" "$ARCH" "$INSTALL_DIR" "$SUDO_CMD"
 
   # Verify installation
-  if ! "${INSTALL_DIR}/${BINARY_NAME}" version >/dev/null 2>&1; then
+  if ! "${INSTALL_DIR}/${BINARY_NAME}" --version >/dev/null 2>&1; then
     error "Installation verification failed. Please check the binary at ${INSTALL_DIR}/${BINARY_NAME}"
   fi
 
