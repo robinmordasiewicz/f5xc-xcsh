@@ -1,14 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Completer } from "../../src/repl/completion/completer.js";
-import { clearResourceFetcherCache } from "../helpers/completion-mocks.js";
 
 describe("Completer with trailing spaces", () => {
 	let completer: Completer;
 
 	beforeEach(() => {
-		// Clear resource fetcher cache for test isolation
-		clearResourceFetcherCache();
-
 		completer = new Completer();
 	});
 
@@ -41,9 +37,6 @@ describe("Completer with domain name prefix", () => {
 	let completer: Completer;
 
 	beforeEach(() => {
-		// Clear resource fetcher cache for test isolation
-		clearResourceFetcherCache();
-
 		completer = new Completer();
 	});
 
