@@ -46,11 +46,52 @@ export type LogoDisplayMode = (typeof LOGO_MODES)[number]["mode"];
 export const LOGO_MODE_HELP = LOGO_MODES.map((m) => m.mode).join(", ");
 
 /**
+ * Completion mode definition with descriptions.
+ * Single source of truth for completion resource display modes.
+ */
+export interface CompletionModeDefinition {
+	/** Mode identifier */
+	mode: string;
+	/** Human-readable description */
+	description: string;
+}
+
+/**
+ * All supported completion resource display modes with descriptions.
+ * This is the canonical definition - used for validation and help generation.
+ */
+export const COMPLETION_MODES: readonly CompletionModeDefinition[] = [
+	{
+		mode: "all",
+		description: "Show all discovered resources (default)",
+	},
+	{
+		mode: "primary",
+		description: "Show only primary resources",
+	},
+] as const;
+
+/**
+ * Completion mode type - derived from COMPLETION_MODES for type safety.
+ */
+export type CompletionMode = (typeof COMPLETION_MODES)[number]["mode"];
+
+/**
+ * Helper string for help text generation
+ * Automatically derived from COMPLETION_MODES constant
+ */
+export const COMPLETION_MODE_HELP = COMPLETION_MODES.map((m) => m.mode).join(
+	", ",
+);
+
+/**
  * Application settings from .xcshconfig file.
  */
 export interface AppSettings {
 	/** Logo display mode */
 	logo: LogoDisplayMode;
+	/** Completion resource display mode */
+	completionMode: CompletionMode;
 }
 
 /**
@@ -58,6 +99,7 @@ export interface AppSettings {
  */
 export const DEFAULT_SETTINGS: AppSettings = {
 	logo: "image",
+	completionMode: "all",
 };
 
 /**
@@ -76,6 +118,21 @@ export function getLogoModeDescription(mode: string): string | undefined {
 }
 
 /**
+ * Validate if a string is a valid completion mode.
+ * Uses COMPLETION_MODES as single source of truth.
+ */
+export function isValidCompletionMode(mode: string): mode is CompletionMode {
+	return COMPLETION_MODES.some((m) => m.mode === mode);
+}
+
+/**
+ * Get completion mode description for help text.
+ */
+export function getCompletionModeDescription(mode: string): string | undefined {
+	return COMPLETION_MODES.find((m) => m.mode === mode)?.description;
+}
+
+/**
  * Validate and sanitize settings from config file.
  * Invalid values are ignored and defaults are used.
  */
@@ -86,6 +143,13 @@ function validateSettings(
 
 	if (settings.logo && isValidLogoMode(settings.logo)) {
 		validated.logo = settings.logo;
+	}
+
+	if (
+		settings.completionMode &&
+		isValidCompletionMode(settings.completionMode)
+	) {
+		validated.completionMode = settings.completionMode;
 	}
 
 	return validated;

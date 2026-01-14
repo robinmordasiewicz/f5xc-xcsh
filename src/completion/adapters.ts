@@ -74,7 +74,13 @@ function fromActionGroup(group: ActionGroup): CompletionNode {
 	const children = new Map<string, CompletionNode>();
 
 	for (const [name, cmd] of group.resources) {
-		children.set(name, fromCommand(cmd));
+		// Use resource name (Map key) not command name for completion
+		children.set(name, {
+			name: name, // Use resource name: "profile", "context"
+			description: cmd.descriptionShort,
+			source: "custom",
+			aliases: cmd.aliases && cmd.aliases.length > 0 ? cmd.aliases : [],
+		});
 	}
 
 	const node: CompletionNode = {

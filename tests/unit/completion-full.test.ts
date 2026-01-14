@@ -56,3 +56,74 @@ describe("Completer with domain name prefix", () => {
 		expect(texts).toContain("query");
 	});
 });
+
+describe("Login domain action group completion (bug fix)", () => {
+	let completer: Completer;
+
+	beforeEach(() => {
+		completer = new Completer();
+	});
+
+	it("should show action groups for '/login ' (trailing space)", async () => {
+		const suggestions = await completer.complete("/login ");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("use");
+		expect(texts).toContain("list");
+		expect(texts).toContain("show");
+		expect(texts).toContain("create");
+		expect(texts).toContain("edit");
+		expect(texts).toContain("delete");
+	});
+
+	it("should show filtered action groups for '/login u' (partial match)", async () => {
+		const suggestions = await completer.complete("/login u");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("use");
+		// Should not show other actions that don't start with 'u'
+		expect(texts).not.toContain("list");
+		expect(texts).not.toContain("show");
+	});
+
+	it("should show resources under use action for '/login use ' (trailing space)", async () => {
+		const suggestions = await completer.complete("/login use ");
+		const texts = suggestions.map((s) => s.text);
+		// Should show resources under the "use" action group
+		expect(texts).toContain("profile");
+		expect(texts).toContain("context");
+		// Should NOT show command-level suggestions like "set"
+		expect(texts).not.toContain("set");
+		// Should NOT show action-level suggestions
+		expect(texts).not.toContain("list");
+		expect(texts).not.toContain("show");
+	});
+
+	it("should show filtered resources for '/login use p' (partial match)", async () => {
+		const suggestions = await completer.complete("/login use p");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("profile");
+		expect(texts).not.toContain("context");
+	});
+
+	it("should show resources under list action for '/login list ' (trailing space)", async () => {
+		const suggestions = await completer.complete("/login list ");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("profile");
+		expect(texts).toContain("context");
+	});
+
+	it("should show resources under show action for '/login show ' (trailing space)", async () => {
+		const suggestions = await completer.complete("/login show ");
+		const texts = suggestions.map((s) => s.text);
+		expect(texts).toContain("profile");
+		expect(texts).toContain("context");
+	});
+
+	it("should NOT cross-contaminate action contexts for '/login use' (no space)", async () => {
+		// When user types "/login use" without trailing space, they're still typing
+		// Should show "use" as a completion option, not drill into it yet
+		const suggestions = await completer.complete("/login use");
+		const texts = suggestions.map((s) => s.text);
+		// Should show "use" as completion
+		expect(texts).toContain("use");
+	});
+});

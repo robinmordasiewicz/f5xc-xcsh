@@ -170,6 +170,7 @@ export const longTextData = {
 
 /**
  * API error response for error formatting tests
+ * Includes realistic F5 XC error message formats
  */
 export const apiErrorResponses = {
 	unauthorized: {
@@ -184,6 +185,15 @@ export const apiErrorResponses = {
 	},
 	notFound: {
 		statusCode: 404,
+		body: {
+			message:
+				"ves.io.schema.views.http_loadbalancer.Object: Key f5-amer-ent-qyyfhhfj/r-mordasiewicz/foobar does not exist",
+			code: "5",
+		},
+		operation: "delete virtual",
+	},
+	notFoundSimple: {
+		statusCode: 404,
 		body: { message: "Resource not found", code: "NOT_FOUND" },
 		operation: "get resource",
 	},
@@ -191,6 +201,14 @@ export const apiErrorResponses = {
 		statusCode: 409,
 		body: { message: "Resource already exists", code: "CONFLICT" },
 		operation: "create resource",
+	},
+	conflictInUse: {
+		statusCode: 409,
+		body: {
+			message:
+				"ves.io.schema.views.origin_pool.Object: Key tenant/namespace/my-pool is in use",
+		},
+		operation: "delete origin_pool",
 	},
 	rateLimit: {
 		statusCode: 429,

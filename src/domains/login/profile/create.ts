@@ -22,6 +22,15 @@ export const createCommand: CommandDefinition = {
 	usage: "<name> --url <api-url> --token <api-token> [--namespace <ns>]",
 	aliases: ["add", "new"],
 
+	completion: async (_currentWord: string, _args: string[]) => {
+		// args = [profileName?, ...flags?]
+		// After "login create profile", suggest flags (whether or not profile name is typed yet)
+
+		// Always suggest flag options at this point
+		// User can see available flags while typing the profile name or after
+		return ["--url", "--token", "--namespace"];
+	},
+
 	async execute(args, session) {
 		const manager = getProfileManager();
 

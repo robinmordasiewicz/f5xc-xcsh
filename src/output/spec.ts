@@ -714,6 +714,7 @@ function buildCustomDomainSpec(domainName: string): CLICommandSpec | null {
 
 /**
  * Build spec for an API-generated domain
+ * Phase 1 Enhancement: Includes allResources to show all available resource types
  */
 function buildApiDomainSpec(domainName: string): CLICommandSpec | null {
 	const info = domainRegistry.get(domainName);
@@ -732,7 +733,8 @@ function buildApiDomainSpec(domainName: string): CLICommandSpec | null {
 		subcommands: [],
 	}));
 
-	return {
+	// Build spec with resource information
+	const spec: CLICommandSpec = {
 		path: [domainName],
 		use: domainName,
 		short: info.descriptionShort,
@@ -742,6 +744,29 @@ function buildApiDomainSpec(domainName: string): CLICommandSpec | null {
 		flags: [],
 		subcommands,
 	};
+
+	// Phase 1 Enhancement: Add resource information to spec
+	// Include both counts and categorized resource lists
+	const resources = info.allResources || info.primaryResources;
+	if (resources && resources.length > 0) {
+		// Add as metadata in the spec (extend the type if needed via casting)
+		(spec as any).resources = {
+			total: resources.length,
+			primary: info.primaryResources?.length || 0,
+			discovered: resources.length - (info.primaryResources?.length || 0),
+			categories: info.resourceCategories,
+			list: resources.map((r) => ({
+				name: r.name,
+				description: r.descriptionShort || r.description,
+				operations: r.operations,
+				category: r.resourceCategory,
+				isPrimary: r.isPrimary,
+				tier: r.tier,
+			})),
+		};
+	}
+
+	return spec;
 }
 
 /**

@@ -40,6 +40,8 @@ import {
 	isValidLogoMode,
 	type LogoDisplayMode,
 	LOGO_MODE_HELP,
+	isValidCompletionMode,
+	COMPLETION_MODE_HELP,
 } from "./config/index.js";
 profiler.checkpoint("import:config");
 import { OUTPUT_FORMAT_HELP } from "./output/types.js";
@@ -74,6 +76,10 @@ program
 	.version(CLI_VERSION, "-v, --version", "Show version number")
 	.option("--no-color", "Disable color output")
 	.option("--logo <mode>", `Logo display mode: ${LOGO_MODE_HELP}`)
+	.option(
+		"--completion-mode <mode>",
+		`Completion resource display: ${COMPLETION_MODE_HELP}`,
+	)
 	.option("-o, --output <format>", `Output format (${OUTPUT_FORMAT_HELP})`)
 	.option("--spec", "Output command specification as JSON (for AI)")
 	.option("--headless", "Run in headless JSON protocol mode (for AI agents)")
@@ -87,6 +93,7 @@ program
 			options: {
 				help?: boolean;
 				logo?: string;
+				completionMode?: string;
 				output?: string;
 				spec?: boolean;
 				headless?: boolean;
@@ -158,6 +165,15 @@ program
 					options.logo && isValidLogoMode(options.logo)
 						? (options.logo as LogoDisplayMode)
 						: undefined;
+
+				// Parse completion mode from CLI option and set environment variable for Completer
+				if (
+					options.completionMode &&
+					isValidCompletionMode(options.completionMode)
+				) {
+					// Set environment variable so Completer can access the override
+					process.env.XCSH_COMPLETION_MODE = options.completionMode;
+				}
 
 				// Show initialization message first
 				process.stdout.write("Initializing...");

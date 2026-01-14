@@ -28,6 +28,21 @@ export type SubscriptionTier =
 	| "WAAP";
 
 /**
+ * Resource categories for classification
+ */
+export type ResourceCategory = "crud" | "analytics" | "utility" | "management";
+
+/**
+ * Resource categories breakdown
+ */
+export interface ResourceCategories {
+	crud: string[]; // Standard CRUD operations
+	analytics: string[]; // Reporting/statistics endpoints
+	utilities: string[]; // Helper endpoints (swagger, pdf, etc.)
+	management: string[]; // Operational endpoints (tickets, etc.)
+}
+
+/**
  * Resource metadata for primary resources within a domain
  * Contains tier, dependencies, and relationship information
  */
@@ -42,6 +57,11 @@ export interface ResourceMetadata {
 	supportsMetrics?: boolean;
 	dependencies?: ResourceDependencies;
 	relationshipHints?: string[];
+
+	// Dynamically discovered fields (Phase 1 enhancement)
+	operations?: string[]; // ["list", "get", "create", "delete", ...]
+	resourceCategory?: ResourceCategory; // "crud" | "analytics" | "utility" | "management"
+	isPrimary?: boolean; // Whether this is in upstream primaryResources
 }
 
 /**
@@ -70,7 +90,12 @@ export interface DomainInfo {
 	uiCategory?: string; // UI grouping (e.g., "Load Balancing", "Security")
 
 	// Rich resource metadata (from upstream enrichment)
-	primaryResources?: ResourceMetadata[];
+	primaryResources?: ResourceMetadata[]; // Curated upstream resources
+
+	// Dynamically discovered resources (Phase 1 enhancement)
+	allResources?: ResourceMetadata[]; // ALL resources discovered from OpenAPI paths
+	validationWarnings?: string[]; // Discrepancies between primary and discovered
+	resourceCategories?: ResourceCategories; // Resources grouped by category
 }
 
 /**

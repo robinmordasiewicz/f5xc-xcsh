@@ -290,6 +290,44 @@ class DomainRegistry {
 		}
 
 		// If we get here, nothing matched
+		// Check if user might have typed resource-first when they should use action-first
+		// (e.g., typed "login profile create" instead of "login create profile")
+		const possibleActions = Array.from(domain.actions?.keys() || []);
+		const secondArg = restArgs[0] || "";
+
+		// Check if the second argument is actually an action and first argument might be a resource
+		if (secondArg && possibleActions.includes(secondArg)) {
+			// User typed: login profile create (wrong - resource first)
+			// Should be: login create profile (correct - action first)
+			// firstArg = "profile" (resource), secondArg = "create" (action)
+
+			// Check if firstArg is a valid resource under the secondArg action
+			const actionGroup = domain.actions?.get(secondArg);
+			const resources = actionGroup?.resources;
+			const resourceList = resources ? Array.from(resources.keys()) : [];
+
+			if (resourceList.includes(firstArg)) {
+				// Definitely wrong order - they have action and resource swapped
+				return {
+					output: [
+						`Unknown command: ${domainName} ${firstArg}`,
+						``,
+						`Did you mean: ${domainName} ${secondArg} ${firstArg}?`,
+						``,
+						`Correct syntax: ${domainName} <action> <resource> [args]`,
+						`Available actions: ${possibleActions.join(", ")}`,
+						``,
+						`Run '${domainName}' for more information.`,
+					],
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+					error: "Unknown command",
+				};
+			}
+		}
+
+		// Generic unknown command error
 		return {
 			output: [
 				`Unknown command: ${domainName} ${firstArg}`,
@@ -371,11 +409,39 @@ class DomainRegistry {
 			return cmd.execute(resourceArgs, session);
 		}
 
+		// Check if user might have swapped action and resource order
+		// (e.g., typed "login profile create" instead of "login create profile")
+		const possibleActions = Array.from(domain.actions?.keys() || []);
+		if (possibleActions.includes(resourceName)) {
+			// User likely typed: domain action resource (wrong order for this domain)
+			// Should be: domain resource action
+			return {
+				output: [
+					`Unknown resource: ${domainName} ${actionName} ${resourceName}`,
+					``,
+					`Did you mean: ${domainName} ${resourceName} ${actionName}?`,
+					``,
+					`Correct syntax: ${domainName} <action> <resource> [args]`,
+					`Available actions: ${possibleActions.join(", ")}`,
+					``,
+					`Run '${domainName}' for more information.`,
+				],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: "Unknown resource",
+			};
+		}
+
+		// Standard unknown resource error
+		const availableResources = Array.from(actionGroup.resources.keys());
 		return {
 			output: [
 				`Unknown resource: ${domainName} ${actionName} ${resourceName}`,
 				``,
-				`Run '${domainName} ${actionName}' for available resources.`,
+				`Available resources: ${availableResources.join(", ")}`,
+				``,
+				`Run '${domainName} ${actionName}' for more information.`,
 			],
 			shouldExit: false,
 			shouldClear: false,
@@ -601,9 +667,8 @@ class DomainRegistry {
 
 			return {
 				output: [
-					`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}'.`,
-					``,
-					`Did you mean: ${suggestedPath}`,
+					`ERROR: Cannot combine '${cmd.name}' with '${firstExtraArg}'`,
+					`Tip: Did you mean: ${suggestedPath}`,
 				],
 				shouldExit: false,
 				shouldClear: false,
@@ -621,9 +686,8 @@ class DomainRegistry {
 
 				return {
 					output: [
-						`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}' (alias for '${siblingName}').`,
-						``,
-						`Did you mean: ${suggestedPath}`,
+						`ERROR: Cannot combine '${cmd.name}' with '${firstExtraArg}' (alias for '${siblingName}')`,
+						`Tip: Did you mean: ${suggestedPath}`,
 					],
 					shouldExit: false,
 					shouldClear: false,
@@ -636,11 +700,8 @@ class DomainRegistry {
 		// Command has no usage pattern but received args - warn about unexpected args
 		return {
 			output: [
-				`Error: Unexpected arguments for '${cmd.name}': ${filteredArgs.join(" ")}`,
-				``,
-				`Usage: ${commandPath}`,
-				``,
-				`The '${cmd.name}' command does not accept additional arguments.`,
+				`ERROR: Unexpected arguments for '${cmd.name}': ${filteredArgs.join(" ")}`,
+				`Tip: Use '${commandPath}' without additional arguments`,
 			],
 			shouldExit: false,
 			shouldClear: false,

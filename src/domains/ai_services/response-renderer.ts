@@ -117,7 +117,8 @@ function renderGenericResponse(response: GenericResponse): string[] {
 
 	// Check for error (handle both string and null)
 	if (response.is_error || (response.error && response.error !== null)) {
-		lines.push(`Error: ${response.error ?? "Unknown error"}`);
+		lines.push(`ERROR: ${response.error ?? "Unknown error"}`);
+		lines.push("Tip: Check your request and try again");
 		return lines;
 	}
 

@@ -229,66 +229,201 @@ describe("formatTSV", () => {
 });
 
 describe("formatAPIError", () => {
-	it("formats 401 unauthorized error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.unauthorized;
-		const result = formatAPIError(statusCode, body, operation);
+	/**
+	 * Helper to validate error message follows human-readable style guide:
+	 * - Exactly 2 lines
+	 * - Line 1: ERROR message (no technical jargon)
+	 * - Line 2: Tip with actionable guidance
+	 * - No JSON, no code numbers, no internal paths
+	 */
+	function validateErrorFormat(result: string, statusCode: number): void {
+		const lines = result.split("\n");
 
-		expect(result).toContain("ERROR: list resources failed (HTTP 401)");
-		expect(result).toContain("Invalid API token");
-		expect(result).toContain("UNAUTHORIZED");
-		expect(result).toContain("Authentication failed");
+		// Must be exactly 2 lines
+		expect(lines.length).toBe(2);
+
+		// Line 1 must start with ERROR
+		expect(lines[0]).toMatch(/^ERROR:/);
+
+		// Line 2 must start with Tip
+		expect(lines[1]).toMatch(/^Tip:/);
+
+		// Should not contain technical jargon
+		expect(result).not.toContain("HTTP " + statusCode); // No HTTP codes in new format
+		expect(result).not.toContain("ves.io.schema"); // No internal paths
+		expect(result).not.toContain("Object:"); // No technical terms
+		expect(result).not.toContain("code:"); // No code fields
+		expect(result).not.toContain("details:"); // No details fields
+		expect(result).not.toContain("{"); // No JSON
+		expect(result).not.toContain("["); // No arrays
+	}
+
+	describe("HTTP 401 - Authentication Errors", () => {
+		it("formats 401 error with concise 2-line message", () => {
+			const { statusCode, body, operation } = apiErrorResponses.unauthorized;
+			const result = formatAPIError(statusCode, body, operation);
+
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Authentication failed");
+			expect(result).toContain("Tip: Run 'login use profile");
+		});
 	});
 
-	it("formats 403 forbidden error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.forbidden;
-		const result = formatAPIError(statusCode, body, operation);
+	describe("HTTP 403 - Permission Errors", () => {
+		it("formats 403 error with concise 2-line message", () => {
+			const { statusCode, body, operation } = apiErrorResponses.forbidden;
+			const result = formatAPIError(statusCode, body, operation);
 
-		expect(result).toContain("ERROR: get resource failed (HTTP 403)");
-		expect(result).toContain("Permission denied");
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Permission denied");
+			expect(result).toContain("Tip: Contact your administrator");
+		});
 	});
 
-	it("formats 404 not found error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.notFound;
-		const result = formatAPIError(statusCode, body, operation);
+	describe("HTTP 404 - Not Found Errors", () => {
+		it("extracts resource info from F5 XC error message", () => {
+			const { statusCode, body, operation } = apiErrorResponses.notFound;
+			const result = formatAPIError(statusCode, body, operation);
 
-		expect(result).toContain("ERROR: get resource failed (HTTP 404)");
-		expect(result).toContain("Resource not found");
-		expect(result).toContain("Verify the name and namespace");
+			validateErrorFormat(result, statusCode);
+			// Should extract resource name and namespace
+			expect(result).toContain("ERROR: Resource 'foobar' not found");
+			expect(result).toContain("namespace 'r-mordasiewicz'");
+			expect(result).toContain("Tip: Use 'list http_loadbalancer'");
+		});
+
+		it("handles simple 404 without resource extraction", () => {
+			const { statusCode, body, operation } = apiErrorResponses.notFoundSimple;
+			const result = formatAPIError(statusCode, body, operation);
+
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Resource not found");
+			expect(result).toContain("Tip:");
+		});
 	});
 
-	it("formats 409 conflict error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.conflict;
-		const result = formatAPIError(statusCode, body, operation);
+	describe("HTTP 409 - Conflict Errors", () => {
+		it("formats 409 'already exists' conflict", () => {
+			const { statusCode, body, operation } = apiErrorResponses.conflict;
+			const result = formatAPIError(statusCode, body, operation);
 
-		expect(result).toContain("ERROR: create resource failed (HTTP 409)");
-		expect(result).toContain("Conflict");
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Resource");
+			expect(result).toContain("already exists");
+			expect(result).toContain("Tip:");
+		});
+
+		it("formats 409 'in use' conflict with helpful tip", () => {
+			const { statusCode, body, operation } = apiErrorResponses.conflictInUse;
+			const result = formatAPIError(statusCode, body, operation);
+
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Resource is currently in use");
+			expect(result).toContain("Tip: Use 'get' command to identify dependencies");
+		});
 	});
 
-	it("formats 429 rate limit error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.rateLimit;
-		const result = formatAPIError(statusCode, body, operation);
+	describe("HTTP 429 - Rate Limit Errors", () => {
+		it("formats 429 error with concise 2-line message", () => {
+			const { statusCode, body, operation } = apiErrorResponses.rateLimit;
+			const result = formatAPIError(statusCode, body, operation);
 
-		expect(result).toContain("ERROR: list resources failed (HTTP 429)");
-		expect(result).toContain("Rate limited");
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Rate limit exceeded");
+			expect(result).toContain("Tip: Wait a moment and try again");
+		});
 	});
 
-	it("formats 500 server error", () => {
-		const { statusCode, body, operation } = apiErrorResponses.serverError;
-		const result = formatAPIError(statusCode, body, operation);
+	describe("HTTP 500/502/503 - Server Errors", () => {
+		it("formats 500 error with concise 2-line message", () => {
+			const { statusCode, body, operation } = apiErrorResponses.serverError;
+			const result = formatAPIError(statusCode, body, operation);
 
-		expect(result).toContain("ERROR: update resource failed (HTTP 500)");
-		expect(result).toContain("Server error");
-		expect(result).toContain("Database timeout");
+			validateErrorFormat(result, statusCode);
+			expect(result).toContain("ERROR: Server error");
+			expect(result).toContain("temporarily unavailable");
+			expect(result).toContain("Tip:");
+		});
+
+		it("handles 502 bad gateway", () => {
+			const result = formatAPIError(502, { message: "Bad gateway" }, "test");
+
+			validateErrorFormat(result, 502);
+			expect(result).toContain("ERROR: Server error");
+			expect(result).toContain("temporarily unavailable");
+		});
+
+		it("handles 503 service unavailable", () => {
+			const result = formatAPIError(
+				503,
+				{ message: "Service unavailable" },
+				"test",
+			);
+
+			validateErrorFormat(result, 503);
+			expect(result).toContain("ERROR: Server error");
+			expect(result).toContain("temporarily unavailable");
+		});
 	});
 
-	it("handles error without body", () => {
-		const result = formatAPIError(500, null, "test operation");
-		expect(result).toContain("ERROR: test operation failed (HTTP 500)");
-	});
+	describe("Error Message Quality", () => {
+		it("never includes technical jargon in any error", () => {
+			const testCases = [
+				apiErrorResponses.unauthorized,
+				apiErrorResponses.forbidden,
+				apiErrorResponses.notFound,
+				apiErrorResponses.conflict,
+				apiErrorResponses.rateLimit,
+				apiErrorResponses.serverError,
+			];
 
-	it("handles error with only message", () => {
-		const result = formatAPIError(400, { message: "Bad request" }, "test");
-		expect(result).toContain("Bad request");
+			for (const { statusCode, body, operation } of testCases) {
+				const result = formatAPIError(statusCode, body, operation);
+
+				// No technical terms
+				expect(result).not.toContain("ves.io.schema");
+				expect(result).not.toContain("Object:");
+				expect(result).not.toContain("Key ");
+				expect(result).not.toContain("code:");
+				expect(result).not.toContain("details:");
+			}
+		});
+
+		it("always provides actionable tip", () => {
+			const testCases = [
+				apiErrorResponses.unauthorized,
+				apiErrorResponses.forbidden,
+				apiErrorResponses.notFound,
+				apiErrorResponses.conflict,
+				apiErrorResponses.rateLimit,
+				apiErrorResponses.serverError,
+			];
+
+			for (const { statusCode, body, operation } of testCases) {
+				const result = formatAPIError(statusCode, body, operation);
+				const lines = result.split("\n");
+
+				// Second line must be actionable tip
+				expect(lines[1]).toMatch(/^Tip:/);
+				expect(lines[1].length).toBeGreaterThan(10); // Not empty tip
+			}
+		});
+
+		it("handles error without body gracefully", () => {
+			const result = formatAPIError(500, null, "test operation");
+
+			validateErrorFormat(result, 500);
+			expect(result).toContain("ERROR:");
+			expect(result).toContain("Tip:");
+		});
+
+		it("handles unknown status codes with generic format", () => {
+			const result = formatAPIError(418, { message: "I'm a teapot" }, "test");
+
+			const lines = result.split("\n");
+			expect(lines.length).toBeGreaterThanOrEqual(1);
+			expect(lines[0]).toContain("ERROR:");
+		});
 	});
 });
 
