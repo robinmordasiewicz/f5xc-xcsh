@@ -267,20 +267,21 @@ export function formatAPIError(
 			break;
 		case 409:
 			// Provide context-specific hints for 409 conflicts
+			lines.push("\nConflict");
 			if (hasInUseError) {
 				lines.push(
-					"\nHint: Resource is currently in use by other resources. Delete or modify the dependent resources first.",
+					"Hint: Resource is currently in use by other resources. Delete or modify the dependent resources first.",
 				);
 				lines.push(
 					"      Use 'get' command to inspect the resource and identify dependencies.",
 				);
 			} else if (errorMessage.toLowerCase().includes("already exists")) {
 				lines.push(
-					"\nHint: Resource already exists. Use a different name or delete the existing resource first.",
+					"Hint: Resource already exists. Use a different name or delete the existing resource first.",
 				);
 			} else {
 				lines.push(
-					"\nHint: Conflict detected. Resource may be in an unexpected state.",
+					"Hint: Conflict detected. Resource may be in an unexpected state.",
 				);
 			}
 			break;
