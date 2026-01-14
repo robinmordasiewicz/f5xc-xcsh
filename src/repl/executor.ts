@@ -135,6 +135,7 @@ const BUILTIN_COMMANDS = new Set([
 	"domains",
 	"whoami",
 	"refresh",
+	"debug-completion",
 ]);
 
 /**
@@ -430,6 +431,48 @@ function executeBuiltin(
 				shouldClear: false,
 				contextChanged: false,
 				error: "whoami failed",
+			}));
+	}
+
+	// Debug completion system
+	if (
+		command === "debug-completion" ||
+		command.startsWith("debug-completion ")
+	) {
+		const parts = parseInputArgs(command).slice(1); // Skip "debug-completion"
+		const options: { verbose?: boolean; json?: boolean } = {};
+		let inputArg = "";
+
+		for (const arg of parts) {
+			const lowerArg = arg.toLowerCase();
+			if (lowerArg === "--verbose" || lowerArg === "-v") {
+				options.verbose = true;
+			} else if (lowerArg === "--json" || lowerArg === "-j") {
+				options.json = true;
+			} else if (!inputArg) {
+				inputArg = arg;
+			}
+		}
+
+		// Import diagnostic module and generate report
+		return import("./diagnostics/completion-diagnostics.js")
+			.then(({ generateDiagnosticReport }) =>
+				generateDiagnosticReport(session, inputArg, options),
+			)
+			.then((output) => ({
+				output,
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+			}))
+			.catch((error: unknown) => ({
+				output: [
+					`Diagnostic failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+				],
+				shouldExit: false,
+				shouldClear: false,
+				contextChanged: false,
+				error: "diagnostic-failed",
 			}));
 	}
 
@@ -1027,6 +1070,10 @@ export function parseCommandArgs(
 
 			switch (flagName) {
 				case "n":
+					name = nextArg;
+					consumedAsValue.add(i + 1);
+					i++;
+					break;
 				case "ns":
 					namespace = nextArg;
 					consumedAsValue.add(i + 1);
@@ -1468,6 +1515,50 @@ async function executeAPICommand(
 		};
 	} catch (error) {
 		if (error instanceof APIError) {
+			// Special handling for 409 "in use" errors on delete
+			if (
+				error.statusCode === 409 &&
+				action === "delete" &&
+				name &&
+				typeof error.response === "object" &&
+				error.response !== null
+			) {
+				const errResp = error.response as Record<string, unknown>;
+				const message = String(errResp.message || "");
+				if (
+					message.toLowerCase().includes("in use") ||
+					message.toLowerCase().includes("cannot be deleted")
+				) {
+					// The API doesn't provide referring_objects in the response
+					// Give a concise error with practical guidance
+					let hint = "";
+					const effectiveResource = resourceType || canonicalDomain;
+
+					// Provide resource-specific guidance based on what's being deleted
+					if (effectiveResource === "origin_pool") {
+						hint =
+							"\nTip: Check 'list http_loadbalancer' or 'list tcp_loadbalancer' to find which load balancers use this pool";
+					} else if (effectiveResource === "healthcheck") {
+						hint =
+							"\nTip: Check 'list origin_pool' or 'list http_loadbalancer' to find resources using this healthcheck";
+					} else {
+						hint =
+							"\nTip: Use the web console to view resource dependencies";
+					}
+
+					return {
+						output: [
+							`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use${hint}`,
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: error.message,
+					};
+				}
+			}
+
+			// Standard error formatting
 			const formatted = formatAPIError(
 				error.statusCode,
 				error.response,

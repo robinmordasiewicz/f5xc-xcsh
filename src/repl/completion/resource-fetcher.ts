@@ -25,6 +25,8 @@ const CACHE_TTL = 30 * 1000;
 export class ResourceFetcher {
 	private cache: Map<string, CacheEntry> = new Map();
 	private pendingRequests: Map<string, Promise<string[]>> = new Map();
+	private lastError: string | null = null;
+	private lastErrorTimestamp: number = 0;
 
 	/**
 	 * Convert resource type (snake_case) to API path (kebab-case with plural)
@@ -75,9 +77,17 @@ export class ResourceFetcher {
 	): Promise<string[]> {
 		const cacheKey = this.getCacheKey(namespace, resourceType);
 
-		// Check cache first
+		// SECURITY: Check authentication BEFORE cache to prevent unauthorized access to cached data
+		if (!client?.isAuthenticated()) {
+			this.lastError = "Not authenticated";
+			this.lastErrorTimestamp = Date.now();
+			return [];
+		}
+
+		// Check cache after authentication
 		const cached = this.cache.get(cacheKey);
 		if (cached && this.isCacheValid(cached)) {
+			// Don't clear lastError on cache hit - preserve error state for diagnostics
 			return this.filterByPrefix(cached.names, partial);
 		}
 
@@ -85,12 +95,8 @@ export class ResourceFetcher {
 		const pending = this.pendingRequests.get(cacheKey);
 		if (pending) {
 			const names = await pending;
+			// Don't clear lastError on pending request - preserve error state for diagnostics
 			return this.filterByPrefix(names, partial);
-		}
-
-		// No client or not authenticated - return empty
-		if (!client?.isAuthenticated()) {
-			return [];
 		}
 
 		// Mark as loading (preserve existing data if available)
@@ -109,6 +115,10 @@ export class ResourceFetcher {
 		try {
 			const names = await fetchPromise;
 
+			// Clear any previous errors on successful fetch
+			this.lastError = null;
+			this.lastErrorTimestamp = 0;
+
 			// Cache the result
 			this.cache.set(cacheKey, {
 				names,
@@ -117,7 +127,12 @@ export class ResourceFetcher {
 			});
 
 			return this.filterByPrefix(names, partial);
-		} catch {
+		} catch (error: unknown) {
+			// Track error for diagnostics
+			this.lastError =
+				error instanceof Error ? error.message : "Unknown error";
+			this.lastErrorTimestamp = Date.now();
+
 			// On error, clear loading state and return empty
 			const existing = this.cache.get(cacheKey);
 			if (existing) {
@@ -206,6 +221,40 @@ export class ResourceFetcher {
 	clearAll(): void {
 		this.cache.clear();
 		this.pendingRequests.clear();
+	}
+
+	/**
+	 * Get last error for diagnostic purposes
+	 */
+	getLastError(): { error: string | null; timestamp: number } {
+		return {
+			error: this.lastError,
+			timestamp: this.lastErrorTimestamp,
+		};
+	}
+
+	/**
+	 * Get cache statistics for diagnostic purposes
+	 */
+	getStats(): {
+		cacheSize: number;
+		pendingRequests: number;
+		cachedResources: Array<{ key: string; age: number; loading: boolean }>;
+	} {
+		const now = Date.now();
+		const cachedResources = Array.from(this.cache.entries()).map(
+			([key, entry]) => ({
+				key,
+				age: now - entry.timestamp,
+				loading: entry.loading,
+			}),
+		);
+
+		return {
+			cacheSize: this.cache.size,
+			pendingRequests: this.pendingRequests.size,
+			cachedResources,
+		};
 	}
 }
 

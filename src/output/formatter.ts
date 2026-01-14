@@ -216,21 +216,39 @@ export function formatAPIError(
 	const lines: string[] = [];
 	lines.push(`ERROR: ${operation} failed (HTTP ${statusCode})`);
 
+	let errorMessage = "";
+	let hasInUseError = false;
+
 	// Try to extract error details
 	if (body && typeof body === "object") {
 		const errResp = body as Record<string, unknown>;
 		if (errResp.message) {
-			lines.push(`  Message: ${errResp.message}`);
+			errorMessage = String(errResp.message);
+			lines.push(`  Message: ${errorMessage}`);
+			// Check if this is an "in use" error
+			hasInUseError =
+				errorMessage.toLowerCase().includes("in use") ||
+				errorMessage.toLowerCase().includes("cannot be deleted");
 		}
 		if (errResp.code) {
 			lines.push(`  Code: ${errResp.code}`);
 		}
 		if (errResp.details) {
-			lines.push(`  Details: ${errResp.details}`);
+			// Format details properly - could be object, array, or string
+			if (typeof errResp.details === "object") {
+				try {
+					const detailsStr = JSON.stringify(errResp.details, null, 2);
+					lines.push(`  Details: ${detailsStr}`);
+				} catch {
+					lines.push(`  Details: ${String(errResp.details)}`);
+				}
+			} else {
+				lines.push(`  Details: ${errResp.details}`);
+			}
 		}
 	}
 
-	// Add hints based on status code
+	// Add hints based on status code and error context
 	switch (statusCode) {
 		case 401:
 			lines.push(
@@ -248,9 +266,23 @@ export function formatAPIError(
 			);
 			break;
 		case 409:
-			lines.push(
-				"\nHint: Conflict - resource may already exist or be in a conflicting state.",
-			);
+			// Provide context-specific hints for 409 conflicts
+			if (hasInUseError) {
+				lines.push(
+					"\nHint: Resource is currently in use by other resources. Delete or modify the dependent resources first.",
+				);
+				lines.push(
+					"      Use 'get' command to inspect the resource and identify dependencies.",
+				);
+			} else if (errorMessage.toLowerCase().includes("already exists")) {
+				lines.push(
+					"\nHint: Resource already exists. Use a different name or delete the existing resource first.",
+				);
+			} else {
+				lines.push(
+					"\nHint: Conflict detected. Resource may be in an unexpected state.",
+				);
+			}
 			break;
 		case 429:
 			lines.push("\nHint: Rate limited. Please wait and try again.");

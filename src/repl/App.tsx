@@ -173,6 +173,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	const ctrlC = useDoubleCtrlC({
 		windowMs: 500,
 		onFirstPress: () => {
+			// Clear the input on first Ctrl+C
+			setInput("");
+			history.reset();
+			// Hide completion suggestions if showing
+			if (completion.isShowing) {
+				completion.hide();
+			}
 			addOutput("\nPress Ctrl+C again to exit, or continue typing");
 			setStatusHint("Press Ctrl+C again to exit");
 		},
@@ -507,18 +514,10 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	// Handle input submission
 	const handleSubmit = useCallback(
 		async (value: string) => {
-			// If showing suggestions, apply selected
-			if (completion.isShowing && completion.suggestions.length > 0) {
-				const selected = completion.selectCurrent();
-				if (selected) {
-					applyCompletion({
-						label: selected.text,
-						value: selected.text,
-						description: selected.description,
-						category: selected.category ?? "builtin",
-					});
-				}
-				return;
+			// Hide completion suggestions if showing (but don't select them)
+			// Only TAB should select completions, ENTER executes the command as-is
+			if (completion.isShowing) {
+				completion.hide();
 			}
 
 			// Clear input immediately to prevent duplicate display in scrollback
@@ -529,7 +528,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			// Execute command
 			await runCommand(value);
 		},
-		[completion, applyCompletion, runCommand, history],
+		[completion, runCommand, history],
 	);
 
 	// Keyboard input handling
