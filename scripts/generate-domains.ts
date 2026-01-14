@@ -2,6 +2,7 @@
 /**
  * Domain Generator Script
  * Generates src/types/domains_generated.ts from .specs/index.json
+ * NOW WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  *
  * Run: npx tsx scripts/generate-domains.ts
  */
@@ -10,6 +11,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as yaml from "yaml";
 import { execSync } from "child_process";
+import { discoverAllDomains, type DomainDiscovery } from "./discover-resources.js";
 
 // Types matching the upstream spec structure
 interface SpecPrimaryResource {
@@ -70,6 +72,15 @@ interface DomainConfig {
 	>;
 }
 
+type ResourceCategory = "crud" | "analytics" | "utility" | "management";
+
+interface ResourceCategories {
+	crud: string[];
+	analytics: string[];
+	utilities: string[];
+	management: string[];
+}
+
 interface ResourceMetadata {
 	name: string;
 	description: string;
@@ -84,6 +95,10 @@ interface ResourceMetadata {
 		optional?: string[];
 	};
 	relationshipHints?: string[];
+	// Dynamically discovered fields
+	operations?: string[];
+	resourceCategory?: ResourceCategory;
+	isPrimary?: boolean;
 }
 
 interface DomainInfo {
@@ -105,6 +120,10 @@ interface DomainInfo {
 	logoSvg?: string;
 	// Rich resource metadata
 	primaryResources?: ResourceMetadata[];
+	// Dynamically discovered resources (Phase 1 enhancement)
+	allResources?: ResourceMetadata[];
+	validationWarnings?: string[];
+	resourceCategories?: ResourceCategories;
 }
 
 /**
@@ -172,6 +191,18 @@ function generateResourceMetadata(resource: ResourceMetadata): string {
 		code += `\t\t\t\trelationshipHints: [${hints}],\n`;
 	}
 
+	// Dynamically discovered fields
+	if (resource.operations && resource.operations.length > 0) {
+		const ops = resource.operations.map((o) => `"${escapeString(o)}"`).join(", ");
+		code += `\t\t\t\toperations: [${ops}],\n`;
+	}
+	if (resource.resourceCategory) {
+		code += `\t\t\t\tresourceCategory: "${resource.resourceCategory}" as const,\n`;
+	}
+	if (resource.isPrimary !== undefined) {
+		code += `\t\t\t\tisPrimary: ${resource.isPrimary},\n`;
+	}
+
 	code += "\t\t\t}";
 	return code;
 }
@@ -224,6 +255,33 @@ function generateDomainEntry(domain: DomainInfo): string {
 		code += `\t\tprimaryResources: [\n\t\t\t${resourceEntries}\n\t\t],\n`;
 	}
 
+	// Dynamically discovered resources (Phase 1 enhancement)
+	if (domain.allResources && domain.allResources.length > 0) {
+		const allResourceEntries = domain.allResources
+			.map((r) => generateResourceMetadata(r))
+			.join(",\n\t\t\t");
+		code += `\t\tallResources: [\n\t\t\t${allResourceEntries}\n\t\t],\n`;
+	}
+
+	if (domain.validationWarnings && domain.validationWarnings.length > 0) {
+		const warnings = domain.validationWarnings.map((w) => `"${escapeString(w)}"`).join(",\n\t\t\t");
+		code += `\t\tvalidationWarnings: [\n\t\t\t${warnings}\n\t\t],\n`;
+	}
+
+	if (domain.resourceCategories) {
+		const crudList = domain.resourceCategories.crud.map((r) => `"${escapeString(r)}"`).join(", ");
+		const analyticsList = domain.resourceCategories.analytics.map((r) => `"${escapeString(r)}"`).join(", ");
+		const utilitiesList = domain.resourceCategories.utilities.map((r) => `"${escapeString(r)}"`).join(", ");
+		const managementList = domain.resourceCategories.management.map((r) => `"${escapeString(r)}"`).join(", ");
+
+		code += `\t\tresourceCategories: {\n`;
+		code += `\t\t\tcrud: [${crudList}],\n`;
+		code += `\t\t\tanalytics: [${analyticsList}],\n`;
+		code += `\t\t\tutilities: [${utilitiesList}],\n`;
+		code += `\t\t\tmanagement: [${managementList}],\n`;
+		code += `\t\t},\n`;
+	}
+
 	code += `\t}]`;
 	return code;
 }
@@ -233,6 +291,7 @@ function generateDomainEntry(domain: DomainInfo): string {
  */
 async function main(): Promise<void> {
 	console.log("🏗️  Generating domains from upstream specs...");
+	console.log("🔍 Phase 1 Enhancement: Dynamic Resource Discovery\n");
 
 	const specsDir = ".specs";
 	const indexPath = path.join(specsDir, "index.json");
@@ -262,6 +321,14 @@ async function main(): Promise<void> {
 		console.log(`✓ Loaded domain config`);
 	}
 
+	// Run dynamic resource discovery
+	console.log("\n🔍 Running resource discovery...");
+	const discoveries = await discoverAllDomains();
+	const discoveryMap = new Map<string, DomainDiscovery>(
+		discoveries.map((d) => [d.domain, d]),
+	);
+	console.log(`✓ Discovered resources for ${discoveries.length} domains\n`);
+
 	// Build domain registry
 	const domains: DomainInfo[] = [];
 
@@ -287,6 +354,72 @@ async function main(): Promise<void> {
 				relationshipHints: r.relationship_hints,
 			}));
 
+		// Get discovery data for this domain
+		const discovery = discoveryMap.get(spec.domain);
+
+		// Build allResources from discovered resources
+		let allResources: ResourceMetadata[] | undefined;
+		let validationWarnings: string[] | undefined;
+		let resourceCategories: ResourceCategories | undefined;
+
+		if (discovery) {
+			const primarySet = new Set(discovery.primaryResources);
+
+			// Convert discovered resources to ResourceMetadata
+			allResources = discovery.discoveredResources.map((discovered) => {
+				const isPrimary = primarySet.has(discovered.name);
+
+				// Find matching primary resource for tier/icon/etc
+				const primaryMatch = primaryResources?.find(
+					(p) => p.name === discovered.name,
+				);
+
+				return {
+					name: discovered.name,
+					description: discovered.description || "",
+					descriptionShort: discovered.description.slice(0, 60) || discovered.name,
+					tier: primaryMatch?.tier || "Standard",
+					icon: primaryMatch?.icon,
+					category: primaryMatch?.category,
+					supportsLogs: primaryMatch?.supportsLogs,
+					supportsMetrics: primaryMatch?.supportsMetrics,
+					dependencies: primaryMatch?.dependencies,
+					relationshipHints: primaryMatch?.relationshipHints,
+					// Dynamically discovered fields
+					operations: discovered.operations,
+					resourceCategory: discovered.category,
+					isPrimary,
+				};
+			});
+
+			// Generate validation warnings
+			const missing = discovery.discoveredResources
+				.filter((r) => !primarySet.has(r.name))
+				.map((r) => r.name);
+
+			if (missing.length > 0) {
+				validationWarnings = [
+					`${missing.length} resources discovered but not in primaryResources: ${missing.slice(0, 5).join(", ")}${missing.length > 5 ? "..." : ""}`,
+				];
+			}
+
+			// Build resource categories
+			resourceCategories = {
+				crud: discovery.discoveredResources
+					.filter((r) => r.category === "crud")
+					.map((r) => r.name),
+				analytics: discovery.discoveredResources
+					.filter((r) => r.category === "analytics")
+					.map((r) => r.name),
+				utilities: discovery.discoveredResources
+					.filter((r) => r.category === "utility")
+					.map((r) => r.name),
+				management: discovery.discoveredResources
+					.filter((r) => r.category === "management")
+					.map((r) => r.name),
+			};
+		}
+
 		const domainInfo: DomainInfo = {
 			name: spec.domain,
 			displayName: titleCase(spec.domain),
@@ -306,6 +439,10 @@ async function main(): Promise<void> {
 			logoSvg: spec["x-f5xc-logo-svg"],
 			// Rich resource metadata
 			primaryResources,
+			// Dynamically discovered resources (Phase 1 enhancement)
+			allResources,
+			validationWarnings,
+			resourceCategories,
 		};
 
 		domains.push(domainInfo);
@@ -322,13 +459,14 @@ async function main(): Promise<void> {
 	const outputContent = `/**
  * AUTO-GENERATED FILE - DO NOT EDIT
  * Generated from .specs/index.json v${specIndex.version}
+ * WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  * Run: npx tsx scripts/generate-domains.ts
  */
 
-import type { DomainInfo, ResourceMetadata, SubscriptionTier } from "./domains.js";
+import type { DomainInfo, ResourceMetadata, SubscriptionTier, ResourceCategory, ResourceCategories } from "./domains.js";
 
 // Re-export types for consumers
-export type { ResourceMetadata, SubscriptionTier };
+export type { ResourceMetadata, SubscriptionTier, ResourceCategory, ResourceCategories };
 
 /**
  * Spec version used for generation

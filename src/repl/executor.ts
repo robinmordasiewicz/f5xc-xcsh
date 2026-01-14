@@ -25,6 +25,10 @@ import {
 	OUTPUT_FORMAT_HELP,
 	type OutputFormat,
 } from "../output/index.js";
+import {
+	detectDependencies,
+	formatDependencyError,
+} from "../dependencies/index.js";
 import { CLI_NAME, CLI_VERSION } from "../branding/index.js";
 import {
 	formatRootHelp,
@@ -1535,32 +1539,52 @@ async function executeAPICommand(
 					message.toLowerCase().includes("cannot be deleted")
 				) {
 					// The API doesn't provide referring_objects in the response
-					// Give a concise error with practical guidance
+					// Automatically detect dependencies by querying related domains
 					const effectiveResource = resourceType || canonicalDomain;
 
-					// Provide resource-specific guidance based on what's being deleted
-					let tip: string;
-					if (effectiveResource === "origin_pool") {
-						tip =
-							"Tip: Check 'list http_loadbalancer' or 'list tcp_loadbalancer' to find which load balancers use this pool";
-					} else if (effectiveResource === "healthcheck") {
-						tip =
-							"Tip: Check 'list origin_pool' or 'list http_loadbalancer' to find resources using this healthcheck";
-					} else {
-						tip =
-							"Tip: Check if any other resources reference this before deleting";
-					}
+					try {
+						// Attempt to detect dependencies
+						const dependencies = await detectDependencies(
+							effectiveResource,
+							name,
+							effectiveNamespace,
+							client,
+						);
 
-					return {
-						output: [
-							`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use`,
-							tip,
-						],
-						shouldExit: false,
-						shouldClear: false,
-						contextChanged: false,
-						error: error.message,
-					};
+						let output: string[];
+						if (dependencies.found) {
+							// Format detailed error with actual dependencies
+							output = formatDependencyError(
+								effectiveResource,
+								name,
+								dependencies,
+							);
+						} else {
+							// Fall back to generic tip if no dependencies found
+							output = [
+								`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use`,
+							];
+						}
+
+						return {
+							output,
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+							error: error.message,
+						};
+					} catch {
+						// If dependency detection fails, show fallback error
+						return {
+							output: [
+								`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use`,
+							],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+							error: error.message,
+						};
+					}
 				}
 			}
 

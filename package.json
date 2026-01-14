@@ -47,6 +47,7 @@
     "generate:descriptions": "tsx scripts/generate-descriptions.ts",
     "generate:description-loader": "tsx scripts/generate-description-loader.ts",
     "generate:docs": "tsx scripts/generate-docs.ts",
+    "validate:domains": "tsx scripts/validate-domains.ts",
     "generate": "npm run generate:domains && npm run generate:completions && npm run generate:logo && npm run generate:description-loader",
     "reconcile:specs": "bash ./scripts/download-specs.sh",
     "prebuild": "npm run reconcile:specs && npm run generate"

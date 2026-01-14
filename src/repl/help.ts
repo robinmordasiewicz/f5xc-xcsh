@@ -200,33 +200,109 @@ export function formatDomainHelp(domain: DomainInfo): string[] {
 	}
 	output.push("");
 
-	// Primary resources with tier and dependencies (from upstream enrichment)
-	if (domain.primaryResources && domain.primaryResources.length > 0) {
-		output.push("RESOURCES");
-		for (const resource of domain.primaryResources) {
-			const tierBadge =
-				resource.tier !== "Standard" ? ` [${resource.tier}]` : "";
-			const icon = resource.icon ? `${resource.icon} ` : "";
-			output.push(`  ${icon}${resource.name}${colorDim(tierBadge)}`);
-			output.push(`      ${resource.descriptionShort}`);
+	// Resources - Phase 1 Enhancement: Show allResources with categories
+	const resources = domain.allResources || domain.primaryResources;
+	if (resources && resources.length > 0) {
+		const primaryCount = domain.primaryResources?.length || 0;
+		const totalCount = resources.length;
+		const discoveredCount = totalCount - primaryCount;
 
-			// Show dependencies if any
-			if (resource.dependencies?.required?.length) {
-				output.push(
-					colorDim(
-						`      Requires: ${resource.dependencies.required.join(", ")}`,
-					),
-				);
-			}
-			if (resource.dependencies?.optional?.length) {
-				output.push(
-					colorDim(
-						`      Optional: ${resource.dependencies.optional.join(", ")}`,
-					),
-				);
-			}
+		// Header with counts
+		output.push("RESOURCES");
+		if (discoveredCount > 0) {
+			output.push(
+				colorDim(
+					`  Total: ${totalCount} (${primaryCount} primary + ${discoveredCount} discovered)`,
+				),
+			);
+		} else {
+			output.push(colorDim(`  Total: ${totalCount}`));
 		}
 		output.push("");
+
+		// Group resources by category if available
+		const byCategory = new Map<string, typeof resources>();
+		if (domain.resourceCategories) {
+			byCategory.set(
+				"crud",
+				resources.filter((r) => r.resourceCategory === "crud"),
+			);
+			byCategory.set(
+				"analytics",
+				resources.filter((r) => r.resourceCategory === "analytics"),
+			);
+			byCategory.set(
+				"utility",
+				resources.filter((r) => r.resourceCategory === "utility"),
+			);
+			byCategory.set(
+				"management",
+				resources.filter((r) => r.resourceCategory === "management"),
+			);
+		} else {
+			// If no categories, show all as one group
+			byCategory.set("all", resources);
+		}
+
+		// Display each category
+		const categoryLabels: Record<string, string> = {
+			crud: "Core Resources",
+			analytics: "Analytics & Reporting",
+			utility: "Utilities",
+			management: "Management Operations",
+			all: "",
+		};
+
+		for (const [category, categoryResources] of byCategory) {
+			if (categoryResources.length === 0) continue;
+
+			// Category header
+			const label = categoryLabels[category] || category;
+			if (label) {
+				output.push(colorBoldWhite(`  ${label}`));
+			}
+
+			// Show up to 10 resources per category, primary first
+			const sorted = categoryResources.sort((a, b) => {
+				if (a.isPrimary && !b.isPrimary) return -1;
+				if (!a.isPrimary && b.isPrimary) return 1;
+				return a.name.localeCompare(b.name);
+			});
+
+			for (const resource of sorted.slice(0, 10)) {
+				const primaryBadge = resource.isPrimary ? " ⭐" : "";
+				const tierBadge =
+					resource.tier && resource.tier !== "Standard"
+						? ` [${resource.tier}]`
+						: "";
+				const icon = resource.icon ? `${resource.icon} ` : "";
+				output.push(
+					`    ${icon}${resource.name}${colorDim(tierBadge)}${primaryBadge}`,
+				);
+				if (resource.descriptionShort) {
+					output.push(
+						`        ${colorDim(resource.descriptionShort.slice(0, 60))}`,
+					);
+				}
+
+				// Show dependencies for primary resources
+				if (resource.isPrimary) {
+					if (resource.dependencies?.required?.length) {
+						output.push(
+							colorDim(
+								`        Requires: ${resource.dependencies.required.join(", ")}`,
+							),
+						);
+					}
+				}
+			}
+
+			// Show "and N more" if there are more resources
+			if (sorted.length > 10) {
+				output.push(colorDim(`    ... and ${sorted.length - 10} more`));
+			}
+			output.push("");
+		}
 	}
 
 	// Examples

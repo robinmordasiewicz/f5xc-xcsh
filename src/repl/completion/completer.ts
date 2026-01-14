@@ -15,6 +15,7 @@ import {
 import { ALL_OUTPUT_FORMATS, OUTPUT_FORMAT_HELP } from "../../output/types.js";
 import { getDomainInfo } from "../../types/domains.js";
 import { resourceFetcher } from "./resource-fetcher.js";
+import { loadSettingsSync, type AppSettings } from "../../config/settings.js";
 
 /**
  * Context for resource completion
@@ -156,9 +157,20 @@ export class Completer {
 	private diagnosticMode: boolean = false;
 	private lastDiagnostic: import("./types.js").CompletionDiagnostic | null =
 		null;
+	private settings: AppSettings;
 
 	constructor() {
 		this.cache = new CompletionCache();
+		this.settings = loadSettingsSync();
+
+		// Check for CLI override via environment variable
+		const cliCompletionMode = process.env.XCSH_COMPLETION_MODE;
+		if (
+			cliCompletionMode &&
+			(cliCompletionMode === "all" || cliCompletionMode === "primary")
+		) {
+			this.settings.completionMode = cliCompletionMode;
+		}
 	}
 
 	/**
@@ -361,10 +373,20 @@ export class Completer {
 		}
 
 		// No args after domain - suggest children (subcommands and direct commands)
-		if (
-			args.length === 0 ||
-			(args.length === 1 && currentWord === args[0])
-		) {
+		if (args.length === 0) {
+			return completionRegistry.getChildSuggestions(
+				domainName,
+				currentWord,
+			);
+		}
+
+		// Check for subcommand groups (action groups)
+		const subgroupName = args[0]?.toLowerCase() ?? "";
+		const subgroupNode = domainNode.children?.get(subgroupName);
+
+		// If we have exactly one arg and it matches currentWord, user is still typing
+		// Show the action/subcommand as a completion suggestion
+		if (args.length === 1 && currentWord === args[0]) {
 			return completionRegistry.getChildSuggestions(
 				domainName,
 				currentWord,
@@ -372,8 +394,6 @@ export class Completer {
 		}
 
 		// First arg is a subcommand group - check for nested children
-		const subgroupName = args[0]?.toLowerCase() ?? "";
-		const subgroupNode = domainNode.children?.get(subgroupName);
 
 		if (subgroupNode?.children) {
 			// Only one arg so far (the subgroup name) - suggest nested commands
@@ -669,19 +689,67 @@ export class Completer {
 
 	/**
 	 * Get resource type suggestions for a domain
-	 * Returns the primaryResources from domain metadata
+	 * Phase 1 Enhancement: Uses allResources (dynamically discovered) by default
+	 * Falls back to primaryResources if allResources not available
+	 * Respects user configuration setting for completion mode
 	 */
 	getResourceTypeSuggestions(domain: string): CompletionSuggestion[] {
 		const domainInfo = getDomainInfo(domain);
-		if (!domainInfo?.primaryResources) {
+		if (!domainInfo) {
 			return [];
 		}
 
-		return domainInfo.primaryResources.map((resource) => ({
-			text: resource.name,
-			description: resource.descriptionShort || resource.description,
-			category: "resource" as const,
-		}));
+		// Select resources based on user's completion mode preference
+		let resources;
+		if (this.settings.completionMode === "primary") {
+			// User prefers primary resources only
+			resources = domainInfo.primaryResources;
+		} else {
+			// Default: "all" mode - use allResources (discovered from OpenAPI) if available
+			resources = domainInfo.allResources || domainInfo.primaryResources;
+		}
+
+		if (!resources || resources.length === 0) {
+			return [];
+		}
+
+		// Sort resources: primary first, then by category, then alphabetically
+		const sortedResources = [...resources].sort((a, b) => {
+			// Primary resources first
+			if (a.isPrimary && !b.isPrimary) return -1;
+			if (!a.isPrimary && b.isPrimary) return 1;
+
+			// Then by category: crud → analytics → utility → management
+			const categoryOrder = {
+				crud: 0,
+				analytics: 1,
+				utility: 2,
+				management: 3,
+			};
+			const aCat = categoryOrder[a.resourceCategory || "crud"];
+			const bCat = categoryOrder[b.resourceCategory || "crud"];
+			if (aCat !== bCat) return aCat - bCat;
+
+			// Finally alphabetically
+			return a.name.localeCompare(b.name);
+		});
+
+		return sortedResources.map((resource) => {
+			// Mark primary resources with indicator (only in "all" mode)
+			const isPrimaryIndicator =
+				this.settings.completionMode === "all" && resource.isPrimary
+					? " ⭐"
+					: "";
+			const description =
+				(resource.descriptionShort || resource.description) +
+				isPrimaryIndicator;
+
+			return {
+				text: resource.name,
+				description,
+				category: "resource" as const,
+			};
+		});
 	}
 
 	/**
@@ -728,12 +796,11 @@ export class Completer {
 			resourceNamePartial: "",
 		};
 
-		// Get current navigation context from session
-		if (!this.session) {
-			return ctx;
-		}
-
-		const navCtx = this.session.getContextPath();
+		// Get current navigation context from session (or empty if no session)
+		const navCtx = this.session?.getContextPath() || {
+			domain: null,
+			resourceType: null,
+		};
 
 		// Detect domain and action from input args
 		// Two patterns:
@@ -770,9 +837,10 @@ export class Completer {
 		// If we have domain + action that supports resources, check for resource type
 		if (ctx.domain && ctx.action && RESOURCE_ACTIONS.has(ctx.action)) {
 			const domainInfo = getDomainInfo(ctx.domain);
-			const resourceNames = new Set(
-				domainInfo?.primaryResources?.map((r) => r.name) ?? [],
-			);
+			// Phase 1 Enhancement: Use allResources (discovered from OpenAPI) if available
+			const resources =
+				domainInfo?.allResources || domainInfo?.primaryResources;
+			const resourceNames = new Set(resources?.map((r) => r.name) ?? []);
 
 			// Find which arg might be a resource type (start after the action position)
 			// argOffset is 0 for navigation-based, 1 for command-based

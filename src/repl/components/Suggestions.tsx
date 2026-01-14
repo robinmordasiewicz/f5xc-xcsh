@@ -107,7 +107,8 @@ export function Suggestions({
 				return;
 			}
 
-			if (key.return || key.tab) {
+			// Only Tab selects suggestions - Enter should execute command
+			if (key.tab) {
 				const selected = suggestions.at(selectedIndex);
 				if (selected) {
 					onSelect(selected);
@@ -187,7 +188,7 @@ export function Suggestions({
 			{/* Help text */}
 			<Box marginTop={1}>
 				<Text color="#666666" dimColor>
-					Tab: select | Up/Down: navigate | Esc: cancel
+					Tab/→: select | Enter: execute | ↑↓: navigate | Esc: cancel
 				</Text>
 			</Box>
 		</Box>
