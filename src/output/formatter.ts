@@ -206,95 +206,157 @@ export function parseOutputFormat(format: string): OutputFormat {
 }
 
 /**
- * Format API error with helpful context
+ * Extract resource information from F5 XC error message
+ * Example: "ves.io.schema.views.http_loadbalancer.Object: Key tenant/namespace/name does not exist"
+ */
+function extractResourceInfo(message: string): {
+	resourceType?: string;
+	namespace?: string;
+	name?: string;
+} {
+	// Match pattern: ves.io.schema.views.{resource_type}.Object: Key {tenant}/{namespace}/{name}
+	const resourceMatch = message.match(
+		/ves\.io\.schema\.views\.([^.]+)\.Object/,
+	);
+	const keyMatch = message.match(/Key [^/]+\/([^/]+)\/([^\s]+)/);
+
+	// Only include properties if they exist (exactOptionalPropertyTypes requirement)
+	const result: {
+		resourceType?: string;
+		namespace?: string;
+		name?: string;
+	} = {};
+
+	if (resourceMatch?.[1]) result.resourceType = resourceMatch[1];
+	if (keyMatch?.[1]) result.namespace = keyMatch[1];
+	if (keyMatch?.[2]) result.name = keyMatch[2];
+
+	return result;
+}
+
+/**
+ * Format API error with helpful context (max 2 lines for human readability)
  */
 export function formatAPIError(
 	statusCode: number,
 	body: unknown,
 	operation: string,
 ): string {
-	const lines: string[] = [];
-	lines.push(`ERROR: ${operation} failed (HTTP ${statusCode})`);
-
+	// Extract error message from response body
 	let errorMessage = "";
-	let hasInUseError = false;
-
-	// Try to extract error details
 	if (body && typeof body === "object") {
 		const errResp = body as Record<string, unknown>;
 		if (errResp.message) {
 			errorMessage = String(errResp.message);
-			lines.push(`  Message: ${errorMessage}`);
-			// Check if this is an "in use" error
-			hasInUseError =
-				errorMessage.toLowerCase().includes("in use") ||
-				errorMessage.toLowerCase().includes("cannot be deleted");
-		}
-		if (errResp.code) {
-			lines.push(`  Code: ${errResp.code}`);
-		}
-		if (errResp.details) {
-			// Format details properly - could be object, array, or string
-			if (typeof errResp.details === "object") {
-				try {
-					const detailsStr = JSON.stringify(errResp.details, null, 2);
-					lines.push(`  Details: ${detailsStr}`);
-				} catch {
-					lines.push(`  Details: ${String(errResp.details)}`);
-				}
-			} else {
-				lines.push(`  Details: ${errResp.details}`);
-			}
 		}
 	}
 
-	// Add hints based on status code and error context
+	// Build concise, human-readable error (max 2 lines)
+	const lines: string[] = [];
+
 	switch (statusCode) {
-		case 401:
+		case 401: {
 			lines.push(
-				"\nHint: Authentication failed. Check your credentials with 'login profile show'",
+				"ERROR: Authentication failed - invalid or expired credentials",
+			);
+			lines.push("Tip: Run 'login use profile <name>' to authenticate");
+			break;
+		}
+
+		case 403: {
+			lines.push("ERROR: Permission denied - insufficient access rights");
+			lines.push(
+				"Tip: Contact your administrator for required permissions",
 			);
 			break;
-		case 403:
-			lines.push(
-				"\nHint: Permission denied. You may not have access to this resource.",
-			);
-			break;
-		case 404:
-			lines.push(
-				"\nHint: Resource not found. Verify the name and namespace are correct.",
-			);
-			break;
-		case 409:
-			// Provide context-specific hints for 409 conflicts
-			lines.push("\nConflict");
-			if (hasInUseError) {
+		}
+
+		case 404: {
+			const info = extractResourceInfo(errorMessage);
+			if (info.name && info.namespace) {
 				lines.push(
-					"Hint: Resource is currently in use by other resources. Delete or modify the dependent resources first.",
+					`ERROR: Resource '${info.name}' not found in namespace '${info.namespace}'`,
 				);
-				lines.push(
-					"      Use 'get' command to inspect the resource and identify dependencies.",
-				);
-			} else if (errorMessage.toLowerCase().includes("already exists")) {
-				lines.push(
-					"Hint: Resource already exists. Use a different name or delete the existing resource first.",
-				);
+				if (info.resourceType) {
+					lines.push(
+						`Tip: Use 'list ${info.resourceType}' to see available resources`,
+					);
+				} else {
+					lines.push(
+						"Tip: Check the resource name and namespace are correct",
+					);
+				}
 			} else {
+				lines.push("ERROR: Resource not found");
 				lines.push(
-					"Hint: Conflict detected. Resource may be in an unexpected state.",
+					"Tip: Verify the resource name and namespace are correct",
 				);
 			}
 			break;
-		case 429:
-			lines.push("\nHint: Rate limited. Please wait and try again.");
+		}
+
+		case 409: {
+			// Check for specific conflict types
+			if (
+				errorMessage.toLowerCase().includes("in use") ||
+				errorMessage.toLowerCase().includes("cannot be deleted")
+			) {
+				lines.push(
+					"ERROR: Resource is currently in use by other resources",
+				);
+				lines.push(
+					"Tip: Use 'get' command to identify dependencies, then delete those first",
+				);
+			} else if (errorMessage.toLowerCase().includes("already exists")) {
+				const info = extractResourceInfo(errorMessage);
+				if (info.name) {
+					lines.push(`ERROR: Resource '${info.name}' already exists`);
+				} else {
+					lines.push("ERROR: Resource already exists");
+				}
+				lines.push(
+					"Tip: Use a different name or delete the existing resource",
+				);
+			} else {
+				lines.push("ERROR: Conflict - resource in unexpected state");
+				lines.push(
+					"Tip: Use 'get' command to inspect current resource state",
+				);
+			}
 			break;
+		}
+
+		case 429: {
+			lines.push("ERROR: Rate limit exceeded - too many requests");
+			lines.push("Tip: Wait a moment and try again");
+			break;
+		}
+
 		case 500:
 		case 502:
-		case 503:
+		case 503: {
+			lines.push("ERROR: Server error - service temporarily unavailable");
 			lines.push(
-				"\nHint: Server error. Please try again later or contact support.",
+				"Tip: Try again in a moment or contact support if it persists",
 			);
 			break;
+		}
+
+		default: {
+			// Generic error format for other status codes
+			lines.push(`ERROR: ${operation} failed (HTTP ${statusCode})`);
+			// Try to extract a simple message
+			if (errorMessage) {
+				// Clean up technical F5 XC message format
+				const cleanMsg = errorMessage
+					.replace(/ves\.io\.schema\.\w+\.\w+\.Object:\s*/g, "")
+					.replace(/Key [^:]+:\s*/g, "")
+					.trim();
+				if (cleanMsg && cleanMsg.length < 100) {
+					lines.push(`Tip: ${cleanMsg}`);
+				}
+			}
+		}
 	}
 
 	return lines.join("\n");
