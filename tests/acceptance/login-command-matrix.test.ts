@@ -135,6 +135,132 @@ describe("Login Command Execution Matrix", () => {
 		});
 	});
 
+	describe("Command Path Consistency (User Acceptance)", () => {
+		it("CREATE: error message should show verb-first order 'login create profile'", async () => {
+			const result = await executeAndExpect(
+				"login create profile",
+				session,
+				{
+					success: false,
+					error: /usage/i,
+				},
+			);
+
+			// CRITICAL: Verify error shows correct command path order
+			const output = Array.isArray(result.output) ? result.output.join("\n") : String(result.output || "");
+			const error = result.error || "";
+			const fullOutput = [output, result.error].filter(Boolean).join("\n");
+
+			expect(fullOutput).toContain("login create profile");
+			expect(fullOutput).not.toContain("login profile create");
+		});
+
+		it("SHOW: error message should show verb-first order 'login show profile'", async () => {
+			const result = await executeAndExpect(
+				"login show profile",
+				session,
+				{
+					success: false,
+					error: /usage/i,
+				},
+			);
+
+			// CRITICAL: Verify error shows correct command path order
+			const output = Array.isArray(result.output)
+				? result.output.join("\n")
+				: String(result.output || "");
+			const errorMsg = result.error || "";
+
+			const fullOutput = output + "\n" + (result.error || "");
+			expect(fullOutput).toContain("login show profile");
+			expect(fullOutput).not.toContain("login profile show");
+		});
+
+		it("USE: error message should show verb-first order 'login use profile'", async () => {
+			const result = await executeAndExpect(
+				"login use profile",
+				session,
+				{
+					success: false,
+					error: /usage/i,
+				},
+			);
+
+			// CRITICAL: Verify error shows correct command path order
+			const fullOutput = Array.isArray(result.output)
+				? result.output.join("\n")
+				: String(result.output || "");
+			expect(fullOutput).toContain("login use profile");
+			expect(fullOutput).not.toContain("login profile use");
+		});
+
+		it("EDIT: error message should show verb-first order 'login edit profile'", async () => {
+			const result = await executeAndExpect(
+				"login edit profile nonexistent",
+				session,
+				{
+					success: false,
+					error: /not found/i,
+				},
+			);
+
+			// If there's a usage line, it must be correct order
+			const output = Array.isArray(result.output)
+				? result.output.join("\n")
+				: String(result.output || "");
+			if (output.toLowerCase().includes("usage")) {
+				expect(output).toContain("login edit profile");
+				expect(output).not.toContain("login profile edit");
+			}
+		});
+
+		it("DELETE: error message should show verb-first order 'login delete profile'", async () => {
+			const result = await executeAndExpect(
+				"login delete profile",
+				session,
+				{
+					success: false,
+					error: /usage/i,
+				},
+			);
+
+			// CRITICAL: Verify error shows correct command path order
+			const outputStr = Array.isArray(result.output)
+				? result.output.join("\n")
+				: String(result.output || "");
+			expect(outputStr).toContain("login delete profile");
+			expect(outputStr).not.toContain("login profile delete");
+		});
+
+		it("ALL profile commands should consistently use verb-first in help", async () => {
+			const commands = [
+				{ cmd: "login create profile", expected: "login create profile" },
+				{ cmd: "login show profile", expected: "login show profile" },
+				{ cmd: "login use profile", expected: "login use profile" },
+				{ cmd: "login delete profile", expected: "login delete profile" },
+			];
+
+			for (const { cmd, expected } of commands) {
+				const result = await executeAndExpect(cmd, session, {
+					success: false,
+				});
+
+				// Convert output array to string for checking
+				const outputStr = Array.isArray(result.output)
+					? result.output.join("\n")
+					: String(result.output || "");
+
+				// Every error message must show the command in correct order
+				if (outputStr.toLowerCase().includes("usage")) {
+					expect(
+						outputStr,
+						`Command "${cmd}" must show "${expected}" in error message`,
+					).toContain(expected);
+				}
+			}
+		});
+	});
+
 	describe("Wrong Order Detection (Noun-First: login profile create)", () => {
 		it("should detect wrong order and show helpful error", async () => {
 			await executeAndExpect(

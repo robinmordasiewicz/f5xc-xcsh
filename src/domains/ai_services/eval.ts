@@ -22,6 +22,7 @@ import { renderResponse } from "./response-renderer.js";
 import { updateLastQueryState, getLastQueryState } from "./query.js";
 import { FEEDBACK_TYPE_MAP, getValidFeedbackTypes } from "./types.js";
 import type { NegativeFeedbackType } from "./types.js";
+import { generateSmartCompletions } from "../../utils/usage-parser.js";
 
 /**
  * Parse eval query args
@@ -81,8 +82,28 @@ export const evalQueryCommand: CommandDefinition = {
 	descriptionShort: "Eval mode AI query",
 	descriptionMedium:
 		"Query the AI assistant in eval mode for RBAC testing and permission validation.",
-	usage: "<question> [--namespace <ns>]",
+	usage: "<question> [--namespace <ns>] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
 	aliases: ["q"],
+
+	async completion(_partial: string, args: string[], session: REPLSession) {
+		const flags = [
+			"--namespace",
+			"-ns",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		// Also include namespace suggestions if available
+		const namespaces = session.getNamespaceCache();
+		return generateSmartCompletions(this.usage, args, [
+			...flags,
+			...namespaces,
+		]);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, namespace, question } =
@@ -238,8 +259,31 @@ export const evalFeedbackCommand: CommandDefinition = {
 	descriptionShort: "Eval mode feedback submission",
 	descriptionMedium:
 		"Submit feedback for eval mode AI queries, keeping RBAC testing analytics separate.",
-	usage: "--positive | --negative <type> [--comment <text>] [--query-id <id>]",
+	usage: "--positive | --negative <type> [--comment <text>] [--query-id <id>] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
 	aliases: ["fb"],
+
+	async completion(_partial: string, args: string[]) {
+		const feedbackTypes = getValidFeedbackTypes();
+		const flags = [
+			"--positive",
+			"-p",
+			"--negative",
+			"-n",
+			"--comment",
+			"-c",
+			"--query-id",
+			"-q",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+			...feedbackTypes,
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { spec, namespace, positive, negativeType, comment, queryId } =

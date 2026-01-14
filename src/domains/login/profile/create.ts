@@ -11,6 +11,8 @@ import {
 	buildConnectionInfo,
 } from "./connection-table.js";
 import { validateResourceName } from "../../../validation/index.js";
+import { generateUsageError } from "../../error-messages.js";
+import { generateSmartCompletions } from "../../../utils/usage-parser.js";
 
 export const createCommand: CommandDefinition = {
 	name: "create",
@@ -22,13 +24,14 @@ export const createCommand: CommandDefinition = {
 	usage: "<name> --url <api-url> --token <api-token> [--namespace <ns>]",
 	aliases: ["add", "new"],
 
-	completion: async (_currentWord: string, _args: string[]) => {
-		// args = [profileName?, ...flags?]
-		// After "login create profile", suggest flags (whether or not profile name is typed yet)
-
-		// Always suggest flag options at this point
-		// User can see available flags while typing the profile name or after
-		return ["--url", "--token", "--namespace"];
+	completion: async (_currentWord: string, args: string[]) => {
+		// Use smart completion to show positional argument placeholder
+		// when profile name hasn't been provided yet
+		return generateSmartCompletions(createCommand.usage, args, [
+			"--url",
+			"--token",
+			"--namespace",
+		]);
 	},
 
 	async execute(args, session) {
@@ -38,17 +41,31 @@ export const createCommand: CommandDefinition = {
 		const name = args[0];
 		if (!name || name.startsWith("-")) {
 			return errorResult(
-				[
-					"Usage: login profile create <name> --url <api-url> --token <api-token>",
-					"",
-					"Options:",
-					"  --url       F5 XC API URL (e.g., https://tenant.console.ves.volterra.io)",
-					"  --token     API token for authentication",
-					"  --namespace Default namespace (optional)",
-					"",
-					"Example:",
-					"  login profile create myprofile --url https://tenant.console.ves.volterra.io --token abc123",
-				].join("\n"),
+				generateUsageError(
+					"login create profile", // FIXED: Correct registry path (verb-first)
+					createCommand.usage!, // Single source of truth
+					{
+						options: [
+							{
+								flag: "--url",
+								description:
+									"F5 XC API URL (e.g., https://tenant.console.ves.volterra.io)",
+							},
+							{
+								flag: "--token",
+								description: "API token for authentication",
+							},
+							{
+								flag: "--namespace",
+								description: "Default namespace (optional)",
+							},
+						],
+						examples: [
+							"login create profile myprofile --url https://tenant.console.ves.volterra.io --token abc123",
+							"login create profile prod --url https://prod.console.ves.volterra.io --token xyz789 --namespace production",
+						],
+					},
+				),
 			);
 		}
 

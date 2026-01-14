@@ -24,6 +24,7 @@ import {
 } from "../../output/domain-formatter.js";
 import type { REPLSession } from "../../repl/session.js";
 import { getSubscriptionClient } from "./client.js";
+import { generateSmartCompletions } from "../../utils/usage-parser.js";
 
 /**
  * Parse output format, spec flag, and command-specific flags from args
@@ -130,7 +131,20 @@ const showCommand: CommandDefinition = {
 	descriptionShort: "Display subscription overview",
 	descriptionMedium:
 		"Show subscription tier, active addons, quota usage summary, and current billing status.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -270,7 +284,20 @@ const planShowCommand: CommandDefinition = {
 	descriptionShort: "Show current plan details",
 	descriptionMedium:
 		"Display detailed subscription plan information including tier level, features, and resource limits.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -340,7 +367,20 @@ const planListCommand: CommandDefinition = {
 	descriptionShort: "List available plans",
 	descriptionMedium:
 		"Display all subscription plan options with tier information and feature comparisons.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -414,7 +454,21 @@ const addonListCommand: CommandDefinition = {
 	descriptionShort: "List addon services",
 	descriptionMedium:
 		"Display all addon services with status and access information. Use --subscribed for active only.",
-	usage: "[--subscribed]",
+	usage: "[--subscribed] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--subscribed",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -502,7 +556,20 @@ const addonShowCommand: CommandDefinition = {
 	descriptionShort: "Show addon details",
 	descriptionMedium:
 		"Display detailed addon service information including features, pricing, and dependencies.",
-	usage: "<addon-name>",
+	usage: "<addon-name> [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -594,7 +661,20 @@ const addonStatusCommand: CommandDefinition = {
 	descriptionShort: "Show addon activation status",
 	descriptionMedium:
 		"Display activation status for all addon services with detailed state information.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -668,7 +748,20 @@ const quotaLimitsCommand: CommandDefinition = {
 	descriptionShort: "Show quota limits",
 	descriptionMedium:
 		"Display all tenant-level resource quota limits and their current values.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -744,7 +837,22 @@ const quotaUsageCommand: CommandDefinition = {
 	descriptionShort: "Show quota usage",
 	descriptionMedium:
 		"Display current resource usage against quota limits with utilization percentage.",
-	usage: "[--critical]",
+	usage: "[--critical] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--critical",
+			"-c",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -838,7 +946,20 @@ const usageCurrentCommand: CommandDefinition = {
 	descriptionShort: "Show current period usage",
 	descriptionMedium:
 		"Display current billing period usage with cost breakdown and projections.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -1001,7 +1122,20 @@ const billingPaymentListCommand: CommandDefinition = {
 	descriptionShort: "List payment methods",
 	descriptionMedium:
 		"Display all payment methods with type, status, and primary/secondary designation.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);
@@ -1166,7 +1300,20 @@ const reportSummaryCommand: CommandDefinition = {
 	descriptionShort: "Generate subscription report",
 	descriptionMedium:
 		"Create comprehensive report with plan, addons, quotas, usage, and billing data.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec } = parseOutputArgs(args, session);

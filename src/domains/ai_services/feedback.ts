@@ -17,6 +17,7 @@ import { getGenAIClient } from "./client.js";
 import { getLastQueryState } from "./query.js";
 import { FEEDBACK_TYPE_MAP, getValidFeedbackTypes } from "./types.js";
 import type { NegativeFeedbackType } from "./types.js";
+import { generateSmartCompletions } from "../../utils/usage-parser.js";
 
 /**
  * Parse feedback command args
@@ -108,8 +109,31 @@ export const feedbackCommand: CommandDefinition = {
 	descriptionShort: "Submit feedback for AI responses",
 	descriptionMedium:
 		"Provide positive or negative feedback for AI assistant responses. Use --negative with a type: inaccurate, irrelevant, poor_format, slow, or other.",
-	usage: "--positive | --negative <type> [--comment <text>] [--query-id <id>]",
+	usage: "--positive | --negative <type> [--comment <text>] [--query-id <id>] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
 	aliases: ["fb", "rate"],
+
+	async completion(_partial: string, args: string[]) {
+		const feedbackTypes = getValidFeedbackTypes();
+		const flags = [
+			"--positive",
+			"-p",
+			"--negative",
+			"-n",
+			"--comment",
+			"-c",
+			"--query-id",
+			"-q",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+			...feedbackTypes,
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const {

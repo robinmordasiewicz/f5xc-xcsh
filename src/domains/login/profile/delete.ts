@@ -23,7 +23,7 @@ export const deleteCommand: CommandDefinition = {
 		const name = args.find((arg) => !arg.startsWith("-"));
 
 		if (!name) {
-			return errorResult("Usage: login profile delete <name>");
+			return errorResult("Usage: login delete profile <name>"); // FIXED: Correct registry path
 		}
 
 		try {

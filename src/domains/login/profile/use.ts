@@ -24,7 +24,7 @@ export const useCommand: CommandDefinition = {
 		const name = args[0];
 
 		if (!name) {
-			return errorResult("Usage: login profile use <name>");
+			return errorResult("Usage: login use profile <name>"); // FIXED: Correct registry path
 		}
 
 		try {

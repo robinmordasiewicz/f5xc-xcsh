@@ -17,6 +17,7 @@ export const listCommand: CommandDefinition = {
 	descriptionShort: "List all saved profiles",
 	descriptionMedium:
 		"Show all profiles with tenant URLs, auth types, and active status indicator.",
+	usage: "[--format <json|table|yaml>]",
 
 	async execute(args, session) {
 		const { options } = parseDomainOutputFlags(

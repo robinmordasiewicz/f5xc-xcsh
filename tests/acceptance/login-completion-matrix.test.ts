@@ -158,6 +158,34 @@ describe("Login Completion Matrix", () => {
 			});
 		});
 
+		it("should suggest placeholder and flags when no profile name provided", async () => {
+			// Real-world scenario: user types /login create profile<TAB>
+			// Should show: <name> --url --token --namespace
+			await completeAndExpect("login create profile", completer, {
+				includes: ["<name>", "--url", "--token", "--namespace"],
+				minCount: 4,
+			});
+		});
+
+		it("should suggest placeholder first to indicate required input", async () => {
+			// Verify that <name> placeholder comes FIRST
+			const result = await completer.complete("login create profile");
+			const suggestions = result.map((s) => s.text);
+			expect(suggestions[0]).toBe("<name>");
+			expect(suggestions).toContain("--url");
+			expect(suggestions).toContain("--token");
+			expect(suggestions).toContain("--namespace");
+		});
+
+		it("should suggest only flags after profile name is provided", async () => {
+			// User types: /login create profile myprofile<TAB>
+			await completeAndExpect("login create profile myprofile", completer, {
+				includes: ["--url", "--token", "--namespace"],
+				excludes: ["<name>"],
+				minCount: 3,
+			});
+		});
+
 		it("should suggest flags after 'login create profile myprofile '", async () => {
 			await completeAndExpect("login create profile myprofile ", completer, {
 				includes: ["--url", "--token", "--namespace"],
@@ -510,6 +538,36 @@ describe("Login Completion Matrix", () => {
 
 			const level4 = await completer.complete("login create profile test ");
 			expect(level4.map((s) => s.text)).toContain("--url");
+		});
+	});
+
+	describe("Complete User Flow: Profile Creation", () => {
+		it("should guide user through complete command construction", async () => {
+			// Step 1: User types command name without trailing space (real-world)
+			const step1 = await completer.complete("login create profile");
+			expect(step1.map((s) => s.text)).toContain("--url");
+			expect(step1.map((s) => s.text)).toContain("--token");
+			expect(step1.map((s) => s.text)).toContain("--namespace");
+
+			// Step 2: User adds profile name and starts typing flag
+			const step2 = await completer.complete("login create profile myprof --");
+			expect(step2.map((s) => s.text)).toContain("--url");
+			expect(step2.map((s) => s.text)).toContain("--token");
+			expect(step2.map((s) => s.text)).toContain("--namespace");
+
+			// Step 3: User completes --url flag with trailing space
+			const step3 = await completer.complete(
+				"login create profile myprof --url ",
+			);
+			// URLs are user-specific, may return empty or values
+			expect(Array.isArray(step3)).toBe(true);
+
+			// Step 4: User adds --token flag
+			const step4 = await completer.complete(
+				"login create profile myprof --url https://test.com --token ",
+			);
+			// Tokens are sensitive, should return empty or placeholder
+			expect(Array.isArray(step4)).toBe(true);
 		});
 	});
 });

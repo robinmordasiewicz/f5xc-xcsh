@@ -33,6 +33,7 @@ import {
 	formatListOutput,
 } from "../../output/domain-formatter.js";
 import type { REPLSession } from "../../repl/session.js";
+import { generateSmartCompletions } from "../../utils/usage-parser.js";
 
 /**
  * Parse output format, spec flag, and command-specific flags from args
@@ -91,7 +92,22 @@ const statusCommand: CommandDefinition = {
 	descriptionShort: "Get overall cloud status indicator",
 	descriptionMedium:
 		"Check overall service health status. Use --quiet for exit code suitable for scripts.",
-	usage: "[--quiet]",
+	usage: "[--quiet] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--quiet",
+			"-q",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -163,7 +179,22 @@ const summaryCommand: CommandDefinition = {
 	descriptionShort: "Get complete status summary",
 	descriptionMedium:
 		"Show combined overview of health, components, incidents, and maintenance windows.",
-	usage: "[--brief]",
+	usage: "[--brief] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--brief",
+			"-b",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -221,7 +252,22 @@ const componentsCommand: CommandDefinition = {
 	descriptionShort: "List all components and status",
 	descriptionMedium:
 		"Display service component health. Use --degraded-only to show only affected components.",
-	usage: "[--degraded-only]",
+	usage: "[--degraded-only] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--degraded-only",
+			"-d",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -301,7 +347,22 @@ const incidentsCommand: CommandDefinition = {
 	descriptionShort: "List active and recent incidents",
 	descriptionMedium:
 		"Display incidents with impact levels and updates. Use --active-only for ongoing issues.",
-	usage: "[--active-only]",
+	usage: "[--active-only] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--active-only",
+			"-a",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
@@ -378,7 +439,22 @@ const maintenanceCommand: CommandDefinition = {
 	descriptionShort: "List scheduled maintenance windows",
 	descriptionMedium:
 		"Show maintenance schedules and timing. Use --upcoming for future windows only.",
-	usage: "[--upcoming]",
+	usage: "[--upcoming] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
+
+	async completion(_partial: string, args: string[]) {
+		const flags = [
+			"--upcoming",
+			"-u",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		return generateSmartCompletions(this.usage, args, flags);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, filteredArgs } = parseOutputArgs(
