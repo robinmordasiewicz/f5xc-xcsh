@@ -29,7 +29,7 @@ export const showCommand: CommandDefinition = {
 		const name = remainingArgs[0];
 
 		if (!name) {
-			return errorResult("Usage: login profile show <name>");
+			return errorResult("Usage: login show profile <name>"); // FIXED: Correct registry path
 		}
 
 		try {

@@ -16,6 +16,7 @@ import {
 import { getGenAIClient } from "./client.js";
 import { renderResponse } from "./response-renderer.js";
 import type { GenAIChatSession } from "./types.js";
+import { generateSmartCompletions } from "../../utils/usage-parser.js";
 
 /**
  * Session state for tracking last query (for feedback)
@@ -113,8 +114,28 @@ export const queryCommand: CommandDefinition = {
 	descriptionShort: "Query the AI assistant",
 	descriptionMedium:
 		"Send natural language queries to the AI assistant for help with F5 XC platform operations, configurations, and troubleshooting.",
-	usage: "<question> [--namespace <ns>]",
+	usage: "<question> [--namespace <ns>] [--format <json|table|yaml|tsv>] [--spec] [--no-color]",
 	aliases: ["ask", "q"],
+
+	async completion(_partial: string, args: string[], session: REPLSession) {
+		const flags = [
+			"--namespace",
+			"-ns",
+			"--format",
+			"--spec",
+			"--no-color",
+			"json",
+			"table",
+			"yaml",
+			"tsv",
+		];
+		// Also include namespace suggestions if available
+		const namespaces = session.getNamespaceCache();
+		return generateSmartCompletions(this.usage, args, [
+			...flags,
+			...namespaces,
+		]);
+	},
 
 	async execute(args, session): Promise<DomainCommandResult> {
 		const { format, noColor, spec, namespace, question } = parseQueryArgs(

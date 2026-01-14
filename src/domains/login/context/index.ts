@@ -25,7 +25,7 @@ export const showCommand: CommandDefinition = {
 	descriptionShort: "Show current default namespace",
 	descriptionMedium:
 		"Display active namespace context and its configuration source.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>]",
 	aliases: ["current", "get"],
 
 	async execute(args, session) {
@@ -176,7 +176,7 @@ export const listCommand: CommandDefinition = {
 	descriptionShort: "List available namespaces",
 	descriptionMedium:
 		"Query tenant for available namespaces with current context indicator.",
-	usage: "",
+	usage: "[--format <json|table|yaml|tsv>]",
 	aliases: ["ls"],
 
 	async execute(args, session) {

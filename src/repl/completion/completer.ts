@@ -396,10 +396,25 @@ export class Completer {
 		// First arg is a subcommand group - check for nested children
 
 		if (subgroupNode?.children) {
-			// Only one arg so far (the subgroup name) - suggest nested commands
+			// Check if args[1] is a complete, valid command name
+			const cmdName = args[1]?.toLowerCase() ?? "";
+			const domain = customDomains.get(domainName);
+			let cmd = domain?.actions
+				?.get(subgroupName)
+				?.resources.get(cmdName);
+
+			// Fall back to old subcommand structure for legacy compatibility
+			if (!cmd) {
+				const subgroup = domain?.subcommands.get(subgroupName);
+				cmd = subgroup?.commands.get(cmdName);
+			}
+
+			// Only suggest nested commands if:
+			// 1. Only one arg so far (the subgroup name), OR
+			// 2. Two args but the second arg is NOT a complete command name
 			if (
 				args.length === 1 ||
-				(args.length === 2 && currentWord === args[1])
+				(args.length === 2 && currentWord === args[1] && !cmd)
 			) {
 				const prefix = args.length === 2 ? currentWord : "";
 				return completionRegistry.getNestedChildSuggestions(
@@ -410,21 +425,7 @@ export class Completer {
 			}
 
 			// Deeper completion - delegate to original command's completion handler
-			if (args.length >= 2 && this.session) {
-				const cmdName = args[1]?.toLowerCase() ?? "";
-				const domain = customDomains.get(domainName);
-
-				// Try to find the command - first check if it's from an action group resource
-				let cmd = domain?.actions
-					?.get(subgroupName)
-					?.resources.get(cmdName);
-
-				// Fall back to old subcommand structure for legacy compatibility
-				if (!cmd) {
-					const subgroup = domain?.subcommands.get(subgroupName);
-					cmd = subgroup?.commands.get(cmdName);
-				}
-
+			if (args.length >= 2 && this.session && cmd) {
 				if (cmd?.completion) {
 					try {
 						const completions = await cmd.completion(

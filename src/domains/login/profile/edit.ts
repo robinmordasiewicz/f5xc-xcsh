@@ -193,7 +193,7 @@ export const editCommand: CommandDefinition = {
 			if (!active) {
 				return errorResult(
 					"No profile specified and no active profile set.\n" +
-						"Usage: login profile edit <name>",
+						"Usage: login edit profile <name>", // FIXED: Correct registry path
 				);
 			}
 			profileName = active;

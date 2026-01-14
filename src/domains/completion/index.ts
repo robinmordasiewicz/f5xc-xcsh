@@ -23,6 +23,7 @@ const bashCommand: CommandDefinition = {
 	descriptionShort: "Generate bash completion script",
 	descriptionMedium:
 		"Output bash completion script for tab-completion of commands, domains, and flags.",
+	usage: "(no arguments)",
 
 	async execute() {
 		try {
@@ -46,6 +47,7 @@ const zshCommand: CommandDefinition = {
 	descriptionShort: "Generate zsh completion script",
 	descriptionMedium:
 		"Output zsh completion script with rich descriptions for commands and options.",
+	usage: "(no arguments)",
 
 	async execute() {
 		try {
@@ -69,6 +71,7 @@ const fishCommand: CommandDefinition = {
 	descriptionShort: "Generate fish completion script",
 	descriptionMedium:
 		"Output fish completion script with inline descriptions for commands and options.",
+	usage: "(no arguments)",
 
 	async execute() {
 		try {
