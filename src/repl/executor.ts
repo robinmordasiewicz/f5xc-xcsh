@@ -1548,7 +1548,7 @@ async function executeAPICommand(
 							"Tip: Check 'list origin_pool' or 'list http_loadbalancer' to find resources using this healthcheck";
 					} else {
 						tip =
-							"Tip: Use the web console to view resource dependencies";
+							"Tip: Check if any other resources reference this before deleting";
 					}
 
 					return {
