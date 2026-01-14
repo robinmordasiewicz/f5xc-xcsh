@@ -92,12 +92,12 @@ describe("parseCommandArgs", () => {
 			},
 		},
 		{
-			description: "-n flag (short form)",
-			args: ["http_loadbalancer", "-n", "test-ns"],
+			description: "-n flag (short form) - sets name, not namespace",
+			args: ["http_loadbalancer", "-n", "test-resource"],
 			domainResourceTypes: new Set(["http_loadbalancer"]),
 			expected: {
 				resourceType: "http_loadbalancer",
-				namespace: "test-ns",
+				name: "test-resource",
 			},
 		},
 		{
@@ -579,19 +579,19 @@ describe("parseCommandArgs", () => {
 	 */
 	describe("namespace flag consistency", () => {
 		const namespaceVariations = [
-			{ flag: "--namespace", value: "test-ns" },
-			{ flag: "--ns", value: "test-ns" },
-			{ flag: "-n", value: "test-ns" },
-			{ flag: "-ns", value: "test-ns" },
+			{ flag: "--namespace", value: "test-ns", field: "namespace" as const },
+			{ flag: "--ns", value: "test-ns", field: "namespace" as const },
+			{ flag: "-n", value: "test-resource", field: "name" as const }, // -n sets name, not namespace
+			{ flag: "-ns", value: "test-ns", field: "namespace" as const },
 		];
 
-		for (const { flag, value } of namespaceVariations) {
-			it(`${flag} sets namespace correctly`, () => {
+		for (const { flag, value, field } of namespaceVariations) {
+			it(`${flag} sets ${field} correctly`, () => {
 				const result = parseCommandArgs(
 					["http_loadbalancer", flag, value],
 					new Set(["http_loadbalancer"]),
 				);
-				expect(result.namespace).toBe(value);
+				expect(result[field]).toBe(value);
 			});
 		}
 	});
