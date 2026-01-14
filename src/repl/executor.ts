@@ -1150,7 +1150,10 @@ async function executeAPICommand(
 	// Check if connected
 	if (!client) {
 		return {
-			output: ["Error: Not connected to F5 XC API"],
+			output: [
+				"ERROR: Not connected to F5 XC API",
+				"Tip: Run 'login use profile <name>' to connect",
+			],
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,
@@ -1161,7 +1164,10 @@ async function executeAPICommand(
 	// Check if authenticated
 	if (!client.isAuthenticated()) {
 		return {
-			output: ["Error: Not authenticated"],
+			output: [
+				"ERROR: Not authenticated - API token required",
+				"Tip: Run 'login use profile <name>' to authenticate",
+			],
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,
@@ -1224,20 +1230,20 @@ async function executeAPICommand(
 			resourceType: "namespace",
 		});
 		if (!nsNameValidation.valid) {
-			const lines = [
-				`Error: Invalid namespace name '${effectiveNamespace}'`,
-				"",
-				nsNameValidation.message ?? "Invalid namespace name",
-			];
-			if (nsNameValidation.suggestion) {
-				lines.push("", `Suggested: ${nsNameValidation.suggestion}`);
-			}
+			const errorMsg =
+				nsNameValidation.message ?? "Invalid namespace name";
+			const tip = nsNameValidation.suggestion
+				? `Tip: Try '${nsNameValidation.suggestion}' instead`
+				: "Tip: Check the namespace name format and try again";
 			return {
-				output: lines,
+				output: [
+					`ERROR: Invalid namespace name '${effectiveNamespace}'`,
+					tip,
+				],
 				shouldExit: false,
 				shouldClear: false,
 				contextChanged: false,
-				error: nsNameValidation.message ?? "Invalid namespace name",
+				error: errorMsg,
 			};
 		}
 	}
@@ -1249,20 +1255,16 @@ async function executeAPICommand(
 			resourceType: resourceType ?? canonicalDomain,
 		});
 		if (!nameValidation.valid) {
-			const lines = [
-				`Error: Invalid resource name '${name}'`,
-				"",
-				nameValidation.message ?? "Invalid resource name",
-			];
-			if (nameValidation.suggestion) {
-				lines.push("", `Suggested: ${nameValidation.suggestion}`);
-			}
+			const errorMsg = nameValidation.message ?? "Invalid resource name";
+			const tip = nameValidation.suggestion
+				? `Tip: Try '${nameValidation.suggestion}' instead`
+				: "Tip: Check the resource name format and try again";
 			return {
-				output: lines,
+				output: [`ERROR: Invalid resource name '${name}'`, tip],
 				shouldExit: false,
 				shouldClear: false,
 				contextChanged: false,
-				error: nameValidation.message ?? "Invalid resource name",
+				error: errorMsg,
 			};
 		}
 	}
@@ -1281,11 +1283,14 @@ async function executeAPICommand(
 	if (!nsValidation.valid) {
 		const errorMsg =
 			nsValidation.message || "Invalid namespace for this operation";
-		const suggestion = nsValidation.suggestion
-			? `\nSuggestion: Use --namespace ${nsValidation.suggestion}`
-			: "";
+		const lines = [`ERROR: ${errorMsg}`];
+		if (nsValidation.suggestion) {
+			lines.push(`Tip: Use --namespace ${nsValidation.suggestion}`);
+		} else {
+			lines.push("Tip: Check namespace requirements for this operation");
+		}
 		return {
-			output: [`Error: ${errorMsg}${suggestion}`],
+			output: lines,
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,
@@ -1531,24 +1536,25 @@ async function executeAPICommand(
 				) {
 					// The API doesn't provide referring_objects in the response
 					// Give a concise error with practical guidance
-					let hint = "";
 					const effectiveResource = resourceType || canonicalDomain;
 
 					// Provide resource-specific guidance based on what's being deleted
+					let tip: string;
 					if (effectiveResource === "origin_pool") {
-						hint =
-							"\nTip: Check 'list http_loadbalancer' or 'list tcp_loadbalancer' to find which load balancers use this pool";
+						tip =
+							"Tip: Check 'list http_loadbalancer' or 'list tcp_loadbalancer' to find which load balancers use this pool";
 					} else if (effectiveResource === "healthcheck") {
-						hint =
-							"\nTip: Check 'list origin_pool' or 'list http_loadbalancer' to find resources using this healthcheck";
+						tip =
+							"Tip: Check 'list origin_pool' or 'list http_loadbalancer' to find resources using this healthcheck";
 					} else {
-						hint =
-							"\nTip: Use the web console to view resource dependencies";
+						tip =
+							"Tip: Use the web console to view resource dependencies";
 					}
 
 					return {
 						output: [
-							`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use${hint}`,
+							`ERROR: Cannot delete ${effectiveResource} '${name}' - resource is in use`,
+							tip,
 						],
 						shouldExit: false,
 						shouldClear: false,
@@ -1576,7 +1582,10 @@ async function executeAPICommand(
 		// Handle other errors
 		const message = error instanceof Error ? error.message : String(error);
 		return {
-			output: [`Error: ${message}`],
+			output: [
+				`ERROR: ${message}`,
+				"Tip: Check your input and try again, or use 'help' for usage information",
+			],
 			shouldExit: false,
 			shouldClear: false,
 			contextChanged: false,

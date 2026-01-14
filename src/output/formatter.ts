@@ -336,9 +336,7 @@ export function formatAPIError(
 		case 502:
 		case 503: {
 			lines.push("ERROR: Server error - service temporarily unavailable");
-			lines.push(
-				"Tip: Try again in a moment or contact support if it persists",
-			);
+			lines.push("Tip: Try again in a moment");
 			break;
 		}
 

@@ -601,9 +601,8 @@ class DomainRegistry {
 
 			return {
 				output: [
-					`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}'.`,
-					``,
-					`Did you mean: ${suggestedPath}`,
+					`ERROR: Cannot combine '${cmd.name}' with '${firstExtraArg}'`,
+					`Tip: Did you mean: ${suggestedPath}`,
 				],
 				shouldExit: false,
 				shouldClear: false,
@@ -621,9 +620,8 @@ class DomainRegistry {
 
 				return {
 					output: [
-						`Error: Cannot combine '${cmd.name}' with '${firstExtraArg}' (alias for '${siblingName}').`,
-						``,
-						`Did you mean: ${suggestedPath}`,
+						`ERROR: Cannot combine '${cmd.name}' with '${firstExtraArg}' (alias for '${siblingName}')`,
+						`Tip: Did you mean: ${suggestedPath}`,
 					],
 					shouldExit: false,
 					shouldClear: false,
@@ -636,11 +634,8 @@ class DomainRegistry {
 		// Command has no usage pattern but received args - warn about unexpected args
 		return {
 			output: [
-				`Error: Unexpected arguments for '${cmd.name}': ${filteredArgs.join(" ")}`,
-				``,
-				`Usage: ${commandPath}`,
-				``,
-				`The '${cmd.name}' command does not accept additional arguments.`,
+				`ERROR: Unexpected arguments for '${cmd.name}': ${filteredArgs.join(" ")}`,
+				`Tip: Use '${commandPath}' without additional arguments`,
 			],
 			shouldExit: false,
 			shouldClear: false,
