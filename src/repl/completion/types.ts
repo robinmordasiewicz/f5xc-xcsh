@@ -43,3 +43,63 @@ export interface ParsedInput {
 	isCompletingFlagValue: boolean;
 	currentFlag: string | null;
 }
+
+/**
+ * Resource fetch result with error information
+ */
+export interface ResourceFetchResult {
+	names: string[];
+	error?: string;
+	cached: boolean;
+	timestamp: number;
+}
+
+/**
+ * Comprehensive diagnostic information for completion troubleshooting
+ */
+export interface CompletionDiagnostic {
+	input: string;
+	cursorPosition: number;
+	parsedContext: ParsedInput;
+
+	authentication: {
+		clientConnected: boolean;
+		isAuthenticated: boolean;
+		tenant?: string;
+	};
+
+	namespace: {
+		fromFlag?: string;
+		fromSession: string;
+		resolved: string;
+	};
+
+	resourceContext?: {
+		domain: string | null;
+		action: string | null;
+		resourceType: string | null;
+		resourceNamePartial: string;
+	};
+
+	apiRequest?: {
+		endpoint: string;
+		method: string;
+		cacheStatus: "hit" | "miss" | "expired" | "loading";
+		error?: string;
+	};
+
+	suggestions: CompletionSuggestion[];
+
+	performance: {
+		parsingMs: number;
+		apiCallMs?: number;
+		filteringMs: number;
+		totalMs: number;
+	};
+
+	failures?: Array<{
+		stage: string;
+		message: string;
+		suggestion?: string;
+	}>;
+}

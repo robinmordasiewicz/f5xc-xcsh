@@ -153,6 +153,9 @@ export function parseInput(text: string): ParsedInput {
 export class Completer {
 	private session: REPLSession | null = null;
 	private cache: CompletionCache;
+	private diagnosticMode: boolean = false;
+	private lastDiagnostic: import("./types.js").CompletionDiagnostic | null =
+		null;
 
 	constructor() {
 		this.cache = new CompletionCache();
@@ -169,6 +172,12 @@ export class Completer {
 	 * Get suggestions for the given input text
 	 */
 	async complete(text: string): Promise<CompletionSuggestion[]> {
+		// If diagnostic mode is enabled, use diagnose() to track full diagnostic info
+		if (this.diagnosticMode) {
+			const diagnostic = await this.diagnose(text);
+			return diagnostic.suggestions;
+		}
+
 		const trimmed = text.trimStart();
 
 		// Empty input - show contextual suggestions
@@ -733,8 +742,9 @@ export class Completer {
 
 		let argOffset = 0; // Offset to find the action
 
-		// Check if we're in navigation context (already in a domain)
-		if (navCtx.domain) {
+		// If input starts with "/" (isEscapedToRoot), ignore navigation context and use command-based parsing
+		// Check if we're in navigation context (already in a domain) AND not escaped to root
+		if (navCtx.domain && !parsed.isEscapedToRoot) {
 			// Pattern 1: Navigation-based
 			ctx.domain = navCtx.domain;
 			argOffset = 0; // Action is at args[0]
@@ -1126,6 +1136,148 @@ export class Completer {
 		return suggestions.filter((s) =>
 			s.text.toLowerCase().startsWith(lowerPrefix),
 		);
+	}
+
+	/**
+	 * Enable diagnostic mode for troubleshooting completion issues
+	 */
+	enableDiagnostics(): void {
+		this.diagnosticMode = true;
+	}
+
+	/**
+	 * Disable diagnostic mode
+	 */
+	disableDiagnostics(): void {
+		this.diagnosticMode = false;
+		this.lastDiagnostic = null;
+	}
+
+	/**
+	 * Get the last diagnostic result (if diagnostic mode was enabled)
+	 */
+	getLastDiagnostic(): import("./types.js").CompletionDiagnostic | null {
+		return this.lastDiagnostic;
+	}
+
+	/**
+	 * Run completion with full diagnostic tracking
+	 * This method performs the same logic as complete() but captures detailed diagnostic information
+	 */
+	async diagnose(
+		text: string,
+	): Promise<import("./types.js").CompletionDiagnostic> {
+		const startTime = Date.now();
+		const trimmed = text.trimStart();
+		const parsed = parseInput(trimmed);
+
+		// Initialize diagnostic object
+		const diagnostic: import("./types.js").CompletionDiagnostic = {
+			input: text,
+			cursorPosition: text.length,
+			parsedContext: parsed,
+			authentication: {
+				clientConnected: false,
+				isAuthenticated: false,
+			},
+			namespace: {
+				fromSession: "default",
+				resolved: "default",
+			},
+			suggestions: [],
+			performance: {
+				parsingMs: Date.now() - startTime,
+				filteringMs: 0,
+				totalMs: 0,
+			},
+			failures: [],
+		};
+
+		// Check session and authentication
+		const client = this.session?.getAPIClient() || null;
+		diagnostic.authentication.clientConnected = client !== null;
+		diagnostic.authentication.isAuthenticated =
+			client?.isAuthenticated() ?? false;
+
+		if (this.session) {
+			const tenant = this.session.getTenant?.();
+			if (tenant) {
+				diagnostic.authentication.tenant = tenant;
+			}
+		}
+
+		// Get namespace
+		const sessionNamespace = this.session?.getNamespace?.() || "default";
+		diagnostic.namespace.fromSession = sessionNamespace;
+		diagnostic.namespace.resolved = sessionNamespace;
+
+		// Check for namespace in flags
+		for (let i = 0; i < parsed.args.length; i++) {
+			const arg = parsed.args[i];
+			if (arg === "--namespace" || arg === "-ns") {
+				const nsValue = parsed.args[i + 1];
+				if (nsValue) {
+					diagnostic.namespace.fromFlag = nsValue;
+					diagnostic.namespace.resolved = nsValue;
+				}
+			}
+		}
+
+		// Track failures
+		if (!client) {
+			diagnostic.failures?.push({
+				stage: "initialization",
+				message: "No API client available",
+				suggestion: "Ensure session is properly initialized",
+			});
+		}
+
+		if (!diagnostic.authentication.isAuthenticated) {
+			diagnostic.failures?.push({
+				stage: "authentication",
+				message: "Not authenticated",
+				suggestion: "Run 'login use profile <name>' to re-authenticate",
+			});
+		}
+
+		// Try to complete and capture timing
+		// Temporarily disable diagnostic mode to avoid infinite recursion
+		const wasDiagnosticMode = this.diagnosticMode;
+		this.diagnosticMode = false;
+		const completeStart = Date.now();
+		try {
+			diagnostic.suggestions = await this.complete(text);
+		} catch (error: unknown) {
+			diagnostic.failures?.push({
+				stage: "completion",
+				message:
+					error instanceof Error
+						? error.message
+						: "Unknown error during completion",
+				suggestion: "Check console for detailed error information",
+			});
+		} finally {
+			// Restore diagnostic mode
+			this.diagnosticMode = wasDiagnosticMode;
+		}
+
+		// Get resource fetcher error if available
+		const fetcherError = resourceFetcher.getLastError();
+		if (fetcherError.error) {
+			diagnostic.apiRequest = {
+				endpoint: "unknown",
+				method: "GET",
+				cacheStatus: "miss",
+				error: fetcherError.error,
+			};
+		}
+
+		// Calculate final timings
+		diagnostic.performance.apiCallMs = Date.now() - completeStart;
+		diagnostic.performance.totalMs = Date.now() - startTime;
+
+		this.lastDiagnostic = diagnostic;
+		return diagnostic;
 	}
 }
 

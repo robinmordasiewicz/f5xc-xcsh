@@ -447,28 +447,32 @@ describe("Acceptance: Get Action Argument Parsing", () => {
 	 * NAMESPACE FLAG VARIATIONS
 	 *
 	 * Test all namespace flag variations with positional name after.
+	 * Note: -n sets the resource name, not namespace
 	 */
 	describe("namespace flag variations with positional name after", () => {
 		const namespaceVariations = [
-			{ flag: "--namespace", value: "test-ns" },
-			{ flag: "--ns", value: "test-ns" },
-			{ flag: "-n", value: "test-ns" },
-			{ flag: "-ns", value: "test-ns" },
+			{ flag: "--namespace", value: "test-ns", setsNamespace: true },
+			{ flag: "--ns", value: "test-ns", setsNamespace: true },
+			{ flag: "-n", value: "test-resource", setsNamespace: false }, // -n sets name, not namespace
+			{ flag: "-ns", value: "test-ns", setsNamespace: true },
 		];
 
-		for (const { flag, value } of namespaceVariations) {
+		for (const { flag, value, setsNamespace } of namespaceVariations) {
 			it(`${flag} with positional name after`, async () => {
 				mockAPIResponse(mockHTTPLoadBalancer, 200);
 				const session = createMockSession("table", "default", "virtual", "get");
 
-				const result = await executeCommand(
-					`http_loadbalancer ${flag} ${value} test-resource`,
-					session,
-				);
+				const command = setsNamespace
+					? `http_loadbalancer ${flag} ${value} test-resource`
+					: `http_loadbalancer ${flag} ${value}`; // -n already provides the name
+
+				const result = await executeCommand(command, session);
 
 				const apiCall = capturedAPICalls.find((c) => c.method === "GET");
 				expect(apiCall?.path).toContain("test-resource");
-				expect(apiCall?.path).toContain(value);
+				if (setsNamespace) {
+					expect(apiCall?.path).toContain(value);
+				}
 
 				expect(result.error).toBeUndefined();
 			});
