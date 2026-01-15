@@ -1,6 +1,6 @@
 # 📉 Telemetry And Insights
 
-Configure and manage telemetry and insights settings, policies, and resources across your F5 Distributed Cloud deployment.
+Collection endpoints, metrics storage, and insight generation for observability workflows.
 
 **Category:** Operations
 

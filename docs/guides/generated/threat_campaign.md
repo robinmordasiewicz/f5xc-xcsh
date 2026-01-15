@@ -1,6 +1,6 @@
 # ⚠️ Threat Campaign
 
-Configure and manage threat campaign settings, policies, and resources across your F5 Distributed Cloud deployment.
+Detection policies, attack tracking, and automated mitigation rule generation for security operations.
 
 **Category:** Security
 
