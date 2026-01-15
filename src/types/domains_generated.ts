@@ -426,8 +426,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_definition",
-					description: "Create API Definition.",
-					descriptionShort: "Create API Definition.",
+					description:
+						"API schema definition for discovery and protection",
+					descriptionShort: "API definition",
 					tier: "Advanced" as const,
 					icon: "📄",
 					category: "API Management",
@@ -750,10 +751,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "api_credential",
-					description:
-						"It is used to revoke multiple API credentials. This API would disable the credentials and mark them for deletion.\nThe actual removal of objects would be done in the background.\nDepending upon if user is admin or not, following behaviour is supported:-\n* for admins : user has the access to DELETE their own as well as credentials created by others\n* for non-admins: user can only DELETE their own credentials.",
-					descriptionShort:
-						"It is used to revoke multiple API credentials. This API woul",
+					description: "API credential for service authentication",
+					descriptionShort: "API credential",
 					tier: "Standard" as const,
 					icon: "🔑",
 					category: "Identity",
@@ -1098,10 +1097,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "quota",
-					description:
-						"Create quota creates a given object from storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create quota creates a given object from storage backend for",
+					description: "Resource quota for usage limits",
+					descriptionShort: "Quota",
 					tier: "Standard" as const,
 					icon: "📊",
 					category: "Other",
@@ -1379,10 +1376,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "secret_policy",
-					description:
-						"Create secret_policy creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create secret_policy creates a new object in the storage bac",
+					description: "Secret management policy configuration",
+					descriptionShort: "Secret policy",
 					tier: "Standard" as const,
 					icon: "📋",
 					category: "Security",
@@ -1687,9 +1682,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cdn_loadbalancer",
-					description: "Shape of the CDN loadbalancer specification.",
-					descriptionShort:
-						"Shape of the CDN loadbalancer specification.",
+					description:
+						"Content delivery network load balancer for edge caching",
+					descriptionShort: "CDN load balancer",
 					tier: "Standard" as const,
 					icon: "🌍",
 					category: "Load Balancing",
@@ -2024,8 +2019,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "certificate",
-					description: "Shape of the Certificate specification.",
-					descriptionShort: "Shape of the Certificate specification.",
+					description: "TLS certificate for secure HTTPS connections",
+					descriptionShort: "Certificate",
 					tier: "Standard" as const,
 					icon: "📜",
 					category: "Security",
@@ -2038,9 +2033,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "certificate_chain",
 					description:
-						"Shape of the Certificate Chain specification.",
-					descriptionShort:
-						"Shape of the Certificate Chain specification.",
+						"Certificate chain for complete trust verification",
+					descriptionShort: "Certificate chain",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "Security",
@@ -2433,8 +2427,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "workload",
-					description: "Shape of Workload.",
-					descriptionShort: "Shape of Workload.",
+					description: "Container workload deployment configuration",
+					descriptionShort: "Workload",
 					tier: "Advanced" as const,
 					icon: "📦",
 					category: "Container",
@@ -2551,10 +2545,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "sensitive_data_policy",
-					description:
-						"Create sensitive_data_policy creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create sensitive_data_policy creates a new object in the sto",
+					description: "Sensitive data policy for PII protection",
+					descriptionShort: "Sensitive data policy",
 					tier: "Advanced" as const,
 					icon: "🔐",
 					category: "Security",
@@ -3317,9 +3309,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "dns_domain",
 					description:
-						"Create DNS Domain in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create DNS Domain in a given namespace. If one already exist",
+						"DNS domain delegation and configuration settings",
+					descriptionShort: "DNS domain",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "DNS",
@@ -3354,9 +3345,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "dns_load_balancer",
 					description:
-						"Create DNS Load Balancer in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create DNS Load Balancer in a given namespace. If one alread",
+						"DNS-based traffic distribution with geographic routing and failover",
+					descriptionShort: "DNS load balancer",
 					tier: "Standard" as const,
 					icon: "⚖️",
 					category: "DNS",
@@ -3373,9 +3363,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "dns_zone",
 					description:
-						"Create DNS Zone in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create DNS Zone in a given namespace. If one already exist i",
+						"Authoritative DNS zone with record management capabilities",
+					descriptionShort: "DNS zone",
 					tier: "Standard" as const,
 					icon: "🌐",
 					category: "DNS",
@@ -3653,8 +3642,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "container_registry",
-					description: "Shape of Container Registry.",
-					descriptionShort: "Shape of Container Registry.",
+					description: "Container image registry for workload images",
+					descriptionShort: "Container registry",
 					tier: "Advanced" as const,
 					icon: "📦",
 					category: "Container",
@@ -3666,10 +3655,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_cluster_role",
-					description:
-						"Create k8s_cluster_role will create the object in the storage backend for namespace metadata.namespace.",
-					descriptionShort:
-						"Create k8s_cluster_role will create the object in the storag",
+					description: "Kubernetes cluster RBAC role configuration",
+					descriptionShort: "K8s cluster role",
 					tier: "Advanced" as const,
 					icon: "👤",
 					category: "Container",
@@ -4205,9 +4192,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "network_connector",
 					description:
-						"Network Connector is created by users in system namespace.",
-					descriptionShort:
-						"Network Connector is created by users in system namespace.",
+						"Network connector for site-to-site or cloud connectivity",
+					descriptionShort: "Network connector",
 					tier: "Advanced" as const,
 					icon: "🔌",
 					category: "Networking",
@@ -4294,9 +4280,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "virtual_network",
-					description: "Create virtual network in given namespace.",
-					descriptionShort:
-						"Create virtual network in given namespace.",
+					description:
+						"Virtual network for site connectivity and segmentation",
+					descriptionShort: "Virtual network",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "Networking",
@@ -4474,9 +4460,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "forward_proxy_policy",
 					description:
-						"Shape of the Forward Proxy Policy specification.",
-					descriptionShort:
-						"Shape of the Forward Proxy Policy specification.",
+						"Forward proxy policy for outbound traffic control",
+					descriptionShort: "Forward proxy policy",
 					tier: "Advanced" as const,
 					icon: "➡️",
 					category: "Security",
@@ -4533,9 +4518,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "network_firewall",
 					description:
-						"Network firewall is created by users in system namespace.",
-					descriptionShort:
-						"Network firewall is created by users in system namespace.",
+						"Network firewall for layer 3/4 traffic protection",
+					descriptionShort: "Network firewall",
 					tier: "Standard" as const,
 					icon: "🧱",
 					category: "Security",
@@ -4548,9 +4532,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "network_policy",
 					description:
-						"Creates a new network policy with configured parameters in specified namespace.",
-					descriptionShort:
-						"Creates a new network policy with configured parameters in s",
+						"Network security policy for traffic filtering",
+					descriptionShort: "Network policy",
 					tier: "Standard" as const,
 					icon: "🔒",
 					category: "Security",
@@ -5492,9 +5475,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "rate_limiter",
 					description:
-						"Create rate_limiter creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create rate_limiter creates a new object in the storage back",
+						"Rate limiter for traffic throttling and protection",
+					descriptionShort: "Rate limiter",
 					tier: "Standard" as const,
 					icon: "⏱️",
 					category: "Security",
@@ -5684,10 +5666,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "endpoint",
-					description:
-						"Create endpoint will create the object in the storage backend for namespace metadata.namespace.",
-					descriptionShort:
-						"Create endpoint will create the object in the storage backen",
+					description: "Service mesh endpoint for traffic routing",
+					descriptionShort: "Endpoint",
 					tier: "Advanced" as const,
 					icon: "🎯",
 					category: "Networking",
@@ -7892,8 +7872,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "site",
-					description: "",
-					descriptionShort: "site",
+					description:
+						"Physical or cloud deployment location for edge services",
+					descriptionShort: "Site",
 					tier: "Standard" as const,
 					icon: "🏢",
 					category: "Infrastructure",
@@ -7909,8 +7890,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "site_mesh_group",
-					description: "GET topology of a site mesh.",
-					descriptionShort: "GET topology of a site mesh.",
+					description:
+						"Mesh connectivity configuration between multiple sites",
+					descriptionShort: "Site mesh group",
 					tier: "Advanced" as const,
 					icon: "🕸️",
 					category: "Infrastructure",
@@ -7965,9 +7947,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "virtual_site",
 					description:
-						"Create a virtual site object in given namespace.",
-					descriptionShort:
-						"Create a virtual site object in given namespace.",
+						"Logical grouping of sites using label selectors",
+					descriptionShort: "Virtual site",
 					tier: "Standard" as const,
 					icon: "🏷️",
 					category: "Infrastructure",
@@ -10283,10 +10264,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "session",
-					description:
-						"GetUserSessions returns a list of user sessions.",
-					descriptionShort:
-						"GetUserSessions returns a list of user sessions.",
+					description: "User session for authentication state",
+					descriptionShort: "Session",
 					tier: "Standard" as const,
 					icon: "🔑",
 					category: "Identity",
@@ -11156,9 +11135,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "healthcheck",
 					description:
-						"Healthcheck object defines method to determine if the given Endpoint is healthy.\nSingle Healthcheck object can be referred to by one or many Cluster objects.",
-					descriptionShort:
-						"Healthcheck object defines method to determine if the given ",
+						"Health monitoring configuration for origin server availability",
+					descriptionShort: "Health check",
 					tier: "Standard" as const,
 					icon: "💓",
 					category: "Monitoring",
@@ -11171,9 +11149,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "http_loadbalancer",
 					description:
-						"Shape of the HTTP load balancer specification.",
-					descriptionShort:
-						"Shape of the HTTP load balancer specification.",
+						"Layer 7 HTTP/HTTPS load balancer for application traffic distribution",
+					descriptionShort: "HTTP load balancer",
 					tier: "Standard" as const,
 					icon: "🌐",
 					category: "Load Balancing",
@@ -11215,9 +11192,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "origin_pool",
 					description:
-						"Shape of the origin pool create specification.",
-					descriptionShort:
-						"Shape of the origin pool create specification.",
+						"Backend server group for load balancer traffic distribution",
+					descriptionShort: "Origin pool",
 					tier: "Standard" as const,
 					icon: "🎯",
 					category: "Load Balancing",
@@ -11289,9 +11265,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "tcp_loadbalancer",
 					description:
-						"Shape of the TCP load balancer create specification.",
-					descriptionShort:
-						"Shape of the TCP load balancer create specification.",
+						"Layer 4 TCP/UDP load balancer for non-HTTP protocol traffic",
+					descriptionShort: "TCP load balancer",
 					tier: "Standard" as const,
 					icon: "🔌",
 					category: "Load Balancing",
@@ -11762,8 +11737,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app_firewall",
-					description: "Create Application Firewall.",
-					descriptionShort: "Create Application Firewall.",
+					description:
+						"Web Application Firewall policy for HTTP traffic protection",
+					descriptionShort: "WAF policy",
 					tier: "Advanced" as const,
 					icon: "🛡️",
 					category: "Security",

@@ -376,8 +376,8 @@ async function main(): Promise<void> {
 
 				return {
 					name: discovered.name,
-					description: discovered.description || "",
-					descriptionShort: discovered.description.slice(0, 60) || discovered.name,
+					description: primaryMatch?.description || discovered.description || "",
+					descriptionShort: primaryMatch?.descriptionShort || discovered.description.slice(0, 60) || discovered.name,
 					tier: primaryMatch?.tier || "Standard",
 					icon: primaryMatch?.icon,
 					category: primaryMatch?.category,
