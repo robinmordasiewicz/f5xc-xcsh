@@ -1,6 +1,6 @@
 # 🔑 Authentication
 
-Configure and manage authentication settings, policies, and resources across your F5 Distributed Cloud deployment.
+Identity management with provider integration, access policies, and credential lifecycle control.
 
 **Category:** Platform
 

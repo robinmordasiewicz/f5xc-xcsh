@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.21
+ * Generated from .specs/index.json v2.0.22
  * WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  * Run: npx tsx scripts/generate-domains.ts
  */
@@ -24,7 +24,7 @@ export type {
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.21";
+export const SPEC_VERSION = "2.0.22";
 
 /**
  * Generated domain data from upstream API specifications
@@ -695,10 +695,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "authentication",
 			displayName: "Authentication",
 			description:
-				"Authentication management for F5 Distributed Cloud. Provides APIs for configuring authentication, managing associated resources, and integrating with other platform services. Supports lifecycle operations, policy enforcement, and observability.",
-			descriptionShort: "Authentication management and configuration",
+				"Identity and access management providing APIs for configuring identity providers, access policies, and user credentials. Supports MFA, identity provider integration, and lifecycle operations for credential management across distributed deployments.",
+			descriptionShort:
+				"Identity provider and access policy configuration.",
 			descriptionMedium:
-				"Configure and manage authentication settings, policies, and resources across your F5 Distributed Cloud deployment.",
+				"Identity management with provider integration, access policies, and credential lifecycle control.",
 			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,
@@ -2579,10 +2580,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "data_intelligence",
 			displayName: "Data Intelligence",
 			description:
-				"Data Intelligence management for F5 Distributed Cloud. Provides APIs for configuring data intelligence, managing associated resources, and integrating with other platform services. Supports lifecycle operations, policy enforcement, and observability.",
-			descriptionShort: "Data Intelligence management and configuration",
+				"APIs for configuring classification policies and resource management. Supports data classification, insight generation, and integration with security services across deployments.",
+			descriptionShort:
+				"Classification, insights, and policy management.",
 			descriptionMedium:
-				"Configure and manage data intelligence settings, policies, and resources across your F5 Distributed Cloud deployment.",
+				"Classification rules, resource policies, and insight generation for data analysis workflows.",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -9187,11 +9189,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "telemetry_and_insights",
 			displayName: "Telemetry And Insights",
 			description:
-				"Telemetry And Insights management for F5 Distributed Cloud. Provides APIs for configuring telemetry and insights, managing associated resources, and integrating with other platform services. Supports lifecycle operations, policy enforcement, and observability.",
+				"APIs for configuring collection endpoints, metrics storage, and insight generation. Supports log aggregation, performance monitoring, and alerting integration across deployments.",
 			descriptionShort:
-				"Telemetry And Insights management and configuration",
+				"Metrics collection, analysis, and visualization.",
 			descriptionMedium:
-				"Configure and manage telemetry and insights settings, policies, and resources across your F5 Distributed Cloud deployment.",
+				"Collection endpoints, metrics storage, and insight generation for observability workflows.",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -10675,10 +10677,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "threat_campaign",
 			displayName: "Threat Campaign",
 			description:
-				"Threat Campaign management for F5 Distributed Cloud. Provides APIs for configuring threat campaign, managing associated resources, and integrating with other platform services. Supports lifecycle operations, policy enforcement, and observability.",
-			descriptionShort: "Threat Campaign management and configuration",
+				"APIs for configuring detection policies and attack tracking. Supports campaign analysis, risk assessment, and automated mitigation rule generation across security domains.",
+			descriptionShort:
+				"Attack detection, tracking, and mitigation rules.",
 			descriptionMedium:
-				"Configure and manage threat campaign settings, policies, and resources across your F5 Distributed Cloud deployment.",
+				"Detection policies, attack tracking, and automated mitigation rule generation for security operations.",
 			aliases: [],
 			complexity: "moderate" as const,
 			isPreview: false,
@@ -11574,11 +11577,11 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			name: "vpm_and_node_management",
 			displayName: "Vpm And Node Management",
 			description:
-				"Vpm And Node Management management for F5 Distributed Cloud. Provides APIs for configuring vpm and node management, managing associated resources, and integrating with other platform services. Supports lifecycle operations, policy enforcement, and observability.",
+				"APIs for configuring node policies, fleet management, and lifecycle operations. Supports node registration, configuration deployment, and status monitoring across distributed infrastructure.",
 			descriptionShort:
-				"Vpm And Node Management management and configuration",
+				"Node lifecycle, fleet grouping, and orchestration.",
 			descriptionMedium:
-				"Configure and manage vpm and node management settings, policies, and resources across your F5 Distributed Cloud deployment.",
+				"Lifecycle control, fleet configuration, and deployment policies for distributed node management.",
 			aliases: [],
 			complexity: "simple" as const,
 			isPreview: false,

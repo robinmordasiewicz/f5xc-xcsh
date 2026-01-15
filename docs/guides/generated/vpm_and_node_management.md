@@ -1,6 +1,6 @@
 # 🖥️ Vpm And Node Management
 
-Configure and manage vpm and node management settings, policies, and resources across your F5 Distributed Cloud deployment.
+Lifecycle control, fleet configuration, and deployment policies for distributed node management.
 
 **Category:** Platform
 
