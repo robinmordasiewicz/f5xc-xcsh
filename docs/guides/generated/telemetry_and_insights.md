@@ -1,6 +1,6 @@
 # 📉 Telemetry And Insights
 
-F5 Distributed Cloud Telemetry And Insights API specifications
+Configure and manage telemetry and insights settings, policies, and resources across your F5 Distributed Cloud deployment.
 
 **Category:** Operations
 
