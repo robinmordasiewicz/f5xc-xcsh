@@ -48,6 +48,18 @@ import {
 	substitutePathParams,
 	hasUnsubstitutedParams,
 } from "../operations/index.js";
+import { promises as fs } from "fs";
+import { resolve } from "path";
+import YAML from "yaml";
+import {
+	parseCreationFlags,
+	hasCreationFlagsInArgs,
+	hasFileFlag,
+	getFilePath,
+	hasResourceBuilder,
+	buildResource,
+	validateResourceFlags,
+} from "./creation/index.js";
 
 /**
  * Write operations that require resource name validation.
@@ -1458,16 +1470,204 @@ async function executeAPICommand(
 			case "replace":
 			case "apply": {
 				// For create/replace/apply, we need a request body
-				// This would typically come from a file or stdin
-				return {
-					output: [
+				// Check for flag-based creation or --file
+
+				let requestBody: Record<string, unknown> | null = null;
+
+				// First priority: Check for --file flag
+				if (hasFileFlag(args)) {
+					const filePath = getFilePath(args);
+					if (!filePath) {
+						return {
+							output: ["Error: --file requires a file path"],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+						};
+					}
+
+					try {
+						const absolutePath = resolve(filePath);
+						const fileContent = await fs.readFile(
+							absolutePath,
+							"utf-8",
+						);
+
+						// Parse as YAML (also handles JSON since JSON is valid YAML)
+						requestBody = YAML.parse(fileContent) as Record<
+							string,
+							unknown
+						>;
+
+						if (!requestBody || typeof requestBody !== "object") {
+							return {
+								output: [
+									"Error: File must contain a valid YAML/JSON object",
+								],
+								shouldExit: false,
+								shouldClear: false,
+								contextChanged: false,
+							};
+						}
+					} catch (error) {
+						const errMsg =
+							error instanceof Error
+								? error.message
+								: String(error);
+						return {
+							output: [`Error reading file: ${errMsg}`],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+						};
+					}
+				}
+				// Second priority: Check for creation flags
+				else if (
+					effectiveResourceType &&
+					hasResourceBuilder(effectiveResourceType) &&
+					hasCreationFlagsInArgs(args, effectiveResourceType)
+				) {
+					// Parse creation flags
+					const parsed = parseCreationFlags(
+						args,
+						effectiveResourceType,
+					);
+
+					// Check for parsing errors
+					if (parsed.errors.length > 0) {
+						return {
+							output: [
+								"Error parsing creation flags:",
+								...parsed.errors.map((e) => `  - ${e}`),
+							],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+						};
+					}
+
+					// Validate flags
+					const validation = validateResourceFlags(
+						effectiveResourceType,
+						parsed,
+					);
+					if (!validation.valid) {
+						return {
+							output: [
+								"Validation errors:",
+								...validation.errors.map((e) => `  - ${e}`),
+							],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+						};
+					}
+
+					// Build request body
+					requestBody = buildResource(
+						effectiveResourceType,
+						parsed,
+						effectiveNamespace,
+					);
+				}
+				// Neither --file nor creation flags provided
+				else {
+					const supportsFlagCreation =
+						effectiveResourceType &&
+						hasResourceBuilder(effectiveResourceType);
+					const hints = [
 						`Action '${action}' requires a resource specification.`,
-						"Use --file <path> to provide resource YAML/JSON.",
-					],
-					shouldExit: false,
-					shouldClear: false,
-					contextChanged: false,
-				};
+						"",
+						"Options:",
+						"  1. Use --file <path> to provide resource YAML/JSON",
+					];
+
+					if (supportsFlagCreation) {
+						hints.push(
+							`  2. Use creation flags (e.g., --name, --type, etc.)`,
+							"",
+							`Example with flags:`,
+							`  create ${effectiveResourceType} --name my-resource ...`,
+						);
+					}
+
+					return {
+						output: hints,
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+					};
+				}
+
+				if (!requestBody) {
+					return {
+						output: ["Error: Failed to build request body"],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+					};
+				}
+
+				// Execute the API call
+				if (action === "create") {
+					const response = await client.post(apiPath, requestBody);
+					result = response.data ?? {
+						message: `Created ${canonicalDomain}`,
+					};
+				} else if (action === "replace") {
+					// Replace uses PUT with name in path
+					const resourceName =
+						(requestBody.metadata as Record<string, unknown>)
+							?.name ?? name;
+					if (resourceName && !usedOperationPath) {
+						apiPath += `/${resourceName}`;
+					}
+					const response = await client.put(apiPath, requestBody);
+					result = response.data ?? {
+						message: `Replaced ${canonicalDomain}`,
+					};
+				} else {
+					// Apply - POST for create or PUT for update
+					// Try POST first, if 409 conflict, use PUT
+					try {
+						const response = await client.post(
+							apiPath,
+							requestBody,
+						);
+						result = response.data ?? {
+							message: `Applied ${canonicalDomain}`,
+						};
+					} catch (postError) {
+						if (
+							postError instanceof APIError &&
+							postError.statusCode === 409
+						) {
+							// Resource exists, use PUT to update
+							const resourceName =
+								(
+									requestBody.metadata as Record<
+										string,
+										unknown
+									>
+								)?.name ?? name;
+							let putPath = apiPath;
+							if (resourceName && !usedOperationPath) {
+								putPath += `/${resourceName}`;
+							}
+							const response = await client.put(
+								putPath,
+								requestBody,
+							);
+							result = response.data ?? {
+								message: `Updated ${canonicalDomain}`,
+							};
+						} else {
+							throw postError;
+						}
+					}
+				}
+				break;
 			}
 
 			case "status": {

@@ -63,7 +63,7 @@ describe("Flag Deduplication - Utility Functions", () => {
 			expect(used.has("--url")).toBe(true);
 			expect(used.has("-u")).toBe(true);
 			expect(used.has("--token")).toBe(true);
-			expect(used.has("-t")).toBe(true);
+			// Note: --token no longer has -t as alias (now used by --type for healthcheck creation)
 		});
 
 		it("ignores non-flag arguments", () => {
