@@ -20,6 +20,7 @@ export interface CompletionSuggestion {
 		| "command"
 		| "resource"
 		| "resource-name";
+	isPrimary?: boolean; // For primary resources - renders with brighter styling
 }
 
 /**

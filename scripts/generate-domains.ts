@@ -377,7 +377,9 @@ async function main(): Promise<void> {
 				return {
 					name: discovered.name,
 					description: primaryMatch?.description || discovered.description || "",
-					descriptionShort: primaryMatch?.descriptionShort || discovered.description.slice(0, 60) || discovered.name,
+					// Prefer discovered.description (from x-f5xc-operation-metadata.purpose) over index.json description_short
+					// Purpose field has better contextual descriptions than the generic short descriptions
+					descriptionShort: discovered.description || primaryMatch?.descriptionShort || discovered.name,
 					tier: primaryMatch?.tier || "Standard",
 					icon: primaryMatch?.icon,
 					category: primaryMatch?.category,

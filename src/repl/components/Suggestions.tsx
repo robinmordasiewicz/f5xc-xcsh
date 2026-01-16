@@ -14,6 +14,7 @@ export interface Suggestion {
 	value: string; // Completion value
 	description?: string; // Optional description
 	category?: string; // e.g., "domain", "action", "flag"
+	isPrimary?: boolean; // Primary resources get brighter styling
 }
 
 interface SuggestionsProps {
@@ -71,9 +72,15 @@ function SuggestionItem({
 				{suggestion.label.padEnd(maxLabelWidth)}
 			</Text>
 
-			{/* Description if present */}
+			{/* Description if present - primary resources get brighter color */}
 			{suggestion.description && (
-				<Text color="#666666"> - {suggestion.description}</Text>
+				<Text
+					color={suggestion.isPrimary ? "#ffffff" : "#666666"}
+					bold={suggestion.isPrimary || false}
+				>
+					{" - "}
+					{suggestion.description}
+				</Text>
 			)}
 		</Box>
 	);

@@ -20,8 +20,8 @@ describe("Enhanced Completion - Dynamic Resource Discovery", () => {
 			const texts = suggestions.map((s) => s.text);
 
 			console.log(`\n🔍 Virtual domain resources: ${texts.length} total`);
-			console.log(`   Primary (⭐): ${suggestions.filter((s) => s.description.includes("⭐")).length}`);
-			console.log(`   Additional: ${suggestions.filter((s) => !s.description.includes("⭐")).length}`);
+			console.log(`   Primary: ${suggestions.filter((s) => s.isPrimary).length}`);
+			console.log(`   Additional: ${suggestions.filter((s) => !s.isPrimary).length}`);
 
 			// Should have significantly more than the original 4 primary resources
 			expect(texts.length).toBeGreaterThan(20);
@@ -39,18 +39,18 @@ describe("Enhanced Completion - Dynamic Resource Discovery", () => {
 			expect(texts).toContain("service_policy");
 		});
 
-		it("should mark primary resources with ⭐ indicator", async () => {
+		it("should mark primary resources with isPrimary flag", async () => {
 			const suggestions = await completer.complete("/virtual list ");
 
-			// Find a primary resource
+			// Find a primary resource - should have isPrimary=true
 			const httpLb = suggestions.find((s) => s.text === "http_loadbalancer");
 			expect(httpLb).toBeDefined();
-			expect(httpLb?.description).toContain("⭐");
+			expect(httpLb?.isPrimary).toBe(true);
 
-			// Find a non-primary resource
+			// Find a non-primary resource - should not have isPrimary
 			const udpLb = suggestions.find((s) => s.text === "udp_loadbalancer");
 			expect(udpLb).toBeDefined();
-			expect(udpLb?.description).not.toContain("⭐");
+			expect(udpLb?.isPrimary).toBeFalsy();
 		});
 
 		it("should sort primary resources first", async () => {
