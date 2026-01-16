@@ -80,10 +80,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "static_component",
-					description:
-						"List the set of static_component in a namespace.",
-					descriptionShort:
-						"List the set of static_component in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "analytics" as const,
@@ -155,10 +153,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "allocateip",
-					description:
-						"AllocateIP will allocate an IP address for the tenant read from context.",
-					descriptionShort:
-						"AllocateIP will allocate an IP address for the tenant read f",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -175,10 +171,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enable_feature",
-					description:
-						"Enable service by returning service account details.",
-					descriptionShort:
-						"Enable service by returning service account details.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -186,10 +180,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "eval_query",
-					description:
-						"Temporarily to be used in place of AIAssistantQuery for evaluating API access/RBAC check.",
-					descriptionShort:
-						"Temporarily to be used in place of AIAssistantQuery for eval",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -197,10 +189,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "eval_query_feedback",
-					description:
-						"Temporarily to be used in place of AIAssistantFeedback for evaluating API access/RBAC check.",
-					descriptionShort:
-						"Temporarily to be used in place of AIAssistantFeedback for e",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -208,8 +198,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettoken",
-					description: "Subscribe to BFDP pipeline.",
-					descriptionShort: "Subscribe to BFDP pipeline.",
+					description: "Authentication credential for access control",
+					descriptionShort:
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -217,10 +208,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "query",
-					description:
-						"Enable service by returning service account details.",
-					descriptionShort:
-						"Enable service by returning service account details.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -228,10 +217,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "query_feedback",
-					description:
-						"Enable service by returning service account details.",
-					descriptionShort:
-						"Enable service by returning service account details.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -239,10 +226,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "refresh_token",
-					description:
-						"Enable service by returning service account details.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"Enable service by returning service account details.",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -250,8 +236,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to BFDP pipeline.",
-					descriptionShort: "Subscribe to BFDP pipeline.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -259,8 +245,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to BFDP pipeline.",
-					descriptionShort: "Unsubscribe to BFDP pipeline.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -417,8 +403,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "api_crawler",
-					description: "Create API crawler.",
-					descriptionShort: "Create API crawler.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -428,7 +414,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "api_definition",
 					description:
 						"API schema definition for discovery and protection",
-					descriptionShort: "API definition",
+					descriptionShort:
+						"API definition for endpoint documentation",
 					tier: "Advanced" as const,
 					icon: "📄",
 					category: "API Management",
@@ -444,10 +431,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_definitions_without_shared",
-					description:
-						"List API definitions suitable for API Inventory management\nGET all API Definitions for specific namespace exclude shared namespace.",
-					descriptionShort:
-						"List API definitions suitable for API Inventory management\nG",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -456,9 +441,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "api_discovery",
 					description:
-						"Create API discovery creates a new object in the storage backend for metadata.namespace.",
+						"API discovery for automatic endpoint detection",
 					descriptionShort:
-						"Create API discovery creates a new object in the storage bac",
+						"API discovery for automatic endpoint detection",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -466,10 +451,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_endpoint_protection",
-					description:
-						"Suggest API endpoint protection rule for a given path.",
-					descriptionShort:
-						"Suggest API endpoint protection rule for a given path.",
+					description: "API endpoint for traffic management",
+					descriptionShort: "API endpoint for traffic management",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -477,9 +460,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_group",
-					description: "List the set of api_group in a namespace.",
-					descriptionShort:
-						"List the set of api_group in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -487,10 +469,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_group_element",
-					description:
-						"List the set of api_group_element in a namespace.",
-					descriptionShort:
-						"List the set of api_group_element in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -498,8 +478,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "api_testing",
-					description: "Create API testing.",
-					descriptionShort: "Create API testing.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -507,10 +487,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app_api_group",
-					description:
-						"Create app_api_group creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create app_api_group creates a new object in the storage bac",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -518,8 +496,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "code_base_integration",
-					description: "CREATE integration details.",
-					descriptionShort: "CREATE integration details.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -527,10 +505,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "data_exposure",
-					description:
-						"Suggest sensitive data rule for a given path.",
-					descriptionShort:
-						"Suggest sensitive data rule for a given path.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -538,10 +514,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "discovery",
-					description:
-						"API to create discovery object for a site or virtual site in system namespace.",
-					descriptionShort:
-						"API to create discovery object for a site or virtual site in",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -549,10 +523,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "download_certificate",
-					description:
-						"Download the cerificates files for the Log Collerctor\nIn order to establish connection from the third party application server to the\nLog Colletor the user should download a zip file with the certificates files:\n- client.crt\n- client.key\n- server_ca.crt.",
-					descriptionShort:
-						"Download the cerificates files for the Log Collerctor\nIn ord",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -561,9 +533,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "loadbalancer",
 					description:
-						"List Loadbalancers referenced by the API Definition (backrefrences).",
+						"Load balancing configuration for traffic distribution",
 					descriptionShort:
-						"List Loadbalancers referenced by the API Definition (backref",
+						"Load balancing configuration for traffic distribution",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -571,10 +543,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mark_as_non_api",
-					description:
-						"Update the API Definition's non-API list with the provided API endpoints.",
-					descriptionShort:
-						"Update the API Definition's non-API list with the provided A",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -582,10 +552,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "move_to_inventory",
-					description:
-						"Update the API Definition's include list with the provided API endpoints.",
-					descriptionShort:
-						"Update the API Definition's include list with the provided A",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -593,10 +561,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "oas_validation",
-					description:
-						"Suggest Open API specification validation rule for a given path.",
-					descriptionShort:
-						"Suggest Open API specification validation rule for a given p",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -604,9 +570,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rate_limit",
-					description: "Suggest rate limit rule for a given path.",
-					descriptionShort:
-						"Suggest rate limit rule for a given path.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -614,10 +579,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "remove_from_inventory",
-					description:
-						"Update the API Definition's exclude list with the provided API endpoints.",
-					descriptionShort:
-						"Update the API Definition's exclude list with the provided A",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -625,10 +588,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unmark_as_non_api",
-					description:
-						"DELETE the provided API endpoints from the API Definition's non-API list.",
-					descriptionShort:
-						"DELETE the provided API endpoints from the API Definition's ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -636,10 +597,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "evaluate",
-					description:
-						"Evaluate API Group Builder against all API endpoints associated with the referenced object and return the resulting API Group.\nFor example, if the referenced object is an HTTP LB then all discovered and imported endpoints are associated with it.",
-					descriptionShort:
-						"Evaluate API Group Builder against all API endpoints associa",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -647,10 +606,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "stat",
-					description:
-						"Check if there are any changes happened to the API Groups, and return number of API Endpoints updated for each API Group.",
-					descriptionShort:
-						"Check if there are any changes happened to the API Groups, a",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -753,7 +710,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "api_credential",
 					description: "API credential for service authentication",
-					descriptionShort: "API credential",
+					descriptionShort: "API credential for programmatic access",
 					tier: "Standard" as const,
 					icon: "🔑",
 					category: "Identity",
@@ -765,9 +722,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scim_token",
-					description: "For SCIM API credential revoke/deletion.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"For SCIM API credential revoke/deletion.",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -775,10 +732,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service_credential",
-					description:
-						"It is used to revoke multiple service credentials. This API would disable the credentials and mark them for deletion.\nThe actual removal of objects would be done in the background. Only admins are allowed to access this API.",
+					description: "Service credential for API authentication",
 					descriptionShort:
-						"It is used to revoke multiple service credentials. This API ",
+						"Service credential for API authentication",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "replace"],
 					resourceCategory: "crud" as const,
@@ -846,10 +802,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "apm",
-					description:
-						"Creates a new APM as a service with configured parameters.",
-					descriptionShort:
-						"Creates a new APM as a service with configured parameters.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -857,8 +811,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bigip_irule",
-					description: "Desired state for BIG-IP iRule Service.",
-					descriptionShort: "Desired state for BIG-IP iRule Service.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -875,10 +829,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "data_group",
-					description:
-						"Create data group in a given namespace. If one already exists it will give an error.",
-					descriptionShort:
-						"Create data group in a given namespace. If one already exist",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -886,10 +838,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_security_config",
-					description:
-						"Fetch the corresponding Security Config for the given BIG-IP load balancers.",
-					descriptionShort:
-						"Fetch the corresponding Security Config for the given BIG-IP",
+					description: "Security configuration retrieval",
+					descriptionShort: "Security configuration retrieval",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -897,10 +847,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "irule",
-					description:
-						"Create iRule in a given namespace. If one already exists it will give an error.",
-					descriptionShort:
-						"Create iRule in a given namespace. If one already exists it ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -908,8 +856,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "BIG-IP APM metrics.",
-					descriptionShort: "BIG-IP APM metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -995,8 +943,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "current",
-					description: "Endpoint to GET current usage plan.",
-					descriptionShort: "Endpoint to GET current usage plan.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1004,10 +952,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "current_usage",
-					description:
-						"List current usage details per tenant and namespace. Some usage have only sense in the system namespace and this selector has no effect on it.",
-					descriptionShort:
-						"List current usage details per tenant and namespace. Some us",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1015,8 +961,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "custom_list",
-					description: "Endpoint to list customer invoices.",
-					descriptionShort: "Endpoint to list customer invoices.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1024,10 +970,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "hourly_usage_detail",
-					description:
-						"List the usage divided by hour. The usage is hourly aggregated, from the start of UTC hour\nto the end of UTC hour. It is used to see the detailed breakdown of the usage received from ListUsageDetails.",
-					descriptionShort:
-						"List the usage divided by hour. The usage is hourly aggregat",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1035,9 +979,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "invoice_pdf",
-					description: "Retrieve pdf for a paid invoice by its name.",
-					descriptionShort:
-						"Retrieve pdf for a paid invoice by its name.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1045,8 +988,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "limit",
-					description: "Custom endpoint to return quota limits.",
-					descriptionShort: "Custom endpoint to return quota limits.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1054,10 +997,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "monthly_usage",
-					description:
-						"List monthly usage details per tenant and namespace. Some usage have only sense in the system namespace and this selector has no effect on it.",
-					descriptionShort:
-						"List monthly usage details per tenant and namespace. Some us",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1065,10 +1006,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "payment_method",
-					description:
-						"Creates a new payment method with a specific role.",
-					descriptionShort:
-						"Creates a new payment method with a specific role.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "delete"],
 					resourceCategory: "crud" as const,
@@ -1076,10 +1015,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "plan_transition",
-					description:
-						"API to create a plan transition request in db.",
-					descriptionShort:
-						"API to create a plan transition request in db.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1087,10 +1024,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "primary",
-					description:
-						"Flags a payment method as primary. Nothing changes is the payment method is already primary, if the payment method is secondary then it becomes default and there will be no secondary.",
-					descriptionShort:
-						"Flags a payment method as primary. Nothing changes is the pa",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1099,7 +1034,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "quota",
 					description: "Resource quota for usage limits",
-					descriptionShort: "Quota",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					icon: "📊",
 					category: "Other",
@@ -1111,10 +1046,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "secondary",
-					description:
-						"Flags a payment method as secondary. Nothing changes is the payment method is already secondary, if the payment method is primary then it becomes secondary and there will be no primary.",
-					descriptionShort:
-						"Flags a payment method as secondary. Nothing changes is the ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1122,10 +1055,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "swap-primary",
-					description:
-						"Swaps payment method roles - the payment method used as a parameter will became primary, any other will become secondary. The `name` parameter is ignored.",
-					descriptionShort:
-						"Swaps payment method roles - the payment method used as a pa",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1133,10 +1064,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "usage",
-					description:
-						"GET allows users to query limits and current usage of resources.",
-					descriptionShort:
-						"GET allows users to query limits and current usage of resour",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1144,10 +1073,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "usage_detail",
-					description:
-						"List usage details per tenant and namespace. Some usage have only sense in the system namespace and this selector has no effect on it.",
-					descriptionShort:
-						"List usage details per tenant and namespace. Some usage have",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1155,8 +1082,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to XC addon services.",
-					descriptionShort: "Subscribe to XC addon services.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -1164,8 +1091,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to XC addon services.",
-					descriptionShort: "Unsubscribe to XC addon services.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -1260,10 +1187,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "access_count",
-					description:
-						"Request to GET number of VoltShare API calls aggregated across multiple dimensions like OPERATION, COUNTRY, RESULT, USER_TENANT.",
-					descriptionShort:
-						"Request to GET number of VoltShare API calls aggregated acro",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1271,10 +1196,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aggregation",
-					description:
-						"Request to GET summary/analytics data for the audit logs that matches the criteria in request.",
-					descriptionShort:
-						"Request to GET summary/analytics data for the audit logs tha",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1282,10 +1205,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "audit_log",
-					description:
-						"Request to GET voltshare audit logs that matches the criteria in request.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET voltshare audit logs that matches the criteri",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1293,10 +1215,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "decrypt_secret",
-					description:
-						"DecryptSecret API takes blinded encrypted secret and policy and responds with blinded decrypted secret if user is allowed by the policy.",
-					descriptionShort:
-						"DecryptSecret API takes blinded encrypted secret and policy ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1304,10 +1224,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_policy_document",
-					description:
-						"GetPolicyDocument API returns secret policy document for the given policy that contains information about all the rules in the policy and policy_id.\nThis document can be given to F5 Distributed Cloud secret management tool to do secret encryption.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"GetPolicyDocument API returns secret policy document for the",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -1315,10 +1234,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_public_key",
-					description:
-						"GetPublicKey API returns public part of the F5 Distributed Cloud secret management key that needs to be given to F5 Distributed Cloud secret management tool to do secret encryption.",
-					descriptionShort:
-						"GetPublicKey API returns public part of the F5 Distributed C",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1326,8 +1243,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list_policy",
-					description: "Listpolicy CustomAPI.",
-					descriptionShort: "Listpolicy CustomAPI.",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1335,10 +1253,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "process_policy_information",
-					description:
-						"ProcessPolicyInformation API takes policy and secret name as input and returns a document containing .",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"ProcessPolicyInformation API takes policy and secret name as",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1346,8 +1263,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "recover",
-					description: "Recoverpolicy CustomAPI.",
-					descriptionShort: "Recoverpolicy CustomAPI.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1355,10 +1272,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scroll",
-					description:
-						"The response for audit log query contain no more than 500 messages.\nOne can use scroll request to scroll through more than 500 messages or all messages\nin multiple batches. Empty scroll_id in the response indicates no more messages to fetch (EOF).",
-					descriptionShort:
-						"The response for audit log query contain no more than 500 me",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -1366,10 +1281,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "secret_management_accesss",
-					description:
-						"Create secret_management_access creates a new object in storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create secret_management_access creates a new object in stor",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1378,7 +1291,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "secret_policy",
 					description: "Secret management policy configuration",
-					descriptionShort: "Secret policy",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					icon: "📋",
 					category: "Security",
@@ -1390,10 +1304,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "secret_policy_rule",
-					description:
-						"Create secret_policy_rule creates a new object in storage backend for metadata.namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Create secret_policy_rule creates a new object in storage ba",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1401,8 +1314,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "softdelete",
-					description: "Deletepolicy CustomAPI.",
-					descriptionShort: "Deletepolicy CustomAPI.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1410,10 +1323,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "voltshare_admin_policy",
-					description:
-						"Create voltshare_admin_policy creates a new object in the storage backend for metadata.namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Create voltshare_admin_policy creates a new object in the st",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1498,10 +1410,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "bot_defense_app_infrastructure",
-					description:
-						"Creates Bot Defense App Infrastructure in a given namespace.",
-					descriptionShort:
-						"Creates Bot Defense App Infrastructure in a given namespace.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1509,10 +1419,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "preauth",
-					description:
-						"Pre-flight auth checks before calling the Provision API.",
-					descriptionShort:
-						"Pre-flight auth checks before calling the Provision API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1520,8 +1428,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "provision",
-					description: "Provision CustomAPI.",
-					descriptionShort: "Provision CustomAPI.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1529,10 +1437,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "shape_bot_defense_instance",
-					description:
-						"List the set of shape_bot_defense_instance in a namespace.",
-					descriptionShort:
-						"List the set of shape_bot_defense_instance in a namespace.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -1540,10 +1446,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tpm_api_key",
-					description:
-						"APIKey object when successfully created returns actual APIKey bytes which is used by the users to call in to\nTPM provisioning API.",
-					descriptionShort:
-						"APIKey object when successfully created returns actual APIKe",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -1551,10 +1455,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tpm_category",
-					description:
-						"Create a Category object, which is a grouping of APIKeys used for TPM provisioning.",
-					descriptionShort:
-						"Create a Category object, which is a grouping of APIKeys use",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -1562,8 +1464,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tpm_manager",
-					description: "Create a TPM Manager object.",
-					descriptionShort: "Create a TPM Manager object.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -1644,8 +1546,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "access_log",
-					description: "Retrieve CDN Load-Balancer Access logs.",
-					descriptionShort: "Retrieve CDN Load-Balancer Access logs.",
+					description: "Logging configuration for audit and analysis",
+					descriptionShort:
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1653,10 +1556,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aggregation",
-					description:
-						"Request to GET summary/analytics data for the CDN access logs that matches the query in request for a given namespace.",
-					descriptionShort:
-						"Request to GET summary/analytics data for the CDN access log",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1664,8 +1565,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cache-purge",
-					description: "Initiate Purge for Edge CDN Cache.",
-					descriptionShort: "Initiate Purge for Edge CDN Cache.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1673,9 +1574,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cdn_cache_rule",
-					description: "Shape of the CDN loadbalancer specification.",
-					descriptionShort:
-						"Shape of the CDN loadbalancer specification.",
+					description: "CDN configuration for content delivery",
+					descriptionShort: "CDN configuration for content delivery",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1685,7 +1585,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "cdn_loadbalancer",
 					description:
 						"Content delivery network load balancer for edge caching",
-					descriptionShort: "CDN load balancer",
+					descriptionShort:
+						"Load balancing configuration for traffic distribution",
 					tier: "Standard" as const,
 					icon: "🌍",
 					category: "Load Balancing",
@@ -1701,10 +1602,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dos_automitigation_rule",
-					description:
-						"GET the corresponding DoS Auto-Mitigation Rules for the given CDN load balancer.",
+					description: "Automated DDoS mitigation rule configuration",
 					descriptionShort:
-						"GET the corresponding DoS Auto-Mitigation Rules for the give",
+						"Automated DDoS mitigation rule configuration",
 					tier: "Standard" as const,
 					operations: ["get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1712,10 +1612,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_security_config",
-					description:
-						"Fetch the corresponding Security Config for the given CDN load balancers.",
-					descriptionShort:
-						"Fetch the corresponding Security Config for the given CDN lo",
+					description: "Security configuration retrieval",
+					descriptionShort: "Security configuration retrieval",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1723,10 +1621,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggestion",
-					description:
-						"Suggest blocking SimpleClientSrcRule for a given IP/ASN.",
-					descriptionShort:
-						"Suggest blocking SimpleClientSrcRule for a given IP/ASN.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -1734,10 +1630,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get-service-operation-statu",
-					description:
-						"GET status of an operation command for a given CDN Loadbalancer.",
-					descriptionShort:
-						"GET status of an operation command for a given CDN Loadbalan",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -1745,10 +1639,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list-service-operations-statu",
-					description:
-						"List of service operations for a given CDN LB.",
-					descriptionShort:
-						"List of service operations for a given CDN LB.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -1756,10 +1648,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description:
-						"Initial metrics request for CDN loadbalancers.",
-					descriptionShort:
-						"Initial metrics request for CDN loadbalancers.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -1767,8 +1657,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to CDN Loadbalancer.",
-					descriptionShort: "Subscribe to CDN Loadbalancer.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -1776,8 +1666,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to CDN Loadbalancer.",
-					descriptionShort: "Unsubscribe to CDN Loadbalancer.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -1870,10 +1760,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "fleet",
-					description:
-						"Create fleet will create a fleet object in 'system' namespace of the user.",
-					descriptionShort:
-						"Create fleet will create a fleet object in 'system' namespac",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1881,10 +1769,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network_interface",
-					description:
-						"Network interface represents configuration of a network device.\nIt is created by users in system namespace.",
-					descriptionShort:
-						"Network interface represents configuration of a network devi",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1892,9 +1778,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pre_upgrade_check",
-					description: "API to check if site is ready for upgrade.",
-					descriptionShort:
-						"API to check if site is ready for upgrade.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -1902,8 +1787,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "setting",
-					description: "Receive the module settings.",
-					descriptionShort: "Receive the module settings.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1911,10 +1796,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "upgradable_sw_version",
-					description:
-						"API to GET list of sw versions that can be upgraded to.",
-					descriptionShort:
-						"API to GET list of sw versions that can be upgraded to.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -1922,8 +1805,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "usb_policy",
-					description: "Creates a new USB policy object.",
-					descriptionShort: "Creates a new USB policy object.",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -1931,8 +1815,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "upgrade_statu",
-					description: "API to GET upgrade status of a site.",
-					descriptionShort: "API to GET upgrade status of a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -2021,7 +1905,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "certificate",
 					description: "TLS certificate for secure HTTPS connections",
-					descriptionShort: "Certificate",
+					descriptionShort:
+						"TLS/SSL certificate for secure connections",
 					tier: "Standard" as const,
 					icon: "📜",
 					category: "Security",
@@ -2035,7 +1920,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "certificate_chain",
 					description:
 						"Certificate chain for complete trust verification",
-					descriptionShort: "Certificate chain",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "Security",
@@ -2047,8 +1932,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "crl",
-					description: "API to create CRL object.",
-					descriptionShort: "API to create CRL object.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2056,10 +1941,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "trusted_ca_list",
-					description:
-						"Shape of the Root CA Certificate specification.",
-					descriptionShort:
-						"Shape of the Root CA Certificate specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2168,10 +2051,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "certified_hardware",
-					description:
-						"List the set of certified_hardware in a namespace.",
-					descriptionShort:
-						"List the set of certified_hardware in a namespace.",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -2179,10 +2060,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cloud_connect",
-					description:
-						"Request to GET top cloud connect from the AWS Cloudwatch metrics.",
-					descriptionShort:
-						"Request to GET top cloud connect from the AWS Cloudwatch met",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2190,10 +2069,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cloud_connect_reapply_vpc_attachment",
-					description:
-						"RE-applies VPC attachment in a cloud connect config.",
-					descriptionShort:
-						"RE-applies VPC attachment in a cloud connect config.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2201,8 +2078,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cloud_credentialss",
-					description: "API to create cloud_credentials object.",
-					descriptionShort: "API to create cloud_credentials object.",
+					description: "Authentication credential for access control",
+					descriptionShort:
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2210,10 +2088,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cloud_elastic_ip",
-					description:
-						"Create Cloud Elastic IP creates Cloud Elastic IP object\nObject is attached to a site.",
-					descriptionShort:
-						"Create Cloud Elastic IP creates Cloud Elastic IP object\nObje",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2221,10 +2097,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cloud_link",
-					description:
-						"Creates a new CloudLink with configured parameters.",
-					descriptionShort:
-						"Creates a new CloudLink with configured parameters.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2241,10 +2115,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "discover_vpc",
-					description:
-						"Returns all the vpcs for a specified cloud provider, region and cred.\nFor AWS it returns all the vpcs which are not attached to any transit gateway in that region.",
-					descriptionShort:
-						"Returns all the vpcs for a specified cloud provider, region ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2252,10 +2124,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "edge_credential",
-					description:
-						"Returns the cloud credential for the matching edge type.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"Returns the cloud credential for the matching edge type.",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2263,10 +2134,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "edge_list",
-					description:
-						"Returns the online edge sites (Both Customer Edge and Cloud Edge)",
-					descriptionShort:
-						"Returns the online edge sites (Both Customer Edge and Cloud ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2274,8 +2143,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "force-delete",
-					description: "Force DELETE Cloud Elastic IP.",
-					descriptionShort: "Force DELETE Cloud Elastic IP.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2283,8 +2152,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "reapply_config",
-					description: "Reapply CloudLink Config.",
-					descriptionShort: "Reapply CloudLink Config.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2292,10 +2161,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description:
-						"Cloud Connect APIs are used to GET the data for cloud connect.",
-					descriptionShort:
-						"Cloud Connect APIs are used to GET the data for cloud connec",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -2303,10 +2170,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "segment_metric",
-					description:
-						"Cloud Connect APIs are used to GET the segment data for cloud connect.",
-					descriptionShort:
-						"Cloud Connect APIs are used to GET the segment data for clou",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -2408,8 +2273,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "usage",
-					description: "GET the workload usage.",
-					descriptionShort: "GET the workload usage.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2418,9 +2283,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "virtual_k8ss",
 					description:
-						"Create virtual_k8s will create the object in the storage backend for namespace metadata.namespace.",
+						"Virtual Kubernetes cluster for workload deployment",
 					descriptionShort:
-						"Create virtual_k8s will create the object in the storage bac",
+						"Virtual Kubernetes cluster for workload deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2429,7 +2294,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "workload",
 					description: "Container workload deployment configuration",
-					descriptionShort: "Workload",
+					descriptionShort:
+						"Container workload deployment configuration",
 					tier: "Advanced" as const,
 					icon: "📦",
 					category: "Container",
@@ -2445,8 +2311,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "workload_flavor",
-					description: "Create a workload_flavor.",
-					descriptionShort: "Create a workload_flavor.",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2516,10 +2382,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "data_type",
-					description:
-						"Create data_type creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create data_type creates a new object in the storage backend",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2527,8 +2391,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "geo_config",
-					description: "Shape of the geo config specification.",
-					descriptionShort: "Shape of the geo config specification.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -2536,9 +2400,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "lma_region",
-					description: "List the set of lma_region in a namespace.",
-					descriptionShort:
-						"List the set of lma_region in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -2547,7 +2410,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "sensitive_data_policy",
 					description: "Sensitive data policy for PII protection",
-					descriptionShort: "Sensitive data policy",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Advanced" as const,
 					icon: "🔐",
 					category: "Security",
@@ -2624,10 +2488,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "datadictionary",
-					description:
-						"GET the dataset features from Data dictionary API.",
-					descriptionShort:
-						"GET the dataset features from Data dictionary API.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2635,8 +2497,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dataset",
-					description: "API to list datasets by tenant.",
-					descriptionShort: "API to list datasets by tenant.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2644,10 +2506,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dataSet",
-					description:
-						"GET the list of data sets eligible for the tenant.",
-					descriptionShort:
-						"GET the list of data sets eligible for the tenant.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2655,10 +2515,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "flowlabel",
-					description:
-						"ListFlowLabels takes a customer name and returns a list of FlowLabel objects.",
-					descriptionShort:
-						"ListFlowLabels takes a customer name and returns a list of F",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2666,10 +2524,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "init-request",
-					description:
-						"Request to enable Data Intelligence for the tenant.",
-					descriptionShort:
-						"Request to enable Data Intelligence for the tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2677,8 +2533,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "receiver",
-					description: "Creates a new Data Delivery object.",
-					descriptionShort: "Creates a new Data Delivery object.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2686,10 +2542,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"Returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"Returns suggested values for the specified field in the give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2697,10 +2551,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "test",
-					description:
-						"API to test receiver destination sink connection.",
-					descriptionShort:
-						"API to test receiver destination sink connection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -2708,10 +2560,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description:
-						"Update receiver object status from enable to disable and vice versa.",
-					descriptionShort:
-						"Update receiver object status from enable to disable and vic",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -2719,10 +2569,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "summary",
-					description:
-						"Executive summary page for DI premium customers.",
-					descriptionShort:
-						"Executive summary page for DI premium customers.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -2730,8 +2578,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to Data Intelligence.",
-					descriptionShort: "Subscribe to Data Intelligence.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -2739,8 +2587,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to Client-Side Defense.",
-					descriptionShort: "Unsubscribe to Client-Side Defense.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -2822,10 +2670,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "access",
-					description:
-						"RPC to GET customer access and availability info.",
-					descriptionShort:
-						"RPC to GET customer access and availability info.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2833,8 +2679,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert",
-					description: "RPC to GET details of an alert.",
-					descriptionShort: "RPC to GET details of an alert.",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -2842,9 +2688,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "annotation",
-					description: "Returns annotations of a single mitigation.",
-					descriptionShort:
-						"Returns annotations of a single mitigation.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2852,10 +2697,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "attachment",
-					description:
-						"Returns any attachments associated with an event. This could be Pcap files or any other document.\nObsolete - use `GetEvent` to list out attachments.",
-					descriptionShort:
-						"Returns any attachments associated with an event. This could",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2872,10 +2715,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "event",
-					description:
-						"Returns details of an event. This allows customers to review any activity related to a DDoS attack.",
-					descriptionShort:
-						"Returns details of an event. This allows customers to review",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "create"],
 					resourceCategory: "crud" as const,
@@ -2883,8 +2724,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_asn",
-					description: "Creates a DDoS transit ASN.",
-					descriptionShort: "Creates a DDoS transit ASN.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2892,8 +2733,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_asn_prefix",
-					description: "Creates a DDoS transit Prefix.",
-					descriptionShort: "Creates a DDoS transit Prefix.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2901,8 +2742,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_deny_list_rule",
-					description: "Creates a DDoS transit Deny List Rule.",
-					descriptionShort: "Creates a DDoS transit Deny List Rule.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2910,8 +2751,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_firewall_rule",
-					description: "Creates a DDoS transit Firewall Rule.",
-					descriptionShort: "Creates a DDoS transit Firewall Rule.",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2919,9 +2760,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_firewall_rule_group",
-					description: "Amends a DDoS transit Firewall Rule Group.",
-					descriptionShort:
-						"Amends a DDoS transit Firewall Rule Group.",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2938,8 +2778,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_information",
-					description: "GET organisation information.",
-					descriptionShort: "GET organisation information.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -2947,8 +2787,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_internet_prefix_advertisement",
-					description: "Creates a DDoS transit Internet Prefix.",
-					descriptionShort: "Creates a DDoS transit Internet Prefix.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2956,8 +2796,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "infraprotect_tunnel",
-					description: "Creates a DDoS transit tunnel.",
-					descriptionShort: "Creates a DDoS transit tunnel.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -2965,10 +2805,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ip",
-					description:
-						"Returns list of IPs involved in a mitigation (and allows for searching through it)",
-					descriptionShort:
-						"Returns list of IPs involved in a mitigation (and allows for",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2976,8 +2814,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mitigation",
-					description: "Returns details of a single mitigation.",
-					descriptionShort: "Returns details of a single mitigation.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -2985,10 +2823,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mitigation_annotation",
-					description:
-						"Return mitigation annotations that occur while an event is active.",
-					descriptionShort:
-						"Return mitigation annotations that occur while an event is a",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -2996,10 +2832,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network",
-					description:
-						"Returns a list available reports to be downloaded. Reports summarise an event or a mitigation in a single PDF document.",
-					descriptionShort:
-						"Returns a list available reports to be downloaded. Reports s",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3007,10 +2841,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "report",
-					description:
-						"Returns details of a report, most importantly the PDF document itself.",
-					descriptionShort:
-						"Returns details of a report, most importantly the PDF docume",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -3018,10 +2850,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"SuggestValues returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"SuggestValues returns suggested values for the specified fie",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3038,8 +2868,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transit_usage",
-					description: "API to GET transit usage data.",
-					descriptionShort: "API to GET transit usage data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3047,9 +2877,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update-asn-prefix-irr-override",
-					description: "Update Infraprotect ASN Prefix IRR Override.",
-					descriptionShort:
-						"Update Infraprotect ASN Prefix IRR Override.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3057,10 +2886,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp_peer_statu",
-					description:
-						"API to GET routed DDoS BGP peer status information.",
-					descriptionShort:
-						"API to GET routed DDoS BGP peer status information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3068,10 +2895,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "events_summary",
-					description:
-						"Return a list of available event (suitable for an alert)",
-					descriptionShort:
-						"Return a list of available event (suitable for an alert)",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3079,10 +2904,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update-advertisement-statu",
-					description:
-						"Update Infraprotect Internet prefix advertisement.",
-					descriptionShort:
-						"Update Infraprotect Internet prefix advertisement.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3090,10 +2913,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update-asn-prefix-review-statu",
-					description:
-						"Update Infraprotect ASN Prefix Review Status.",
-					descriptionShort:
-						"Update Infraprotect ASN Prefix Review Status.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3101,8 +2922,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update-asn-review-statu",
-					description: "Update Infraprotect ASN Review Status.",
-					descriptionShort: "Update Infraprotect ASN Review Status.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3110,8 +2931,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update-tunnel-statu",
-					description: "Update Tunnel Status.",
-					descriptionShort: "Update Tunnel Status.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3290,8 +3111,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "clone_from_dns_domain",
-					description: "Cloning DNS domain to DNSZone.",
-					descriptionShort: "Cloning DNS domain to DNSZone.",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3299,10 +3120,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dns_compliance_checkss",
-					description:
-						"Create DNS Compliance Checks Specification in a given namespace. If one already exists it will give an error.",
-					descriptionShort:
-						"Create DNS Compliance Checks Specification in a given namesp",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3312,7 +3131,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "dns_domain",
 					description:
 						"DNS domain delegation and configuration settings",
-					descriptionShort: "DNS domain",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "DNS",
@@ -3324,10 +3143,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dns_lb_health_check",
-					description:
-						"Create DNS Load Balancer Health Check in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create DNS Load Balancer Health Check in a given namespace. ",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3335,10 +3152,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dns_lb_pool",
-					description:
-						"Create DNS Load Balancer Pool in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create DNS Load Balancer Pool in a given namespace. If one a",
+					description: "Backend server pool configuration",
+					descriptionShort: "Backend server pool configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3348,7 +3163,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "dns_load_balancer",
 					description:
 						"DNS-based traffic distribution with geographic routing and failover",
-					descriptionShort: "DNS load balancer",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					icon: "⚖️",
 					category: "DNS",
@@ -3366,7 +3181,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "dns_zone",
 					description:
 						"Authoritative DNS zone with record management capabilities",
-					descriptionShort: "DNS zone",
+					descriptionShort: "DNS zone for domain name management",
 					tier: "Standard" as const,
 					icon: "🌐",
 					category: "DNS",
@@ -3382,8 +3197,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "export",
-					description: "Export Zone File.",
-					descriptionShort: "Export Zone File.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3391,8 +3206,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "import",
-					description: "Import F5 Cloud Services DNS Zone.",
-					descriptionShort: "Import F5 Cloud Services DNS Zone.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3400,8 +3215,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "import_axfr",
-					description: "Import DNS Zone via AXFR.",
-					descriptionShort: "Import DNS Zone via AXFR.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3409,8 +3224,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "import_bind_create",
-					description: "Import BIND Files to Create DNS Zones.",
-					descriptionShort: "Import BIND Files to Create DNS Zones.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3418,8 +3233,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "import_bind_validate",
-					description: "Validate BIND Files for Import.",
-					descriptionShort: "Validate BIND Files for Import.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3427,8 +3242,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "local_zone_file",
-					description: "GET local zone file from secondary DNS.",
-					descriptionShort: "GET local zone file from secondary DNS.",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3436,8 +3251,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "remote_zone_file",
-					description: "GET remote zone file from primary DNS.",
-					descriptionShort: "GET remote zone file from primary DNS.",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3445,8 +3260,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "request_log",
-					description: "Retrieve DNS Zone Request Logs.",
-					descriptionShort: "Retrieve DNS Zone Request Logs.",
+					description: "Logging configuration for audit and analysis",
+					descriptionShort:
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3454,8 +3270,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rrset",
-					description: "Create CustomAPI.",
-					descriptionShort: "Create CustomAPI.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "replace", "delete"],
 					resourceCategory: "crud" as const,
@@ -3463,10 +3279,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"SuggestValues returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"SuggestValues returns suggested values for the specified fie",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3474,10 +3288,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "verify",
-					description:
-						"Verify DNS Domain for a given dns_domain object.",
-					descriptionShort:
-						"Verify DNS Domain for a given dns_domain object.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3485,10 +3297,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health_statu",
-					description:
-						"GET Health Status of all DNS Load Balancers in a namespace.",
-					descriptionShort:
-						"GET Health Status of all DNS Load Balancers in a namespace.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "analytics" as const,
@@ -3496,10 +3306,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health_status_change_event",
-					description:
-						"GET DNS Load Balancer Pool Health Status Changes.",
-					descriptionShort:
-						"GET DNS Load Balancer Pool Health Status Changes.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3507,8 +3315,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "Request to GET DNS zone metrics data.",
-					descriptionShort: "Request to GET DNS zone metrics data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -3516,10 +3324,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pool_members_health_statu",
-					description:
-						"GET Health Status of all DNS Load Balancer Pool Members in a namespace.",
-					descriptionShort:
-						"GET Health Status of all DNS Load Balancer Pool Members in a",
+					description: "Backend server pool configuration",
+					descriptionShort: "Backend server pool configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3527,8 +3333,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to DNS Management.",
-					descriptionShort: "Subscribe to DNS Management.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -3536,8 +3342,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to DNS Management.",
-					descriptionShort: "Unsubscribe to DNS Management.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -3645,7 +3451,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "container_registry",
 					description: "Container image registry for workload images",
-					descriptionShort: "Container registry",
+					descriptionShort: "Resource creation operation",
 					tier: "Advanced" as const,
 					icon: "📦",
 					category: "Container",
@@ -3658,7 +3464,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "k8s_cluster_role",
 					description: "Kubernetes cluster RBAC role configuration",
-					descriptionShort: "K8s cluster role",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Advanced" as const,
 					icon: "👤",
 					category: "Container",
@@ -3670,10 +3476,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_cluster_role_binding",
-					description:
-						"Create k8s_cluster_role_binding will create the object in the storage backend for namespace metadata.namespace.",
-					descriptionShort:
-						"Create k8s_cluster_role_binding will create the object in th",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3681,10 +3485,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_pod_security_admission",
-					description:
-						"Create k8s_pod_security_admission will create the object in the storage backend.",
-					descriptionShort:
-						"Create k8s_pod_security_admission will create the object in ",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3692,10 +3494,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_pod_security_policy",
-					description:
-						"Create k8s_pod_security_policy will create the object in the storage backend for namespace metadata.namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Create k8s_pod_security_policy will create the object in the",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3769,10 +3570,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "addon_service",
-					description:
-						"Retrieves addon service information for the given addon service name.",
-					descriptionShort:
-						"Retrieves addon service information for the given addon serv",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get", "list"],
 					resourceCategory: "crud" as const,
@@ -3780,10 +3579,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cminstance",
-					description:
-						"Create App type will create the configuration in namespace metadata.namespace.",
-					descriptionShort:
-						"Create App type will create the configuration in namespace m",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3791,10 +3588,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "external_connector",
-					description:
-						"Shape of the external_connector configuration specification.",
-					descriptionShort:
-						"Shape of the external_connector configuration specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -3802,10 +3597,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "force-delete",
-					description:
-						"Force DELETE view object. This can result in staled objects in cloud provider.",
-					descriptionShort:
-						"Force DELETE view object. This can result in staled objects ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3813,10 +3606,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "generate_token",
-					description:
-						"Generate token that will be used by the third party application.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"Generate token that will be used by the third party applicat",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -3824,10 +3616,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_security_config",
-					description:
-						"Fetch the corresponding Security Config for the given Third Party Application.",
-					descriptionShort:
-						"Fetch the corresponding Security Config for the given Third ",
+					description: "Security configuration retrieval",
+					descriptionShort: "Security configuration retrieval",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3835,10 +3625,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "navigation_tile",
-					description:
-						"List the set of navigation_tile in a namespace.",
-					descriptionShort:
-						"List the set of navigation_tile in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -3846,8 +3634,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "plan",
-					description: "List the set of plan in a namespace.",
-					descriptionShort: "List the set of plan in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -3855,10 +3643,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "run",
-					description:
-						"Perform terraform actions for a given view. Supported actions are apply and plan.",
-					descriptionShort:
-						"Perform terraform actions for a given view. Supported action",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -3866,10 +3652,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "terraform_parameter",
-					description:
-						"Returned from list of terraform parameter objects for a given view.",
-					descriptionShort:
-						"Returned from list of terraform parameter objects for a give",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3886,9 +3670,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "view_internal",
-					description: "Returned internal object for a given view.",
-					descriptionShort:
-						"Returned internal object for a given view.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -3896,10 +3679,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "activation-statu",
-					description:
-						"GET current subscription status for an addon service. Response can indicate whether the service was successfully subscribed or in pending state.",
-					descriptionShort:
-						"GET current subscription status for an addon service. Respon",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3907,10 +3688,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all-activation-statu",
-					description:
-						"GET current subscription status for all addon services in a feature tier. Response can indicate whether the service was successfully subscribed or in pending state.",
-					descriptionShort:
-						"GET current subscription status for all addon services in a ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3918,10 +3697,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description:
-						"Returned from list of terraform parameter status objects for a given view.",
-					descriptionShort:
-						"Returned from list of terraform parameter status objects for",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -3929,10 +3706,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "addon_subscription",
-					description:
-						"Create a new Addon Subscription with Addon Subscription State.",
-					descriptionShort:
-						"Create a new Addon Subscription with Addon Subscription Stat",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "management" as const,
@@ -4043,10 +3818,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "address_allocator",
-					description:
-						"Create Address Allocator will create an address allocator object in 'system' namespace of the user.",
-					descriptionShort:
-						"Create Address Allocator will create an address allocator ob",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4054,10 +3827,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "advertise_policy",
-					description:
-						"Advertise_policy object controls how and where a service represented by a given virtual_host object is advertised to consumers.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Advertise_policy object controls how and where a service rep",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4065,10 +3837,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp",
-					description:
-						"BGP object is the configuration for peering with external BGP servers.\nIt is created by users in system namespace.",
-					descriptionShort:
-						"BGP object is the configuration for peering with external BG",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4076,10 +3846,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp_asn_set",
-					description:
-						"Create bgp_asn_set creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create bgp_asn_set creates a new object in the storage backe",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4087,8 +3855,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp_peer",
-					description: "Show BGP Peer information.",
-					descriptionShort: "Show BGP Peer information.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -4096,9 +3864,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp_route",
-					description: "Show routes exported / imported via BGP.",
-					descriptionShort:
-						"Show routes exported / imported via BGP.",
+					description: "Traffic routing configuration",
+					descriptionShort: "Traffic routing configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -4106,10 +3873,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgp_routing_policy",
-					description:
-						"BGP Routing Policy is a list of rules containing match criteria\nand action to be applied. These rules help contol routes which are\nimported or exported to BGP peers.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"BGP Routing Policy is a list of rules containing match crite",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4117,9 +3883,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dc_cluster_group",
-					description: "Create DC Cluster group in given namespace.",
-					descriptionShort:
-						"Create DC Cluster group in given namespace.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4127,10 +3892,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "forwarding_classs",
-					description:
-						"Forwarding Class is created by users in system namespace.",
-					descriptionShort:
-						"Forwarding Class is created by users in system namespace.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4138,10 +3901,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ike_phase1_profile",
-					description:
-						"Shape of the IKE Phase1 profile specification.",
-					descriptionShort:
-						"Shape of the IKE Phase1 profile specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4149,10 +3910,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ike_phase2_profile",
-					description:
-						"Shape of the IKE Phase2 profile specification.",
-					descriptionShort:
-						"Shape of the IKE Phase2 profile specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4160,10 +3919,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ike1",
-					description:
-						"Shape of the IKE Phase1 profile specification.",
-					descriptionShort:
-						"Shape of the IKE Phase1 profile specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4171,10 +3928,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ike2",
-					description:
-						"Shape of the IKE Phase2 profile specification.",
-					descriptionShort:
-						"Shape of the IKE Phase2 profile specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4182,10 +3937,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ip_prefix_set",
-					description:
-						"Create ip_prefix_set creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create ip_prefix_set creates a new object in the storage bac",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4195,7 +3948,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "network_connector",
 					description:
 						"Network connector for site-to-site or cloud connectivity",
-					descriptionShort: "Network connector",
+					descriptionShort: "Network connector for site connectivity",
 					tier: "Advanced" as const,
 					icon: "🔌",
 					category: "Networking",
@@ -4219,9 +3972,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "route",
 					description:
-						"Create route object in a given namespace. Route object is list of route rules.\nEach rule has match condition to match incoming requests and actions to take on matching requests.\nVirtual host object has reference to route object.",
+						"HTTP routing rule for path-based traffic distribution",
 					descriptionShort:
-						"Create route object in a given namespace. Route object is li",
+						"HTTP routing rule for path-based traffic distribution",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4229,10 +3982,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "simplified_route",
-					description:
-						"Show user-friendly VER routes matching the request.",
-					descriptionShort:
-						"Show user-friendly VER routes matching the request.",
+					description: "Traffic routing configuration",
+					descriptionShort: "Traffic routing configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4240,10 +3991,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "srv6_network_slice",
-					description:
-						"Create srv6_network_slice creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create srv6_network_slice creates a new object in the storag",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4251,10 +4000,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subnet",
-					description:
-						"Subnet object contains configuration for an interface of a VM/pod.\nIt is created in user or shared namespace.",
-					descriptionShort:
-						"Subnet object contains configuration for an interface of a V",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4262,8 +4009,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "traceroute",
-					description: "Run traceroute to a destination.",
-					descriptionShort: "Run traceroute to a destination.",
+					description: "Traffic routing configuration",
+					descriptionShort: "Traffic routing configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4271,10 +4018,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tunnel",
-					description:
-						"Create tunnel in a given namespace. If one already exist it will give a error.",
-					descriptionShort:
-						"Create tunnel in a given namespace. If one already exist it ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4284,7 +4029,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "virtual_network",
 					description:
 						"Virtual network for site connectivity and segmentation",
-					descriptionShort: "Virtual network",
+					descriptionShort:
+						"Virtual network for workload connectivity",
 					tier: "Standard" as const,
 					icon: "🔗",
 					category: "Networking",
@@ -4300,10 +4046,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bgpstatu",
-					description:
-						"Returned from list of BGP status objects for a given view.",
-					descriptionShort:
-						"Returned from list of BGP status objects for a given view.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -4311,8 +4055,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "DC Cluster Group metrics.",
-					descriptionShort: "DC Cluster Group metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -4419,10 +4163,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "fast_acl",
-					description:
-						"Create a `fast_acl` object, `fast_acl` object contains rules to protect site from denial of service\nIt has destination{destination IP, destination port) and references to `fast_acl_rule`",
-					descriptionShort:
-						"Create a `fast_acl` object, `fast_acl` object contains rules",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4430,10 +4172,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "fast_acl_rule",
-					description:
-						"Create a new Fast ACL rule, `fast_acl_rule` has specification to match source IP, source port and action to apply.",
-					descriptionShort:
-						"Create a new Fast ACL rule, `fast_acl_rule` has specificatio",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4441,8 +4181,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "filter_set",
-					description: "Create specification.",
-					descriptionShort: "Create specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4450,10 +4190,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "find",
-					description:
-						"Retrieve any saved filter sets that are applicable for the given context key(s)",
-					descriptionShort:
-						"Retrieve any saved filter sets that are applicable for the g",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4463,7 +4201,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "forward_proxy_policy",
 					description:
 						"Forward proxy policy for outbound traffic control",
-					descriptionShort: "Forward proxy policy",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Advanced" as const,
 					icon: "➡️",
 					category: "Security",
@@ -4475,10 +4214,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "graph",
-					description:
-						"Request to GET different network segments with given metrics .\nThis will give metric data for all segments including intra segment metrics.",
-					descriptionShort:
-						"Request to GET different network segments with given metrics",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4486,10 +4223,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "hit",
-					description:
-						"GET the counter for Forward Proxy Policy hits for a given namespace.",
-					descriptionShort:
-						"GET the counter for Forward Proxy Policy hits for a given na",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4497,10 +4232,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "latency",
-					description:
-						"GET the average latency for Service policy evaluation.",
-					descriptionShort:
-						"GET the average latency for Service policy evaluation.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4508,10 +4241,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nat_policy",
-					description:
-						"NAT Policy create specification configures NAT Policy with multiple Rules,.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"NAT Policy create specification configures NAT Policy with m",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4521,7 +4253,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "network_firewall",
 					description:
 						"Network firewall for layer 3/4 traffic protection",
-					descriptionShort: "Network firewall",
+					descriptionShort:
+						"Network layer firewall for traffic filtering",
 					tier: "Standard" as const,
 					icon: "🧱",
 					category: "Security",
@@ -4535,7 +4268,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "network_policy",
 					description:
 						"Network security policy for traffic filtering",
-					descriptionShort: "Network policy",
+					descriptionShort: "Network access control policy",
 					tier: "Standard" as const,
 					icon: "🔒",
 					category: "Security",
@@ -4547,10 +4280,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network_policy_rule",
-					description:
-						"Creates a network policy rule with configured parameters in specified namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Creates a network policy rule with configured parameters in ",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4558,10 +4290,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network_policy_set",
-					description:
-						"List the set of network_policy_set in a namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"List the set of network_policy_set in a namespace.",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4569,10 +4300,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network_policy_view",
-					description:
-						"Shape of the Network policy view specification.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Shape of the Network policy view specification.",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4580,10 +4310,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "policy_based_routing",
-					description:
-						"Shape of the Network Policy based routing create specification.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Shape of the Network Policy based routing create specificati",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4591,8 +4320,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "segment",
-					description: "Shape of the segment specification.",
-					descriptionShort: "Shape of the segment specification.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4609,10 +4338,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service_policy",
-					description:
-						"Create service_policy creates a new object in the storage backend for metadata.namespace.",
+					description: "Traffic control policy with allow/deny rules",
 					descriptionShort:
-						"Create service_policy creates a new object in the storage ba",
+						"Traffic control policy with allow/deny rules",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4702,9 +4430,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "nginx_csg",
-					description: "List the set of nginx_csg in a namespace.",
-					descriptionShort:
-						"List the set of nginx_csg in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4712,10 +4439,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nginx_dataplane_server",
-					description:
-						"GET NGINX One Servers associated to an NGINX dataplane.",
-					descriptionShort:
-						"GET NGINX One Servers associated to an NGINX dataplane.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4723,10 +4448,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nginx_instance",
-					description:
-						"List the set of nginx_instance in a namespace.",
-					descriptionShort:
-						"List the set of nginx_instance in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4734,9 +4457,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nginx_server",
-					description: "List the set of nginx_server in a namespace.",
-					descriptionShort:
-						"List the set of nginx_server in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4744,10 +4466,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nginx_service_discovery",
-					description:
-						"API to create NGINX Service Discovery object for a site or virtual site in system namespace.",
-					descriptionShort:
-						"API to create NGINX Service Discovery object for a site or v",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -4755,8 +4475,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to NGINX One.",
-					descriptionShort: "Subscribe to NGINX One.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -4764,8 +4484,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to NGINX One.",
-					descriptionShort: "Unsubscribe to NGINX One.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -4845,10 +4565,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "mobile-app-shield",
-					description:
-						"ListMobileAppShields is an API to list all mobile app shields available for download.",
-					descriptionShort:
-						"ListMobileAppShields is an API to list all mobile app shield",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4856,10 +4574,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mobile-integrator",
-					description:
-						"ListMobileIntegrators is an API to list all mobile integrators available for download.",
-					descriptionShort:
-						"ListMobileIntegrators is an API to list all mobile integrato",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -4867,10 +4583,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "stored_object",
-					description:
-						"ListObjects is an API to list objects in object store.",
-					descriptionShort:
-						"ListObjects is an API to list objects in object store.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "delete", "get"],
 					resourceCategory: "crud" as const,
@@ -4953,10 +4667,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "access_log",
-					description:
-						"Request to GET access logs that matches the criteria in request for a given namespace.\nTypically, virtual host is specified as match condition in the request to GET all access logs\nfor a virtual host. By default, the access logs in the response are sorted in the reverse chronological order.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET access logs that matches the criteria in requ",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4964,10 +4677,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aggregation",
-					description:
-						"GET summary/aggregation data for alerts in the given namespace.\nFor `system` namespace, all alerts for the tenant matching the query specified\nin the request will be considered for aggregation.",
-					descriptionShort:
-						"GET summary/aggregation data for alerts in the given namespa",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -4975,10 +4686,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert",
-					description:
-						"GET alerts matching the filter for the given namespace.",
-					descriptionShort:
-						"GET alerts matching the filter for the given namespace.",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -4986,10 +4695,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_alert",
-					description:
-						"For system namespace, all the alerts for the tenant matching the filter specified in the request\nwill be returned in the response.",
-					descriptionShort:
-						"For system namespace, all the alerts for the tenant matching",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -4997,10 +4704,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "audit_log",
-					description:
-						"Request to GET audit logs that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for audit logs across all namespaces for a given tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET audit logs that matches the criteria in reque",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5008,8 +4714,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "certificate-report-detail",
-					description: "Returns the certificate report detail.",
-					descriptionShort: "Returns the certificate report detail.",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5017,10 +4723,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dns-monitors-health",
-					description:
-						"Returns list of DNS monitors in namespace with corresponding region health(s)",
-					descriptionShort:
-						"Returns list of DNS monitors in namespace with corresponding",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5028,10 +4732,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "filtered-dns-monitor-list",
-					description:
-						"List v1_dns_monitor in a namespace based on filter.",
-					descriptionShort:
-						"List v1_dns_monitor in a namespace based on filter.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5039,10 +4741,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "filtered-http-monitor-list",
-					description:
-						"List v1_http_monitor in a namespace based on filter.",
-					descriptionShort:
-						"List v1_http_monitor in a namespace based on filter.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5050,10 +4750,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "firewall_log",
-					description:
-						"Request to GET access logs and network logs with policy hits.\nBy default, the firewall logs in the response are sorted in the reverse chronological order.",
-					descriptionShort:
-						"Request to GET access logs and network logs with policy hits",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5061,10 +4759,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "global-history",
-					description:
-						"Returns a time series of critical monitor counts in namespace.",
-					descriptionShort:
-						"Returns a time series of critical monitor counts in namespac",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5072,9 +4768,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health",
-					description: "Returns 200 Ok if the service is healthy.",
-					descriptionShort:
-						"Returns 200 Ok if the service is healthy.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5082,10 +4777,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "history",
-					description:
-						"GET the history of alert notifications sent to the end-user between the start_time and end_time that matches the\nfilter specified in the request.",
-					descriptionShort:
-						"GET the history of alert notifications sent to the end-user ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5093,10 +4786,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "http-monitor-detail",
-					description:
-						"Returns the monitor latency, trend, and health by region.",
-					descriptionShort:
-						"Returns the monitor latency, trend, and health by region.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5104,10 +4795,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "http-monitors-health",
-					description:
-						"Returns list of HTTP monitors in namespace with corresponding region health(s)",
-					descriptionShort:
-						"Returns list of HTTP monitors in namespace with correspondin",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5115,10 +4804,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "monitor-event",
-					description:
-						"Returns the healthy and critical events for the specified monitor.",
-					descriptionShort:
-						"Returns the healthy and critical events for the specified mo",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5126,10 +4813,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "monitor-history",
-					description:
-						"Returns the healthy and critical statuses for the specified monitor.",
-					descriptionShort:
-						"Returns the healthy and critical statuses for the specified ",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5137,10 +4822,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "platform_event",
-					description:
-						"Request to GET platform event that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for platform events across all namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET platform event that matches the criteria in r",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5148,10 +4831,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scroll",
-					description:
-						'Scroll request is used to fetch large number of alert messages in multiple batches with each AlertsHistoryResponse\ncontaining no more than 500 alerts. To scroll through more than 500 or all alert messages, one can use the\nAlertsHistoryScrollRequest. Use the scroll_id returned in the AlertsHistoryResponse to fetch the next batch of alert messages and\none can continue this process till the scroll_id returned in the AlertsHistoryResponse is "" which indicates no more\nalert messages to scroll.',
-					descriptionShort:
-						"Scroll request is used to fetch large number of alert messag",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -5159,10 +4840,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"Returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"Returns suggested values for the specified field in the give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5170,10 +4849,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tls-report-detail",
-					description:
-						"Returns the HTML encoding of the generated TLS report.",
-					descriptionShort:
-						"Returns the HTML encoding of the generated TLS report.",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5181,8 +4858,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "v1_dns_monitor",
-					description: "Create a new DNS Monitor.",
-					descriptionShort: "Create a new DNS Monitor.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5190,8 +4867,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "v1_http_monitor",
-					description: "Create HTTP Monitor.",
-					descriptionShort: "Create HTTP Monitor.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5199,10 +4876,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_audit_log",
-					description:
-						"Request to GET Virtual K8s audit logs that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for audit logs across all namespaces for a given tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET Virtual K8s audit logs that matches the crite",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5210,10 +4886,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_event",
-					description:
-						"Request to GET Virtual K8s events that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nvK8s events in the namespace. User with access to the `system` namespace may query for vK8s across\nall namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET Virtual K8s events that matches the criteria ",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5221,10 +4895,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "certificate-summary",
-					description:
-						"Returns list of TLS certificate expirations in specified time window for HTTPS monitors running in namespace.",
-					descriptionShort:
-						"Returns list of TLS certificate expirations in specified tim",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5232,10 +4904,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dns-monitor-summary",
-					description:
-						"Returns the DNS monitor health status, latency, and trend.",
-					descriptionShort:
-						"Returns the DNS monitor health status, latency, and trend.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5243,10 +4913,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "global-summary",
-					description:
-						"Returns a healthy and critical count of all monitors in namespace, based on monitor type.",
-					descriptionShort:
-						"Returns a healthy and critical count of all monitors in name",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5254,10 +4922,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "http-monitor-summary",
-					description:
-						"Returns the HTTP monitor health status, latency, and trend.",
-					descriptionShort:
-						"Returns the HTTP monitor health status, latency, and trend.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5265,10 +4931,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric-query",
-					description:
-						"Returns time series data of monitor metric query by region.",
-					descriptionShort:
-						"Returns time series data of monitor metric query by region.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -5276,10 +4940,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "record-type-summary",
-					description:
-						"Returns record type summary for DNS monitor including record type and count.",
-					descriptionShort:
-						"Returns record type summary for DNS monitor including record",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5287,10 +4949,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "source-summary",
-					description:
-						"Returns the healthy and critical status count, latency, and coordinates for each source region.",
-					descriptionShort:
-						"Returns the healthy and critical status count, latency, and ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5298,10 +4958,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tls-report-summary",
-					description:
-						"Returns the TLS report summary including grade, score, and protocol names.",
-					descriptionShort:
-						"Returns the TLS report summary including grade, score, and p",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5309,10 +4967,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tls-summary",
-					description:
-						"Returns TLS summary of all HTTPS monitors running in namespace.",
-					descriptionShort:
-						"Returns TLS summary of all HTTPS monitors running in namespa",
+					description: "TLS/SSL certificate management",
+					descriptionShort: "TLS/SSL certificate management",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5320,10 +4976,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description:
-						"Subscribe to Observability Synthetic Monitor.",
-					descriptionShort:
-						"Subscribe to Observability Synthetic Monitor.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -5331,10 +4985,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description:
-						"Unsubscribe to Observability Synthetic Monitor.",
-					descriptionShort:
-						"Unsubscribe to Observability Synthetic Monitor.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -5454,10 +5106,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "policer",
-					description:
-						"Create a new policer with traffic rate limits.",
-					descriptionShort:
-						"Create a new policer with traffic rate limits.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5465,10 +5115,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "protocol_policer",
-					description:
-						"Create a protocol_policer object, protocol_policer object contains list\nof L4 protocol match condition and corresponding traffic rate limits.",
-					descriptionShort:
-						"Create a protocol_policer object, protocol_policer object co",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5478,7 +5126,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "rate_limiter",
 					description:
 						"Rate limiter for traffic throttling and protection",
-					descriptionShort: "Rate limiter",
+					descriptionShort:
+						"Request rate limiting for traffic control",
 					tier: "Standard" as const,
 					icon: "⏱️",
 					category: "Security",
@@ -5555,10 +5204,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "malicious_user_mitigation",
-					description:
-						"Create malicious_user_mitigation creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create malicious_user_mitigation creates a new object in the",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5646,10 +5293,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "app_setting",
-					description:
-						"Create App setting configuration in namespace metadata.namespace.",
-					descriptionShort:
-						"Create App setting configuration in namespace metadata.names",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5657,10 +5302,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app_type",
-					description:
-						"Create App type will create the configuration in namespace metadata.namespace.",
-					descriptionShort:
-						"Create App type will create the configuration in namespace m",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5669,7 +5312,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "endpoint",
 					description: "Service mesh endpoint for traffic routing",
-					descriptionShort: "Endpoint",
+					descriptionShort: "Resource creation operation",
 					tier: "Advanced" as const,
 					icon: "🎯",
 					category: "Networking",
@@ -5681,8 +5324,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "force-delete",
-					description: "Force DELETE NFV Service.",
-					descriptionShort: "Force DELETE NFV Service.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5690,10 +5333,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "nfv_service",
-					description:
-						"Creates a new NFV service with configured parameters.",
-					descriptionShort:
-						"Creates a new NFV service with configured parameters.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5701,8 +5342,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "sid_counter",
-					description: "API to GET SID Counters.",
-					descriptionShort: "API to GET SID Counters.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5710,10 +5351,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "site_mesh_group",
-					description:
-						"Create a Site Mesh Group in system namespace of user.",
-					descriptionShort:
-						"Create a Site Mesh Group in system namespace of user.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5721,10 +5360,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "software_os_version",
-					description:
-						"API to GET OS IMAGE based on the software version.",
-					descriptionShort:
-						"API to GET OS IMAGE based on the software version.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5732,9 +5369,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "virtual_network",
-					description: "Create virtual network in given namespace.",
+					description: "Virtual network for workload connectivity",
 					descriptionShort:
-						"Create virtual network in given namespace.",
+						"Virtual network for workload connectivity",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5743,9 +5380,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "api_endpoint",
 					description:
-						"GET all auto discovered API endpoints for App type.",
+						"API endpoint configuration for traffic management",
 					descriptionShort:
-						"GET all auto discovered API endpoints for App type.",
+						"API endpoint configuration for traffic management",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -5753,10 +5390,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "learnt_schema",
-					description:
-						"GET Learnt Schema per API endpoint for a given auto discovered API endpoint for Service.",
-					descriptionShort:
-						"GET Learnt Schema per API endpoint for a given auto discover",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -5764,8 +5399,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "Nfv Service metrics.",
-					descriptionShort: "Nfv Service metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -5773,10 +5408,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "override",
-					description:
-						"GET all override for API endpoints configured for this App type.",
-					descriptionShort:
-						"GET all override for API endpoints configured for this App t",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5784,10 +5417,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pdf",
-					description:
-						"GET PDF of all metrics for a given auto discovered API endpoint for App type.",
-					descriptionShort:
-						"GET PDF of all metrics for a given auto discovered API endpo",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -5795,10 +5426,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pop",
-					description:
-						"Remove override for dynamic component for API endpoints discovered for this App type.",
-					descriptionShort:
-						"Remove override for dynamic component for API endpoints disc",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -5806,10 +5435,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "push",
-					description:
-						"Add override for dynamic component for API endpoints discovered for this App type.",
-					descriptionShort:
-						"Add override for dynamic component for API endpoints discove",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -5817,8 +5444,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suspicious_user",
-					description: "GET status of suspicious users.",
-					descriptionShort: "GET status of suspicious users.",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -5826,10 +5453,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "swagger_spec",
-					description:
-						"GET the corresponding Swagger spec for the given app type.",
-					descriptionShort:
-						"GET the corresponding Swagger spec for the given app type.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -5920,9 +5545,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "action",
-					description: "GET Malicious Traffic Overview in Actions.",
-					descriptionShort:
-						"GET Malicious Traffic Overview in Actions.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5930,10 +5554,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "affectedUser",
-					description:
-						"List affected users who have loaded this particular script.",
-					descriptionShort:
-						"List affected users who have loaded this particular script.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5941,8 +5563,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "age",
-					description: "GET device age information.",
-					descriptionShort: "GET device age information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5950,8 +5572,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert_gen_policy",
-					description: "Create Alert Generation Policy.",
-					descriptionShort: "Create Alert Generation Policy.",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5959,8 +5582,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert_template",
-					description: "Create Domain to protect.",
-					descriptionShort: "Create Domain to protect.",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5968,8 +5591,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "allowed_domain",
-					description: "Create allowed domain.",
-					descriptionShort: "Create allowed domain.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -5977,9 +5600,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "analysi",
-					description: "Mark / unmark field sensitivity by customer.",
-					descriptionShort:
-						"Mark / unmark field sensitivity by customer.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -5987,8 +5609,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "apikey",
-					description: "GET API key.",
-					descriptionShort: "GET API key.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -5996,8 +5618,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app",
-					description: "GET top latency overview apps.",
-					descriptionShort: "GET top latency overview apps.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6005,8 +5627,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app_provision",
-					description: "Provision an application for a tenant.",
-					descriptionShort: "Provision an application for a tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6014,8 +5636,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "application",
-					description: "Update an application's information.",
-					descriptionShort: "Update an application's information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "delete", "list"],
 					resourceCategory: "crud" as const,
@@ -6023,8 +5645,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "asn",
-					description: "GET Bot Top ASN Information.",
-					descriptionShort: "GET Bot Top ASN Information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6032,9 +5654,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "asorg",
-					description: "GET top malicious bots by AS Organization.",
-					descriptionShort:
-						"GET top malicious bots by AS Organization.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6042,8 +5663,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "atb",
-					description: "ATB Status.",
-					descriptionShort: "ATB Status.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -6051,8 +5672,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "attackintent",
-					description: "Top Malicious Bots by Attack Intent.",
-					descriptionShort: "Top Malicious Bots by Attack Intent.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6060,8 +5681,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "audit",
-					description: "GET SAFE block table list.",
-					descriptionShort: "GET SAFE block table list.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6069,9 +5690,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "automation",
-					description: "GET top malicious bots automation types.",
-					descriptionShort:
-						"GET top malicious bots automation types.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6079,8 +5699,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bad-bot-reduction",
-					description: "Insight Bad Bot Reduction.",
-					descriptionShort: "Insight Bad Bot Reduction.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6088,10 +5708,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "behavior",
-					description:
-						"List all the behaviors for a script depending on start time and end time.",
-					descriptionShort:
-						"List all the behaviors for a script depending on start time ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6099,8 +5717,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bfp",
-					description: "Top Attacked BFP.",
-					descriptionShort: "Top Attacked BFP.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6108,9 +5726,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_allowlist_policy",
-					description: "GET all bot allowlist policies and versions.",
-					descriptionShort:
-						"GET all bot allowlist policies and versions.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "get"],
 					resourceCategory: "crud" as const,
@@ -6118,8 +5735,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_detection_rule",
-					description: "Deploybotdetectionrules CustomAPI.",
-					descriptionShort: "Deploybotdetectionrules CustomAPI.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -6127,8 +5744,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_detection_update",
-					description: "Getbotdetectionupdates CustomAPI.",
-					descriptionShort: "Getbotdetectionupdates CustomAPI.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6136,9 +5753,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_endpoint_policy",
-					description: "GET all bot endpoint policies and versions.",
-					descriptionShort:
-						"GET all bot endpoint policies and versions.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "get"],
 					resourceCategory: "crud" as const,
@@ -6146,8 +5762,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_infrastructure",
-					description: "Create Bot Infrastructure.",
-					descriptionShort: "Create Bot Infrastructure.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -6155,9 +5771,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "bot_network_policy",
-					description: "GET all bot network policies and versions.",
-					descriptionShort:
-						"GET all bot network policies and versions.",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "get"],
 					resourceCategory: "crud" as const,
@@ -6165,8 +5780,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "browser",
-					description: "Malicious Report Transactions Browser.",
-					descriptionShort: "Malicious Report Transactions Browser.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6174,8 +5789,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "category",
-					description: "GET Endpoint Category Breakdown.",
-					descriptionShort: "GET Endpoint Category Breakdown.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6183,10 +5798,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "channel",
-					description:
-						"GET channel chart data from shape recognize API.",
-					descriptionShort:
-						"GET channel chart data from shape recognize API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6194,9 +5807,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "check",
-					description: "Check if the tenant has the peer or not.",
-					descriptionShort:
-						"Check if the tenant has the peer or not.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6204,8 +5816,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "clone",
-					description: "Clone the BRM Alert Template.",
-					descriptionShort: "Clone the BRM Alert Template.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6213,8 +5825,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "config",
-					description: "GET Connector config.",
-					descriptionShort: "GET Connector config.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -6222,10 +5834,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "conversion",
-					description:
-						"GET conversion chart data from shape recognize API.",
-					descriptionShort:
-						"GET conversion chart data from shape recognize API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6233,8 +5843,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "country",
-					description: "GET devices country information.",
-					descriptionShort: "GET devices country information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6242,8 +5852,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "credential-stuffing-attack",
-					description: "GET Insight Credential Stuffing Attack.",
-					descriptionShort: "GET Insight Credential Stuffing Attack.",
+					description: "Authentication credential for access control",
+					descriptionShort:
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6251,10 +5862,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dashboard",
-					description:
-						"GET script overview data for a script depending on start time and end time.",
-					descriptionShort:
-						"GET script overview data for a script depending on start tim",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6262,9 +5871,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "deployment",
-					description: "Getbotdetectionrulesdeployments CustomAPI.",
-					descriptionShort:
-						"Getbotdetectionrulesdeployments CustomAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6272,8 +5880,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "deployment_history",
-					description: "GET deployment history.",
-					descriptionShort: "GET deployment history.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -6281,8 +5889,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "detail",
-					description: "GET SAFE block details.",
-					descriptionShort: "GET SAFE block details.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6290,10 +5898,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "detected_domain",
-					description:
-						"GET the detected domains data for the tenant.",
-					descriptionShort:
-						"GET the detected domains data for the tenant.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6301,8 +5907,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "device",
-					description: "GET top human device.",
-					descriptionShort: "GET top human device.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6310,8 +5916,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "domain_detail",
-					description: "GET the details of the domain provided.",
-					descriptionShort: "GET the details of the domain provided.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6319,10 +5925,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "download_release_note",
-					description:
-						"Downloadbotdetectionupdatesreleasenotes CustomAPI.",
-					descriptionShort:
-						"Downloadbotdetectionupdatesreleasenotes CustomAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6330,8 +5934,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "draft",
-					description: "Getbotdetectionrulesdraft CustomAPI.",
-					descriptionShort: "Getbotdetectionrulesdraft CustomAPI.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create", "delete"],
 					resourceCategory: "crud" as const,
@@ -6339,10 +5943,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enable",
-					description:
-						"Enable Application Traffic Insights feature for the tenant.",
-					descriptionShort:
-						"Enable Application Traffic Insights feature for the tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6350,8 +5952,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "endpoint",
-					description: "Report Endpoints.",
-					descriptionShort: "Report Endpoints.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6359,8 +5961,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "endpointlabel",
-					description: "GET top Endpoint labels.",
-					descriptionShort: "GET top Endpoint labels.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6368,10 +5970,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enjoy",
-					description:
-						"GET enjoy chart data from shape recognize API.",
-					descriptionShort:
-						"GET enjoy chart data from shape recognize API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6379,8 +5979,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ep",
-					description: "POST Safe Analyst Station ep request.",
-					descriptionShort: "POST Safe Analyst Station ep request.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6388,8 +5988,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "expanded",
-					description: "GET expanded traffic overview.",
-					descriptionShort: "GET expanded traffic overview.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6397,8 +5997,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "feedback",
-					description: "POST Safe block feedback.",
-					descriptionShort: "POST Safe block feedback.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6406,8 +6006,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "field",
-					description: "GET",
-					descriptionShort: "GET",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6415,10 +6015,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "formField",
-					description:
-						"List form fields for all the scripts depending on start time and end time with GET method.",
-					descriptionShort:
-						"List form fields for all the scripts depending on start time",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -6426,10 +6024,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "friction_aggregation",
-					description:
-						"GET Friction Aggregation chart data from shape recognize API.",
-					descriptionShort:
-						"GET Friction Aggregation chart data from shape recognize API",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6437,10 +6033,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "friction_histogram",
-					description:
-						"GET Histogram Aggregation chart data from shape recognize API.",
-					descriptionShort:
-						"GET Histogram Aggregation chart data from shape recognize AP",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6448,10 +6042,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "general_feedback",
-					description:
-						"Update fraud feedback for a transaction or session.",
-					descriptionShort:
-						"Update fraud feedback for a transaction or session.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6459,8 +6051,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "geolocation",
-					description: "GET top human geolocation.",
-					descriptionShort: "GET top human geolocation.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6468,10 +6060,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "getcurrentfrauddata",
-					description:
-						"GET Current Fraud data request for a time range.",
-					descriptionShort:
-						"GET Current Fraud data request for a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6479,10 +6069,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettopriskyaccount",
-					description:
-						"GET top risky accounts data request in a time range.",
-					descriptionShort:
-						"GET top risky accounts data request in a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6490,10 +6078,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettopriskydevice",
-					description:
-						"GET top risky devices data request in a time range.",
-					descriptionShort:
-						"GET top risky devices data request in a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6501,10 +6087,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettopriskyipaddresse",
-					description:
-						"GET top risky IP addresses data request in a time range.",
-					descriptionShort:
-						"GET top risky IP addresses data request in a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6512,10 +6096,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettopriskyreason",
-					description:
-						"GET top risky reasons data request for a time range.",
-					descriptionShort:
-						"GET top risky reasons data request for a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6523,10 +6105,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gettransactiondata",
-					description:
-						"GET Transaction data request for a time range.",
-					descriptionShort:
-						"GET Transaction data request for a time range.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6534,8 +6114,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "good",
-					description: "GET top good bots.",
-					descriptionShort: "GET top good bots.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6543,8 +6123,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health",
-					description: "Health Check.",
-					descriptionShort: "Health Check.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6552,9 +6132,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "history",
-					description: "Getbotdetectionrulechangehistory CustomAPI.",
-					descriptionShort:
-						"Getbotdetectionrulechangehistory CustomAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6562,10 +6141,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "init",
-					description:
-						"Enable Client-Side Defense feature for the tenant.",
-					descriptionShort:
-						"Enable Client-Side Defense feature for the tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6573,8 +6150,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ip",
-					description: "Malicious Report Transactions IP.",
-					descriptionShort: "Malicious Report Transactions IP.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6582,10 +6159,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "js_configuration",
-					description:
-						"GET JS Injection Configuration for this tenant.",
-					descriptionShort:
-						"GET JS Injection Configuration for this tenant.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6602,10 +6177,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "lift",
-					description:
-						"GET lift chart data from shape recognize API.",
-					descriptionShort:
-						"GET lift chart data from shape recognize API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6613,8 +6186,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list",
-					description: "GET All Protected Endpoints.",
-					descriptionShort: "GET All Protected Endpoints.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6622,8 +6195,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mitigated_domain",
-					description: "Create Mitigated Domain.",
-					descriptionShort: "Create Mitigated Domain.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -6631,8 +6204,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mobile_base_config",
-					description: "Create Mobile SDK Base Configuration.",
-					descriptionShort: "Create Mobile SDK Base Configuration.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -6640,8 +6213,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mobile_base_config_file",
-					description: "GET Mobile Base Configuration File.",
-					descriptionShort: "GET Mobile Base Configuration File.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -6649,10 +6222,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mobile-sdk",
-					description:
-						"ListMobileSDKs is an API to list all mobile SDKs available for download.",
-					descriptionShort:
-						"ListMobileSDKs is an API to list all mobile SDKs available f",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -6660,10 +6231,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "networkInteraction",
-					description:
-						"List all the network interactions for a script depending on start time and end time.",
-					descriptionShort:
-						"List all the network interactions for a script depending on ",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6671,8 +6240,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "o",
-					description: "Malicious Report Transactions OS.",
-					descriptionShort: "Malicious Report Transactions OS.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6680,8 +6249,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "overview",
-					description: "GET top latency overview.",
-					descriptionShort: "GET top latency overview.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -6689,8 +6258,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "platform",
-					description: "GET top human platform.",
-					descriptionShort: "GET top human platform.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6698,8 +6267,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "policy",
-					description: "Deploy Policies to Bot Infrastructure.",
-					descriptionShort: "Deploy Policies to Bot Infrastructure.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6707,10 +6276,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "protected_application",
-					description:
-						"Create applications protected by Bot Defense.",
-					descriptionShort:
-						"Create applications protected by Bot Defense.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -6718,8 +6285,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "protected_domain",
-					description: "Create Domain to protect.",
-					descriptionShort: "Create Domain to protect.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -6727,10 +6294,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "provision",
-					description:
-						"GET Recognize provision status as add-on service.",
-					descriptionShort:
-						"GET Recognize provision status as add-on service.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -6738,10 +6303,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "readStatu",
-					description:
-						"Allow / block script from reading form fields.",
-					descriptionShort:
-						"Allow / block script from reading form fields.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6749,10 +6312,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "region",
-					description:
-						"Returns Application Traffic Insights regions information for the tenant.",
-					descriptionShort:
-						"Returns Application Traffic Insights regions information for",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6760,10 +6321,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rescue",
-					description:
-						"GET rescue chart data from shape recognize API.",
-					descriptionShort:
-						"GET rescue chart data from shape recognize API.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6771,8 +6330,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rule",
-					description: "Edit exising block rule.",
-					descriptionShort: "Edit exising block rule.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6780,10 +6339,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "safecubejsdata",
-					description:
-						"GET Safe CubeJS data request for a given query.",
-					descriptionShort:
-						"GET Safe CubeJS data request for a given query.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6791,10 +6348,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "script",
-					description:
-						"List all the scripts for the tenant depending on start time and end time.",
-					descriptionShort:
-						"List all the scripts for the tenant depending on start time ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -6802,8 +6357,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "session",
-					description: "GET devices session information.",
-					descriptionShort: "GET devices session information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6811,10 +6366,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "src_tag_injection",
-					description:
-						"Validate js src tag injection in the target URL.",
-					descriptionShort:
-						"Validate js src tag injection in the target URL.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6822,10 +6375,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"Returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"Returns suggested values for the specified field in the give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6833,8 +6384,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "table",
-					description: "GET Safe block table as CSV file.",
-					descriptionShort: "GET Safe block table as CSV file.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -6842,8 +6393,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "template",
-					description: "GET iApp template.",
-					descriptionShort: "GET iApp template.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -6851,10 +6402,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "testj",
-					description:
-						"Validate JS script tag injection in the target URL.",
-					descriptionShort:
-						"Validate JS script tag injection in the target URL.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6862,10 +6411,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "threat-type",
-					description:
-						"GetThreat Types traffic count for Peergroup Benchmarking.",
-					descriptionShort:
-						"GetThreat Types traffic count for Peergroup Benchmarking.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6873,8 +6420,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "timesery",
-					description: "Malicious Report APP Time Series.",
-					descriptionShort: "Malicious Report APP Time Series.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6882,8 +6429,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top-good-bot",
-					description: "GET Peer Group Top Good Bots.",
-					descriptionShort: "GET Peer Group Top Good Bots.",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6891,8 +6438,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top-reason-code",
-					description: "GET Top Reason Codes.",
-					descriptionShort: "GET Top Reason Codes.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6900,8 +6447,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "total-automation",
-					description: "GET Insight Totol Automation data.",
-					descriptionShort: "GET Insight Totol Automation data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6909,8 +6456,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction",
-					description: "GET Bot Transactions Information.",
-					descriptionShort: "GET Bot Transactions Information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6918,10 +6465,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction_detail",
-					description:
-						"GET a detailed information about the requested transaction.",
-					descriptionShort:
-						"GET a detailed information about the requested transaction.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -6929,10 +6474,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction_device_history",
-					description:
-						"POST Safe Analyst Station specific transaction device history.",
-					descriptionShort:
-						"POST Safe Analyst Station specific transaction device histor",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6940,10 +6483,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction_location",
-					description:
-						"POST Safe Analyst Station specific transaction locations.",
-					descriptionShort:
-						"POST Safe Analyst Station specific transaction locations.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6951,10 +6492,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction_related_session",
-					description:
-						"POST Safe Analyst Station specific transaction related sessions.",
-					descriptionShort:
-						"POST Safe Analyst Station specific transaction related sessi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6962,10 +6501,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transaction_timeline",
-					description:
-						"POST Safe Analyst Station specific transaction timeline.",
-					descriptionShort:
-						"POST Safe Analyst Station specific transaction timeline.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6973,8 +6510,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transactions_csv",
-					description: "GET Safe transactions as CSV file.",
-					descriptionShort: "GET Safe transactions as CSV file.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6982,10 +6519,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "transactions_over_time",
-					description:
-						"POST Safe Analyst Station Dashboard Transaction Breakdown request.",
-					descriptionShort:
-						"POST Safe Analyst Station Dashboard Transaction Breakdown re",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -6993,8 +6528,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ua",
-					description: "GET devices user agent information.",
-					descriptionShort: "GET devices user agent information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7002,8 +6537,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unaddressed-automation",
-					description: "Insight Unaddressed Automations.",
-					descriptionShort: "Insight Unaddressed Automations.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7011,8 +6546,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unique",
-					description: "GET devices unique access information.",
-					descriptionShort: "GET devices unique access information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7020,10 +6555,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update_domain",
-					description:
-						"Update domain from mitigated domains to allowed domains and vice versa.",
-					descriptionShort:
-						"Update domain from mitigated domains to allowed domains and ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7031,8 +6564,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "url",
-					description: "GET Bot Top URL Information.",
-					descriptionShort: "GET Bot Top URL Information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7040,8 +6573,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "version",
-					description: "GET bot endpoint policy versions.",
-					descriptionShort: "GET bot endpoint policy versions.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -7049,8 +6582,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "deployment_statu",
-					description: "GET deployment status.",
-					descriptionShort: "GET deployment status.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -7058,8 +6591,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "Malicious Traffic Overview Metrics.",
-					descriptionShort: "Malicious Traffic Overview Metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -7067,8 +6600,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "personal-stat",
-					description: "Insight Personal Stats.",
-					descriptionShort: "Insight Personal Stats.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -7076,8 +6609,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "state",
-					description: "GET customer State if after or before.",
-					descriptionShort: "GET customer State if after or before.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -7085,10 +6618,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description:
-						"Returns Application Traffic Insights information for the tenant.",
-					descriptionShort:
-						"Returns Application Traffic Insights information for the ten",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -7096,8 +6627,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "summary",
-					description: "Getbotdetectionrulessummary CustomAPI.",
-					descriptionShort: "Getbotdetectionrulessummary CustomAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -7105,10 +6636,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_location",
-					description:
-						"GET SAFE Analyst Station Dashboard Transaction Breakdown request.",
-					descriptionShort:
-						"GET SAFE Analyst Station Dashboard Transaction Breakdown req",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -7116,8 +6645,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_reason_code",
-					description: "Top Reason Codes.",
-					descriptionShort: "Top Reason Codes.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -7125,10 +6654,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_source",
-					description:
-						"GET SAFE Analyst Station Dashboard Transaction Breakdown request.",
-					descriptionShort:
-						"GET SAFE Analyst Station Dashboard Transaction Breakdown req",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "analytics" as const,
@@ -7136,8 +6663,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to Client-Side Defense.",
-					descriptionShort: "Subscribe to Client-Side Defense.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -7145,8 +6672,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to Client-Side Defense.",
-					descriptionShort: "Unsubscribe to Client-Side Defense.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -7428,10 +6955,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "aggregation",
-					description:
-						"Request to GET summary/analytics data for the firewall logs that matches the query in request for a given namespace.",
-					descriptionShort:
-						"Request to GET summary/analytics data for the firewall logs ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7439,9 +6964,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aws_tgw_site",
-					description: "Shape of the AWS TGW site specification.",
-					descriptionShort:
-						"Shape of the AWS TGW site specification.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7449,9 +6973,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aws_vpc_site",
-					description: "Shape of the AWS VPC site specification.",
-					descriptionShort:
-						"Shape of the AWS VPC site specification.",
+					description: "AWS VPC site for cloud deployment",
+					descriptionShort: "AWS VPC site for cloud deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7459,9 +6982,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "azure_vnet_site",
-					description: "Shape of the Azure VNet site specification.",
-					descriptionShort:
-						"Shape of the Azure VNet site specification.",
+					description: "Azure VNet site for cloud deployment",
+					descriptionShort: "Azure VNet site for cloud deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7469,10 +6991,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "configmap",
-					description:
-						"API to GET list of configmaps for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of configmaps for a given namespace in a sit",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7480,10 +7000,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cronjob",
-					description:
-						"API to GET list of cronjobs for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of cronjobs for a given namespace in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7491,10 +7009,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "daemonset",
-					description:
-						"API to GET list of daemon sets for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of daemon sets for a given namespace in a si",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7502,8 +7018,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dc_cluster_group",
-					description: "GET topology of a DC Cluster.",
-					descriptionShort: "GET topology of a DC Cluster.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -7511,10 +7027,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "deployment",
-					description:
-						"API to GET list of deployments for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of deployments for a given namespace in a si",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7522,10 +7036,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "edge",
-					description:
-						"Request to GET time-series data for an edge returned in the site traffic graph.",
-					descriptionShort:
-						"Request to GET time-series data for an edge returned in the ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7533,10 +7045,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "endpoint",
-					description:
-						"API to GET list of endpoints for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of endpoints for a given namespace in a site",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7544,10 +7054,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "firewall_log",
-					description:
-						"Request to GET access logs and network logs with policy hits.\nBy default, the firewall logs in the response are sorted in the reverse chronological order.",
-					descriptionShort:
-						"Request to GET access logs and network logs with policy hits",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7555,9 +7063,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "gcp_vpc_site",
-					description: "Shape of the GCP VPC site specification.",
-					descriptionShort:
-						"Shape of the GCP VPC site specification.",
+					description: "GCP VPC site for cloud deployment",
+					descriptionShort: "GCP VPC site for cloud deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7565,9 +7072,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "global_network",
-					description: "API to GET list of Global Network in a site.",
-					descriptionShort:
-						"API to GET list of Global Network in a site.",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7575,8 +7081,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "global-kubeconfig",
-					description: "Kubeconfig credential revoke/deletion.",
-					descriptionShort: "Kubeconfig credential revoke/deletion.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -7584,10 +7090,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "job",
-					description:
-						"API to GET list of jobs for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of jobs for a given namespace in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7595,10 +7099,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_audit_log",
-					description:
-						"Request to GET Physical K8s audit logs that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for audit logs across all namespaces in a K8s Cluster.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET Physical K8s audit logs that matches the crit",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7606,10 +7109,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_cluster",
-					description:
-						"Create k8s_cluster will create the object in the storage backend for namespace metadata.namespace.",
-					descriptionShort:
-						"Create k8s_cluster will create the object in the storage bac",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7617,10 +7118,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "k8s_event",
-					description:
-						"Request to GET physical K8s events that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nK8s events in the namespace. User with access to the `system` namespace may query for K8s events across\nall namespaces in a K8s Cluster.",
-					descriptionShort:
-						"Request to GET physical K8s events that matches the criteria",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7628,10 +7127,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "local-kubeconfig",
-					description:
-						"Down load kube config for local K8s cluster access.",
-					descriptionShort:
-						"Down load kube config for local K8s cluster access.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "get"],
 					resourceCategory: "crud" as const,
@@ -7639,10 +7136,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "log",
-					description:
-						"Request to GET external connector logs that matches the criteria in request for a given namespace.\nThe logs are per site per external connector is specified as match condition in the request to GET the logs for a external connector.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET external connector logs that matches the crit",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7650,9 +7146,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "namespace",
-					description: "API to GET list of namespaces in a site.",
-					descriptionShort:
-						"API to GET list of namespaces in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7660,8 +7155,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "network",
-					description: "Gets Networks Associated to Site.",
-					descriptionShort: "Gets Networks Associated to Site.",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -7669,8 +7164,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "node",
-					description: "API to GET list of nodes in a site.",
-					descriptionShort: "API to GET list of nodes in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -7678,10 +7173,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "persistentvolume",
-					description:
-						"API to GET list of Persistent Volumes in a site.",
-					descriptionShort:
-						"API to GET list of Persistent Volumes in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7689,10 +7182,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "persistentvolumeclaim",
-					description:
-						"API to GET list of PVCs for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of PVCs for a given namespace in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7700,10 +7191,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "platform_event",
-					description:
-						"Request to GET platform event that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for platform events across all namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET platform event that matches the criteria in r",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7711,10 +7200,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pod",
-					description:
-						"API to GET list of pods in a site for a given namespace.",
-					descriptionShort:
-						"API to GET list of pods in a site for a given namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7722,10 +7209,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "replicaset",
-					description:
-						"API to GET list of replica sets for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of replica sets for a given namespace in a s",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7733,9 +7218,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "route_table",
-					description: "Gets Route Tables Associated with a Network.",
-					descriptionShort:
-						"Gets Route Tables Associated with a Network.",
+					description: "Traffic routing configuration",
+					descriptionShort: "Traffic routing configuration",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -7743,10 +7227,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scroll",
-					description:
-						"The response for firewall log query contain no more than 500 records.\nScroll request is used scroll through more than 500 records or all records that matched the criteria in the\nfirewall log query in multiple batches. EOF is indicated by empty scroll_id in the response.",
-					descriptionShort:
-						"The response for firewall log query contain no more than 500",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -7754,10 +7236,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "secret",
-					description:
-						"API to GET list of secrets for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of secrets for a given namespace in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7765,9 +7245,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "securemesh_site",
-					description: "Shape of the Secure Mesh site specification.",
-					descriptionShort:
-						"Shape of the Secure Mesh site specification.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7775,9 +7254,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "securemesh_site_v2",
-					description: "Shape of the Secure Mesh site specification.",
-					descriptionShort:
-						"Shape of the Secure Mesh site specification.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7785,8 +7263,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "segment",
-					description: "API to GET list of segments in a site.",
-					descriptionShort: "API to GET list of segments in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7794,10 +7272,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "selectee",
-					description:
-						"GET the list of objects selected by this Virtual Site based on its selector label expression.",
-					descriptionShort:
-						"GET the list of objects selected by this Virtual Site based ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -7805,10 +7281,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service",
-					description:
-						"API to GET list of services for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of services for a given namespace in a site.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -7816,10 +7290,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_cloud_site_info",
-					description:
-						"Configure AWS VPC Site Information like public, private ips, subnet IDs and others.",
-					descriptionShort:
-						"Configure AWS VPC Site Information like public, private ips,",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7827,10 +7299,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_tgw_info",
-					description:
-						"Configure TGW Information like tgw-ID, F5 Distributed Cloud site's VPC-ID.",
-					descriptionShort:
-						"Configure TGW Information like tgw-ID, F5 Distributed Cloud ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7838,8 +7308,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_vip_info",
-					description: "Configure AWS TGW Site VIP Information.",
-					descriptionShort: "Configure AWS TGW Site VIP Information.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7847,8 +7317,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_vpc_ip_prefixe",
-					description: "Configure VPC IP prefix set.",
-					descriptionShort: "Configure VPC IP prefix set.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7856,8 +7326,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_vpc_k8s_hostname",
-					description: "Configure VPC K8s node hostname set.",
-					descriptionShort: "Configure VPC K8s node hostname set.",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7865,8 +7335,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "set_vpn_tunnel",
-					description: "Configure VPC IP prefix set.",
-					descriptionShort: "Configure VPC IP prefix set.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7894,7 +7364,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "site_mesh_group",
 					description:
 						"Mesh connectivity configuration between multiple sites",
-					descriptionShort: "Site mesh group",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Advanced" as const,
 					icon: "🕸️",
 					category: "Infrastructure",
@@ -7910,8 +7380,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "upgrade_o",
-					description: "Upgrade Site OS version.",
-					descriptionShort: "Upgrade Site OS version.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7919,8 +7389,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "upgrade_sw",
-					description: "Upgrade Site SW version.",
-					descriptionShort: "Upgrade Site SW version.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7928,8 +7398,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "validate_config",
-					description: "Validate AWS TGW Config.",
-					descriptionShort: "Validate AWS TGW Config.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7938,9 +7408,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "virtual_k8ss",
 					description:
-						"Create virtual_k8s will create the object in the storage backend for namespace metadata.namespace.",
+						"Virtual Kubernetes cluster for workload deployment",
 					descriptionShort:
-						"Create virtual_k8s will create the object in the storage bac",
+						"Virtual Kubernetes cluster for workload deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7950,7 +7420,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "virtual_site",
 					description:
 						"Logical grouping of sites using label selectors",
-					descriptionShort: "Virtual site",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					icon: "🏷️",
 					category: "Infrastructure",
@@ -7962,10 +7432,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_audit_log",
-					description:
-						"Request to GET Virtual K8s audit logs that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for audit logs across all namespaces for a given tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET Virtual K8s audit logs that matches the crite",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7973,10 +7442,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_event",
-					description:
-						"Request to GET Virtual K8s events that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nvK8s events in the namespace. User with access to the `system` namespace may query for vK8s across\nall namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET Virtual K8s events that matches the criteria ",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -7984,9 +7451,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "voltstack_site",
-					description: "Shape of the App Stack site specification.",
+					description:
+						"Customer Edge site for on-premises deployment",
 					descriptionShort:
-						"Shape of the App Stack site specification.",
+						"Customer Edge site for on-premises deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -7994,10 +7462,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description:
-						"API to GET pods metrics for a given namespace in a site.",
-					descriptionShort:
-						"API to GET pods metrics for a given namespace in a site.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -8005,10 +7471,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "state",
-					description:
-						"Request changing site state but this request goes through validation as some\ntrainsitions are not allowed.\nIt can be used to decomission site by sending state DECOMISSIONING. Example of\nforbidden state is PROVISIONING and UPGRADING.",
-					descriptionShort:
-						"Request changing site state but this request goes through va",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -8016,10 +7480,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statefulset",
-					description:
-						"API to GET list of stateful sets for a given namespace in a site.",
-					descriptionShort:
-						"API to GET list of stateful sets for a given namespace in a ",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -8027,8 +7489,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description: "Check Site Exist for a site.",
-					descriptionShort: "Check Site Exist for a site.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -8156,10 +7618,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "aggregation",
-					description:
-						"Request to GET summary/analytics data for the firewall logs that matches the query in request for a given namespace.",
-					descriptionShort:
-						"Request to GET summary/analytics data for the firewall logs ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8167,8 +7627,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert_policy",
-					description: "Creates a new Alert Policy Object.",
-					descriptionShort: "Creates a new Alert Policy Object.",
+					description: "Alert policy for monitoring notifications",
+					descriptionShort:
+						"Alert policy for monitoring notifications",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -8176,8 +7637,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "alert_receiver",
-					description: "Creates a new Alert Receiver object.",
-					descriptionShort: "Creates a new Alert Receiver object.",
+					description: "Alert receiver for notification delivery",
+					descriptionShort:
+						"Alert receiver for notification delivery",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -8185,10 +7647,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_alert",
-					description:
-						"For system namespace, all the alerts for the tenant matching the filter specified in the request\nwill be returned in the response.",
-					descriptionShort:
-						"For system namespace, all the alerts for the tenant matching",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8196,10 +7656,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_service",
-					description:
-						"Request to GET monitoring data for a service mesh of a given application.",
-					descriptionShort:
-						"Request to GET monitoring data for a service mesh of a given",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8207,10 +7665,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "by_application",
-					description:
-						"Request to GET l3l4 Application traffic data.",
-					descriptionShort:
-						"Request to GET l3l4 Application traffic data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8218,9 +7674,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "by_mitigation",
-					description: "Request to GET l3l4 Mitigation Traffic data.",
-					descriptionShort:
-						"Request to GET l3l4 Mitigation Traffic data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8228,9 +7683,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "by_network",
-					description: "Request to GET l3l4 Network Traffic data.",
-					descriptionShort:
-						"Request to GET l3l4 Network Traffic data.",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8238,10 +7692,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "by_zone",
-					description:
-						"Request to GET l3l4 zone destination Traffic data.",
-					descriptionShort:
-						"Request to GET l3l4 zone destination Traffic data.",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8258,10 +7710,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "confirm",
-					description:
-						"API to confirm the Alert Receiver - applicable only for email and sms.",
-					descriptionShort:
-						"API to confirm the Alert Receiver - applicable only for emai",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8269,10 +7719,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "create_http_load_balancer",
-					description:
-						"Create HTTP/HTTPS load balancer using the discovered virtual server as an origin server.",
-					descriptionShort:
-						"Create HTTP/HTTPS load balancer using the discovered virtual",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8280,10 +7728,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "create_tcp_load_balancer",
-					description:
-						"Create TCP load balancer using the discovered virtual server as an origin server.",
-					descriptionShort:
-						"Create TCP load balancer using the discovered virtual server",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8291,8 +7737,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dc_cluster_group",
-					description: "GET topology of a DC Cluster.",
-					descriptionShort: "GET topology of a DC Cluster.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -8300,10 +7746,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "disable_visibility",
-					description:
-						"Disable Visibility of the service in all workspaces. This will remove the discovered service\nfrom being visible in other wokspaces like WAAP.",
-					descriptionShort:
-						"Disable Visibility of the service in all workspaces. This wi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8311,10 +7755,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "discovered_service",
-					description:
-						"List the discovered services of specific type like virtual-servers, K8s, consul, NGINX server, etc.",
-					descriptionShort:
-						"List the discovered services of specific type like virtual-s",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -8322,8 +7764,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "download",
-					description: "Download report.",
-					descriptionShort: "Download report.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -8331,10 +7773,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enable_visibility",
-					description:
-						"Enable Visibility of the service in all workspaces. This action will make the\ndiscovered service visible within WAAP, App Connect where the user can perform\nthe workspace specific actions.",
-					descriptionShort:
-						"Enable Visibility of the service in all workspaces. This act",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8342,10 +7782,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "event_count",
-					description:
-						"Request to GET l3l4 Event counts over a period of time.",
-					descriptionShort:
-						"Request to GET l3l4 Event counts over a period of time.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8353,10 +7791,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "firewall_log",
-					description:
-						"Request to GET access logs and network logs with policy hits.\nBy default, the firewall logs in the response are sorted in the reverse chronological order.",
-					descriptionShort:
-						"Request to GET access logs and network logs with policy hits",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8364,9 +7800,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "flow_anomaly",
-					description: "List the set of flow_anomaly in a namespace.",
-					descriptionShort:
-						"List the set of flow_anomaly in a namespace.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -8374,8 +7809,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "generate",
-					description: "Generate report now.",
-					descriptionShort: "Generate report now.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8383,9 +7818,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "global_log_receiver",
-					description: "Creates a new Global Log Receiver object.",
+					description: "Global log receiver for tenant-wide logging",
 					descriptionShort:
-						"Creates a new Global Log Receiver object.",
+						"Global log receiver for tenant-wide logging",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -8393,10 +7828,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list-reports-history",
-					description:
-						"List Reports history for the list of report configurations in the given namespace.",
-					descriptionShort:
-						"List Reports history for the list of report configurations i",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8404,10 +7837,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list-reports-history-bot-defence",
-					description:
-						"List Reports history bot defence for the list of report configurations in the given namespace.",
-					descriptionShort:
-						"List Reports history bot defence for the list of report conf",
+					description: "Bot detection and defense configuration",
+					descriptionShort: "Bot detection and defense configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8415,10 +7846,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list-reports-history-waap",
-					description:
-						"List Reports history waap for the list of report configurations in the given namespace.",
-					descriptionShort:
-						"List Reports history waap for the list of report configurati",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8426,8 +7855,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "log_receiver",
-					description: "Creates a new Log Receiver object.",
-					descriptionShort: "Creates a new Log Receiver object.",
+					description: "Log receiver for centralized logging",
+					descriptionShort: "Log receiver for centralized logging",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -8435,10 +7864,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "match",
-					description:
-						"GET Alert Policies that match to a set of alert labels for a namespace.",
-					descriptionShort:
-						"GET Alert Policies that match to a set of alert labels for a",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8446,8 +7873,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "matching_flow",
-					description: "Show VER flows matching the request.",
-					descriptionShort: "Show VER flows matching the request.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8455,10 +7882,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "platform_event",
-					description:
-						"Request to GET platform event that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for platform events across all namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET platform event that matches the criteria in r",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8466,9 +7891,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "report",
-					description: "GET Report will read the report metadata.",
-					descriptionShort:
-						"GET Report will read the report metadata.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -8476,10 +7900,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "report_config",
-					description:
-						"Report configuration is used to schedule report generation at a later point in time.",
-					descriptionShort:
-						"Report configuration is used to schedule report generation a",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -8487,9 +7909,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "route_table",
-					description: "Gets Route Tables Associated with a Network.",
-					descriptionShort:
-						"Gets Route Tables Associated with a Network.",
+					description: "Traffic routing configuration",
+					descriptionShort: "Traffic routing configuration",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -8497,10 +7918,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scroll",
-					description:
-						"The response for firewall log query contain no more than 500 records.\nScroll request is used scroll through more than 500 records or all records that matched the criteria in the\nfirewall log query in multiple batches. EOF is indicated by empty scroll_id in the response.",
-					descriptionShort:
-						"The response for firewall log query contain no more than 500",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -8508,8 +7927,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "site_mesh_group",
-					description: "GET topology of a site mesh.",
-					descriptionShort: "GET topology of a site mesh.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["create", "list"],
 					resourceCategory: "crud" as const,
@@ -8517,10 +7936,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"SuggestValues returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"SuggestValues returns suggested values for the specified fie",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8528,8 +7945,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "test",
-					description: "API to send test alert.",
-					descriptionShort: "API to send test alert.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8537,10 +7954,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "verify",
-					description:
-						"API to send request to verify Alert Receiver - applicable only for email and sms.",
-					descriptionShort:
-						"API to send request to verify Alert Receiver - applicable on",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8548,10 +7963,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_audit_log",
-					description:
-						"Request to GET Virtual K8s audit logs that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nCRUD operations performed in the namespace. User with access to the `system` namespace\nmay query for audit logs across all namespaces for a given tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"Request to GET Virtual K8s audit logs that matches the crite",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8559,10 +7973,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vk8s_event",
-					description:
-						"Request to GET Virtual K8s events that matches the criteria in request for a given namespace.\nIf no match conditions are specified in the request, then the response contains all\nvK8s events in the namespace. User with access to the `system` namespace may query for vK8s across\nall namespaces for a given tenant.",
-					descriptionShort:
-						"Request to GET Virtual K8s events that matches the criteria ",
+					description: "Kubernetes workload configuration",
+					descriptionShort: "Kubernetes workload configuration",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8570,8 +7982,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description: "GET status for global log receivers.",
-					descriptionShort: "GET status for global log receivers.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -8579,10 +7991,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscription-statu",
-					description:
-						"Check subscription status flow Flow Collection.",
-					descriptionShort:
-						"Check subscription status flow Flow Collection.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -8590,10 +8000,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_talker",
-					description:
-						"Request to GET l3l4 Top talkers Traffic data.",
-					descriptionShort:
-						"Request to GET l3l4 Top talkers Traffic data.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -8601,8 +8009,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to Flow Collection.",
-					descriptionShort: "Subscribe to Flow Collection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -8610,8 +8018,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to Flow Collection.",
-					descriptionShort: "Unsubscribe to Flow Collection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -8731,8 +8139,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "add",
-					description: "Add USB Enablement Rules.",
-					descriptionShort: "Add USB Enablement Rules.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8740,8 +8148,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "change-password",
-					description: "Change host user password.",
-					descriptionShort: "Change host user password.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8749,10 +8157,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "check-debug-info-collection",
-					description:
-						"Check if the zip file of debug info from node is available.",
-					descriptionShort:
-						"Check if the zip file of debug info from node is available.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8760,10 +8166,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "close",
-					description:
-						"Closes selected customer support ticket (if not already closed). You can always attempt to reopen if needed to be.",
-					descriptionShort:
-						"Closes selected customer support ticket (if not already clos",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8771,10 +8175,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "comment",
-					description:
-						"Adds additional comment to a specified customer support ticket. The comment may include an attachment.",
-					descriptionShort:
-						"Adds additional comment to a specified customer support tick",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8782,8 +8184,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "config",
-					description: "GET LTE configuration from the node.",
-					descriptionShort: "GET LTE configuration from the node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -8791,10 +8193,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "customer_support",
-					description:
-						"Creates a new customer support ticket in our customer support provider system.",
-					descriptionShort:
-						"Creates a new customer support ticket in our customer suppor",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "list", "get"],
 					resourceCategory: "crud" as const,
@@ -8802,8 +8202,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "delete",
-					description: "DELETE USB Enablement Rules.",
-					descriptionShort: "DELETE USB Enablement Rules.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8811,8 +8211,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dhcp_lease",
-					description: "GET DHCP lease information.",
-					descriptionShort: "GET DHCP lease information.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8820,8 +8220,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "diagnosi",
-					description: "GET VPM network information.",
-					descriptionShort: "GET VPM network information.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8829,8 +8229,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "disconnect",
-					description: "Disconnect the node from LTE network.",
-					descriptionShort: "Disconnect the node from LTE network.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8838,10 +8238,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "download-debug-info-collection",
-					description:
-						"Download the zip file of debug info from node if available.",
-					descriptionShort:
-						"Download the zip file of debug info from node if available.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8849,10 +8247,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "escalate",
-					description:
-						"Escalates a selected ticket. Only certain customers (depending on their contract) are allowed to escalate tickets.",
-					descriptionShort:
-						"Escalates a selected ticket. Only certain customers (dependi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8860,8 +8256,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "exec",
-					description: "Run supported exec command on node.",
-					descriptionShort: "Run supported exec command on node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8869,8 +8265,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "exec-log",
-					description: "Retrieve exec history on node.",
-					descriptionShort: "Retrieve exec history on node.",
+					description: "Logging configuration for audit and analysis",
+					descriptionShort:
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8878,10 +8275,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "exec-user",
-					description:
-						"Run supported exec command on node with lower privilege.",
-					descriptionShort:
-						"Run supported exec command on node with lower privilege.",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8889,10 +8284,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "fetchdump",
-					description:
-						"Fetch the captured pcap data from an earlier Tcpdump request.",
-					descriptionShort:
-						"Fetch the captured pcap data from an earlier Tcpdump request",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8900,8 +8293,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health",
-					description: "GET VPM health information.",
-					descriptionShort: "GET VPM health information.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8909,8 +8302,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "host-ping",
-					description: "Ping intiated from host kernel.",
-					descriptionShort: "Ping intiated from host kernel.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8918,8 +8311,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "info",
-					description: "GET LTE runtime information.",
-					descriptionShort: "GET LTE runtime information.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8927,10 +8320,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "jira_projects_issue_type",
-					description:
-						"Returns the available projects and issue types that are available from the Jira ticket tracking system.",
-					descriptionShort:
-						"Returns the available projects and issue types that are avai",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8938,8 +8329,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list",
-					description: "List connected USB devices.",
-					descriptionShort: "List connected USB devices.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8947,9 +8338,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list_tcpdump",
-					description: "List tcpdump capture status on a ver node.",
-					descriptionShort:
-						"List tcpdump capture status on a ver node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8957,10 +8347,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "list-service",
-					description:
-						"GET List of services managed by F5 Distributed Cloud.",
-					descriptionShort:
-						"GET List of services managed by F5 Distributed Cloud.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8968,10 +8356,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "log",
-					description:
-						"GET logs for given service from the specific node.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"GET logs for given service from the specific node.",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -8979,8 +8366,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ping",
-					description: "Run ping to a destination.",
-					descriptionShort: "Run ping to a destination.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8988,10 +8375,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "priority",
-					description:
-						"Changes priority of a selected ticket. Not possible if ticket's already closed.",
-					descriptionShort:
-						"Changes priority of a selected ticket. Not possible if ticke",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -8999,8 +8384,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "reboot",
-					description: "Reboot specific node in site.",
-					descriptionShort: "Reboot specific node in site.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9008,10 +8393,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "reopen",
-					description:
-						"Reopens a selected closed customer support ticket.",
-					descriptionShort:
-						"Reopens a selected closed customer support ticket.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9019,10 +8402,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "resync_crl",
-					description:
-						"Resync CRL by downloading from the server again.",
-					descriptionShort:
-						"Resync CRL by downloading from the server again.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9030,8 +8411,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rule",
-					description: "List USB Enablement Rules.",
-					descriptionShort: "List USB Enablement Rules.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9039,10 +8420,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "soft-restart",
-					description:
-						"Soft restart reloads VER instance on the node.",
-					descriptionShort:
-						"Soft restart reloads VER instance on the node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9050,10 +8429,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "start-debug-info-collection",
-					description:
-						"Start collecting a zip file of debug info from node.",
-					descriptionShort:
-						"Start collecting a zip file of debug info from node.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9061,10 +8438,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tax_exempt_request",
-					description:
-						"Raises a tax exemption verification request. This will ultimately create a support ticket and assign it to our billing department.\nIf verified and approved then the customer will not be levied sale taxes.",
-					descriptionShort:
-						"Raises a tax exemption verification request. This will ultim",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9072,9 +8447,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tcpdump",
-					description: "Run tcpdump on an interface in a ver node.",
-					descriptionShort:
-						"Run tcpdump on an interface in a ver node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9082,8 +8456,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "statu",
-					description: "GET Status of F5XC components.",
-					descriptionShort: "GET Status of F5XC components.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -9091,10 +8465,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "stop_tcpdump",
-					description:
-						"Stop tcpdump running on an interface in a ver node.",
-					descriptionShort:
-						"Stop tcpdump running on an interface in a ver node.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -9102,10 +8474,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "support_ticket",
-					description:
-						"Return list of support tickets for a given child tenant\nNote: Direct API access is restricted. Client needs to use the /managed_tenant/<mt_identifier>/ prefix in the URL to\nGET the support ticket list for child tenant.",
-					descriptionShort:
-						"Return list of support tickets for a given child tenant\nNote",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -9113,8 +8483,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ticket_tracking_system",
-					description: "Create Ticket Tracking System.",
-					descriptionShort: "Create Ticket Tracking System.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "management" as const,
@@ -9122,10 +8492,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "validate_ticket_tracking_system",
-					description:
-						"Validate input for the ticket tracking system like the credentials + organization.",
-					descriptionShort:
-						"Validate input for the ticket tracking system like the crede",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -9233,10 +8601,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "all_ns_service",
-					description:
-						"Request to GET monitoring data for a service mesh of a given application.",
-					descriptionShort:
-						"Request to GET monitoring data for a service mesh of a given",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9244,10 +8610,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "app_type",
-					description:
-						"Request to GET list of application types for a given namespace.\nFor system namespace, all the application types for the tenant\nwill be returned in the response.",
-					descriptionShort:
-						"Request to GET list of application types for a given namespa",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9255,10 +8619,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "connectivity",
-					description:
-						"Request to GET Connectivity data between the sites.",
-					descriptionShort:
-						"Request to GET Connectivity data between the sites.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9266,10 +8628,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "create_http_load_balancer",
-					description:
-						"Create HTTP/HTTPS load balancer using the discovered virtual server as an origin server.",
-					descriptionShort:
-						"Create HTTP/HTTPS load balancer using the discovered virtual",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9277,10 +8637,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "create_tcp_load_balancer",
-					description:
-						"Create TCP load balancer using the discovered virtual server as an origin server.",
-					descriptionShort:
-						"Create TCP load balancer using the discovered virtual server",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9288,10 +8646,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "disable_visibility",
-					description:
-						"Disable Visibility of the service in all workspaces. This will remove the discovered service\nfrom being visible in other wokspaces like WAAP.",
-					descriptionShort:
-						"Disable Visibility of the service in all workspaces. This wi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9299,10 +8655,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "discovered_service",
-					description:
-						"List the discovered services of specific type like virtual-servers, K8s, consul, NGINX server, etc.",
-					descriptionShort:
-						"List the discovered services of specific type like virtual-s",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -9310,10 +8664,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "edge",
-					description:
-						"Request to GET Connectivity data for an edge.\nThis query is used to GET time-series data for a given edge.",
-					descriptionShort:
-						"Request to GET Connectivity data for an edge.\nThis query is ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9321,10 +8673,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enable_visibility",
-					description:
-						"Enable Visibility of the service in all workspaces. This action will make the\ndiscovered service visible within WAAP, App Connect where the user can perform\nthe workspace specific actions.",
-					descriptionShort:
-						"Enable Visibility of the service in all workspaces. This act",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9332,10 +8682,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "flow_collection",
-					description:
-						"Request to GET flow collection from the flow records.",
-					descriptionShort:
-						"Request to GET flow collection from the flow records.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9343,10 +8691,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "instance",
-					description:
-						"Request to GET time-series data for a service instance.",
-					descriptionShort:
-						"Request to GET time-series data for a service instance.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9354,10 +8700,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "lb_cache_content",
-					description:
-						"Request to GET time-series cacheable data for HTTP-LBs.",
-					descriptionShort:
-						"Request to GET time-series cacheable data for HTTP-LBs.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9365,10 +8709,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "node",
-					description:
-						"Request to GET Connectivity data for a site.\nThis query is used to GET time-series data for a given site.",
-					descriptionShort:
-						"Request to GET Connectivity data for a site.\nThis query is u",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9376,10 +8718,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service",
-					description:
-						"Request to GET monitoring data for a service mesh of a given application.",
-					descriptionShort:
-						"Request to GET monitoring data for a service mesh of a given",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9387,10 +8727,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"SuggestValues returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"SuggestValues returns suggested values for the specified fie",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9398,8 +8736,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "health_statu",
-					description: "GET Discovered Service Health status.",
-					descriptionShort: "GET Discovered Service Health status.",
+					description: "Health monitoring configuration",
+					descriptionShort: "Health monitoring configuration",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -9407,9 +8745,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "status_at_site",
-					description: "GET status of an object in a given site.",
-					descriptionShort:
-						"GET status of an object in a given site.",
+					description: "Edge site for distributed deployment",
+					descriptionShort: "Edge site for distributed deployment",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -9417,10 +8754,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscription-statu",
-					description:
-						"Check subscription status flow Flow Collection.",
-					descriptionShort:
-						"Check subscription status flow Flow Collection.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -9428,8 +8763,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_flow_anomaly",
-					description: "Request to GET flow anomaly records.",
-					descriptionShort: "Request to GET flow anomaly records.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -9437,10 +8772,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_talker",
-					description:
-						"Request to GET top talkers from the flow records.",
-					descriptionShort:
-						"Request to GET top talkers from the flow records.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -9448,8 +8781,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to Flow Collection.",
-					descriptionShort: "Subscribe to Flow Collection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -9457,8 +8790,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to Flow Collection.",
-					descriptionShort: "Unsubscribe to Flow Collection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -9558,10 +8891,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "accept_to",
-					description:
-						"Accept TOS updates version of accepted terms of service.",
-					descriptionShort:
-						"Accept TOS updates version of accepted terms of service.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9569,10 +8900,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "access",
-					description:
-						"GET current access details for the support tenant.",
-					descriptionShort:
-						"GET current access details for the support tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9580,10 +8909,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "active_alert_policy",
-					description:
-						"GetActiveAlertPolicies returns the list of active alert policies for the namespace.",
-					descriptionShort:
-						"GetActiveAlertPolicies returns the list of active alert poli",
+					description: "Alert configuration for monitoring",
+					descriptionShort: "Alert configuration for monitoring",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9591,10 +8918,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "active_network_policy",
-					description:
-						"GetActiveNetworkPolicies resturn the list of active network policies for the namespace.",
-					descriptionShort:
-						"GetActiveNetworkPolicies resturn the list of active network ",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9602,10 +8927,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "active_service_policy",
-					description:
-						"GetActiveServicePolicies resturn the list of active service policies for the namespace.",
-					descriptionShort:
-						"GetActiveServicePolicies resturn the list of active service ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9613,10 +8936,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "admin_notification",
-					description:
-						"GET admin ntfn preferences gets current admin notification preferences for user.\nIt combines information from two sources:\n- explicitly set admin notification preferences in user settings object\n- default values from uam config (for those notifications which not explicitly set)",
-					descriptionShort:
-						"GET admin ntfn preferences gets current admin notification p",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace"],
 					resourceCategory: "crud" as const,
@@ -9624,10 +8945,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "admin_reset",
-					description:
-						"Reset password by admin resets password for a user specified in request payload.\nThis request is meant to be executed by the tenant's admin.",
-					descriptionShort:
-						"Reset password by admin resets password for a user specified",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace"],
 					resourceCategory: "crud" as const,
@@ -9635,10 +8954,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_application_inventory",
-					description:
-						"AllApplicationInventory returns inventory of configured application related objects for all namespaces.",
-					descriptionShort:
-						"AllApplicationInventory returns inventory of configured appl",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9646,10 +8963,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_application_inventory_waf_filter",
-					description:
-						"AllApplicationInventoryWaf returns inventory of configured application related objects for all namespaces with WAF Filters.",
-					descriptionShort:
-						"AllApplicationInventoryWaf returns inventory of configured a",
+					description: "Security policy for threat protection",
+					descriptionShort: "Security policy for threat protection",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9658,9 +8973,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "allowed_tenant",
 					description:
-						"Creates a allowed_tenant config instance. Name of the object is name of the tenant that is allowed to manage.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"Creates a allowed_tenant config instance. Name of the object",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -9668,10 +8983,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "analyze_for_deletion",
-					description:
-						"AnalyzeForDeletion checks the references of the object to make sure it is deletable.",
-					descriptionShort:
-						"AnalyzeForDeletion checks the references of the object to ma",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9679,10 +8992,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "application_inventory",
-					description:
-						"ApplicationInventory returns inventory of configured application related objects for the tenant.\nInventory of namespaced objects (HTTP LBs, TCP LBs, etc) in a particular namespace is returned.",
-					descriptionShort:
-						"ApplicationInventory returns inventory of configured applica",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9690,8 +9001,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "authentication",
-					description: "Create authentication.",
-					descriptionShort: "Create authentication.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -9699,10 +9010,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "cascade_delete",
-					description:
-						"CascadeDelete will DELETE the namespace and all configuration objects like virtual_hosts etc.\nUnder it. Use this only if the entire namespace and its contents are to be wiped out.",
-					descriptionShort:
-						"CascadeDelete will DELETE the namespace and all configuratio",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9711,9 +9020,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "child_tenant",
 					description:
-						"GET list of child tenants user has access to based on assigned membership.\nThis is an optimized list generated based on the requesting user's current group assignments\nthat will allow access to child tenant.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"GET list of child tenants user has access to based on assign",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list", "create", "replace", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -9722,9 +9031,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "child_tenant_manager",
 					description:
-						"Creates a child_tenant_manager config instance. Name of the object is the name of the child tenant manager to be created.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"Creates a child_tenant_manager config instance. Name of the ",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -9732,10 +9041,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "city",
-					description:
-						"Returns a list of known cities of a country/state.",
-					descriptionShort:
-						"Returns a list of known cities of a country/state.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9743,10 +9050,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "close",
-					description:
-						"Closes selected customer support ticket (if not already closed). You can always attempt to reopen if needed to be.",
-					descriptionShort:
-						"Closes selected customer support ticket (if not already clos",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9754,10 +9059,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "combined_notification",
-					description:
-						"GET combined ntfn preferences gets user-ntfn-preferences and admin-ntfn-preferences and returns combined result.",
-					descriptionShort:
-						"GET combined ntfn preferences gets user-ntfn-preferences and",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace"],
 					resourceCategory: "crud" as const,
@@ -9765,10 +9068,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "comment",
-					description:
-						"Adds additional comment to a specified customer support ticket. The comment may include an attachment.",
-					descriptionShort:
-						"Adds additional comment to a specified customer support tick",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9776,10 +9077,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "contact",
-					description:
-						"Creates a new customer's contact detail record with us, including address and phone number.",
-					descriptionShort:
-						"Creates a new customer's contact detail record with us, incl",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -9787,10 +9086,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "country",
-					description:
-						"Returns a list of supported countries along with with additional information such as address validation rules.",
-					descriptionShort:
-						"Returns a list of supported countries along with with additi",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9798,10 +9095,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "customer_support",
-					description:
-						"Return list of all support tickets for a child tenant.",
-					descriptionShort:
-						"Return list of all support tickets for a child tenant.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9818,10 +9113,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "delete",
-					description:
-						"DELETE deletes OIDC provider by name. This would also disable SCIM integration for the tenant, if at all, it was enabled.\nReturns OIDC provider object that gets deleted. Query will look into current tenants `system` namespace for OIDC provider by name.",
-					descriptionShort:
-						"DELETE deletes OIDC provider by name. This would also disabl",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9847,10 +9140,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "escalate",
-					description:
-						"Escalates a selected ticket. Only certain customers (depending on their contract) are allowed to escalate tickets.",
-					descriptionShort:
-						"Escalates a selected ticket. Only certain customers (dependi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9858,10 +9149,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "evaluate-api-access",
-					description:
-						"EvaluateAPIAccess can evaluate multiple lists of API URL, method under a namespace for a given user of a tenant.",
-					descriptionShort:
-						"EvaluateAPIAccess can evaluate multiple lists of API URL, me",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9869,10 +9158,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "evaluate-batch-api-access",
-					description:
-						"EvaluateBatchAPIAccess can evaluate multiple lists of API URL, method under a batch of namespaces for a given user of a tenant.",
-					descriptionShort:
-						"EvaluateBatchAPIAccess can evaluate multiple lists of API UR",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9880,10 +9167,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "fast_acls_for_internet_vip",
-					description:
-						"GetFastACLsForInternetVIPs Returns the list of Active FastACLs for Internet VIPs.",
-					descriptionShort:
-						"GetFastACLsForInternetVIPs Returns the list of Active FastAC",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -9891,8 +9176,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "favicon",
-					description: "Receive current tenant favicon.",
-					descriptionShort: "Receive current tenant favicon.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9900,8 +9185,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "Group",
-					description: "List groups based on the given filter.",
-					descriptionShort: "List groups based on the given filter.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: [
 						"list",
@@ -9933,8 +9218,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "image",
-					description: "Receive current tenant profile image.",
-					descriptionShort: "Receive current tenant profile image.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace", "delete"],
 					resourceCategory: "crud" as const,
@@ -9942,10 +9227,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "inactive",
-					description:
-						"Returns list of users for which no login events was found for last 90 days of time.\nIt consider all users within current tenant.",
-					descriptionShort:
-						"Returns list of users for which no login events was found fo",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9953,10 +9236,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "last_login",
-					description:
-						"GetLastLoginMap returns last login timestamp for each user within a tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"GetLastLoginMap returns last login timestamp for each user w",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9964,10 +9246,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "login",
-					description:
-						"GetLoginEvents returns login events for specified in config period of time. It consider all users within current tenant.\nLogin events are extracted directly from IDM.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"GetLoginEvents returns login events for specified in config ",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9975,10 +9256,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "login_in_time",
-					description:
-						"GetLoginEventsInTimeFrame returns login events for specified period of time. It consider all users specified by context tenant.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"GetLoginEventsInTimeFrame returns login events for specified",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -9986,8 +9266,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "logo",
-					description: "Receive current tenant logo.",
-					descriptionShort: "Receive current tenant logo.",
+					description: "Logging configuration for audit and analysis",
+					descriptionShort:
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -9995,8 +9276,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "lookup",
-					description: "Checks if a cname is available.",
-					descriptionShort: "Checks if a cname is available.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10004,10 +9285,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "lookup-user-role",
-					description:
-						"LookupUserRoles returns roles for the the given user, namespace.",
-					descriptionShort:
-						"LookupUserRoles returns roles for the the given user, namesp",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10016,9 +9295,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "managed_tenant",
 					description:
-						"GET list of managed tenants that user have access to based on assingned membership.\nThis is an optimized list generated based on the requesting user's current group assignments\nthat will allow access to managed tenant.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"GET list of managed tenants that user have access to based o",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list", "create", "replace", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -10027,9 +9306,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "managed_tenants_by_user",
 					description:
-						"GET list of managed tenants that user have access to based on assigned membership.\nThis is an optimized list generated based on the requesting user's current group assignments\nthat will allow access to managed tenant.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"GET list of managed tenants that user have access to based o",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10038,9 +9317,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "managed_tenants_list",
 					description:
-						"GET full list of managed tenants access details.\nThis response will contain full list of managed tenant based on the configuration\nand is not filtered by requesting user's group membership that enable access.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"GET full list of managed tenants access details.\nThis respon",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10048,10 +9327,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "mapper",
-					description:
-						"GET OIDC mappers gets OIDC mappers from underlying IDM provider.",
-					descriptionShort:
-						"GET OIDC mappers gets OIDC mappers from underlying IDM provi",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["get", "create"],
 					resourceCategory: "crud" as const,
@@ -10059,10 +9336,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "migrate",
-					description:
-						"Migrate ACTIVE child tenants from existing CTM(s) to a specified new CTM.",
-					descriptionShort:
-						"Migrate ACTIVE child tenants from existing CTM(s) to a speci",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10070,9 +9345,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "namespace",
-					description: "List the set of namespace in a namespace.",
-					descriptionShort:
-						"List the set of namespace in a namespace.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create", "replace", "get"],
 					resourceCategory: "crud" as const,
@@ -10081,9 +9355,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "namespace_role",
 					description:
-						"List the set of namespace_role in a namespace.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"List the set of namespace_role in a namespace.",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -10091,10 +9365,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "networking_inventory",
-					description:
-						"NetworkingInventory returns inventory of configured networking related objects for the tenant.\nInventory of system-wide objects (global networks, sites, site mesh groups, etc) is returned.",
-					descriptionShort:
-						"NetworkingInventory returns inventory of configured networki",
+					description: "Network configuration for connectivity",
+					descriptionShort: "Network configuration for connectivity",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10102,10 +9374,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "notification",
-					description:
-						"GET ntfn preferences gets current notification preferences for user.\nIt combines information from two sources:\n- explicitly set notification preferences in user settings object\n- default values from uam config (for those notifications which not explicitly set)",
-					descriptionShort:
-						"GET ntfn preferences gets current notification preferences f",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace"],
 					resourceCategory: "crud" as const,
@@ -10113,10 +9383,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "oidc_provider",
-					description:
-						"GET implements OIDC provider query by name.\nReturns OIDC provider object. Query will look into current tenants `system` namespace for OIDC provider by name.",
-					descriptionShort:
-						"GET implements OIDC provider query by name.\nReturns OIDC pro",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get", "list", "create", "replace"],
 					resourceCategory: "crud" as const,
@@ -10124,10 +9392,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "priority",
-					description:
-						"Changes priority of a selected ticket. Not possible if ticket's already closed.",
-					descriptionShort:
-						"Changes priority of a selected ticket. Not possible if ticke",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10135,9 +9401,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rbac_policy",
-					description: "List the set of rbac_policy in a namespace.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"List the set of rbac_policy in a namespace.",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -10154,10 +9420,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "reopen",
-					description:
-						"Reopens a selected closed customer support ticket.",
-					descriptionShort:
-						"Reopens a selected closed customer support ticket.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10174,10 +9438,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "request-delete",
-					description:
-						"Request to mark Tenant for deletion queue, after approve it will completely removed from the system.",
-					descriptionShort:
-						"Request to mark Tenant for deletion queue, after approve it ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10185,10 +9447,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "reset",
-					description:
-						"Reset password resets password for user who is making this request.",
-					descriptionShort:
-						"Reset password resets password for user who is making this r",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10196,8 +9456,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ResourceType",
-					description: "Listresourcetypes CustomPublicAPI.",
-					descriptionShort: "Listresourcetypes CustomPublicAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10205,10 +9465,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "role",
-					description:
-						"List the Role objects with all API groups which the role can access to.",
-					descriptionShort:
-						"List the Role objects with all API groups which the role can",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create", "get", "replace", "delete"],
 					resourceCategory: "crud" as const,
@@ -10216,10 +9474,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "role_user",
-					description:
-						"AssignRole allows customers to assign a namespace/role pair to multiple users.",
-					descriptionShort:
-						"AssignRole allows customers to assign a namespace/role pair ",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10227,8 +9483,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "Schema",
-					description: "Listschemas CustomPublicAPI.",
-					descriptionShort: "Listschemas CustomPublicAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10245,10 +9501,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "send_password_email",
-					description:
-						"SendPasswordEmail allows admin user to trigger send password email for a user to update user's password.\nDeprecated: use ResetPasswordByAdmin RPC instead.",
-					descriptionShort:
-						"SendPasswordEmail allows admin user to trigger send password",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10256,9 +9510,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "ServiceProviderConfig",
-					description: "Listserviceproviderconfig CustomPublicAPI.",
-					descriptionShort:
-						"Listserviceproviderconfig CustomPublicAPI.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10267,7 +9520,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "session",
 					description: "User session for authentication state",
-					descriptionShort: "Session",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					icon: "🔑",
 					category: "Identity",
@@ -10279,10 +9532,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "setting",
-					description:
-						"GetIDMSettings returns IDM settings for tenant. IDM settings contains info like password policy,\nbrute-force detection policy, etc...",
-					descriptionShort:
-						"GetIDMSettings returns IDM settings for tenant. IDM settings",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace"],
 					resourceCategory: "crud" as const,
@@ -10290,10 +9541,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suggest-value",
-					description:
-						"Returns suggested values for the specified field in the given Create/Replace/Custom request.",
-					descriptionShort:
-						"Returns suggested values for the specified field in the give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10301,8 +9550,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "support-info",
-					description: "Receive support information for tenant.",
-					descriptionShort: "Receive support information for tenant.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10310,10 +9559,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "sync",
-					description:
-						"In case when user created initially from identity provider we need to sync the user data.",
-					descriptionShort:
-						"In case when user created initially from identity provider w",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10322,9 +9569,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "tenant_configuration",
 					description:
-						"Shape of the tenant configuration specification.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"Shape of the tenant configuration specification.",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -10333,9 +9580,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "tenant_profile",
 					description:
-						"Creates a tenant_profile config instance. Name of the object is the name of the tenant profile to be created.",
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"Creates a tenant_profile config instance. Name of the object",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -10343,9 +9590,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "tenant-escalation-doc",
-					description: "Receive current tenant escalation document.",
+					description:
+						"Resource isolation and multi-tenancy boundary",
 					descriptionShort:
-						"Receive current tenant escalation document.",
+						"Resource isolation and multi-tenancy boundary",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10353,8 +9601,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "to",
-					description: "GET TOS provides TOS version with text.",
-					descriptionShort: "GET TOS provides TOS version with text.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10371,10 +9619,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update_allow_advertise_on_public",
-					description:
-						"UpdateAllowAdvertiseOnPublic can update a config to allow advertise on public.",
-					descriptionShort:
-						"UpdateAllowAdvertiseOnPublic can update a config to allow ad",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10382,8 +9628,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "User",
-					description: "GET all users.",
-					descriptionShort: "GET all users.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: [
 						"list",
@@ -10397,9 +9643,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "user_group",
-					description: "List fetches all the groups for the tenant.",
-					descriptionShort:
-						"List fetches all the groups for the tenant.",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["list", "create", "get", "replace", "delete"],
 					resourceCategory: "crud" as const,
@@ -10407,10 +9652,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "user_identification",
-					description:
-						"Create user_identification creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create user_identification creates a new object in the stora",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -10418,10 +9661,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "user_role",
-					description:
-						"List enumerates users and their namespace roles for this tenant.",
-					descriptionShort:
-						"List enumerates users and their namespace roles for this ten",
+					description: "User account for access management",
+					descriptionShort: "User account for access management",
 					tier: "Standard" as const,
 					operations: ["list", "create", "replace"],
 					resourceCategory: "crud" as const,
@@ -10429,10 +9670,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "user_token",
-					description:
-						"GET one time token to connect Web App Scanning Service.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"GET one time token to connect Web App Scanning Service.",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10440,10 +9680,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "validate_rule",
-					description:
-						"ValidateRules returns whether the value is valid or not for the specified validator rules.",
-					descriptionShort:
-						"ValidateRules returns whether the value is valid or not for ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10451,10 +9689,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "view_preference",
-					description:
-						"GET view preference gets view preference for specific user.",
-					descriptionShort:
-						"GET view preference gets view preference for specific user.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list", "replace"],
 					resourceCategory: "crud" as const,
@@ -10462,10 +9698,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "whoami",
-					description:
-						"GET fetches user information based on the username header from the request context\nthis API is also called as WhoAmI.",
-					descriptionShort:
-						"GET fetches user information based on the username header fr",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10473,10 +9707,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_stat",
-					description:
-						"GET API endpoints stats for all Namespaces. This API is specific to system namespace.",
-					descriptionShort:
-						"GET API endpoints stats for all Namespaces. This API is spec",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -10484,10 +9716,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "stat",
-					description:
-						"GET API endpoints stats for the given Namespace.",
-					descriptionShort:
-						"GET API endpoints stats for the given Namespace.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -10495,10 +9725,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "state",
-					description:
-						"Returns a list of known states of a country. List will be empty if country has no states.",
-					descriptionShort:
-						"Returns a list of known states of a country. List will be em",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -10506,8 +9734,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "summary",
-					description: "This API returns tenant summary.",
-					descriptionShort: "This API returns tenant summary.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -10515,10 +9743,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "assign",
-					description:
-						"Assign domain owner tries to assign domain owner to user in the request. It checks that requester is domain owner as well.\nIt implies such steps:\n1) mark user as domain owner\n2) if user is SSO\n- mark user as F5 Distributed Cloud managed\n- send update password email\n3) set admin roles in system, shared, * namespaces\nNOTE: previous roles (which was explicitly assigned to this user) will be deleted.",
-					descriptionShort:
-						"Assign domain owner tries to assign domain owner to user in ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -10535,10 +9761,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description:
-						"Subscribe Delegated Access addon service feature. A support request will be created and feature will be enabled upon approval.",
-					descriptionShort:
-						"Subscribe Delegated Access addon service feature. A support ",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -10546,10 +9770,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unassign",
-					description:
-						"Unassign domain owner tries to remove domain owner privilege from user in the request.\nIt checks that requester is domain owner.\nIt implies such steps:\n1) remove domain owner boolean flag\n2) if tenant has SSO enabled:\n- mark user as SSO\n- DELETE password credential\n- DELETE OTP credential (if exists)\nNOTE: previously granted roles (including admin roles) will be retained.",
-					descriptionShort:
-						"Unassign domain owner tries to remove domain owner privilege",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -10557,10 +9779,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description:
-						"Unsubscribe Delegated Access addon service feature. A support request will be created and request will be processed upon approval.",
-					descriptionShort:
-						"Unsubscribe Delegated Access addon service feature. A suppor",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -10712,8 +9932,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "threat_campaign",
-					description: "GET Threat Campaign by ID.",
-					descriptionShort: "GET Threat Campaign by ID.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10796,10 +10016,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "create",
-					description:
-						"Create creates a new label in shared namespace. Any other namespace requested will return error.",
-					descriptionShort:
-						"Create creates a new label in shared namespace. Any other na",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10807,10 +10025,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "delete",
-					description:
-						"DELETE will DELETE a given label label key = label value from current tenants shared namespace.",
-					descriptionShort:
-						"DELETE will DELETE a given label label key = label value fro",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10818,10 +10034,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get-cloud-init-config",
-					description:
-						"Returns cloud-init counfig for kvm provider with JWT token.",
-					descriptionShort:
-						"Returns cloud-init counfig for kvm provider with JWT token.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10829,10 +10043,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "implicit_label",
-					description:
-						"GET is generic label query. Two types of queries are supported\n* Return label with exact matching entry label key = label value.\n* Return list of labels that have prefix of label key = label value.\nReturns list of labels. Query will look into current tenants shared namespace and VES-I/O shared.",
-					descriptionShort:
-						"GET is generic label query. Two types of queries are support",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10840,10 +10052,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "known_label",
-					description:
-						"GET is generic label query. Two types of queries are supported\nReturn label with exact matching entry label key = label value.\nReturn list of labels that have prefix of label key = label value.\nReturns list of labels. Query will look into current tenants shared namespace and VES-I/O shared.",
-					descriptionShort:
-						"GET is generic label query. Two types of queries are support",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10851,10 +10061,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "known_label_key",
-					description:
-						"GET is generic label key query. Two types of queries are supported\nReturn label with exact matching entry label key.\nReturn list of labels that have prefix of label key .\nReturns list of label keys. Query will look into current tenants shared namespace and VES-I/O shared.",
-					descriptionShort:
-						"GET is generic label key query. Two types of queries are sup",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -10862,10 +10070,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "token",
-					description:
-						"Creates new token. Token object is used to manage site admission. User must generate token before provisioning and pass this\ntoken to site during it's registration.",
+					description: "Authentication credential for access control",
 					descriptionShort:
-						"Creates new token. Token object is used to manage site admis",
+						"Authentication credential for access control",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -10873,10 +10080,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "state",
-					description:
-						"TokenState changes token status, it can be used to disable token.",
-					descriptionShort:
-						"TokenState changes token status, it can be used to disable t",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11074,9 +10279,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "ca_certificate",
 					description:
-						"GetProxyServerCACert returns PEM encoded proxy server CA certificate.",
+						"Certificate authority certificate for trust chains",
 					descriptionShort:
-						"GetProxyServerCACert returns PEM encoded proxy server CA cer",
+						"Certificate authority certificate for trust chains",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -11085,9 +10290,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "cluster",
 					description:
-						"Create cluster will create the object in the storage backend for namespace metadata.namespace.",
+						"Backend cluster for distributed service deployment",
 					descriptionShort:
-						"Create cluster will create the object in the storage backend",
+						"Backend cluster for distributed service deployment",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11095,10 +10300,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "dos_automitigation_rule",
-					description:
-						"GET the corresponding DoS Auto-Mitigation Rules for the given HTTP load balancer.",
+					description: "Automated DDoS mitigation rule configuration",
 					descriptionShort:
-						"GET the corresponding DoS Auto-Mitigation Rules for the give",
+						"Automated DDoS mitigation rule configuration",
 					tier: "Standard" as const,
 					operations: ["get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11106,8 +10310,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "geo_location_set",
-					description: "Creates a Geolocation Set.",
-					descriptionShort: "Creates a Geolocation Set.",
+					description:
+						"Geographic location set for geo-based routing",
+					descriptionShort:
+						"Geographic location set for geo-based routing",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11115,10 +10321,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_security_config",
-					description:
-						"Fetch the corresponding Security Config for the given HTTP load balancers.",
-					descriptionShort:
-						"Fetch the corresponding Security Config for the given HTTP l",
+					description: "Security configuration retrieval",
+					descriptionShort: "Security configuration retrieval",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11126,10 +10330,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get-dns-info",
-					description:
-						"GetDnsInfo is an API to GET DNS information for a given HTTP load balancer.",
-					descriptionShort:
-						"GetDnsInfo is an API to GET DNS information for a given HTTP",
+					description: "DNS configuration for name resolution",
+					descriptionShort: "DNS configuration for name resolution",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "crud" as const,
@@ -11139,7 +10341,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "healthcheck",
 					description:
 						"Health monitoring configuration for origin server availability",
-					descriptionShort: "Health check",
+					descriptionShort:
+						"Endpoint health monitoring configuration",
 					tier: "Standard" as const,
 					icon: "💓",
 					category: "Monitoring",
@@ -11153,7 +10356,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "http_loadbalancer",
 					description:
 						"Layer 7 HTTP/HTTPS load balancer for application traffic distribution",
-					descriptionShort: "HTTP load balancer",
+					descriptionShort:
+						"HTTP/HTTPS load balancer with origin pools and routing rules",
 					tier: "Standard" as const,
 					icon: "🌐",
 					category: "Load Balancing",
@@ -11183,10 +10387,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "l7ddos_rps_threshold",
-					description:
-						"Sets the L7 DDoS RPS threshold for HTTP load balancer.",
+					description: "Layer 7 DDoS requests-per-second threshold",
 					descriptionShort:
-						"Sets the L7 DDoS RPS threshold for HTTP load balancer.",
+						"Layer 7 DDoS requests-per-second threshold",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11196,7 +10399,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "origin_pool",
 					description:
 						"Backend server group for load balancer traffic distribution",
-					descriptionShort: "Origin pool",
+					descriptionShort:
+						"Backend server pool for load balancing and failover",
 					tier: "Standard" as const,
 					icon: "🎯",
 					category: "Load Balancing",
@@ -11213,9 +10417,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "proxy",
 					description:
-						"Shape of the TCP loadbalancer create specification.",
+						"Traffic proxy for request forwarding and transformation",
 					descriptionShort:
-						"Shape of the TCP loadbalancer create specification.",
+						"Traffic proxy for request forwarding and transformation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11223,10 +10427,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rate_limiter_policy",
-					description:
-						"Shape of the Rate Limiter Policy Create specification.",
+					description: "Rate limiting policy for request throttling",
 					descriptionShort:
-						"Shape of the Rate Limiter Policy Create specification.",
+						"Rate limiting policy for request throttling",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11234,10 +10437,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service_policy",
-					description:
-						"Create service_policy creates a new object in the storage backend for metadata.namespace.",
+					description: "Traffic control policy with allow/deny rules",
 					descriptionShort:
-						"Create service_policy creates a new object in the storage ba",
+						"Traffic control policy with allow/deny rules",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11245,10 +10447,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "service_policy_rule",
-					description:
-						"Create service_policy_rule creates a new object in the storage backend for metadata.namespace.",
-					descriptionShort:
-						"Create service_policy_rule creates a new object in the stora",
+					description: "Individual rule within a service policy",
+					descriptionShort: "Individual rule within a service policy",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11257,9 +10457,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "service_policy_set",
 					description:
-						"List the set of service_policy_set in a namespace.",
+						"Collection of service policies for grouped application",
 					descriptionShort:
-						"List the set of service_policy_set in a namespace.",
+						"Collection of service policies for grouped application",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
 					resourceCategory: "crud" as const,
@@ -11269,7 +10469,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "tcp_loadbalancer",
 					description:
 						"Layer 4 TCP/UDP load balancer for non-HTTP protocol traffic",
-					descriptionShort: "TCP load balancer",
+					descriptionShort:
+						"Layer 4 TCP load balancer for non-HTTP traffic",
 					tier: "Standard" as const,
 					icon: "🔌",
 					category: "Load Balancing",
@@ -11290,9 +10491,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "udp_loadbalancer",
 					description:
-						"Shape of the UDP load balancer create specification.",
+						"Layer 4 UDP load balancer for stateless protocols",
 					descriptionShort:
-						"Shape of the UDP load balancer create specification.",
+						"Layer 4 UDP load balancer for stateless protocols",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11300,9 +10501,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "virtual_host",
-					description: "Creates virtual host in a given namespace.",
+					description:
+						"DNS name mapping to routes and load balancers",
 					descriptionShort:
-						"Creates virtual host in a given namespace.",
+						"DNS name mapping to routes and load balancers",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11311,9 +10513,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "api_endpoint",
 					description:
-						"GET list of all API Endpoints associated with the HTTP loadbalancer in format suitable for API Groups management.\nDeprecated: instead use GetAPIEndpoints in VES.I/o.schema.virtual_host.apiepcustomapi.",
+						"API endpoint configuration for traffic management",
 					descriptionShort:
-						"GET list of all API Endpoints associated with the HTTP loadb",
+						"API endpoint configuration for traffic management",
 					tier: "Standard" as const,
 					operations: ["create", "get"],
 					resourceCategory: "analytics" as const,
@@ -11321,10 +10523,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "calls_by_response_code",
-					description:
-						"GET total API calls for the given Virtual Host.",
+					description: "API call statistics grouped by response code",
 					descriptionShort:
-						"GET total API calls for the given Virtual Host.",
+						"API call statistics grouped by response code",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11332,9 +10533,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "create_ticket",
-					description: "Create a ticket for the given vulnerability.",
-					descriptionShort:
-						"Create a ticket for the given vulnerability.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11342,10 +10542,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "get_schema_update",
-					description:
-						"GET list of schema pairs, current and updated, for each endpoint in the request\nor all pending changes if empty list is provided.\nNOTE: any API endpoint defined in user swagger files should be ignored\nDEPRECATED. USE virtual host custom API GetAPIEndpointsSchemaUpdates.",
-					descriptionShort:
-						"GET list of schema pairs, current and updated, for each endp",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11353,10 +10551,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "learnt_schema",
-					description:
-						"GET Learnt Schema per API endpoint for a given auto discovered API endpoint for Virtual Host.",
-					descriptionShort:
-						"GET Learnt Schema per API endpoint for a given auto discover",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -11364,10 +10560,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "pdf",
-					description:
-						"GET PDF of all metrics for a given auto discovered API endpoint for Virtual Host.",
-					descriptionShort:
-						"GET PDF of all metrics for a given auto discovered API endpo",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -11375,10 +10569,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "sources_openapi_schema",
-					description:
-						"GET openapi schema per API endpoint for a given source types and Virtual Host.",
-					descriptionShort:
-						"GET openapi schema per API endpoint for a given source types",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -11386,10 +10578,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "stat",
-					description:
-						"GET API endpoints stats for the given Virtual Host.",
-					descriptionShort:
-						"GET API endpoints stats for the given Virtual Host.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -11397,10 +10587,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "swagger_spec",
-					description:
-						"GET the corresponding Swagger spec for the given HTTP load balancer.",
-					descriptionShort:
-						"GET the corresponding Swagger spec for the given HTTP load b",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "analytics" as const,
@@ -11408,10 +10596,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_active",
-					description:
-						"Top APIs by requested activity metric. For example most-active APIs or most-attacked APIs.",
-					descriptionShort:
-						"Top APIs by requested activity metric. For example most-acti",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11419,10 +10605,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "top_sensitive_data",
-					description:
-						"GET sensitive data summary for the given Virtual Host.\nFor each sensitive data type (e.g. SSN, CC, Email) we count the number of APIEPs having the respective\nsensitive data type and return top k (max 10) types with maximum APIEPs.",
-					descriptionShort:
-						"GET sensitive data summary for the given Virtual Host.\nFor e",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11430,10 +10614,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unlink_ticket",
-					description:
-						"Remove the Ticket from vulnerability in XC platform\nExternal ticket systems will continue to have the record.",
-					descriptionShort:
-						"Remove the Ticket from vulnerability in XC platform\nExternal",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11441,10 +10623,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unmerge_sources_openapi_schema",
-					description:
-						"Unmerge Source Discovered schema from API Endpoint merged schema.",
-					descriptionShort:
-						"Unmerge Source Discovered schema from API Endpoint merged sc",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11452,10 +10632,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update_schema",
-					description:
-						"Update the payload schema for the specified endpoints or all pending changes if empty list is provided.\nNOTE: only API endpoints returned by a call to `GetAPIEndpointsSchemaStates` can be updated.\nDEPRECATED. USE virtual host custom API UpdateAPIEndpointsSchemas.",
-					descriptionShort:
-						"Update the payload schema for the specified endpoints or all",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11463,10 +10641,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "update_state",
-					description:
-						"Update vulnerabilities for the given Virtual Host.",
-					descriptionShort:
-						"Update vulnerabilities for the given Virtual Host.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11474,10 +10650,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "vulnerability",
-					description:
-						"GET vulnerabilities for the given Virtual Host.",
-					descriptionShort:
-						"GET vulnerabilities for the given Virtual Host.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11485,10 +10659,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "assign",
-					description:
-						"Set a reference to the API Definition, with an option to create an empty one if not exists.\nDEPRECATED. Instead use virtual host public custom API - AssignAPIDefinition.",
-					descriptionShort:
-						"Set a reference to the API Definition, with an option to cre",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -11496,10 +10668,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "available",
-					description:
-						"List API definitions suitable for API Inventory management\nAPI Definitions which are associated at most with one app type.\nDEPRECATED: instead use ListAvailableAPIDefinitions in VES.I/o.schema.views.api_definition.publicconfigcustomapi.",
-					descriptionShort:
-						"List API definitions suitable for API Inventory management\nA",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
 					resourceCategory: "management" as const,
@@ -11507,8 +10677,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "subscribe",
-					description: "Subscribe to Malware Protection.",
-					descriptionShort: "Subscribe to Malware Protection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -11516,8 +10686,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "unsubscribe",
-					description: "Unsubscribe to Malware Protection.",
-					descriptionShort: "Unsubscribe to Malware Protection.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "management" as const,
@@ -11622,8 +10792,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "upgrade_statu",
-					description: "Request to GET the upgrade status.",
-					descriptionShort: "Request to GET the upgrade status.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "analytics" as const,
@@ -11709,8 +10879,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			allResources: [
 				{
 					name: "active_staged_signature",
-					description: "API to GET active Staged Signatures.",
-					descriptionShort: "API to GET active Staged Signatures.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -11718,10 +10888,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "aggregation",
-					description:
-						"GET summary/aggregation data for security events in the given namespace.\nFor `system` namespace, all security events for the tenant matching the query specified\nin the request will be considered for aggregation. User may query security events that matches various\nfields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
-					descriptionShort:
-						"GET summary/aggregation data for security events in the give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11729,10 +10897,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_event",
-					description:
-						"GET security events for the given namespace.\nFor `system` namespace, all security events for the tenant matching the query specified\nin the request will be returned in the response. User may query security events that matches various\nfields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.\nThis API is specific to system namespace.",
-					descriptionShort:
-						"GET security events for the given namespace.\nFor `system` na",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11742,7 +10908,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					name: "app_firewall",
 					description:
 						"Web Application Firewall policy for HTTP traffic protection",
-					descriptionShort: "WAF policy",
+					descriptionShort:
+						"Web application firewall for threat protection",
 					tier: "Advanced" as const,
 					icon: "🛡️",
 					category: "Security",
@@ -11758,10 +10925,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "enhanced_firewall_policy",
-					description:
-						"Shape of Enhanced Firewall Policy specification.",
+					description: "Configuration policy for resource behavior",
 					descriptionShort:
-						"Shape of Enhanced Firewall Policy specification.",
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11769,10 +10935,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "event",
-					description:
-						"GET security events for the given namespace.\nFor `system` namespace, all security events for the tenant matching the query specified\nin the request will be returned in the response. User may query security events that matches various\nfields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
-					descriptionShort:
-						"GET security events for the given namespace.\nFor `system` na",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11780,10 +10944,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "hit",
-					description:
-						"GET the counter for Enhanced Firewall Policy hits for a given namespace.",
-					descriptionShort:
-						"GET the counter for Enhanced Firewall Policy hits for a give",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11791,10 +10953,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "incident",
-					description:
-						"GET security incidents for the given namespace.\nFor `system` namespace, all security incidents for the tenant matching the query specified\nin the request will be returned in the response. User may query security incidents that matches various\nfields such as `vh_name`, `intent`, `city`, `country`.",
-					descriptionShort:
-						"GET security incidents for the given namespace.\nFor `system`",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11803,9 +10963,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				{
 					name: "loadbalancer",
 					description:
-						"GET list of virtual hosts matching label filter.",
+						"Load balancing configuration for traffic distribution",
 					descriptionShort:
-						"GET list of virtual hosts matching label filter.",
+						"Load balancing configuration for traffic distribution",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11813,10 +10973,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "protocol_inspection",
-					description:
-						"Create Protocol Inspection Specification in a given namespace. If one already exists it will give an error.",
-					descriptionShort:
-						"Create Protocol Inspection Specification in a given namespac",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11824,8 +10982,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "released_signature",
-					description: "API to GET Released Signatures.",
-					descriptionShort: "API to GET Released Signatures.",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["list"],
 					resourceCategory: "crud" as const,
@@ -11833,10 +10991,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "rule_hit",
-					description:
-						"GET number of rule hits per client for a given namespace.\nThe rule hits counter can be aggregated based on one or more labels listed here.\nNAMESPACE, APP_TYPE, VIRTUAL_HOST, SITE, SERVICE, INSTANCE, WAF_INSTANCE_ID, RULE_ID, RULE_SEVERITY, RULE_TAG.",
-					descriptionShort:
-						"GET number of rule hits per client for a given namespace.\nTh",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11844,10 +11000,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "scroll",
-					description:
-						'Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventResponse\ncontaining no more than 500 messages. To scroll through more than 500 or all messages, one can use the\nSecurityEventScrollRequest. Use the scroll_id returned in the SecurityEventResponse to fetch the next batch of security events\nand one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
-					descriptionShort:
-						"Scroll request is used to fetch large number of security eve",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["list", "create"],
 					resourceCategory: "crud" as const,
@@ -11855,10 +11009,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "security_event",
-					description:
-						"GET number of security events per client for a given namespace.\nThe security events counter can be aggregated based on one or more labels listed here.\nNAMESPACE, APP_TYPE, VIRTUAL_HOST, SITE, SERVICE, INSTANCE, WAF_INSTANCE_ID, WAF_MODE.",
-					descriptionShort:
-						"GET number of security events per client for a given namespa",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11866,10 +11018,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "suspicious_user_log",
-					description:
-						"GET suspicious user logs for the given namespace.\nFor `system` namespace, all suspicious users logs for the tenant matching the query specified\nin the request will be returned in the response. User may query suspicious user logs that matches various\nfields such as `vh_name`, `user`, `site`, `city`, `country`.",
+					description: "Logging configuration for audit and analysis",
 					descriptionShort:
-						"GET suspicious user logs for the given namespace.\nFor `syste",
+						"Logging configuration for audit and analysis",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -11877,8 +11028,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "waf_exclusion_policy",
-					description: "Create a WAF exclusion policy.",
-					descriptionShort: "Create a WAF exclusion policy.",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
@@ -11886,8 +11038,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "all_ns_metric",
-					description: "App Firewall metrics.",
-					descriptionShort: "App Firewall metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11895,8 +11047,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "metric",
-					description: "App Firewall metrics.",
-					descriptionShort: "App Firewall metrics.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,
@@ -11904,8 +11056,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 				{
 					name: "staged_signature",
-					description: "API to GET Staged Signatures.",
-					descriptionShort: "API to GET Staged Signatures.",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "analytics" as const,

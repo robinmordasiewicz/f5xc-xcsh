@@ -42,6 +42,10 @@ interface OpenAPIOperation {
 	summary?: string;
 	description?: string;
 	operationId?: string;
+	"x-f5xc-operation-metadata"?: {
+		purpose?: string;
+		[key: string]: unknown;
+	};
 }
 
 interface OpenAPIPathItem {
@@ -260,17 +264,22 @@ function discoverResourcesFromSpec(spec: OpenAPISpec): DiscoveredResource[] {
 		if (!resources.has(resourceType)) {
 			const category = categorizeResource(resourceType, isDataAPI, methods);
 
+			// Priority: x-f5xc-operation-metadata.purpose > description > summary
+			const description =
+				pathItem.post?.["x-f5xc-operation-metadata"]?.purpose ||
+				pathItem.get?.["x-f5xc-operation-metadata"]?.purpose ||
+				pathItem.post?.description ||
+				pathItem.get?.description ||
+				pathItem.post?.summary ||
+				pathItem.get?.summary ||
+				"";
+
 			resources.set(resourceType, {
 				name: resourceType,
 				operations: [],
 				paths: [],
 				category,
-				description:
-					pathItem.get?.description ||
-					pathItem.post?.description ||
-					pathItem.get?.summary ||
-					pathItem.post?.summary ||
-					"",
+				description,
 				source: "discovered",
 				httpMethods: [],
 			});

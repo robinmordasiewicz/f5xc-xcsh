@@ -31,7 +31,18 @@ interface ResourceContext {
 /**
  * Actions that can operate on resource types
  */
-const RESOURCE_ACTIONS = new Set(["list", "get", "delete", "status"]);
+const RESOURCE_ACTIONS = new Set([
+	"list",
+	"get",
+	"create",
+	"delete",
+	"replace",
+	"apply",
+	"status",
+	"patch",
+	"add-labels",
+	"remove-labels",
+]);
 
 /**
  * Parse input text into args array, handling quoted strings
@@ -736,19 +747,20 @@ export class Completer {
 		});
 
 		return sortedResources.map((resource) => {
-			// Mark primary resources with indicator (only in "all" mode)
-			const isPrimaryIndicator =
-				this.settings.completionMode === "all" && resource.isPrimary
-					? " ⭐"
-					: "";
+			// Mark primary resources (only in "all" mode) - styling handled by Suggestions component
+			const isPrimary =
+				(this.settings.completionMode === "all" &&
+					resource.isPrimary) ||
+				false;
+
 			const description =
-				(resource.descriptionShort || resource.description) +
-				isPrimaryIndicator;
+				resource.descriptionShort || resource.description || "";
 
 			return {
 				text: resource.name,
 				description,
 				category: "resource" as const,
+				isPrimary,
 			};
 		});
 	}

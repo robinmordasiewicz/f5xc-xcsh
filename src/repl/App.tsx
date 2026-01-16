@@ -505,20 +505,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	);
 
 	// Handle input submission
+	// NOTE: Enter key ALWAYS executes the command - it does NOT select completions
+	// Only Tab selects completion suggestions (see useInput handler below)
 	const handleSubmit = useCallback(
 		async (value: string) => {
-			// If showing suggestions, apply selected
-			if (completion.isShowing && completion.suggestions.length > 0) {
-				const selected = completion.selectCurrent();
-				if (selected) {
-					applyCompletion({
-						label: selected.text,
-						value: selected.text,
-						description: selected.description,
-						category: selected.category ?? "builtin",
-					});
-				}
-				return;
+			// Hide completion popup when executing command
+			if (completion.isShowing) {
+				completion.hide();
 			}
 
 			// Clear input immediately to prevent duplicate display in scrollback
