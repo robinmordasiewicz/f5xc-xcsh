@@ -1,0 +1,10 @@
+metadata:
+  name: claude-test-hc
+  namespace: default
+spec:
+  http_health_check:
+    path: /health
+  timeout: 5
+  interval: 10
+  healthy_threshold: 2
+  unhealthy_threshold: 3

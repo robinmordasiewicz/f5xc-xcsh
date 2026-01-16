@@ -91,3 +91,43 @@ export function filterUsedFlagsFromStrings(
 	const usedFlags = extractUsedFlags(args);
 	return flags.filter((flag) => !usedFlags.has(flag));
 }
+
+/**
+ * Count how many times each flag appears in args
+ * Used for repeatable flags with maxOccurrences limit
+ *
+ * Handles multiple flag patterns:
+ * - `--flag value` pattern
+ * - `--flag=value` pattern
+ *
+ * @param args - Array of command arguments
+ * @returns Map of flag names to their usage count
+ *
+ * @example
+ * countFlagUsage(["--public-ip", "1.2.3.4", "--public-ip", "5.6.7.8"])
+ * // Returns Map { "--public-ip" => 2 }
+ *
+ * countFlagUsage(["--name", "test", "--port", "80"])
+ * // Returns Map { "--name" => 1, "--port" => 1 }
+ */
+export function countFlagUsage(args: string[]): Map<string, number> {
+	const counts = new Map<string, number>();
+
+	for (const arg of args) {
+		// Handle --flag=value pattern - extract just the flag part
+		let flagPart = arg;
+		if (arg.includes("=")) {
+			flagPart = arg.split("=")[0] ?? arg;
+		}
+
+		// Only process arguments that start with "-"
+		if (!flagPart.startsWith("-")) {
+			continue;
+		}
+
+		const current = counts.get(flagPart) || 0;
+		counts.set(flagPart, current + 1);
+	}
+
+	return counts;
+}

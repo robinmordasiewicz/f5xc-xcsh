@@ -10,17 +10,47 @@
  * Each group contains all equivalent forms of a flag (long form, short form)
  */
 export const FLAG_ALIAS_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
+	// Common flags
 	["--namespace", "-ns"],
 	["--output", "-o"],
 	["--name", "-n"],
 	["--file", "-f"],
 	["--url", "-u"],
-	["--token", "-t"],
 	["--limit"],
 	["--label"],
 	["--show-labels"],
 	["--force"],
 	["--cascade"],
+	// Creation flags for healthcheck
+	["--type", "-t"],
+	["--interval"],
+	["--timeout"],
+	["--healthy-threshold"],
+	["--unhealthy-threshold"],
+	["--path"],
+	["--expected-status"],
+	["--host-header"],
+	["--use-origin-server-name"],
+	["--use-http2"],
+	// Creation flags for origin_pool
+	["--port"],
+	["--automatic-port"],
+	["--lb-port"],
+	["--public-ip"],
+	["--public-name"],
+	["--private-ip"],
+	["--private-name"],
+	["--k8s-service"],
+	["--consul-service"],
+	["--custom-endpoint"],
+	["--vn-private-ip"],
+	["--vn-private-name"],
+	["--cbip-service"],
+	["--algorithm"],
+	["--health-check"],
+	["--no-tls"],
+	["--use-tls"],
+	["--site"],
 ];
 
 /**

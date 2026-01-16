@@ -20,7 +20,12 @@ import {
 } from "../../types/domains.js";
 import { resourceFetcher } from "./resource-fetcher.js";
 import { loadSettingsSync, type AppSettings } from "../../config/settings.js";
-import { extractUsedFlags, filterUsedFlags } from "./flag-utils.js";
+import {
+	extractUsedFlags,
+	filterUsedFlags,
+	countFlagUsage,
+} from "./flag-utils.js";
+import { getCreationFlags, hasCreationFlags } from "./creation-flags.js";
 
 /**
  * Context for resource completion
@@ -48,6 +53,11 @@ const RESOURCE_ACTIONS = new Set([
 	"add-labels",
 	"remove-labels",
 ]);
+
+/**
+ * Actions that create new resources (show creation flags instead of existing resource names)
+ */
+const CREATION_ACTIONS = new Set(["create", "apply"]);
 
 /**
  * Generic descriptions indicating utility endpoints, not user-manageable resources.
@@ -187,6 +197,31 @@ export function parseInput(text: string): ParsedInput {
 		"-f",
 		"--limit",
 		"--label",
+		// Creation flags for healthcheck
+		"--type",
+		"-t",
+		"--interval",
+		"--timeout",
+		"--healthy-threshold",
+		"--unhealthy-threshold",
+		"--path",
+		"--expected-status",
+		"--host-header",
+		// Creation flags for origin_pool
+		"--port",
+		"--public-ip",
+		"--public-name",
+		"--private-ip",
+		"--private-name",
+		"--k8s-service",
+		"--consul-service",
+		"--custom-endpoint",
+		"--vn-private-ip",
+		"--vn-private-name",
+		"--cbip-service",
+		"--algorithm",
+		"--health-check",
+		"--site",
 	];
 
 	if (args.length >= 1 && !currentWord.startsWith("-")) {
@@ -319,8 +354,22 @@ export class Completer {
 			);
 		}
 
-		// If we have a resource type, complete resource names from API
+		// If we have a resource type, branch based on action type
 		if (resourceCtx.resourceType) {
+			// For creation actions (create, apply), show creation flags if defined
+			// instead of existing resource names
+			if (
+				resourceCtx.action &&
+				CREATION_ACTIONS.has(resourceCtx.action) &&
+				hasCreationFlags(resourceCtx.resourceType)
+			) {
+				return this.getCreationFlagSuggestions(
+					resourceCtx.resourceType,
+					parsed.args,
+				);
+			}
+
+			// For existing resource actions (get, delete, list, etc.), show resource names from API
 			const resourceNames = await this.getResourceNameSuggestions(
 				resourceCtx.resourceType,
 				resourceCtx.resourceNamePartial,
@@ -1082,6 +1131,76 @@ export class Completer {
 	}
 
 	/**
+	 * Get creation flag suggestions for a resource type
+	 * Shows flags needed to create a new resource (--name, --type, etc.)
+	 * instead of existing resource names
+	 *
+	 * Handles repeatable flags (e.g., --public-ip can be specified multiple times)
+	 * by checking maxOccurrences instead of simply filtering out used flags.
+	 *
+	 * @param resourceType - The resource type being created
+	 * @param args - Current command arguments to filter out used flags
+	 * @returns Array of flag suggestions for resource creation
+	 */
+	getCreationFlagSuggestions(
+		resourceType: string,
+		args: string[],
+	): CompletionSuggestion[] {
+		const creationFlags = getCreationFlags(resourceType);
+		const usedFlags = extractUsedFlags(args);
+		const flagUsageCounts = countFlagUsage(args);
+		const suggestions: CompletionSuggestion[] = [];
+
+		// Add --file prominently for create/apply (allows YAML/JSON configuration)
+		if (!usedFlags.has("--file") && !usedFlags.has("-f")) {
+			suggestions.push({
+				text: "--file",
+				description: "Configuration file (YAML/JSON)",
+				category: "flag",
+			});
+		}
+
+		// Add resource-specific creation flags
+		for (const flag of creationFlags) {
+			// Handle repeatable flags: check if max occurrences reached
+			if (flag.isRepeatable) {
+				const count = flagUsageCounts.get(flag.name) || 0;
+				const max = flag.maxOccurrences || Infinity;
+				if (count >= max) continue; // Skip if maxed out
+
+				// Repeatable flags should still be shown even if used before
+				const marker = " (repeatable)";
+				suggestions.push({
+					text: flag.name,
+					description: flag.description + marker,
+					category: "flag",
+				});
+			} else {
+				// Non-repeatable: skip if already used
+				if (usedFlags.has(flag.name)) continue;
+				if (flag.shortName && usedFlags.has(flag.shortName)) continue;
+
+				const marker = flag.required ? " (required)" : "";
+				suggestions.push({
+					text: flag.name,
+					description: flag.description + marker,
+					category: "flag",
+				});
+			}
+		}
+
+		// Add common flags (--namespace, --output)
+		const commonFlags = this.getCommonFlagSuggestions();
+		for (const flag of commonFlags) {
+			if (!usedFlags.has(flag.text)) {
+				suggestions.push(flag);
+			}
+		}
+
+		return suggestions;
+	}
+
+	/**
 	 * Get flag completions filtered by prefix
 	 * @param prefix - The prefix to filter by
 	 * @param action - Optional action for action-specific flags
@@ -1217,6 +1336,167 @@ export class Completer {
 						category: "value" as const,
 					},
 				].filter((s) => s.text.startsWith(valuePartial));
+
+			// Creation flag value completions for healthcheck
+			case "--type":
+			case "-t":
+				return [
+					{
+						text: "http",
+						description: "HTTP health check",
+						category: "value" as const,
+					},
+					{
+						text: "tcp",
+						description: "TCP health check",
+						category: "value" as const,
+					},
+					{
+						text: "dns",
+						description: "DNS health check",
+						category: "value" as const,
+					},
+					{
+						text: "udp-icmp",
+						description: "UDP ICMP health check",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.startsWith(lowerPartial));
+
+			case "--interval":
+			case "--timeout":
+				return [
+					{
+						text: "5",
+						description: "5 seconds",
+						category: "value" as const,
+					},
+					{
+						text: "10",
+						description: "10 seconds",
+						category: "value" as const,
+					},
+					{
+						text: "30",
+						description: "30 seconds",
+						category: "value" as const,
+					},
+					{
+						text: "60",
+						description: "1 minute",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.startsWith(valuePartial));
+
+			case "--healthy-threshold":
+			case "--unhealthy-threshold":
+				return [
+					{
+						text: "2",
+						description: "2 checks",
+						category: "value" as const,
+					},
+					{
+						text: "3",
+						description: "3 checks",
+						category: "value" as const,
+					},
+					{
+						text: "5",
+						description: "5 checks",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.startsWith(valuePartial));
+
+			case "--path":
+				return [
+					{
+						text: "/health",
+						description: "Common health endpoint",
+						category: "value" as const,
+					},
+					{
+						text: "/healthz",
+						description: "Kubernetes-style",
+						category: "value" as const,
+					},
+					{
+						text: "/ready",
+						description: "Readiness endpoint",
+						category: "value" as const,
+					},
+					{
+						text: "/",
+						description: "Root path",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.toLowerCase().startsWith(lowerPartial));
+
+			// Origin pool flag value completions
+			case "--algorithm":
+				return [
+					{
+						text: "ROUND_ROBIN",
+						description: "Round robin distribution",
+						category: "value" as const,
+					},
+					{
+						text: "LEAST_ACTIVE",
+						description: "Least active connections",
+						category: "value" as const,
+					},
+					{
+						text: "RANDOM",
+						description: "Random selection",
+						category: "value" as const,
+					},
+					{
+						text: "SOURCE_IP_STICKINESS",
+						description: "Sticky by source IP",
+						category: "value" as const,
+					},
+					{
+						text: "COOKIE_STICKINESS",
+						description: "Sticky by cookie",
+						category: "value" as const,
+					},
+					{
+						text: "RING_HASH",
+						description: "Consistent ring hash",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.toLowerCase().startsWith(lowerPartial));
+
+			case "--port":
+				return [
+					{
+						text: "80",
+						description: "HTTP port",
+						category: "value" as const,
+					},
+					{
+						text: "443",
+						description: "HTTPS port",
+						category: "value" as const,
+					},
+					{
+						text: "8080",
+						description: "Alt HTTP port",
+						category: "value" as const,
+					},
+					{
+						text: "8443",
+						description: "Alt HTTPS port",
+						category: "value" as const,
+					},
+				].filter((s) => s.text.startsWith(valuePartial));
+
+			case "--health-check":
+				// Complete health check references from existing healthchecks
+				return this.getResourceNameSuggestions(
+					"healthcheck",
+					valuePartial,
+				);
 
 			default:
 				return [];
