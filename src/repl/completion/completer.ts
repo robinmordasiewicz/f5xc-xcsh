@@ -13,9 +13,14 @@ import {
 	getActionDescriptions,
 } from "../../completion/index.js";
 import { ALL_OUTPUT_FORMATS, OUTPUT_FORMAT_HELP } from "../../output/types.js";
-import { getDomainInfo } from "../../types/domains.js";
+import {
+	getDomainInfo,
+	type ResourceCategory,
+	type ResourceMetadata,
+} from "../../types/domains.js";
 import { resourceFetcher } from "./resource-fetcher.js";
 import { loadSettingsSync, type AppSettings } from "../../config/settings.js";
+import { extractUsedFlags, filterUsedFlags } from "./flag-utils.js";
 
 /**
  * Context for resource completion
@@ -43,6 +48,64 @@ const RESOURCE_ACTIONS = new Set([
 	"add-labels",
 	"remove-labels",
 ]);
+
+/**
+ * Generic descriptions indicating utility endpoints, not user-manageable resources.
+ * Resources with these descriptions are typically auto-generated from x-f5xc-operation-metadata.purpose
+ * and represent internal/utility endpoints rather than CRUD-manageable resources.
+ */
+const GENERIC_RESOURCE_DESCRIPTIONS = new Set([
+	"Resource retrieval operation",
+	"Resource creation operation",
+	"Resource update operation",
+	"Resource deletion operation",
+]);
+
+/**
+ * Resource categories to exclude from standard completion.
+ * These represent internal/utility endpoints that shouldn't clutter the completion list.
+ */
+const EXCLUDED_RESOURCE_CATEGORIES = new Set<ResourceCategory>([
+	"analytics",
+	"utility",
+	"management",
+]);
+
+/**
+ * Check if a resource should appear in standard completion mode.
+ * Filters out utility endpoints and resources with generic descriptions.
+ *
+ * @param resource - The resource metadata to check
+ * @returns true if the resource should be shown in standard completion
+ */
+function isResourceCompletionAppropriate(resource: ResourceMetadata): boolean {
+	// Primary resources always shown
+	if (resource.isPrimary) {
+		return true;
+	}
+
+	// Exclude non-CRUD categories
+	if (
+		resource.resourceCategory &&
+		EXCLUDED_RESOURCE_CATEGORIES.has(resource.resourceCategory)
+	) {
+		return false;
+	}
+
+	// Exclude generic descriptions
+	const desc = resource.descriptionShort || resource.description || "";
+	if (GENERIC_RESOURCE_DESCRIPTIONS.has(desc)) {
+		return false;
+	}
+
+	// Exclude self-referential descriptions (name as description)
+	// e.g., resource "stat" with description "stat" or "Stat"
+	if (desc.toLowerCase() === resource.name.toLowerCase().replace(/_/g, " ")) {
+		return false;
+	}
+
+	return true;
+}
 
 /**
  * Parse input text into args array, handling quoted strings
@@ -178,7 +241,9 @@ export class Completer {
 		const cliCompletionMode = process.env.XCSH_COMPLETION_MODE;
 		if (
 			cliCompletionMode &&
-			(cliCompletionMode === "all" || cliCompletionMode === "primary")
+			(cliCompletionMode === "all" ||
+				cliCompletionMode === "primary" ||
+				cliCompletionMode === "standard")
 		) {
 			this.settings.completionMode = cliCompletionMode;
 		}
@@ -245,10 +310,12 @@ export class Completer {
 		}
 
 		// Completing a flag - pass detected action for action-specific flags
+		// Also filter out flags that have already been used in the command
 		if (parsed.isCompletingFlag) {
-			return this.getFlagCompletions(
+			return this.getAvailableFlagCompletions(
 				parsed.currentWord,
 				resourceCtx.action ?? undefined,
+				parsed.args,
 			);
 		}
 
@@ -262,12 +329,17 @@ export class Completer {
 				return resourceNames;
 			}
 			// Resource type is specified but no resources exist - show flags only, not actions
-			return this.getActionFlagSuggestions(
+			// Filter out already-used flags
+			const allFlags = this.getActionFlagSuggestions(
 				resourceCtx.action ?? undefined,
 			);
+			const usedFlags = extractUsedFlags(parsed.args);
+			return filterUsedFlags(allFlags, usedFlags);
 		}
 
 		// If in domain context with an action that supports resources, show resource types
+		// CRITICAL: This block MUST return when conditions are met to prevent fall-through
+		// to domain-level suggestions (the recurring regression bug)
 		if (
 			resourceCtx.domain &&
 			resourceCtx.action &&
@@ -278,7 +350,9 @@ export class Completer {
 				resourceCtx.domain,
 			);
 			if (resourceTypes.length > 0) {
-				// If typing a word, filter resource types (unless word is the action itself)
+				let suggestions = resourceTypes;
+
+				// If typing a word that's not a flag and not the action itself, filter
 				if (
 					parsed.currentWord &&
 					!parsed.currentWord.startsWith("-") &&
@@ -289,18 +363,24 @@ export class Completer {
 						parsed.currentWord,
 					);
 					if (filtered.length > 0) {
-						return filtered;
+						suggestions = filtered;
 					}
-				} else if (
-					!parsed.currentWord ||
-					parsed.currentWord.toLowerCase() === resourceCtx.action
-				) {
-					// Just typed action + space (or typing action itself), show all resource types plus flags
-					return [
-						...resourceTypes,
-						...this.getActionFlagSuggestions(resourceCtx.action),
-					];
+					// If filtered is empty, keep all resource types as fallback
+					// (user may be typing something that doesn't match yet)
 				}
+
+				// ALWAYS return resource types + flags when in resource action context
+				// This prevents fall-through to domain-level suggestions
+				// Filter out already-used flags
+				const actionFlags = this.getActionFlagSuggestions(
+					resourceCtx.action,
+				);
+				const usedFlagsInContext = extractUsedFlags(parsed.args);
+				const availableActionFlags = filterUsedFlags(
+					actionFlags,
+					usedFlagsInContext,
+				);
+				return [...suggestions, ...availableActionFlags];
 			}
 		}
 
@@ -336,8 +416,15 @@ export class Completer {
 						} else {
 							// Action already typed - resource context logic above should have
 							// handled showing resource types. If we got here, show flags.
-							suggestions = this.getActionFlagSuggestions(
-								parsed.args[1]?.toLowerCase(),
+							// Filter out already-used flags
+							const flagsForAction =
+								this.getActionFlagSuggestions(
+									parsed.args[1]?.toLowerCase(),
+								);
+							const usedFlagsHere = extractUsedFlags(parsed.args);
+							suggestions = filterUsedFlags(
+								flagsForAction,
+								usedFlagsHere,
 							);
 						}
 					} else {
@@ -703,7 +790,10 @@ export class Completer {
 	 * Get resource type suggestions for a domain
 	 * Phase 1 Enhancement: Uses allResources (dynamically discovered) by default
 	 * Falls back to primaryResources if allResources not available
-	 * Respects user configuration setting for completion mode
+	 * Respects user configuration setting for completion mode:
+	 * - "primary": Only curated primary resources
+	 * - "standard": Primary + CRUD resources with meaningful descriptions (default)
+	 * - "all": Everything discovered from OpenAPI
 	 */
 	getResourceTypeSuggestions(domain: string): CompletionSuggestion[] {
 		const domainInfo = getDomainInfo(domain);
@@ -716,8 +806,18 @@ export class Completer {
 		if (this.settings.completionMode === "primary") {
 			// User prefers primary resources only
 			resources = domainInfo.primaryResources;
+		} else if (this.settings.completionMode === "standard") {
+			// Default: "standard" mode - filter to appropriate resources
+			const allResources =
+				domainInfo.allResources || domainInfo.primaryResources;
+			resources = allResources?.filter(isResourceCompletionAppropriate);
+
+			// Fallback to primary if filtering removed everything
+			if (!resources || resources.length === 0) {
+				resources = domainInfo.primaryResources;
+			}
 		} else {
-			// Default: "all" mode - use allResources (discovered from OpenAPI) if available
+			// "all" mode - use allResources (discovered from OpenAPI) unfiltered
 			resources = domainInfo.allResources || domainInfo.primaryResources;
 		}
 
@@ -992,6 +1092,23 @@ export class Completer {
 	): CompletionSuggestion[] {
 		const allFlags = this.getActionFlagSuggestions(action);
 		return this.filterSuggestions(allFlags, prefix);
+	}
+
+	/**
+	 * Get available flag completions excluding already-used flags
+	 * @param prefix - The prefix to filter by
+	 * @param action - Optional action for action-specific flags
+	 * @param args - Current command arguments to check for used flags
+	 */
+	getAvailableFlagCompletions(
+		prefix: string,
+		action?: string,
+		args: string[] = [],
+	): CompletionSuggestion[] {
+		const allFlags = this.getActionFlagSuggestions(action);
+		const usedFlags = extractUsedFlags(args);
+		const availableFlags = filterUsedFlags(allFlags, usedFlags);
+		return this.filterSuggestions(availableFlags, prefix);
 	}
 
 	/**

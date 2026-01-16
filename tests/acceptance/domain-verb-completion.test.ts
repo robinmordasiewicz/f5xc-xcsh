@@ -397,4 +397,71 @@ describe("Domain Verb → Resource Name Completion (Regression Tests)", () => {
 			expect(result2).not.toContain("remove-labels");
 		});
 	});
+
+	describe("Fall-Through Bug Regression Guards", () => {
+		/**
+		 * These tests specifically target the recurring regression where
+		 * `domain verb ` falls through to domain-level suggestions.
+		 *
+		 * Bug pattern: When filterSuggestions() returns empty array,
+		 * the code would fall through instead of returning all resource types.
+		 */
+
+		it("CRITICAL: filterSuggestions empty result should show all resources", async () => {
+			// Type a partial that matches NO resources
+			// This triggers the edge case where filtered.length === 0
+			const suggestions = await completer.complete("/virtual get xyznonexistent");
+			const result = suggestions.map((s) => s.text);
+
+			// Should show ALL resources as fallback (the fix)
+			expect(result).toContain("http_loadbalancer");
+			expect(result).toContain("tcp_loadbalancer");
+			expect(result).toContain("origin_pool");
+
+			// Must NOT show verbs (fall-through to domain suggestions)
+			expect(result).not.toContain("list");
+			expect(result).not.toContain("get");
+			expect(result).not.toContain("create");
+			expect(result).not.toContain("delete");
+		});
+
+		it("CRITICAL: non-escaped domain verb shows resources", async () => {
+			// Without "/" prefix - this path was also affected
+			const suggestions = await completer.complete("virtual get ");
+			const result = suggestions.map((s) => s.text);
+
+			expect(result).toContain("http_loadbalancer");
+			expect(result).not.toContain("list");
+			expect(result).not.toContain("get");
+		});
+
+		it("CRITICAL: all verbs behave consistently (matrix check)", async () => {
+			const verbs = ["list", "get", "create", "delete", "replace", "apply", "status", "patch"];
+
+			for (const verb of verbs) {
+				const suggestions = await completer.complete(`/virtual ${verb} `);
+				const result = suggestions.map((s) => s.text);
+
+				// Every verb should show resources
+				expect(result).toContain("http_loadbalancer");
+
+				// No verb should show other verbs
+				for (const otherVerb of verbs) {
+					expect(result).not.toContain(otherVerb);
+				}
+			}
+		});
+
+		it("CRITICAL: suggestions include action-specific flags", async () => {
+			// After the fix, we always return resources + action flags
+			const suggestions = await completer.complete("/virtual list ");
+			const result = suggestions.map((s) => s.text);
+
+			// Should have resources
+			expect(result).toContain("http_loadbalancer");
+
+			// Should also have flags (action-specific)
+			expect(result.some(r => r.startsWith("--"))).toBe(true);
+		});
+	});
 });
