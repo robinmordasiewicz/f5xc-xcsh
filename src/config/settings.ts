@@ -62,8 +62,13 @@ export interface CompletionModeDefinition {
  */
 export const COMPLETION_MODES: readonly CompletionModeDefinition[] = [
 	{
+		mode: "standard",
+		description:
+			"Show primary and CRUD resources with valid descriptions (default)",
+	},
+	{
 		mode: "all",
-		description: "Show all discovered resources (default)",
+		description: "Show all discovered resources",
 	},
 	{
 		mode: "primary",
@@ -99,7 +104,7 @@ export interface AppSettings {
  */
 export const DEFAULT_SETTINGS: AppSettings = {
 	logo: "image",
-	completionMode: "all",
+	completionMode: "standard",
 };
 
 /**

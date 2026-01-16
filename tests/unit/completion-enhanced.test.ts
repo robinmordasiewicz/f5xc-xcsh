@@ -3,7 +3,7 @@
  * Tests that allResources (discovered from OpenAPI) are shown in completions
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { Completer } from "../../src/repl/completion/completer.js";
 import { getDomainInfo } from "../../src/types/domains.js";
 
@@ -11,7 +11,13 @@ describe("Enhanced Completion - Dynamic Resource Discovery", () => {
 	let completer: Completer;
 
 	beforeEach(() => {
+		// Set completion mode to "all" for these tests to verify all-resource behavior
+		process.env.XCSH_COMPLETION_MODE = "all";
 		completer = new Completer();
+	});
+
+	afterEach(() => {
+		delete process.env.XCSH_COMPLETION_MODE;
 	});
 
 	describe("Virtual domain - all 38 resources", () => {

@@ -10,6 +10,8 @@
  * - Optional flag alone: [--flag]
  */
 
+import { filterUsedFlagsFromStrings } from "../repl/completion/flag-utils.js";
+
 export interface PositionalArgument {
 	name: string;
 	required: boolean;
@@ -297,6 +299,7 @@ export function formatUsageRequirements(usage: UsageRequirements): string {
  * 1. Showing positional argument placeholders when they're required but not yet provided
  * 2. Showing flag suggestions after required positional arguments are satisfied
  * 3. Supporting both required and optional positional arguments
+ * 4. Filtering out flags that have already been used in the command
  *
  * @param usage - The usage string (e.g., "<name> --url <api-url> --token <api-token> [--namespace <ns>]")
  * @param args - Current arguments provided (e.g., [] or ["myprofile"] or ["myprofile", "--url", "..."])
@@ -310,22 +313,28 @@ export function formatUsageRequirements(usage: UsageRequirements): string {
  *
  * generateSmartCompletions(usage, ["myprofile"], ["--url", "--token"])
  * // Returns: ["--url", "--token"]
+ *
+ * generateSmartCompletions(usage, ["myprofile", "--url", "https://..."], ["--url", "--token"])
+ * // Returns: ["--token"] (--url is filtered out because it was already used)
  */
 export function generateSmartCompletions(
 	usage: string | undefined,
 	args: string[],
 	flags: string[],
 ): string[] {
+	// Filter out already-used flags from the suggestions
+	const availableFlags = filterUsedFlagsFromStrings(flags, args);
+
 	if (!usage) {
-		return flags;
+		return availableFlags;
 	}
 
 	const requirements = parseUsage(usage);
 
 	// Count how many positional arguments have been provided
-	// (filter out flags that start with --)
+	// (filter out flags that start with -- or -)
 	const positionalArgsProvided = args.filter(
-		(arg) => !arg.startsWith("--"),
+		(arg) => !arg.startsWith("-"),
 	).length;
 
 	// Get required positional arguments
@@ -339,11 +348,11 @@ export function generateSmartCompletions(
 			.slice(positionalArgsProvided)
 			.map((p) => `<${p.name}>`);
 
-		// Return placeholders first, then flags
+		// Return placeholders first, then available flags
 		// This shows the user: "You need to provide X, and here are the flags available"
-		return [...placeholders, ...flags];
+		return [...placeholders, ...availableFlags];
 	}
 
-	// All required positional args satisfied, return only flags
-	return flags;
+	// All required positional args satisfied, return only available flags
+	return availableFlags;
 }
