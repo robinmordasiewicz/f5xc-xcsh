@@ -1,6 +1,6 @@
 # 🔑 Authentication
 
-F5 Distributed Cloud Authentication API specifications
+Identity management with provider integration, access policies, and credential lifecycle control.
 
 **Category:** Platform
 

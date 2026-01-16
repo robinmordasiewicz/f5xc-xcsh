@@ -1,6 +1,6 @@
 # ⚠️ Threat Campaign
 
-F5 Distributed Cloud Threat Campaign API specifications
+Detection policies, attack tracking, and automated mitigation rule generation for security operations.
 
 **Category:** Security
 

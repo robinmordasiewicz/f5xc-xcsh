@@ -1,6 +1,6 @@
 # 📉 Telemetry And Insights
 
-F5 Distributed Cloud Telemetry And Insights API specifications
+Collection endpoints, metrics storage, and insight generation for observability workflows.
 
 **Category:** Operations
 

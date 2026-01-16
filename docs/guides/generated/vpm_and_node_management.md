@@ -1,6 +1,6 @@
 # 🖥️ Vpm And Node Management
 
-F5 Distributed Cloud Vpm And Node Management API specifications
+Lifecycle control, fleet configuration, and deployment policies for distributed node management.
 
 **Category:** Platform
 

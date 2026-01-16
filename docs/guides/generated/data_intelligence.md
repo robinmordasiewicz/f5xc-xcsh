@@ -1,6 +1,6 @@
 # 🧠 Data Intelligence
 
-F5 Distributed Cloud Data Intelligence API specifications
+Classification rules, resource policies, and insight generation for data analysis workflows.
 
 **Category:** Operations
 
