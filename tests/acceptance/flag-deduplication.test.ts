@@ -35,22 +35,16 @@ describe("Flag Deduplication - Utility Functions", () => {
 			expect(used.has("--url")).toBe(true);
 		});
 
-		it("extracts single flag and its aliases", () => {
+		it("extracts flag without short alias expansion (Phase 1 removed short aliases)", () => {
 			const used = extractUsedFlags(["--url", "https://example.com"]);
 			expect(used.has("--url")).toBe(true);
-			expect(used.has("-u")).toBe(true);
-		});
-
-		it("extracts short flag and its long-form alias", () => {
-			const used = extractUsedFlags(["-ns", "default"]);
-			expect(used.has("-ns")).toBe(true);
-			expect(used.has("--namespace")).toBe(true);
+			// Short aliases have been removed in Phase 1, so no alias expansion
 		});
 
 		it("handles --flag=value syntax", () => {
 			const used = extractUsedFlags(["--output=json"]);
 			expect(used.has("--output")).toBe(true);
-			expect(used.has("-o")).toBe(true);
+			// Short aliases have been removed in Phase 1
 		});
 
 		it("extracts multiple flags", () => {
@@ -61,9 +55,8 @@ describe("Flag Deduplication - Utility Functions", () => {
 				"abc123",
 			]);
 			expect(used.has("--url")).toBe(true);
-			expect(used.has("-u")).toBe(true);
 			expect(used.has("--token")).toBe(true);
-			// Note: --token no longer has -t as alias (now used by --type for healthcheck creation)
+			// Short aliases have been removed in Phase 1
 		});
 
 		it("ignores non-flag arguments", () => {
@@ -139,15 +132,14 @@ describe("Flag Deduplication - Utility Functions", () => {
 			expect(filtered).toContain("--namespace");
 		});
 
-		it("handles alias expansion", () => {
-			const flags = ["--namespace", "-ns", "--output", "-o"];
-			const args = ["-ns", "default"];
+		it("filters exact flag matches only (Phase 1 removed short aliases)", () => {
+			// Short aliases have been removed in Phase 1
+			const flags = ["--namespace", "--output"];
+			const args = ["--namespace", "default"];
 			const filtered = filterUsedFlagsFromStrings(flags, args);
 
 			expect(filtered).not.toContain("--namespace");
-			expect(filtered).not.toContain("-ns");
 			expect(filtered).toContain("--output");
-			expect(filtered).toContain("-o");
 		});
 	});
 });
@@ -243,30 +235,18 @@ describe("Flag Deduplication - Completer Integration", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--namespace");
-			expect(result).not.toContain("-ns");
+			// Short flags removed in Phase 1
 			// Other flags should still be present
 			expect(result).toContain("--output");
 		});
 
-		it("CRITICAL: excludes -ns when --namespace used (alias bidirection)", async () => {
+		it("excludes --output when --output is used", async () => {
 			const suggestions = await completer.complete(
-				"/virtual list --namespace default ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			// Both long and short forms should be excluded
-			expect(result).not.toContain("--namespace");
-			expect(result).not.toContain("-ns");
-		});
-
-		it("excludes --output when -o is used", async () => {
-			const suggestions = await completer.complete(
-				"/virtual list -o json ",
+				"/virtual list --output json ",
 			);
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--output");
-			expect(result).not.toContain("-o");
 			expect(result).toContain("--namespace");
 		});
 
@@ -277,9 +257,8 @@ describe("Flag Deduplication - Completer Integration", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--namespace");
-			expect(result).not.toContain("-ns");
 			expect(result).not.toContain("--output");
-			expect(result).not.toContain("-o");
+			// Short flags removed in Phase 1
 		});
 
 		it("handles --flag=value syntax", async () => {
@@ -289,7 +268,6 @@ describe("Flag Deduplication - Completer Integration", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--output");
-			expect(result).not.toContain("-o");
 			expect(result).toContain("--namespace");
 		});
 	});
@@ -396,25 +374,7 @@ describe("Flag Deduplication - Regression Prevention", () => {
 		const result = suggestions.map((s) => s.text);
 
 		expect(result).not.toContain("--namespace");
-		expect(result).not.toContain("-ns");
-	});
-
-	it("REGRESSION: alias bidirectionality must work", async () => {
-		// Using short form should exclude long form
-		const suggestions1 = await completer.complete(
-			"/virtual list -ns default --",
-		);
-		const result1 = suggestions1.map((s) => s.text);
-		expect(result1).not.toContain("--namespace");
-		expect(result1).not.toContain("-ns");
-
-		// Using long form should exclude short form
-		const suggestions2 = await completer.complete(
-			"/virtual list --namespace default --",
-		);
-		const result2 = suggestions2.map((s) => s.text);
-		expect(result2).not.toContain("--namespace");
-		expect(result2).not.toContain("-ns");
+		// Short flags removed in Phase 1
 	});
 
 	it("REGRESSION: --flag=value syntax must be handled", async () => {
@@ -424,7 +384,7 @@ describe("Flag Deduplication - Regression Prevention", () => {
 		const result = suggestions.map((s) => s.text);
 
 		expect(result).not.toContain("--namespace");
-		expect(result).not.toContain("-ns");
+		// Short flags removed in Phase 1
 	});
 
 	it("REGRESSION: multiple flags must all be excluded", async () => {

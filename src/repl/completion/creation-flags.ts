@@ -12,8 +12,6 @@
 export interface CreationFlagDefinition {
 	/** The full flag name (e.g., "--type") */
 	name: string;
-	/** Short form alias (e.g., "-t") */
-	shortName?: string;
 	/** Description shown in completion menu */
 	description: string;
 	/** Whether this flag is required for resource creation */
@@ -103,7 +101,6 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	// Required flags
 	{
 		name: "--name",
-		shortName: "-n",
 		description: "Resource name",
 		required: true,
 		hasValue: true,
@@ -112,12 +109,13 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	},
 	{
 		name: "--type",
-		shortName: "-t",
-		description: "Health check type",
-		required: true,
+		description: "Health check type (http, tcp, udp-icmp)",
+		required: false,
 		hasValue: true,
 		valueType: "enum",
-		enumValues: ["http", "tcp", "dns", "udp-icmp"],
+		enumValues: ["http", "tcp", "udp-icmp"],
+		defaultValue: "http",
+		recommendedValue: "http",
 		priority: 2, // Second highest - determines available options
 	},
 	{
@@ -127,6 +125,7 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "integer",
 		defaultValue: 15,
+		recommendedValue: 15,
 	},
 	{
 		name: "--timeout",
@@ -135,6 +134,7 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "integer",
 		defaultValue: 3,
+		recommendedValue: 3,
 	},
 	{
 		name: "--healthy-threshold",
@@ -143,6 +143,7 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "integer",
 		defaultValue: 3,
+		recommendedValue: 3,
 	},
 	{
 		name: "--unhealthy-threshold",
@@ -151,6 +152,7 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "integer",
 		defaultValue: 1,
+		recommendedValue: 1,
 	},
 	// Optional flags with server defaults
 	{
@@ -160,6 +162,8 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "integer",
 		defaultValue: 30,
+		recommendedValue: 30,
+		hasServerDefault: true,
 	},
 	// HTTP-specific (conditionally required when type=http)
 	{
@@ -262,27 +266,6 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 		applicableTypes: ["tcp"],
 		priority: 5, // Type-specific flags appear after --type but before other required
 	},
-
-	// DNS-specific flags
-	{
-		name: "--query-name",
-		description: "DNS query name (max 1024 chars)",
-		required: false,
-		hasValue: true,
-		valueType: "string",
-		applicableTypes: ["dns"],
-		priority: 5, // Type-specific flags appear after --type but before other required
-	},
-	{
-		name: "--expected-response-dns",
-		description:
-			"Expected DNS response (IPv4/IPv6 address, max 1024 chars)",
-		required: false,
-		hasValue: true,
-		valueType: "string",
-		applicableTypes: ["dns"],
-		priority: 5, // Type-specific flags appear after --type but before other required
-	},
 ];
 
 /**
@@ -293,7 +276,6 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 	// Required - Name
 	{
 		name: "--name",
-		shortName: "-n",
 		description: "Origin pool name",
 		required: true,
 		hasValue: true,
@@ -795,9 +777,6 @@ export function getAllCreationFlagNames(resourceType: string): Set<string> {
 
 	for (const flag of flags) {
 		names.add(flag.name);
-		if (flag.shortName) {
-			names.add(flag.shortName);
-		}
 	}
 
 	return names;

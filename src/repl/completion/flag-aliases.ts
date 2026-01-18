@@ -7,22 +7,21 @@
 
 /**
  * Flag alias groups - when any form is used, all forms should be excluded
- * Each group contains all equivalent forms of a flag (long form, short form)
+ * Each group contains all equivalent forms of a flag
  */
 export const FLAG_ALIAS_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
 	// Common flags
-	["--namespace", "-ns"],
-	["--output", "-o"],
-	["--name", "-n"],
-	["--file", "-f"],
-	["--url", "-u"],
+	["--namespace"],
+	["--output"],
+	["--name"],
+	["--url"],
 	["--limit"],
 	["--label"],
 	["--show-labels"],
 	["--force"],
 	["--cascade"],
 	// Creation flags for healthcheck
-	["--type", "-t"],
+	["--type"],
 	["--interval"],
 	["--timeout"],
 	["--healthy-threshold"],

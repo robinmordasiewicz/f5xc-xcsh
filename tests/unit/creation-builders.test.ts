@@ -845,6 +845,143 @@ describe("Healthcheck Builder - validateHealthcheckFlags", () => {
 		expect(validation.valid).toBe(false);
 		expect(validation.errors.some((e) => e.includes("interval"))).toBe(true);
 	});
+
+	// Tests for default type (Phase 0 enhancement)
+	it("uses default type 'http' when --type not specified", () => {
+		const args = [
+			"--name", "test-hc",
+			// --type NOT provided
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(true);
+		expect(validation.errors).toHaveLength(0);
+	});
+
+	it("builds HTTP healthcheck when --type not specified", () => {
+		const args = [
+			"--name", "test-minimal-hc",
+			// --type NOT provided - should default to http
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(request.metadata.name).toBe("test-minimal-hc");
+		expect(request.spec.http_health_check).toBeDefined();
+		expect(request.spec.http_health_check?.path).toBe("/");
+		expect(request.spec.interval).toBe(15);
+		expect(request.spec.timeout).toBe(3);
+	});
+
+	it("minimal command creates valid HTTP healthcheck with all defaults", () => {
+		const args = [
+			"--name", "minimal",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(validation.valid).toBe(true);
+		expect(request.spec.http_health_check).toBeDefined();
+		expect(request.spec.interval).toBe(15);
+		expect(request.spec.timeout).toBe(3);
+		expect(request.spec.healthy_threshold).toBe(3);
+		expect(request.spec.unhealthy_threshold).toBe(1);
+		expect(request.spec.jitter_percent).toBe(30);
+	});
+});
+
+describe("UDP-ICMP Healthcheck Tests", () => {
+	it("builds basic UDP-ICMP healthcheck", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(request.metadata.name).toBe("test-icmp");
+		expect(request.spec.udp_icmp_health_check).toBeDefined();
+		expect(request.spec.http_health_check).toBeUndefined();
+		expect(request.spec.tcp_health_check).toBeUndefined();
+	});
+
+	it("includes only common fields for UDP-ICMP", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+			"--interval", "20",
+			"--timeout", "5",
+			"--healthy-threshold", "2",
+			"--unhealthy-threshold", "3",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(request.spec.interval).toBe(20);
+		expect(request.spec.timeout).toBe(5);
+		expect(request.spec.healthy_threshold).toBe(2);
+		expect(request.spec.unhealthy_threshold).toBe(3);
+	});
+
+	it("creates empty udp_icmp_health_check object", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(request.spec.udp_icmp_health_check).toEqual({});
+	});
+
+	it("validates UDP-ICMP with all common flags", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+			"--interval", "15",
+			"--timeout", "3",
+			"--healthy-threshold", "3",
+			"--unhealthy-threshold", "1",
+			"--jitter-percent", "30",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(true);
+		expect(validation.errors).toHaveLength(0);
+	});
+
+	it("verifies UDP-ICMP type in request body", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		// Only udp_icmp_health_check should be defined
+		expect(request.spec.udp_icmp_health_check).toEqual({});
+		expect(request.spec.http_health_check).toBeUndefined();
+		expect(request.spec.tcp_health_check).toBeUndefined();
+		expect(request.spec.dns_health_check).toBeUndefined();
+	});
+
+	it("uses default values for UDP-ICMP healthcheck", () => {
+		const args = [
+			"--name", "test-icmp",
+			"--type", "udp-icmp",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		expect(request.spec.interval).toBe(15);
+		expect(request.spec.timeout).toBe(3);
+		expect(request.spec.healthy_threshold).toBe(3);
+		expect(request.spec.unhealthy_threshold).toBe(1);
+		expect(request.spec.jitter_percent).toBe(30);
+	});
 });
 
 describe("Origin Pool Builder - buildOriginPoolRequest", () => {

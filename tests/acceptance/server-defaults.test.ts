@@ -1,16 +1,16 @@
 /**
- * Server Default Value Display Tests
+ * Default Value Display Tests
  *
- * Tests that server defaults from the OpenAPI spec are properly displayed
+ * Tests that defaults from the OpenAPI spec and client-side are properly displayed
  * in completion hints for creation flags.
  *
  * Background: The upstream f5xc-api-enriched spec provides server defaults
- * via the `default` field and `x-f5xc-server-default: true` marker.
+ * via the `default` field. These are now displayed as "(default: value)" for simplicity.
  *
  * These tests verify that:
- * 1. Optional flags with server defaults show "(server default: value)" in descriptions
+ * 1. Optional flags with defaults show "(default: value)" in descriptions
  * 2. Required flags don't show defaults (since users must provide values anyway)
- * 3. The jitter-percent flag correctly shows its server default of 0
+ * 3. The jitter-percent flag correctly shows its default of 30
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -26,7 +26,7 @@ import type { Completer } from "../../src/repl/completion/completer.js";
 // Setup mocks for all tests
 setupTestEnvironment();
 
-describe("Server Default Value Display", () => {
+describe("Default Value Display", () => {
 	let session: REPLSession;
 	let completer: Completer;
 
@@ -39,8 +39,8 @@ describe("Server Default Value Display", () => {
 		cleanupTestEnvironment();
 	});
 
-	describe("Healthcheck Server Defaults", () => {
-		it("shows client default for jitter-percent flag", async () => {
+	describe("Healthcheck Defaults", () => {
+		it("shows default for jitter-percent flag", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck ",
 			);
@@ -61,26 +61,30 @@ describe("Server Default Value Display", () => {
 				(s) => s.text === "--jitter-percent",
 			);
 			expect(jitterFlag).toBeDefined();
-			// Should NOT contain "required" since it has a server default
+			// Should NOT contain "required" since it has a default
 			expect(jitterFlag?.description).not.toContain("required");
 		});
 
-		it("required flags do not show server defaults", async () => {
+		it("required flags do not show defaults", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck ",
 			);
 
-			// These flags are required per spec (x-f5xc-required-for.create: true)
-			const requiredFlags = ["--name", "--type"];
+			// --name is required per spec (x-f5xc-required-for.create: true)
+			const requiredFlags = ["--name"];
 
 			for (const flagName of requiredFlags) {
 				const flag = suggestions.find((s) => s.text === flagName);
 				expect(flag).toBeDefined();
 				expect(flag?.description).toContain("required");
 				// Required flags should NOT show defaults since users must provide them
-				expect(flag?.description).not.toContain("server default");
 				expect(flag?.description).not.toContain("default:");
 			}
+
+			// --type is now optional with default "http"
+			const typeFlag = suggestions.find((s) => s.text === "--type");
+			expect(typeFlag).toBeDefined();
+			expect(typeFlag?.description).toContain("default: http");
 
 			// These flags now have client-side defaults
 			const defaultFlags = {
@@ -115,7 +119,7 @@ describe("Server Default Value Display", () => {
 	});
 
 	describe("Flag Description Format", () => {
-		it("formats client default values correctly in descriptions", async () => {
+		it("formats default values correctly in descriptions", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck ",
 			);
@@ -154,7 +158,7 @@ describe("Server Default Value Display", () => {
 				"/virtual create healthcheck --type http ",
 			);
 
-			// HTTP-specific optional flags that don't have server defaults
+			// HTTP-specific optional flags that don't have defaults
 			const optionalFlags = ["--path", "--host-header"];
 
 			for (const flagName of optionalFlags) {
@@ -163,14 +167,13 @@ describe("Server Default Value Display", () => {
 				// Should NOT be marked as required
 				expect(flag?.description).not.toContain("required");
 				// Should NOT show default values
-				expect(flag?.description).not.toContain("server default");
 				expect(flag?.description).not.toContain("default:");
 			}
 		});
 	});
 
-	describe("Apply Action Client Defaults", () => {
-		it("shows client defaults for apply action as well", async () => {
+	describe("Apply Action Defaults", () => {
+		it("shows defaults for apply action as well", async () => {
 			const suggestions = await completer.complete(
 				"/virtual apply healthcheck ",
 			);

@@ -83,13 +83,19 @@ describe("Create Completion Matrix - Required Flag Sorting", () => {
 				"/virtual create healthcheck ",
 			);
 
-			const requiredFlags = ["--name", "--type"];
+			// --name is required, --type is now optional with default "http"
+			const requiredFlags = ["--name"];
 
 			for (const flagName of requiredFlags) {
 				const flag = suggestions.find((s) => s.text === flagName);
 				expect(flag).toBeDefined();
 				expect(flag?.description).toContain("required");
 			}
+
+			// --type should show default value since it's optional with default
+			const typeFlag = suggestions.find((s) => s.text === "--type");
+			expect(typeFlag).toBeDefined();
+			expect(typeFlag?.description).toContain("default: http");
 
 			// Flags with defaults should show default value, not "required"
 			const defaultFlags = {
@@ -130,7 +136,6 @@ describe("Create Completion Matrix - Required Flag Sorting", () => {
 			const flagTexts = suggestions.map((s) => s.text);
 
 			expect(flagTexts).not.toContain("--name");
-			expect(flagTexts).not.toContain("-n");
 			// Other required flags should still be present
 			expect(flagTexts).toContain("--type");
 			expect(flagTexts).toContain("--interval");
@@ -175,17 +180,14 @@ describe("Create Completion Matrix - Required Flag Sorting", () => {
 			);
 			const flagTexts = suggestions.map((s) => s.text);
 
-			// Global flags
+			// Global flags (no short forms since Phase 1 removed them)
 			const namespaceIndex = flagTexts.indexOf("--namespace");
 			const outputIndex = flagTexts.indexOf("--output");
-			const nsShortIndex = flagTexts.indexOf("-ns");
-			const oShortIndex = flagTexts.indexOf("-o");
 
 			// Contextual flags (should appear before global flags)
 			const typeIndex = flagTexts.indexOf("--type");
 			const intervalIndex = flagTexts.indexOf("--interval");
 			const pathIndex = flagTexts.indexOf("--path");
-			const fileIndex = flagTexts.indexOf("--file");
 
 			// All global flags should exist
 			expect(namespaceIndex).toBeGreaterThanOrEqual(0);
@@ -204,18 +206,12 @@ describe("Create Completion Matrix - Required Flag Sorting", () => {
 				expect(pathIndex).toBeLessThan(namespaceIndex);
 				expect(pathIndex).toBeLessThan(outputIndex);
 			}
-			if (fileIndex >= 0) {
-				expect(fileIndex).toBeLessThan(namespaceIndex);
-				expect(fileIndex).toBeLessThan(outputIndex);
-			}
 
 			// Global flags should be grouped together at the end
-			// (sorted alphabetically: --namespace, -ns, -o, --output)
-			const globalFlags = [namespaceIndex, nsShortIndex, oShortIndex, outputIndex].filter(i => i >= 0);
-			const minGlobalIndex = Math.min(...globalFlags);
+			const globalFlags = [namespaceIndex, outputIndex].filter(i => i >= 0);
 			const maxGlobalIndex = Math.max(...globalFlags);
 
-			// Verify global flags are contiguous at the end
+			// Verify global flags are at the end
 			expect(maxGlobalIndex).toBe(flagTexts.length - 1);
 		});
 
@@ -257,7 +253,7 @@ describe("Create Completion Matrix - Healthcheck Scenarios", () => {
 	});
 
 	describe("Input: create healthcheck <space>", () => {
-		it("shows flags: --file, --name, --type, --interval...", async () => {
+		it("shows flags: --name, --type, --interval... (no --file since Phase 2)", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck ",
 			);
@@ -269,7 +265,6 @@ describe("Create Completion Matrix - Healthcheck Scenarios", () => {
 			expect(result).toContain("--timeout");
 			expect(result).toContain("--healthy-threshold");
 			expect(result).toContain("--unhealthy-threshold");
-			expect(result).toContain("--file");
 		});
 	});
 
@@ -305,14 +300,13 @@ describe("Create Completion Matrix - Healthcheck Scenarios", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--name");
-			expect(result).not.toContain("-n");
 			expect(result).toContain("--type");
 			expect(result).toContain("--interval");
 		});
 	});
 
 	describe("Input: create healthcheck --type <space>", () => {
-		it("shows enum values: http, tcp, dns, udp-icmp", async () => {
+		it("shows enum values: http, tcp, udp-icmp (and NOT dns)", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck --type ",
 			);
@@ -320,8 +314,8 @@ describe("Create Completion Matrix - Healthcheck Scenarios", () => {
 
 			expect(result).toContain("http");
 			expect(result).toContain("tcp");
-			expect(result).toContain("dns");
 			expect(result).toContain("udp-icmp");
+			expect(result).not.toContain("dns"); // DNS is NOT supported by F5 XC API
 		});
 	});
 
@@ -334,7 +328,6 @@ describe("Create Completion Matrix - Healthcheck Scenarios", () => {
 
 			expect(result).toContain("http");
 			expect(result).not.toContain("tcp");
-			expect(result).not.toContain("dns");
 		});
 	});
 
@@ -381,7 +374,7 @@ describe("Create Completion Matrix - Origin Pool Scenarios", () => {
 	});
 
 	describe("Input: create origin_pool <space>", () => {
-		it("shows flags: --file, --name, --port, --public-ip...", async () => {
+		it("shows flags: --name, --port, --public-ip... (no --file since Phase 2)", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create origin_pool ",
 			);
@@ -391,7 +384,6 @@ describe("Create Completion Matrix - Origin Pool Scenarios", () => {
 			expect(result).toContain("--port");
 			expect(result).toContain("--public-ip");
 			expect(result).toContain("--algorithm");
-			expect(result).toContain("--file");
 		});
 	});
 
@@ -415,7 +407,6 @@ describe("Create Completion Matrix - Origin Pool Scenarios", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).not.toContain("--name");
-			expect(result).not.toContain("-n");
 		});
 	});
 
@@ -568,27 +559,6 @@ describe("Create Completion Matrix - Edge Cases", () => {
 		});
 	});
 
-	describe("Short flag form", () => {
-		it("-n filters out --name", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck -n test ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			expect(result).not.toContain("--name");
-			expect(result).not.toContain("-n");
-		});
-
-		it("-t filters out --type", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck -t http ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			expect(result).not.toContain("--type");
-			expect(result).not.toContain("-t");
-		});
-	});
 
 	describe("Mixed flag formats", () => {
 		it("handles --flag=value format", async () => {
@@ -685,20 +655,6 @@ describe("Create Completion Matrix - Edge Cases", () => {
 			expect(tcpIndex).toBeGreaterThan(-1);
 			expect(timingIndex).toBeGreaterThan(-1);
 			expect(tcpIndex).toBeLessThan(timingIndex);
-		});
-
-		it("type-specific flags (DNS) appear before timing flags", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck --type dns --name test ",
-			);
-			const flags = suggestions.filter((s) => s.text.startsWith("--"));
-
-			const dnsIndex = flags.findIndex((f) => f.text === "--query-name");
-			const timingIndex = flags.findIndex((f) => f.text === "--interval");
-
-			expect(dnsIndex).toBeGreaterThan(-1);
-			expect(timingIndex).toBeGreaterThan(-1);
-			expect(dnsIndex).toBeLessThan(timingIndex);
 		});
 
 		it("type-specific flags are alphabetically ordered", async () => {

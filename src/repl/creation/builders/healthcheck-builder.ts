@@ -33,10 +33,7 @@ export interface HealthcheckRequestBody {
 			request_headers_to_remove?: string[];
 		};
 		tcp_health_check?: Record<string, unknown>;
-		dns_health_check?: {
-			name_to_resolve?: string;
-			expected_response?: string;
-		};
+		udp_icmp_health_check?: Record<string, unknown>; // Empty object type per API schema
 		timeout: number;
 		interval: number;
 		healthy_threshold: number;
@@ -94,7 +91,7 @@ export function buildHealthcheckRequest(
 	namespace: string,
 ): HealthcheckRequestBody {
 	const name = getFlagValue(flags, "--name");
-	const type = getFlagValue(flags, "--type");
+	const type = getFlagValue(flags, "--type") || "http"; // Default to http (recommended)
 	const interval = getFlagIntValue(flags, "--interval");
 	const timeout = getFlagIntValue(flags, "--timeout");
 	const healthyThreshold = getFlagIntValue(flags, "--healthy-threshold");
@@ -260,14 +257,10 @@ export function buildHealthcheckRequest(
 			break;
 		}
 
-		case "dns": {
-			request.spec.dns_health_check = {};
-			break;
-		}
-
 		case "udp-icmp": {
-			// UDP-ICMP health check (basic config)
-			// The API may have specific fields for this
+			// UDP-ICMP: ICMP echo request/reply healthcheck
+			// No type-specific configuration - uses empty object per API schema
+			request.spec.udp_icmp_health_check = {};
 			break;
 		}
 	}
@@ -296,9 +289,9 @@ export function validateHealthcheckFlags(
 		);
 	}
 
-	const type = getFlagValue(flags, "--type");
-	if (!type) {
-		errors.push("--type is required (http, tcp, dns, or udp-icmp)");
+	const type = getFlagValue(flags, "--type") || "http"; // Default to http (recommended)
+	if (type && !["http", "tcp", "udp-icmp"].includes(type)) {
+		errors.push("--type must be http, tcp, or udp-icmp");
 	}
 
 	const interval = getFlagIntValue(flags, "--interval");

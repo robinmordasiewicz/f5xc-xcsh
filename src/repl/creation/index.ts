@@ -7,8 +7,6 @@
 export {
 	parseCreationFlags,
 	hasCreationFlagsInArgs,
-	hasFileFlag,
-	getFilePath,
 	getFlagValue,
 	getFlagValues,
 	getFlagIntValue,

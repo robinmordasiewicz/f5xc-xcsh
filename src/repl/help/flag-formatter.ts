@@ -22,9 +22,7 @@ export function formatFlagEntry(flag: CreationFlagDefinition): string[] {
 }
 
 function buildFlagSignature(flag: CreationFlagDefinition): string {
-	const names = flag.shortName
-		? `${flag.shortName}, ${flag.name}`
-		: flag.name;
+	const names = flag.name;
 
 	if (!flag.hasValue) {
 		return names; // Boolean flag

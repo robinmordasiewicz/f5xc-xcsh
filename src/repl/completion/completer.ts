@@ -191,18 +191,12 @@ export function parseInput(text: string): ParsedInput {
 	// Flags that expect values (not boolean flags)
 	const valueFlagPatterns = [
 		"--namespace",
-		"-ns",
 		"--output",
-		"-o",
 		"--name",
-		"-n",
-		"--file",
-		"-f",
 		"--limit",
 		"--label",
 		// Creation flags for healthcheck
 		"--type",
-		"-t",
 		"--interval",
 		"--timeout",
 		"--healthy-threshold",
@@ -843,11 +837,6 @@ export class Completer {
 				description: `Output format (${OUTPUT_FORMAT_HELP})`,
 				category: "flag",
 			},
-			{
-				text: "-o",
-				description: "Output format (short)",
-				category: "flag",
-			},
 		];
 	}
 
@@ -1088,20 +1077,10 @@ export class Completer {
 		// Common flags that apply to most actions
 		const commonFlags: CompletionSuggestion[] = [
 			{ text: "--name", description: "Resource name", category: "flag" },
-			{
-				text: "-n",
-				description: "Resource name (short)",
-				category: "flag",
-			},
 			{ text: "--namespace", description: "Namespace", category: "flag" },
 			{
 				text: "--output",
 				description: `Output format (${OUTPUT_FORMAT_HELP})`,
-				category: "flag",
-			},
-			{
-				text: "-o",
-				description: "Output format (short)",
 				category: "flag",
 			},
 		];
@@ -1134,21 +1113,6 @@ export class Completer {
 					description: "Show resource labels",
 					category: "flag",
 				});
-				break;
-			case "create":
-			case "apply":
-				actionFlags.push(
-					{
-						text: "--file",
-						description: "Configuration file path",
-						category: "flag",
-					},
-					{
-						text: "-f",
-						description: "Configuration file (short)",
-						category: "flag",
-					},
-				);
 				break;
 			case "delete":
 				actionFlags.push(
@@ -1267,23 +1231,13 @@ export class Completer {
 		// Parse flag values for conditional filtering
 		const flagValues = parseCreationFlagValues(args);
 
-		// Get current --type value (or -t short form)
-		const currentType = flagValues.get("--type") || flagValues.get("-t");
+		// Get current --type value
+		const currentType = flagValues.get("--type");
 
 		// Track three groups for sorting: required, optional contextual, global
 		const requiredFlagSuggestions: CompletionSuggestion[] = [];
 		const optionalContextualSuggestions: CompletionSuggestion[] = [];
 		const globalFlagSuggestions: CompletionSuggestion[] = [];
-
-		// Add --file for create/apply (allows YAML/JSON configuration)
-		if (!usedFlags.has("--file") && !usedFlags.has("-f")) {
-			optionalContextualSuggestions.push({
-				text: "--file",
-				description: "Configuration file (YAML/JSON)",
-				category: "flag",
-				// No priority - will get default for optional flags from applyDefaultPriority
-			});
-		}
 
 		// Add resource-specific creation flags
 		for (const flag of creationFlags) {
@@ -1334,10 +1288,10 @@ export class Completer {
 					: " (repeatable)";
 				let desc = flag.description + repeatableSuffix;
 
-				if (flag.hasServerDefault && flag.defaultValue !== undefined) {
-					const formattedDefault = formatDefaultValue(
-						flag.defaultValue,
-					);
+				// Prefer recommendedValue over defaultValue when both exist
+				const displayValue = flag.recommendedValue ?? flag.defaultValue;
+				if (displayValue !== undefined) {
+					const formattedDefault = formatDefaultValue(displayValue);
 					if (formattedDefault !== null) {
 						desc += ` [default: ${formattedDefault}]`;
 					}
@@ -1353,7 +1307,6 @@ export class Completer {
 			} else {
 				// Non-repeatable: skip if already used
 				if (usedFlags.has(flag.name)) continue;
-				if (flag.shortName && usedFlags.has(flag.shortName)) continue;
 
 				if (flag.required) {
 					// Required flag not yet provided - show with "(required)" marker
@@ -1367,16 +1320,15 @@ export class Completer {
 					});
 				} else {
 					// Optional flag - add default hint if present
+					// Prefer recommendedValue over defaultValue when both exist
 					let desc = flag.description;
-					if (flag.defaultValue !== undefined) {
-						const formattedDefault = formatDefaultValue(
-							flag.defaultValue,
-						);
+					const displayValue =
+						flag.recommendedValue ?? flag.defaultValue;
+					if (displayValue !== undefined) {
+						const formattedDefault =
+							formatDefaultValue(displayValue);
 						if (formattedDefault !== null) {
-							const defaultLabel = flag.hasServerDefault
-								? "server default"
-								: "default";
-							desc += ` (${defaultLabel}: ${formattedDefault})`;
+							desc += ` (default: ${formattedDefault})`;
 						}
 					}
 					optionalContextualSuggestions.push({
@@ -1424,17 +1376,17 @@ export class Completer {
 	 * These are shown last in completion to prioritize contextual flags
 	 */
 	getGlobalFlagSuggestions(): CompletionSuggestion[] {
+		// Get namespace from session (profile default or "default")
+		const namespace = this.session?.getNamespace() ?? "default";
 		return [
-			{ text: "--namespace", description: "Namespace", category: "flag" },
-			{ text: "-ns", description: "Namespace (short)", category: "flag" },
 			{
-				text: "--output",
-				description: `Output format (${OUTPUT_FORMAT_HELP})`,
+				text: "--namespace",
+				description: `Namespace (default: ${namespace})`,
 				category: "flag",
 			},
 			{
-				text: "-o",
-				description: "Output format (short)",
+				text: "--output",
+				description: `Output format (${OUTPUT_FORMAT_HELP})`,
 				category: "flag",
 			},
 		];
@@ -1506,7 +1458,6 @@ export class Completer {
 
 		switch (flag) {
 			case "--output":
-			case "-o":
 				return ALL_OUTPUT_FORMATS.map((fmt) => ({
 					text: fmt,
 					description: `${fmt.toUpperCase()} format`,
@@ -1516,11 +1467,9 @@ export class Completer {
 				);
 
 			case "--namespace":
-			case "-ns":
 				return this.completeNamespace(valuePartial);
 
-			case "--name":
-			case "-n": {
+			case "--name": {
 				// Resource name completion - use command context for resource type
 				if (!this.session) {
 					return [];
@@ -1537,7 +1486,6 @@ export class Completer {
 				// Get namespace from --namespace flag in args, or session default
 				const nsFromFlag = this.extractFlagValue(parsed.args, [
 					"--namespace",
-					"-ns",
 				]);
 				const namespace = nsFromFlag || this.session.getNamespace();
 
@@ -1579,7 +1527,6 @@ export class Completer {
 
 			// Creation flag value completions for healthcheck
 			case "--type":
-			case "-t":
 				return [
 					{
 						text: "http",
@@ -1589,11 +1536,6 @@ export class Completer {
 					{
 						text: "tcp",
 						description: "TCP health check",
-						category: "value" as const,
-					},
-					{
-						text: "dns",
-						description: "DNS health check",
 						category: "value" as const,
 					},
 					{
@@ -1932,7 +1874,7 @@ export class Completer {
 		// Check for namespace in flags
 		for (let i = 0; i < parsed.args.length; i++) {
 			const arg = parsed.args[i];
-			if (arg === "--namespace" || arg === "-ns") {
+			if (arg === "--namespace") {
 				const nsValue = parsed.args[i + 1];
 				if (nsValue) {
 					diagnostic.namespace.fromFlag = nsValue;

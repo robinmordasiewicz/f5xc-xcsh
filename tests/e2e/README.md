@@ -28,7 +28,7 @@ xcsh login use profile --name test-tenant
 ## Option B: Environment Variable
 
 ```bash
-export VESCTL_API_TOKEN="your-api-token-here"
+export F5XC_API_TOKEN="your-api-token-here"
 ```
 
 ## Option C: Configuration File

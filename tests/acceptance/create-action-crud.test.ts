@@ -4,7 +4,6 @@
  * Matrix-based acceptance tests for the `create`, `apply`, and `replace` actions.
  * Tests the FULL execution path including:
  * - Flag-based resource creation
- * - File-based resource creation (--file)
  * - Validation error handling
  * - API error handling
  * - CRUD lifecycle (create → get → delete)
@@ -16,9 +15,6 @@ import type { APIClient as APIClientType } from "../../src/api/client.js";
 import type { ContextPath } from "../../src/repl/context.js";
 import { executeCommand } from "../../src/repl/executor.js";
 import { APIError } from "../../src/api/types.js";
-import { promises as fs } from "fs";
-import { join } from "path";
-import { tmpdir } from "os";
 
 /**
  * Test case interface for create action matrix testing
@@ -345,16 +341,6 @@ describe("Acceptance: Create Action with Flags", () => {
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["--name"],
-					isError: true,
-				},
-			},
-			{
-				description: "missing required --type flag",
-				command:
-					"healthcheck --name test-hc --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
-				initialContext: { domain: "virtual", action: "create" },
-				expectedOutput: {
-					shouldContain: ["--type"],
 					isError: true,
 				},
 			},
@@ -745,7 +731,6 @@ describe("Acceptance: Create Action with Flags", () => {
 
 			const output = result.output.join("\n");
 			expect(output).toContain("requires a resource specification");
-			expect(output).toContain("--file");
 			expect(output).toContain("--name");
 		});
 
@@ -756,170 +741,6 @@ describe("Acceptance: Create Action with Flags", () => {
 
 			const output = result.output.join("\n");
 			expect(output).toContain("requires a resource specification");
-		});
-	});
-});
-
-describe("Acceptance: Create Action with --file", () => {
-	let tempDir: string;
-
-	beforeEach(async () => {
-		vi.clearAllMocks();
-		capturedAPICalls = [];
-		mockClientResponse = null;
-		mockClientError = null;
-		tempDir = await fs.mkdtemp(join(tmpdir(), "xcsh-test-"));
-	});
-
-	afterEach(async () => {
-		vi.clearAllMocks();
-		// Clean up temp files
-		try {
-			const files = await fs.readdir(tempDir);
-			for (const file of files) {
-				await fs.unlink(join(tempDir, file));
-			}
-			await fs.rmdir(tempDir);
-		} catch {
-			// Ignore cleanup errors
-		}
-	});
-
-	/**
-	 * FILE-BASED CREATE - SUCCESS SCENARIOS
-	 */
-	describe("file-based create - success scenarios", () => {
-		it("creates healthcheck from YAML file", async () => {
-			const yamlContent = `
-metadata:
-  name: file-based-hc
-  namespace: default
-spec:
-  http_health_check:
-    path: /health
-  timeout: 5
-  interval: 10
-  healthy_threshold: 2
-  unhealthy_threshold: 3
-`;
-			const filePath = join(tempDir, "healthcheck.yaml");
-			await fs.writeFile(filePath, yamlContent);
-
-			mockAPIResponse({ metadata: { name: "file-based-hc" } }, 200);
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand(
-				`healthcheck --file ${filePath}`,
-				session,
-			);
-
-			expect(capturedAPICalls.length).toBeGreaterThan(0);
-			const apiCall = capturedAPICalls.find((c) => c.method === "POST");
-			expect(apiCall).toBeDefined();
-			expect(apiCall?.body).toBeDefined();
-			expect((apiCall?.body as Record<string, unknown>)?.metadata).toBeDefined();
-
-			expect(result.error).toBeUndefined();
-		});
-
-		it("creates origin pool from JSON file", async () => {
-			const jsonContent = JSON.stringify({
-				metadata: {
-					name: "file-based-pool",
-					namespace: "default",
-				},
-				spec: {
-					origin_servers: [{ public_ip: { ip: "1.2.3.4" } }],
-					port: 80,
-					no_tls: {},
-				},
-			});
-			const filePath = join(tempDir, "origin-pool.json");
-			await fs.writeFile(filePath, jsonContent);
-
-			mockAPIResponse({ metadata: { name: "file-based-pool" } }, 200);
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand(
-				`origin_pool --file ${filePath}`,
-				session,
-			);
-
-			expect(capturedAPICalls.length).toBeGreaterThan(0);
-			const apiCall = capturedAPICalls.find((c) => c.method === "POST");
-			expect(apiCall).toBeDefined();
-
-			expect(result.error).toBeUndefined();
-		});
-
-		it("supports --file=path syntax", async () => {
-			const yamlContent = `
-metadata:
-  name: eq-syntax-hc
-spec:
-  http_health_check: {}
-  timeout: 5
-  interval: 10
-  healthy_threshold: 2
-  unhealthy_threshold: 3
-`;
-			const filePath = join(tempDir, "hc.yaml");
-			await fs.writeFile(filePath, yamlContent);
-
-			mockAPIResponse({ metadata: { name: "eq-syntax-hc" } }, 200);
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand(
-				`healthcheck --file=${filePath}`,
-				session,
-			);
-
-			expect(capturedAPICalls.find((c) => c.method === "POST")).toBeDefined();
-			expect(result.error).toBeUndefined();
-		});
-	});
-
-	/**
-	 * FILE-BASED CREATE - FAILURE SCENARIOS
-	 */
-	describe("file-based create - failure scenarios", () => {
-		it("fails when file does not exist", async () => {
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand(
-				"healthcheck --file /nonexistent/path.yaml",
-				session,
-			);
-
-			const output = result.output.join("\n");
-			expect(output.toLowerCase()).toContain("error");
-
-			// API should not be called
-			expect(capturedAPICalls.filter((c) => c.method === "POST").length).toBe(0);
-		});
-
-		it("fails when file contains invalid YAML", async () => {
-			const filePath = join(tempDir, "invalid.yaml");
-			await fs.writeFile(filePath, "{ invalid yaml content: [");
-
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand(
-				`healthcheck --file ${filePath}`,
-				session,
-			);
-
-			const output = result.output.join("\n");
-			expect(output.toLowerCase()).toContain("error");
-		});
-
-		it("fails when --file has no value", async () => {
-			const session = createMockSession("json", "default", "virtual", "create");
-
-			const result = await executeCommand("healthcheck --file", session);
-
-			const output = result.output.join("\n");
-			expect(output.toLowerCase()).toContain("error");
 		});
 	});
 });

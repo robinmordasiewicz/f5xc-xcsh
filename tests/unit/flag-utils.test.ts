@@ -58,29 +58,20 @@ describe("extractUsedFlags", () => {
 		});
 	});
 
-	describe("alias expansion", () => {
-		it("expands -n to include --name", () => {
-			const result = extractUsedFlags(["-n", "test"]);
-			expect(result.has("-n")).toBe(true);
-			expect(result.has("--name")).toBe(true);
-		});
-
-		it("expands --namespace to include -ns", () => {
+	describe("flag extraction without aliases", () => {
+		it("extracts --namespace flag", () => {
 			const result = extractUsedFlags(["--namespace", "default"]);
 			expect(result.has("--namespace")).toBe(true);
-			expect(result.has("-ns")).toBe(true);
 		});
 
-		it("expands -o to include --output", () => {
-			const result = extractUsedFlags(["-o", "json"]);
-			expect(result.has("-o")).toBe(true);
+		it("extracts --output flag", () => {
+			const result = extractUsedFlags(["--output", "json"]);
 			expect(result.has("--output")).toBe(true);
 		});
 
-		it("expands --output=value format", () => {
+		it("extracts --output=value format", () => {
 			const result = extractUsedFlags(["--output=json"]);
 			expect(result.has("--output")).toBe(true);
-			expect(result.has("-o")).toBe(true);
 		});
 	});
 
@@ -91,9 +82,9 @@ describe("extractUsedFlags", () => {
 		});
 
 		it("handles mixed flag formats", () => {
-			const result = extractUsedFlags(["--name=test", "-o", "json", "--verbose"]);
+			const result = extractUsedFlags(["--name=test", "--output", "json", "--verbose"]);
 			expect(result.has("--name")).toBe(true);
-			expect(result.has("-o")).toBe(true);
+			expect(result.has("--output")).toBe(true);
 			expect(result.has("--verbose")).toBe(true);
 		});
 	});
@@ -149,11 +140,11 @@ describe("filterUsedFlags", () => {
 describe("filterUsedFlagsFromStrings", () => {
 	it("filters string array based on used flags in args", () => {
 		const flags = ["--name", "--type", "--output"];
-		const args = ["--name", "test", "-o", "json"];
+		const args = ["--name", "test", "--output", "json"];
 		const result = filterUsedFlagsFromStrings(flags, args);
 
 		expect(result).not.toContain("--name");
-		expect(result).not.toContain("--output"); // -o expands to --output
+		expect(result).not.toContain("--output");
 		expect(result).toContain("--type");
 	});
 
@@ -252,19 +243,18 @@ describe("getCreationFlags", () => {
 			const nameFlag = flags.find((f) => f.name === "--name");
 			expect(nameFlag).toBeDefined();
 			expect(nameFlag?.required).toBe(true);
-			expect(nameFlag?.shortName).toBe("-n");
 		});
 
-		it("includes required --type flag with enum values", () => {
+		it("includes optional --type flag with enum values and default", () => {
 			const flags = getCreationFlags("healthcheck");
 			const typeFlag = flags.find((f) => f.name === "--type");
 			expect(typeFlag).toBeDefined();
-			expect(typeFlag?.required).toBe(true);
+			expect(typeFlag?.required).toBe(false);
 			expect(typeFlag?.valueType).toBe("enum");
 			expect(typeFlag?.enumValues).toContain("http");
 			expect(typeFlag?.enumValues).toContain("tcp");
-			expect(typeFlag?.enumValues).toContain("dns");
 			expect(typeFlag?.enumValues).toContain("udp-icmp");
+			expect(typeFlag?.defaultValue).toBe("http");
 		});
 
 		it("includes interval/timeout flags with defaults", () => {
@@ -347,16 +337,13 @@ describe("getAllCreationFlagNames", () => {
 	it("returns set of all flag names for healthcheck", () => {
 		const names = getAllCreationFlagNames("healthcheck");
 		expect(names.has("--name")).toBe(true);
-		expect(names.has("-n")).toBe(true);
 		expect(names.has("--type")).toBe(true);
-		expect(names.has("-t")).toBe(true);
 		expect(names.has("--interval")).toBe(true);
 	});
 
 	it("returns set of all flag names for origin_pool", () => {
 		const names = getAllCreationFlagNames("origin_pool");
 		expect(names.has("--name")).toBe(true);
-		expect(names.has("-n")).toBe(true);
 		expect(names.has("--public-ip")).toBe(true);
 		expect(names.has("--algorithm")).toBe(true);
 	});
@@ -366,14 +353,14 @@ describe("getAllCreationFlagNames", () => {
 		expect(names.size).toBe(0);
 	});
 
-	it("includes both long and short forms", () => {
+	it("includes long form flags only (no short forms)", () => {
 		const names = getAllCreationFlagNames("healthcheck");
-		// --name and -n
+		// Only long form flags
 		expect(names.has("--name")).toBe(true);
-		expect(names.has("-n")).toBe(true);
-		// --type and -t
 		expect(names.has("--type")).toBe(true);
-		expect(names.has("-t")).toBe(true);
+		// No short forms
+		expect(names.has("-n")).toBe(false);
+		expect(names.has("-t")).toBe(false);
 	});
 });
 
@@ -397,23 +384,15 @@ describe("parseCreationFlagValues", () => {
 			expect(result.get("--verbose")).toBe("");
 		});
 
-		it("parses short form flags", () => {
-			const result = parseCreationFlagValues(["-t", "http", "-n", "test"]);
-			expect(result.get("-t")).toBe("http");
-			expect(result.get("-n")).toBe("test");
-		});
-
 		it("handles mixed patterns", () => {
 			const result = parseCreationFlagValues([
 				"--type=http",
 				"--name", "test",
 				"--use-http2",
-				"-t", "tcp",
 			]);
 			expect(result.get("--type")).toBe("http");
 			expect(result.get("--name")).toBe("test");
 			expect(result.get("--use-http2")).toBe("");
-			expect(result.get("-t")).toBe("tcp");
 		});
 	});
 
@@ -524,15 +503,15 @@ describe("parseCreationFlagValues", () => {
 			expect(result.get("--path")).toBe("/health");
 		});
 
-		it("parses short and long form mix", () => {
+		it("parses long form flags", () => {
 			const result = parseCreationFlagValues([
-				"-t", "http",
+				"--type", "http",
 				"--name", "test",
-				"-ns", "default",
+				"--namespace", "default",
 			]);
-			expect(result.get("-t")).toBe("http");
+			expect(result.get("--type")).toBe("http");
 			expect(result.get("--name")).toBe("test");
-			expect(result.get("-ns")).toBe("default");
+			expect(result.get("--namespace")).toBe("default");
 		});
 	});
 
@@ -559,17 +538,6 @@ describe("parseCreationFlagValues", () => {
 			expect(result.get("--type")).toBe("tcp");
 			expect(result.get("--expected-response")).toBe("0x4f4b");
 			expect(result.get("--send-payload")).toBe("0x50494e47");
-		});
-
-		it("parses DNS healthcheck flags", () => {
-			const result = parseCreationFlagValues([
-				"--type", "dns",
-				"--query-name", "example.com",
-				"--expected-response", "192.168.1.1",
-			]);
-			expect(result.get("--type")).toBe("dns");
-			expect(result.get("--query-name")).toBe("example.com");
-			expect(result.get("--expected-response")).toBe("192.168.1.1");
 		});
 	});
 });

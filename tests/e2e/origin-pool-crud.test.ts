@@ -7,7 +7,7 @@
  * - DELETE: Clean up test resources
  *
  * REQUIREMENTS:
- * - Valid F5 XC authentication (VESCTL_API_TOKEN or logged in via xcsh login)
+ * - Valid F5 XC authentication (F5XC_API_TOKEN or logged in via xcsh login)
  * - Network access to F5 XC API
  * - Permissions to create/delete origin_pool resources
  *

@@ -5,7 +5,7 @@
  * the system shows creation FLAGS (--name, --type, etc.) instead of existing resource names.
  *
  * Bug: /virtual create healthcheck<TAB> was showing existing healthcheck names (bazz, sse-hc...)
- * Fix: /virtual create healthcheck<TAB> now shows creation flags (--file, --name, --type...)
+ * Fix: /virtual create healthcheck<TAB> now shows creation flags (--name, --type...)
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -42,8 +42,7 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 			);
 			const result = suggestions.map((s) => s.text);
 
-			// Should show creation flags
-			expect(result).toContain("--file");
+			// Should show creation flags (no --file since Phase 2 removed it)
 			expect(result).toContain("--name");
 			expect(result).toContain("--type");
 			expect(result).toContain("--interval");
@@ -64,8 +63,7 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 			);
 			const result = suggestions.map((s) => s.text);
 
-			// Apply action should also show creation flags
-			expect(result).toContain("--file");
+			// Apply action should also show creation flags (no --file since Phase 2 removed it)
 			expect(result).toContain("--name");
 			expect(result).toContain("--type");
 		});
@@ -75,10 +73,10 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 				"/virtual create healthcheck ",
 			);
 
-			// Find the --type flag
+			// Find the --type flag (now optional with default)
 			const typeFlag = suggestions.find((s) => s.text === "--type");
 			expect(typeFlag).toBeDefined();
-			expect(typeFlag?.description).toContain("required");
+			expect(typeFlag?.description).toContain("default: http");
 
 			// Find the --interval flag
 			const intervalFlag = suggestions.find((s) => s.text === "--interval");
@@ -86,25 +84,10 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 			expect(intervalFlag?.description).toContain("default: 15");
 		});
 
-		it("includes --file as an option for configuration (after required flags)", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			// --file should be present for YAML/JSON config
-			// Note: With Phase 2 sorting, required flags come first, so --file
-			// appears after the 6 required healthcheck flags
-			expect(result).toContain("--file");
-			const fileIndex = result.indexOf("--file");
-			// --file should be in the optional section (after required flags)
-			// 6 required flags + optional flags means --file should be around position 6+
-			expect(fileIndex).toBeLessThan(15); // Should be in reasonable position
-		});
 	});
 
 	describe("Type Flag Value Completions", () => {
-		it("shows type enum values for --type flag", async () => {
+		it("shows type enum values for --type flag (and NOT dns)", async () => {
 			const suggestions = await completer.complete(
 				"/virtual create healthcheck --type ",
 			);
@@ -112,19 +95,10 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 
 			expect(result).toContain("http");
 			expect(result).toContain("tcp");
-			expect(result).toContain("dns");
 			expect(result).toContain("udp-icmp");
+			expect(result).not.toContain("dns"); // DNS is NOT supported by F5 XC API
 		});
 
-		it("shows type enum values for -t flag (short form)", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck -t ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			expect(result).toContain("http");
-			expect(result).toContain("tcp");
-		});
 
 		it("filters type values by partial input", async () => {
 			const suggestions = await completer.complete(
@@ -134,7 +108,6 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 
 			expect(result).toContain("http");
 			expect(result).not.toContain("tcp");
-			expect(result).not.toContain("dns");
 		});
 	});
 
@@ -240,22 +213,10 @@ describe("Create Action Completion (Flags Instead of Resource Names)", () => {
 
 			// --name should NOT appear again
 			expect(result).not.toContain("--name");
-			expect(result).not.toContain("-n");
 
 			// Other flags should still appear
 			expect(result).toContain("--type");
 			expect(result).toContain("--interval");
-		});
-
-		it("filters out flags when short form is used", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck -n test-hc ",
-			);
-			const result = suggestions.map((s) => s.text);
-
-			// Both long and short form should be filtered
-			expect(result).not.toContain("--name");
-			expect(result).not.toContain("-n");
 		});
 	});
 
@@ -392,8 +353,7 @@ describe("Origin Pool Create Action Completion", () => {
 			);
 			const result = suggestions.map((s) => s.text);
 
-			// Should show origin pool flags
-			expect(result).toContain("--file");
+			// Should show origin pool flags (no --file since Phase 2 removed it)
 			expect(result).toContain("--name");
 			expect(result).toContain("--port");
 			expect(result).toContain("--public-ip");
@@ -557,8 +517,7 @@ describe("Origin Pool Create Action Completion", () => {
 			);
 			const result = suggestions.map((s) => s.text);
 
-			// Healthcheck flags should still appear
-			expect(result).toContain("--file");
+			// Healthcheck flags should still appear (no --file since Phase 2 removed it)
 			expect(result).toContain("--name");
 			expect(result).toContain("--type");
 			expect(result).toContain("--interval");
@@ -585,22 +544,8 @@ describe("Origin Pool Create Action Completion", () => {
 				// Should NOT show TCP-specific flags
 				expect(result).not.toContain("--expected-response");
 				expect(result).not.toContain("--send-payload");
-
-				// Should NOT show DNS-specific flags
-				expect(result).not.toContain("--query-name");
-				expect(result).not.toContain("--expected-response-dns");
 			});
 
-			it("shows HTTP-specific flags with short form -t http", async () => {
-				const suggestions = await completer.complete(
-					"/virtual create healthcheck -t http ",
-				);
-				const result = suggestions.map((s) => s.text);
-
-				// Short form should work identically
-				expect(result).toContain("--path");
-				expect(result).toContain("--host-header");
-			});
 
 			it("shows HTTP-specific flags with equals syntax --type=http", async () => {
 				const suggestions = await completer.complete(
@@ -631,42 +576,8 @@ describe("Origin Pool Create Action Completion", () => {
 				expect(result).not.toContain("--use-http2");
 				expect(result).not.toContain("--use-origin-server-name");
 				expect(result).not.toContain("--request-headers-to-remove");
-
-				// Should NOT show DNS-specific flags
-				expect(result).not.toContain("--query-name");
-				expect(result).not.toContain("--expected-response-dns");
 			});
 
-			it("shows TCP-specific flags with short form -t tcp", async () => {
-				const suggestions = await completer.complete(
-					"/virtual create healthcheck -t tcp ",
-				);
-				const result = suggestions.map((s) => s.text);
-
-				expect(result).toContain("--expected-response");
-				expect(result).toContain("--send-payload");
-			});
-		});
-
-		describe("DNS Type - Shows DNS-specific flags", () => {
-			it("shows DNS-specific flags when --type dns is specified", async () => {
-				const suggestions = await completer.complete(
-					"/virtual create healthcheck --type dns ",
-				);
-				const result = suggestions.map((s) => s.text);
-
-				// Should show DNS-specific flags
-				expect(result).toContain("--query-name");
-				expect(result).toContain("--expected-response-dns");
-
-				// Should NOT show HTTP-specific flags
-				expect(result).not.toContain("--path");
-				expect(result).not.toContain("--host-header");
-				expect(result).not.toContain("--use-http2");
-
-				// Should NOT show TCP-specific flags
-				expect(result).not.toContain("--send-payload");
-			});
 		});
 
 		describe("UDP-ICMP Type - Shows only common flags", () => {
@@ -681,7 +592,6 @@ describe("Origin Pool Create Action Completion", () => {
 				expect(result).not.toContain("--host-header");
 				expect(result).not.toContain("--expected-response");
 				expect(result).not.toContain("--send-payload");
-				expect(result).not.toContain("--query-name");
 
 				// Should still show common flags
 				expect(result).toContain("--name");
@@ -711,8 +621,6 @@ describe("Origin Pool Create Action Completion", () => {
 				expect(result).not.toContain("--use-http2");
 				expect(result).not.toContain("--expected-response");
 				expect(result).not.toContain("--send-payload");
-				expect(result).not.toContain("--query-name");
-				expect(result).not.toContain("--expected-response-dns");
 			});
 		});
 
@@ -733,18 +641,20 @@ describe("Origin Pool Create Action Completion", () => {
 				expect(result).not.toContain("--use-http2");
 			});
 
-			it("handles type change from TCP to DNS", async () => {
+			it("handles type change from TCP to UDP-ICMP", async () => {
 				const suggestions = await completer.complete(
-					"/virtual create healthcheck --type tcp --expected-response 0x4f4b --type dns ",
+					"/virtual create healthcheck --type tcp --expected-response 0x4f4b --type udp-icmp ",
 				);
 				const result = suggestions.map((s) => s.text);
 
-				// Should show DNS-specific flags
-				expect(result).toContain("--query-name");
-				expect(result).toContain("--expected-response-dns");
-
-				// Should NOT show TCP-specific flags
+				// Should NOT show any type-specific flags for UDP-ICMP
 				expect(result).not.toContain("--send-payload");
+				expect(result).not.toContain("--expected-response");
+				expect(result).not.toContain("--path");
+
+				// Should show common flags
+				expect(result).toContain("--name");
+				expect(result).toContain("--interval");
 			});
 		});
 

@@ -12,6 +12,10 @@ const EXAMPLES_REGISTRY = new Map<string, UsageExample[]>([
 		"virtual:healthcheck",
 		[
 			{
+				title: "Minimal health check (uses HTTP defaults)",
+				command: "xcsh virtual create healthcheck --name simple-check",
+			},
+			{
 				title: "Basic HTTP health check",
 				command:
 					"xcsh virtual create healthcheck --name web-health --type http --path /health",
@@ -22,9 +26,24 @@ const EXAMPLES_REGISTRY = new Map<string, UsageExample[]>([
 					"xcsh virtual create healthcheck --name api-health --type http --path /api/status --expected-status-codes 200-299",
 			},
 			{
+				title: "HTTP/2 health check",
+				command:
+					"xcsh virtual create healthcheck --name http2-check --type http --path /health --use-http2",
+			},
+			{
 				title: "TCP health check",
 				command:
 					"xcsh virtual create healthcheck --name tcp-check --type tcp --send-payload PING --expected-response PONG",
+			},
+			{
+				title: "TCP connect-only check",
+				command:
+					"xcsh virtual create healthcheck --name tcp-connect --type tcp --interval 10 --timeout 3",
+			},
+			{
+				title: "UDP-ICMP health check (ICMP ping)",
+				command:
+					"xcsh virtual create healthcheck --name icmp-check --type udp-icmp --interval 10 --timeout 3",
 			},
 		],
 	],

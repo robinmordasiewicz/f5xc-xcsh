@@ -8,8 +8,6 @@ import { describe, it, expect } from "vitest";
 import {
 	parseCreationFlags,
 	hasCreationFlagsInArgs,
-	hasFileFlag,
-	getFilePath,
 	getFlagValue,
 	getFlagValues,
 	getFlagIntValue,
@@ -43,38 +41,6 @@ describe("Flag Parser - hasCreationFlagsInArgs", () => {
 
 	it("handles --flag=value format", () => {
 		expect(hasCreationFlagsInArgs(["--name=test-hc"], "healthcheck")).toBe(true);
-	});
-});
-
-describe("Flag Parser - hasFileFlag", () => {
-	it("detects --file flag", () => {
-		expect(hasFileFlag(["--file", "config.yaml"])).toBe(true);
-	});
-
-	it("detects --file=value format", () => {
-		expect(hasFileFlag(["--file=config.yaml"])).toBe(true);
-	});
-
-	it("returns false when no --file flag", () => {
-		expect(hasFileFlag(["--name", "test"])).toBe(false);
-	});
-});
-
-describe("Flag Parser - getFilePath", () => {
-	it("extracts file path from --file flag", () => {
-		expect(getFilePath(["--file", "config.yaml"])).toBe("config.yaml");
-	});
-
-	it("extracts file path from --file=value format", () => {
-		expect(getFilePath(["--file=config.yaml"])).toBe("config.yaml");
-	});
-
-	it("returns null when no --file flag", () => {
-		expect(getFilePath(["--name", "test"])).toBeNull();
-	});
-
-	it("returns null when --file has no value", () => {
-		expect(getFilePath(["--file"])).toBeNull();
 	});
 });
 
@@ -133,13 +99,15 @@ describe("Flag Parser - parseCreationFlags for healthcheck", () => {
 		expect(parsed.errors.some((e) => e.includes("Invalid value 'invalid-type'"))).toBe(true);
 	});
 
-	it("reports missing required flags", () => {
+	it("parses minimum flags with defaults applied", () => {
 		const args = ["--name", "test-hc"];
 		const parsed = parseCreationFlags(args, "healthcheck");
 
-		// Should report missing --type, --interval, --timeout, --healthy-threshold, --unhealthy-threshold
-		expect(parsed.errors.length).toBeGreaterThan(0);
-		expect(parsed.errors.some((e) => e.includes("--type"))).toBe(true);
+		// --type is now optional with default "http", so no error expected
+		// Only --name is required
+		expect(parsed.errors.filter((e) => e.includes("--type"))).toHaveLength(0);
+		expect(parsed.hasFlags).toBe(true);
+		expect(parsed.values.get("--name")).toBe("test-hc");
 	});
 
 	it("handles --flag=value format", () => {
