@@ -1281,7 +1281,7 @@ export class Completer {
 				text: "--file",
 				description: "Configuration file (YAML/JSON)",
 				category: "flag",
-				priority: 0, // No priority for --file flag
+				// No priority - will get default for optional flags from applyDefaultPriority
 			});
 		}
 
@@ -1346,7 +1346,9 @@ export class Completer {
 					text: flag.name,
 					description: desc,
 					category: "flag",
-					priority: flag.priority ?? 0, // Pass through priority
+					...(flag.priority !== undefined && {
+						priority: flag.priority,
+					}),
 				});
 			} else {
 				// Non-repeatable: skip if already used
@@ -1359,7 +1361,9 @@ export class Completer {
 						text: flag.name,
 						description: flag.description + " (required)",
 						category: "flag",
-						priority: flag.priority ?? 0, // Pass through priority
+						...(flag.priority !== undefined && {
+							priority: flag.priority,
+						}),
 					});
 				} else {
 					// Optional flag - add default hint if present
@@ -1379,7 +1383,9 @@ export class Completer {
 						text: flag.name,
 						description: desc,
 						category: "flag",
-						priority: flag.priority ?? 0, // Pass through priority
+						...(flag.priority !== undefined && {
+							priority: flag.priority,
+						}),
 					});
 				}
 			}
