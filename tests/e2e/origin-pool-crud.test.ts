@@ -52,7 +52,6 @@ async function xcsh(command: string): Promise<{
 		const xcshPath = "node dist/index.js";
 		const { stdout, stderr } = await execAsync(`${xcshPath} ${command}`, {
 			timeout: 30000, // 30 second timeout
-			cwd: "/Users/r.mordasiewicz/GIT/robinmordasiewicz/f5xc/f5xc-xcsh",
 		});
 		return { stdout, stderr, exitCode: 0 };
 	} catch (error: any) {
