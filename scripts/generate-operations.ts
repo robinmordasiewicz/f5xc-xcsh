@@ -50,6 +50,38 @@ interface ExternalDocs {
 	description?: string;
 }
 
+interface OpenAPISchemaProperty {
+	type?: string;
+	description?: string;
+	default?: unknown;
+	"x-f5xc-server-default"?: boolean;
+	"x-f5xc-required-for"?: {
+		create?: boolean;
+		update?: boolean;
+		read?: boolean;
+		minimum_config?: boolean;
+	};
+	"x-ves-required"?: string;
+	properties?: Record<string, OpenAPISchemaProperty>;
+	$ref?: string;
+}
+
+interface OpenAPISchema {
+	type?: string;
+	properties?: Record<string, OpenAPISchemaProperty>;
+	required?: string[];
+}
+
+interface OpenAPIRequestBody {
+	content?: {
+		"application/json"?: {
+			schema?: {
+				$ref?: string;
+			};
+		};
+	};
+}
+
 interface OpenAPIOperation {
 	summary?: string;
 	description?: string;
@@ -59,6 +91,7 @@ interface OpenAPIOperation {
 	"x-f5xc-danger-level"?: string;
 	"x-f5xc-namespace-scope"?: string | null;
 	"x-f5xc-operation-metadata"?: OperationMetadata;
+	requestBody?: OpenAPIRequestBody;
 }
 
 interface OpenAPIPathItem {
@@ -79,6 +112,9 @@ interface OpenAPISpec {
 		"x-f5xc-cli-domain"?: string;
 	};
 	paths: Record<string, OpenAPIPathItem>;
+	components?: {
+		schemas?: Record<string, OpenAPISchema>;
+	};
 	tags?: Array<{
 		name: string;
 		description?: string;
@@ -122,6 +158,15 @@ interface OperationInfo {
 	externalDocs?: OperationExternalDocs;
 	// Namespace scope
 	namespaceScope?: "system" | "shared" | "any" | null;
+	// Field defaults from spec
+	fieldDefaults?: Record<
+		string,
+		{
+			value: unknown;
+			serverDefault: boolean;
+			requiredForCreate: boolean;
+		}
+	>;
 }
 
 interface DomainOperations {
@@ -296,6 +341,53 @@ function processSpec(specPath: string): DomainOperations | null {
 				};
 			}
 
+			// Extract field defaults from requestBody schema (for create operations)
+			if (action === "create" && operation.requestBody?.content?.["application/json"]?.schema?.$ref) {
+				const schemaRef = operation.requestBody.content["application/json"].schema.$ref;
+				const schemaName = schemaRef.split("/").pop();
+
+				if (schemaName && spec.components?.schemas?.[schemaName]) {
+					let schema = spec.components.schemas[schemaName];
+
+					// Handle nested spec references (e.g., healthcheckCreateRequest -> spec -> healthcheckCreateSpecType)
+					if (schema.properties?.spec?.["$ref"]) {
+						const specRef = schema.properties.spec["$ref"];
+						const specSchemaName = specRef.split("/").pop();
+						if (specSchemaName && spec.components.schemas[specSchemaName]) {
+							schema = spec.components.schemas[specSchemaName];
+						}
+					}
+
+					const fieldDefaults: Record<
+						string,
+						{
+							value: unknown;
+							serverDefault: boolean;
+							requiredForCreate: boolean;
+						}
+					> = {};
+
+					// Extract defaults from schema properties
+					if (schema.properties) {
+						for (const [fieldName, prop] of Object.entries(schema.properties)) {
+							// Only include fields with actual defaults or server defaults
+							if (prop.default !== undefined || prop["x-f5xc-server-default"] === true) {
+								fieldDefaults[fieldName] = {
+									value: prop.default,
+									serverDefault: prop["x-f5xc-server-default"] === true,
+									requiredForCreate: prop["x-f5xc-required-for"]?.create === true,
+								};
+							}
+						}
+					}
+
+					// Only add fieldDefaults if we found any
+					if (Object.keys(fieldDefaults).length > 0) {
+						opInfo.fieldDefaults = fieldDefaults;
+					}
+				}
+			}
+
 			operations.push(opInfo);
 		}
 	}
@@ -393,6 +485,18 @@ function generateOperationEntry(op: OperationInfo): string {
 		} else {
 			code += `\t\t\tnamespaceScope: "${op.namespaceScope}",\n`;
 		}
+	}
+
+	// Field defaults
+	if (op.fieldDefaults && Object.keys(op.fieldDefaults).length > 0) {
+		const defaultEntries: string[] = [];
+		for (const [fieldName, defaults] of Object.entries(op.fieldDefaults)) {
+			const valueStr = JSON.stringify(defaults.value);
+			defaultEntries.push(
+				`"${escapeString(fieldName)}": { value: ${valueStr}, serverDefault: ${defaults.serverDefault}, requiredForCreate: ${defaults.requiredForCreate} }`,
+			);
+		}
+		code += `\t\t\tfieldDefaults: { ${defaultEntries.join(", ")} },\n`;
 	}
 
 	code += `\t\t}`;

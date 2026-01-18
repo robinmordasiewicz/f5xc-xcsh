@@ -68,9 +68,19 @@ export function checkOperationSafety(
 
 	// Add optional fields only when defined
 	if (dangerLevel === "high") {
-		result.warning = formatHighDangerWarning(domain, action, sideEffects);
+		result.warning = formatHighDangerWarning(
+			domain,
+			action,
+			resourceType,
+			sideEffects,
+		);
 	} else if (dangerLevel === "medium") {
-		result.warning = formatMediumDangerWarning(domain, action, sideEffects);
+		result.warning = formatMediumDangerWarning(
+			domain,
+			action,
+			resourceType,
+			sideEffects,
+		);
 	}
 
 	if (sideEffects) {
@@ -81,11 +91,53 @@ export function checkOperationSafety(
 }
 
 /**
+ * Check if side effects are trivial (obvious consequences of the action)
+ *
+ * @param action - The action being performed (e.g., "create", "delete")
+ * @param resourceType - The resource type being operated on
+ * @param sideEffects - The side effects of the operation
+ * @returns true if the side effects are trivial and should not generate a warning
+ */
+function isTrivialSideEffect(
+	action: string,
+	resourceType: string | undefined,
+	sideEffects: SideEffects,
+): boolean {
+	// Only check for create/delete actions with a specific resource type
+	if (!resourceType) {
+		return false;
+	}
+
+	// For create actions: trivial if only creating the same resource type
+	if (action === "create" && sideEffects.creates) {
+		return (
+			sideEffects.creates.length === 1 &&
+			sideEffects.creates[0] === resourceType &&
+			!sideEffects.updates?.length &&
+			!sideEffects.deletes?.length
+		);
+	}
+
+	// For delete actions: trivial if only deleting the same resource type
+	if (action === "delete" && sideEffects.deletes) {
+		return (
+			sideEffects.deletes.length === 1 &&
+			sideEffects.deletes[0] === resourceType &&
+			!sideEffects.updates?.length &&
+			!sideEffects.creates?.length
+		);
+	}
+
+	return false;
+}
+
+/**
  * Format a high danger warning message
  */
 function formatHighDangerWarning(
 	_domain: string,
 	_action: string,
+	_resourceType: string | undefined,
 	sideEffects?: SideEffects,
 ): string {
 	const lines: string[] = [
@@ -122,9 +174,15 @@ function formatHighDangerWarning(
  */
 function formatMediumDangerWarning(
 	_domain: string,
-	_action: string,
+	action: string,
+	resourceType: string | undefined,
 	sideEffects?: SideEffects,
 ): string {
+	// Skip warning for trivial side effects (e.g., creating X only lists X as created)
+	if (sideEffects && isTrivialSideEffect(action, resourceType, sideEffects)) {
+		return "";
+	}
+
 	const lines: string[] = [
 		colorYellow("⚠️  CAUTION: This operation may have significant effects"),
 		"",

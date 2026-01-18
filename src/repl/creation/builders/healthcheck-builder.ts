@@ -7,9 +7,11 @@
 import {
 	ParsedCreationFlags,
 	getFlagValue,
+	getFlagValues,
 	getFlagIntValue,
 	isFlagSet,
 } from "../flag-parser.js";
+import { toApiHex } from "../../../utils/hex-encoding.js";
 
 /**
  * F5 XC Healthcheck API request body structure
@@ -24,10 +26,11 @@ export interface HealthcheckRequestBody {
 	spec: {
 		http_health_check?: {
 			path?: string;
-			use_origin_server_name?: boolean;
+			use_origin_server_name?: Record<string, unknown>; // Empty object choice field
 			use_http2?: boolean;
 			expected_status_codes?: string[];
 			headers?: Record<string, string>;
+			request_headers_to_remove?: string[];
 		};
 		tcp_health_check?: Record<string, unknown>;
 		dns_health_check?: {
@@ -38,6 +41,7 @@ export interface HealthcheckRequestBody {
 		interval: number;
 		healthy_threshold: number;
 		unhealthy_threshold: number;
+		jitter_percent?: number;
 	};
 }
 
@@ -47,6 +51,35 @@ export interface HealthcheckRequestBody {
 export interface BuilderValidationResult {
 	valid: boolean;
 	errors: string[];
+}
+
+/**
+ * Validate HTTP status code or range format
+ * Valid formats: "200", "200-299", "404"
+ */
+function isValidHttpStatusCodeOrRange(codeStr: string): boolean {
+	// Single code: 3 digits, 100-599
+	const singleCodeMatch = /^(\d{3})$/.exec(codeStr);
+	if (singleCodeMatch && singleCodeMatch[1]) {
+		const code = parseInt(singleCodeMatch[1], 10);
+		return code >= 100 && code <= 599;
+	}
+
+	// Range: format "200-299"
+	const rangeMatch = /^(\d{3})-(\d{3})$/.exec(codeStr);
+	if (rangeMatch && rangeMatch[1] && rangeMatch[2]) {
+		const start = parseInt(rangeMatch[1], 10);
+		const end = parseInt(rangeMatch[2], 10);
+		return (
+			start >= 100 &&
+			start <= 599 &&
+			end >= 100 &&
+			end <= 599 &&
+			start <= end
+		);
+	}
+
+	return false;
 }
 
 /**
@@ -66,6 +99,7 @@ export function buildHealthcheckRequest(
 	const timeout = getFlagIntValue(flags, "--timeout");
 	const healthyThreshold = getFlagIntValue(flags, "--healthy-threshold");
 	const unhealthyThreshold = getFlagIntValue(flags, "--unhealthy-threshold");
+	const jitterPercent = getFlagIntValue(flags, "--jitter-percent");
 
 	// Build base request
 	const request: HealthcheckRequestBody = {
@@ -74,10 +108,11 @@ export function buildHealthcheckRequest(
 			namespace: namespace,
 		},
 		spec: {
-			timeout: timeout || 5,
-			interval: interval || 10,
-			healthy_threshold: healthyThreshold || 2,
-			unhealthy_threshold: unhealthyThreshold || 3,
+			timeout: timeout ?? 3,
+			interval: interval ?? 15,
+			healthy_threshold: healthyThreshold ?? 3,
+			unhealthy_threshold: unhealthyThreshold ?? 1,
+			jitter_percent: jitterPercent ?? 30,
 		},
 	};
 
@@ -85,35 +120,143 @@ export function buildHealthcheckRequest(
 	switch (type) {
 		case "http": {
 			const path = getFlagValue(flags, "--path") || "/";
-			const useOriginServerName = isFlagSet(
-				flags,
-				"--use-origin-server-name",
-			);
-			const useHttp2 = isFlagSet(flags, "--use-http2");
-			const expectedStatus = getFlagValue(flags, "--expected-status");
-			const hostHeader = getFlagValue(flags, "--host-header");
 
+			// Build HTTP health check configuration
 			request.spec.http_health_check = {
 				path: path,
-				use_origin_server_name: useOriginServerName,
-				use_http2: useHttp2,
 			};
 
-			if (expectedStatus) {
-				request.spec.http_health_check.expected_status_codes =
-					expectedStatus.split(",").map((s) => s.trim());
+			// use_origin_server_name: Empty object type (choice field)
+			// Only include when flag is set
+			if (isFlagSet(flags, "--use-origin-server-name")) {
+				request.spec.http_health_check.use_origin_server_name = {};
 			}
 
+			// use_http2: Boolean type
+			// Include as boolean value when flag is set
+			if (isFlagSet(flags, "--use-http2")) {
+				request.spec.http_health_check.use_http2 = true;
+			}
+
+			// Handle --expected-status-codes (repeatable array with range support)
+			const expectedStatusCodes = getFlagValues(
+				flags,
+				"--expected-status-codes",
+			);
+
+			if (expectedStatusCodes.length > 0) {
+				// Validate each status code (single code or range like "200-299")
+				for (const code of expectedStatusCodes) {
+					if (!isValidHttpStatusCodeOrRange(code)) {
+						throw new Error(
+							`Invalid HTTP status code or range: ${code}. Use format '200' or '200-299'`,
+						);
+					}
+				}
+				request.spec.http_health_check.expected_status_codes =
+					expectedStatusCodes;
+			}
+
+			// Parse custom headers from --headers flags
+			const customHeaders = getFlagValues(flags, "--headers");
+			const headersObj: Record<string, string> = {};
+
+			// Add Host header if specified via --host-header
+			const hostHeader = getFlagValue(flags, "--host-header");
 			if (hostHeader) {
-				request.spec.http_health_check.headers = {
-					Host: hostHeader,
-				};
+				headersObj.Host = hostHeader;
+			}
+
+			// Parse and add custom headers from --headers flags
+			for (const headerStr of customHeaders) {
+				const colonIndex = headerStr.indexOf(":");
+				if (colonIndex === -1) {
+					throw new Error(
+						`Invalid header format: ${headerStr}. Expected 'Key:Value'`,
+					);
+				}
+
+				const key = headerStr.substring(0, colonIndex).trim();
+				const value = headerStr.substring(colonIndex + 1).trim();
+
+				// Validate key and value lengths (API constraints)
+				if (key.length === 0 || key.length > 256) {
+					throw new Error(
+						`Header key length must be 1-256 chars: ${key}`,
+					);
+				}
+				if (value.length === 0 || value.length > 2048) {
+					throw new Error(
+						`Header value length must be 1-2048 chars: ${value}`,
+					);
+				}
+
+				// Check for duplicate keys
+				if (headersObj[key]) {
+					console.warn(
+						`Duplicate header key '${key}'. Using last value.`,
+					);
+				}
+
+				headersObj[key] = value;
+			}
+
+			// Only add headers field if there are headers to add
+			if (Object.keys(headersObj).length > 0) {
+				request.spec.http_health_check.headers = headersObj;
+			}
+
+			// Parse request_headers_to_remove flags (repeatable)
+			// Note: maxOccurrences (16) is validated by the flag parser
+			const requestHeadersToRemove = getFlagValues(
+				flags,
+				"--request-headers-to-remove",
+			);
+			if (requestHeadersToRemove.length > 0) {
+				// Validate each header string (max 256 chars per API spec)
+				for (const header of requestHeadersToRemove) {
+					if (header.length > 256) {
+						throw new Error(
+							`Header name too long (max 256 chars): ${header}`,
+						);
+					}
+				}
+
+				request.spec.http_health_check.request_headers_to_remove =
+					requestHeadersToRemove;
 			}
 			break;
 		}
 
 		case "tcp": {
 			request.spec.tcp_health_check = {};
+
+			// Handle --send-payload (optional)
+			const sendPayload = getFlagValue(flags, "--send-payload");
+			if (sendPayload) {
+				try {
+					request.spec.tcp_health_check.send_payload =
+						toApiHex(sendPayload);
+				} catch (error) {
+					throw new Error(
+						`Invalid --send-payload: ${error instanceof Error ? error.message : "must be hex or plain text"}`,
+					);
+				}
+			}
+
+			// Handle --expected-response (optional)
+			const expectedResponse = getFlagValue(flags, "--expected-response");
+			if (expectedResponse) {
+				try {
+					request.spec.tcp_health_check.expected_response =
+						toApiHex(expectedResponse);
+				} catch (error) {
+					throw new Error(
+						`Invalid --expected-response: ${error instanceof Error ? error.message : "must be hex or plain text"}`,
+					);
+				}
+			}
+
 			break;
 		}
 
@@ -159,30 +302,28 @@ export function validateHealthcheckFlags(
 	}
 
 	const interval = getFlagIntValue(flags, "--interval");
-	if (interval === undefined) {
-		errors.push("--interval is required");
-	} else if (interval < 1 || interval > 600) {
+	if (interval !== undefined && (interval < 1 || interval > 600)) {
 		errors.push("--interval must be between 1 and 600 seconds");
 	}
 
 	const timeout = getFlagIntValue(flags, "--timeout");
-	if (timeout === undefined) {
-		errors.push("--timeout is required");
-	} else if (timeout < 1 || timeout > 600) {
+	if (timeout !== undefined && (timeout < 1 || timeout > 600)) {
 		errors.push("--timeout must be between 1 and 600 seconds");
 	}
 
 	const healthyThreshold = getFlagIntValue(flags, "--healthy-threshold");
-	if (healthyThreshold === undefined) {
-		errors.push("--healthy-threshold is required");
-	} else if (healthyThreshold < 1 || healthyThreshold > 16) {
+	if (
+		healthyThreshold !== undefined &&
+		(healthyThreshold < 1 || healthyThreshold > 16)
+	) {
 		errors.push("--healthy-threshold must be between 1 and 16");
 	}
 
 	const unhealthyThreshold = getFlagIntValue(flags, "--unhealthy-threshold");
-	if (unhealthyThreshold === undefined) {
-		errors.push("--unhealthy-threshold is required");
-	} else if (unhealthyThreshold < 1 || unhealthyThreshold > 16) {
+	if (
+		unhealthyThreshold !== undefined &&
+		(unhealthyThreshold < 1 || unhealthyThreshold > 16)
+	) {
 		errors.push("--unhealthy-threshold must be between 1 and 16");
 	}
 
@@ -192,6 +333,41 @@ export function validateHealthcheckFlags(
 		const path = getFlagValue(flags, "--path");
 		if (path && !path.startsWith("/")) {
 			errors.push("--path must start with /");
+		}
+
+		// Validate jitter_percent range (0, or 10-50)
+		const jitterPercent = getFlagIntValue(flags, "--jitter-percent");
+		if (jitterPercent !== undefined) {
+			if (
+				jitterPercent !== 0 &&
+				(jitterPercent < 10 || jitterPercent > 50)
+			) {
+				errors.push("--jitter-percent must be 0 or between 10 and 50");
+			}
+		}
+
+		// Validate expected status codes format
+		const expectedStatusCodes = getFlagValues(
+			flags,
+			"--expected-status-codes",
+		);
+
+		for (const code of expectedStatusCodes) {
+			if (!isValidHttpStatusCodeOrRange(code)) {
+				errors.push(
+					`Invalid HTTP status code or range: ${code}. Use format '200' or '200-299'`,
+				);
+			}
+		}
+
+		// Validate custom headers format
+		const customHeaders = getFlagValues(flags, "--headers");
+		for (const headerStr of customHeaders) {
+			if (!headerStr.includes(":")) {
+				errors.push(
+					`Invalid --headers format: ${headerStr}. Expected 'Key:Value'`,
+				);
+			}
 		}
 	}
 
