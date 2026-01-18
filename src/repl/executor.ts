@@ -1035,7 +1035,7 @@ function domainToResourcePath(domain: string): string {
  * Parsed command arguments
  */
 export interface ParsedArgs {
-	resourceType: string;
+	resourceType: string | undefined;
 	name: string | undefined;
 	namespace: string | undefined;
 	outputFormat: OutputFormat | undefined;
@@ -1173,7 +1173,7 @@ export function parseCommandArgs(
 	}
 
 	return {
-		resourceType: resourceType ?? "",
+		resourceType,
 		name,
 		namespace,
 		outputFormat,

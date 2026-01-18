@@ -388,7 +388,7 @@ describe("Origin Pool API Request Integration Tests", () => {
 			expect(request.spec.advanced_options?.http2_options).toEqual({
 				enabled: true,
 			});
-			expect(request.spec.advanced_options?.subset_load_balancer).toBeDefined();
+			expect(request.spec.advanced_options?.enable_subsets).toBeDefined();
 			expect(request.spec.advanced_options?.panic_threshold).toBe(50);
 		});
 

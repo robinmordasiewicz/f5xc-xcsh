@@ -1756,8 +1756,8 @@ describe("Origin Pool Builder - Advanced Features", () => {
 			const parsed = parseCreationFlags(args, "origin_pool");
 			const result = buildOriginPoolRequest(parsed, "default");
 
-			expect(result.spec.advanced_options?.subset_load_balancer).toBeDefined();
-			expect(result.spec.advanced_options?.subset_load_balancer?.endpoint_subsets).toBeDefined();
+			expect(result.spec.advanced_options?.enable_subsets).toBeDefined();
+			expect(result.spec.advanced_options?.enable_subsets?.endpoint_subsets).toBeDefined();
 		});
 
 		it("configures subset fallback policy", () => {
@@ -1772,9 +1772,9 @@ describe("Origin Pool Builder - Advanced Features", () => {
 			const parsed = parseCreationFlags(args, "origin_pool");
 			const result = buildOriginPoolRequest(parsed, "default");
 
-			expect(result.spec.advanced_options?.subset_load_balancer?.default_subset).toBeDefined();
+			expect(result.spec.advanced_options?.enable_subsets?.default_subset).toBeDefined();
 			expect(
-				result.spec.advanced_options?.subset_load_balancer?.default_subset?.default_fallback_policy
+				result.spec.advanced_options?.enable_subsets?.default_subset?.default_fallback_policy
 			).toBe("ANY_ENDPOINT");
 		});
 
@@ -1838,7 +1838,9 @@ describe("Origin Pool Builder - Advanced Features", () => {
 			const parsed = parseCreationFlags(args, "origin_pool");
 			const result = buildOriginPoolRequest(parsed, "default");
 
-			expect(result.spec.advanced_options?.subset_load_balancer?.endpoint_subsets?.keys).toHaveLength(2);
+			expect(result.spec.advanced_options?.enable_subsets?.endpoint_subsets).toHaveLength(2);
+		expect((result.spec.advanced_options?.enable_subsets?.endpoint_subsets as any)?.[0]?.keys).toHaveLength(2);
+		expect((result.spec.advanced_options?.enable_subsets?.endpoint_subsets as any)?.[1]?.keys).toHaveLength(1);
 		});
 	});
 

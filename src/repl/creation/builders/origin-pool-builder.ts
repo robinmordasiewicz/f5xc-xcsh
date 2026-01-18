@@ -462,11 +462,9 @@ export function buildOriginPoolRequest(
 
 			// Fallback policy (oneOf: any_endpoint | default_subset | fail_request)
 			if (subsetFallback) {
-				if (subsetFallback === "ANY_ENDPOINT") {
-					subsetConfig.any_endpoint = {};
-				} else if (subsetFallback === "DEFAULT_SUBSET") {
-					subsetConfig.default_subset = {};
-				}
+				subsetConfig.default_subset = {
+					default_fallback_policy: subsetFallback,
+				};
 			}
 
 			advancedOptions.enable_subsets = subsetConfig;
@@ -483,9 +481,7 @@ export function buildOriginPoolRequest(
 		if (http1Transform) {
 			if (!advancedOptions) advancedOptions = {};
 			advancedOptions.http1_config = {
-				header_transformation_type: {
-					[http1Transform]: {},
-				},
+				header_transformation: http1Transform,
 			};
 		}
 	} else if (httpProtocol === "http2") {
