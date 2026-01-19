@@ -3,7 +3,12 @@
  * Provides context-aware suggestions for domains, actions, flags, and built-in commands
  */
 
-import type { CompletionSuggestion, ParsedInput } from "./types.js";
+import type {
+	CompletionSuggestion,
+	ParsedInput,
+	CompletionResult,
+	ResourceQuotaInfo,
+} from "./types.js";
 import type { REPLSession } from "../session.js";
 import { customDomains, isCustomDomain } from "../../domains/index.js";
 import { extensionRegistry } from "../../extensions/index.js";
@@ -432,9 +437,12 @@ export class Completer {
 				return suggestions;
 			}
 
-			const resourceTypes = this.getResourceTypeSuggestions(
-				resourceCtx.domain,
-			);
+			const resourceTypes =
+				await this.getResourceTypeSuggestionsWithQuota(
+					resourceCtx.domain,
+					this.session?.getNamespace() ?? null,
+					this.session?.getAPIClient() ?? null,
+				);
 			if (resourceTypes.length > 0) {
 				let suggestions = resourceTypes;
 
@@ -538,6 +546,70 @@ export class Completer {
 		}
 
 		return suggestions;
+	}
+
+	/**
+	 * Get suggestions with metadata (including resource quota info)
+	 * Use this when you need quota info for the status line
+	 */
+	async completeWithMeta(text: string): Promise<CompletionResult> {
+		const trimmed = text.trimStart();
+		const parsed = parseInput(trimmed);
+		const resourceCtx = this.parseResourceContext(parsed);
+
+		// Get the suggestions
+		const suggestions = await this.complete(text);
+
+		// Check if we're showing creation flags for a resource type
+		let resourceQuotaInfo: ResourceQuotaInfo | undefined;
+
+		if (
+			resourceCtx.resourceType &&
+			resourceCtx.action &&
+			CREATION_ACTIONS.has(resourceCtx.action) &&
+			hasCreationFlags(resourceCtx.resourceType) &&
+			this.session
+		) {
+			// Fetch quota info for this resource type
+			try {
+				const { getQuotaForResourceType } =
+					await import("./quota-helper.js");
+				const { getQuotaMapping } =
+					await import("../../quota/mapping.js");
+
+				const namespace = this.session.getNamespace();
+				const client = this.session.getAPIClient();
+				const mapping = getQuotaMapping(resourceCtx.resourceType);
+
+				if (namespace && client && mapping) {
+					const quotaInfo = await getQuotaForResourceType(
+						client,
+						namespace,
+						resourceCtx.resourceType,
+					);
+
+					if (quotaInfo) {
+						resourceQuotaInfo = {
+							resourceType: resourceCtx.resourceType,
+							displayName: mapping.displayName,
+							current: quotaInfo.current,
+							limit: quotaInfo.limit,
+							level: quotaInfo.level,
+						};
+					}
+				}
+			} catch {
+				// Fail silently - quota info is optional
+			}
+		}
+
+		const result: CompletionResult = {
+			suggestions,
+		};
+		if (resourceQuotaInfo) {
+			result.resourceQuotaInfo = resourceQuotaInfo;
+		}
+		return result;
 	}
 
 	/**
@@ -944,6 +1016,59 @@ export class Completer {
 				isPrimary,
 			};
 		});
+	}
+
+	/**
+	 * Get resource type suggestions with quota information
+	 *
+	 * Enhanced version of getResourceTypeSuggestions that includes quota usage
+	 * data for resources that have quota mappings. Quota info is displayed
+	 * right-justified with color coding:
+	 * - White: Normal usage (< 90%)
+	 * - Yellow: Warning (90-99%)
+	 * - Red: At quota limit (100%)
+	 *
+	 * @param domain - The domain to get resource types for
+	 * @param namespace - The namespace to get quota for
+	 * @param client - The API client for quota lookups
+	 * @returns Promise of completion suggestions with quota info
+	 */
+	async getResourceTypeSuggestionsWithQuota(
+		domain: string,
+		namespace: string | null,
+		client: import("../../api/client.js").APIClient | null,
+	): Promise<CompletionSuggestion[]> {
+		// Get base suggestions (existing logic)
+		const baseSuggestions = this.getResourceTypeSuggestions(domain);
+
+		// If no client or namespace, return without quota
+		if (!client || !namespace) {
+			return baseSuggestions;
+		}
+
+		try {
+			const { getQuotasForResourceTypes } =
+				await import("./quota-helper.js");
+			const resourceTypes = baseSuggestions.map((s) => s.text);
+			const quotas = await getQuotasForResourceTypes(
+				client,
+				namespace,
+				resourceTypes,
+			);
+
+			return baseSuggestions.map((suggestion) => {
+				const quota = quotas.get(suggestion.text);
+				if (!quota) return suggestion;
+
+				return {
+					...suggestion,
+					quotaLevel: quota.level,
+					quotaInfo: quota.display,
+				};
+			});
+		} catch {
+			return baseSuggestions; // Graceful degradation
+		}
 	}
 
 	/**

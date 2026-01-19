@@ -4,7 +4,10 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
-import type { CompletionSuggestion } from "../completion/types.js";
+import type {
+	CompletionSuggestion,
+	ResourceQuotaInfo,
+} from "../completion/types.js";
 import { Completer } from "../completion/completer.js";
 import type { REPLSession } from "../session.js";
 
@@ -16,6 +19,7 @@ interface UseCompletionResult {
 	suggestions: CompletionSuggestion[];
 	selectedIndex: number;
 	isShowing: boolean;
+	resourceQuotaInfo: ResourceQuotaInfo | null; // Quota info for current resource type
 	triggerCompletion: (input: string) => Promise<CompletionSuggestion | null>; // Returns suggestion if single match (auto-complete)
 	navigateUp: () => void;
 	navigateDown: () => void;
@@ -43,6 +47,8 @@ export function useCompletion(
 	const [suggestions, setSuggestions] = useState<CompletionSuggestion[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isShowing, setIsShowing] = useState(false);
+	const [resourceQuotaInfo, setResourceQuotaInfo] =
+		useState<ResourceQuotaInfo | null>(null);
 
 	// Update completer when session changes
 	useEffect(() => {
@@ -55,11 +61,16 @@ export function useCompletion(
 		setIsShowing(false);
 		setSuggestions([]);
 		setSelectedIndex(0);
+		setResourceQuotaInfo(null);
 	}, []);
 
 	const triggerCompletion = useCallback(
 		async (input: string): Promise<CompletionSuggestion | null> => {
-			const newSuggestions = await completer.complete(input);
+			const result = await completer.completeWithMeta(input);
+			const newSuggestions = result.suggestions;
+
+			// Update quota info (may be null)
+			setResourceQuotaInfo(result.resourceQuotaInfo ?? null);
 
 			if (newSuggestions.length === 1) {
 				const singleSuggestion = newSuggestions[0];
@@ -93,7 +104,12 @@ export function useCompletion(
 		async (input: string): Promise<void> => {
 			if (!isShowing) return;
 
-			const newSuggestions = await completer.complete(input);
+			const result = await completer.completeWithMeta(input);
+			const newSuggestions = result.suggestions;
+
+			// Update quota info (may be null)
+			setResourceQuotaInfo(result.resourceQuotaInfo ?? null);
+
 			if (newSuggestions.length === 0) {
 				hide();
 			} else {
@@ -136,6 +152,7 @@ export function useCompletion(
 		suggestions,
 		selectedIndex,
 		isShowing,
+		resourceQuotaInfo,
 		triggerCompletion,
 		navigateUp,
 		navigateDown,
