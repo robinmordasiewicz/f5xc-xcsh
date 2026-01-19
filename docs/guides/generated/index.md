@@ -1,6 +1,6 @@
 # Domain Reference
 
-Generated from enriched API specifications v2.0.38.
+Generated from enriched API specifications v2.0.40.
 
 ## AI
 
@@ -69,3 +69,4 @@ Generated from enriched API specifications v2.0.38.
 | [🎭 Shape](shape.md) | Bot defense, fraud prevention, and client integrity. |
 | [⚠️ Threat Campaign](threat_campaign.md) | Attack detection, tracking, and mitigation rules. |
 | [🛡️ Waf](waf.md) | Request inspection, attack signatures, and bot mitigation. |
+
