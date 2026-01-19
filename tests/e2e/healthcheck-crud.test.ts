@@ -510,6 +510,91 @@ describe("Healthcheck CRUD End-to-End Tests", () => {
 	});
 
 	// ============================================================================
+	// CATEGORY 4.5: HOST HEADER CHOICE ONEOF
+	// ============================================================================
+
+	describe("CATEGORY 4.5: Host Header Choice OneOf", () => {
+		it("✓ CREATE: HTTP healthcheck with --use-origin-server-name", async () => {
+			const name = generateResourceName("hc-origin-name");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create healthcheck --name ${name} --type http --use-origin-server-name --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			// Verify in GET response
+			const readResult = await xcsh(
+				`virtual get healthcheck --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.http_health_check?.use_origin_server_name).toBeDefined();
+			expect(resource.spec?.http_health_check?.host_header).toBeUndefined();
+		}, 60000);
+
+		it("✓ CREATE: HTTP healthcheck with --host-header", async () => {
+			const name = generateResourceName("hc-host-header");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create healthcheck --name ${name} --type http --host-header api.example.com --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			// Verify host_header field in GET response
+			const readResult = await xcsh(
+				`virtual get healthcheck --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.http_health_check?.host_header).toBe("api.example.com");
+			expect(resource.spec?.http_health_check?.use_origin_server_name).toBeUndefined();
+		}, 60000);
+
+		it("✓ CREATE: HTTP healthcheck with --host-header and custom headers", async () => {
+			const name = generateResourceName("hc-host-custom");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create healthcheck --name ${name} --type http --host-header api.example.com --headers "X-Custom:value" --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get healthcheck --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// host_header is a separate field
+			expect(resource.spec?.http_health_check?.host_header).toBe("api.example.com");
+			// Custom headers are in headers map, Host is NOT there
+			expect(resource.spec?.http_health_check?.headers?.["X-Custom"]).toBe("value");
+			expect(resource.spec?.http_health_check?.headers?.Host).toBeUndefined();
+		}, 60000);
+
+		it("✓ VALIDATION: Mutually exclusive host header flags fail", async () => {
+			const name = generateResourceName("hc-mutual-excl");
+
+			const createResult = await xcsh(
+				`virtual create healthcheck --name ${name} --type http --use-origin-server-name --host-header api.example.com --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).not.toBe(0);
+			expect(
+				createResult.stdout.includes("mutually exclusive") ||
+					createResult.stderr.includes("mutually exclusive"),
+			).toBe(true);
+		}, 30000);
+	});
+
+	// ============================================================================
 	// CATEGORY 5: LIST OPERATIONS
 	// ============================================================================
 

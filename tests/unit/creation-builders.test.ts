@@ -90,6 +90,55 @@ describe("Healthcheck Builder - buildHealthcheckRequest", () => {
 		expect(request.spec.http_health_check?.use_origin_server_name).toBeUndefined();
 	});
 
+	it("builds HTTP healthcheck with host_header as separate field", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--host-header", "api.example.com",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		// host_header should be a separate field, NOT in headers map
+		expect(request.spec.http_health_check?.host_header).toBe("api.example.com");
+		expect(request.spec.http_health_check?.headers?.Host).toBeUndefined();
+		expect(request.spec.http_health_check?.use_origin_server_name).toBeUndefined();
+	});
+
+	it("builds HTTP healthcheck with custom headers separate from host_header", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--host-header", "api.example.com",
+			"--headers", "X-Custom:value",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		// host_header is separate from headers map
+		expect(request.spec.http_health_check?.host_header).toBe("api.example.com");
+		expect(request.spec.http_health_check?.headers).toEqual({ "X-Custom": "value" });
+		// Host should NOT be in headers map
+		expect(request.spec.http_health_check?.headers?.Host).toBeUndefined();
+	});
+
+	it("prefers use_origin_server_name over host_header in builder (validation catches conflict)", () => {
+		// When both flags are set, use_origin_server_name takes precedence in builder
+		// (validation should catch this as an error, but builder has deterministic behavior)
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--use-origin-server-name",
+			"--host-header", "example.com",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const request = buildHealthcheckRequest(parsed, "default");
+
+		// use_origin_server_name wins
+		expect(request.spec.http_health_check?.use_origin_server_name).toEqual({});
+		expect(request.spec.http_health_check?.host_header).toBeUndefined();
+	});
+
 	it("omits use_http2 when flag not set", () => {
 		const args = [
 			"--name", "test-hc",
@@ -481,7 +530,7 @@ describe("Healthcheck Builder - buildHealthcheckRequest", () => {
 		});
 	});
 
-	it("combines --headers with --host-header", () => {
+	it("keeps --headers and --host-header separate (host_header_choice OneOf)", () => {
 		const args = [
 			"--name", "test-hc",
 			"--type", "http",
@@ -495,8 +544,10 @@ describe("Healthcheck Builder - buildHealthcheckRequest", () => {
 		const parsed = parseCreationFlags(args, "healthcheck");
 		const request = buildHealthcheckRequest(parsed, "default");
 
+		// host_header is a separate field (host_header_choice OneOf)
+		expect(request.spec.http_health_check?.host_header).toBe("example.com");
+		// Custom headers in headers map, Host NOT added
 		expect(request.spec.http_health_check?.headers).toEqual({
-			Host: "example.com",
 			"X-API-Key": "secret123",
 		});
 	});
@@ -644,6 +695,58 @@ describe("Healthcheck Builder - validateHealthcheckFlags", () => {
 		expect(validation.errors.some((e) => e.includes("--path must start with /"))).toBe(
 			true,
 		);
+	});
+
+	// Validation tests for host_header_choice OneOf
+	it("rejects mutually exclusive host header flags", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--use-origin-server-name",
+			"--host-header", "example.com",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(false);
+		expect(
+			validation.errors.some((e) => e.includes("mutually exclusive")),
+		).toBe(true);
+	});
+
+	it("accepts --use-origin-server-name alone", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--use-origin-server-name",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(true);
+	});
+
+	it("accepts --host-header alone", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+			"--host-header", "api.example.com",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(true);
+	});
+
+	it("accepts neither host header flag (API applies default)", () => {
+		const args = [
+			"--name", "test-hc",
+			"--type", "http",
+		];
+		const parsed = parseCreationFlags(args, "healthcheck");
+		const validation = validateHealthcheckFlags(parsed);
+
+		expect(validation.valid).toBe(true);
 	});
 
 	// Validation tests for v2.0.31 enhancements

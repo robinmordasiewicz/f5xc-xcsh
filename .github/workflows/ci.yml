@@ -67,8 +67,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
-        run: npm test
+      - name: Run unit tests (excluding E2E)
+        run: npm test -- --exclude='**/e2e/**'
 
       - name: Upload coverage
         uses: codecov/codecov-action@v5
@@ -131,6 +131,50 @@ jobs:
           else
             echo "✅ Completions are up to date."
           fi
+
+  check-e2e-credentials:
+    name: Check E2E Credentials
+    runs-on: ubuntu-latest
+    outputs:
+      has-credentials: ${{ steps.check.outputs.has-credentials }}
+    steps:
+      - name: Check if F5 XC credentials are available
+        id: check
+        run: |
+          if [ -n "${{ secrets.F5_XC_API_TOKEN }}" ]; then
+            echo "has-credentials=true" >> $GITHUB_OUTPUT
+            echo "✅ F5 XC credentials available - E2E tests will run"
+          else
+            echo "has-credentials=false" >> $GITHUB_OUTPUT
+            echo "⏭️ F5 XC credentials not configured - E2E tests will be skipped"
+          fi
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: check-e2e-credentials
+    if: needs.check-e2e-credentials.outputs.has-credentials == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure F5 XC credentials
+        run: |
+          mkdir -p ~/.xcsh
+          echo "${{ secrets.F5_XC_API_TOKEN }}" > ~/.xcsh/token
+
+      - name: Run E2E tests
+        run: npm test -- tests/e2e/ --run
+        timeout-minutes: 10
 
   lint-python:
     name: Lint Python

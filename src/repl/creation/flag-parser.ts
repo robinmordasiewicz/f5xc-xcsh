@@ -219,6 +219,26 @@ export function parseCreationFlags(
 		}
 	}
 
+	// Validate OneOf mutual exclusivity
+	// Group flags by their oneOfGroup and check for violations
+	const oneOfGroups = new Map<string, string[]>();
+	for (const def of flagDefs) {
+		if (def.oneOfGroup && result.values.has(def.name)) {
+			const group = oneOfGroups.get(def.oneOfGroup) ?? [];
+			group.push(def.name);
+			oneOfGroups.set(def.oneOfGroup, group);
+		}
+	}
+
+	// Check for violations (more than one flag in same OneOf group)
+	for (const [groupName, usedFlags] of oneOfGroups) {
+		if (usedFlags.length > 1) {
+			result.errors.push(
+				`Flags ${usedFlags.join(" and ")} are mutually exclusive (OneOf group: ${groupName})`,
+			);
+		}
+	}
+
 	return result;
 }
 
