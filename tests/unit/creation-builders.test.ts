@@ -697,7 +697,7 @@ describe("Healthcheck Builder - validateHealthcheckFlags", () => {
 		);
 	});
 
-	// Validation tests for host_header_choice OneOf
+	// Validation tests for host_header_choice (x-f5xc-conflicts-with)
 	it("rejects mutually exclusive host header flags", () => {
 		const args = [
 			"--name", "test-hc",

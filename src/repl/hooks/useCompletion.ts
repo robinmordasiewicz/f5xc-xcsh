@@ -62,9 +62,17 @@ export function useCompletion(
 			const newSuggestions = await completer.complete(input);
 
 			if (newSuggestions.length === 1) {
+				const singleSuggestion = newSuggestions[0];
+				// Don't auto-complete context items (informational only)
+				if (singleSuggestion?.category === "context") {
+					setSuggestions(newSuggestions);
+					setSelectedIndex(0);
+					setIsShowing(true);
+					return null;
+				}
 				// Single match - return it for auto-complete
 				hide();
-				return newSuggestions[0] ?? null;
+				return singleSuggestion ?? null;
 			}
 
 			if (newSuggestions.length > 0) {
@@ -116,6 +124,10 @@ export function useCompletion(
 		if (!isShowing || suggestions.length === 0) return null;
 
 		const selected = suggestions.at(selectedIndex);
+		// Don't allow selecting context items (informational only)
+		if (selected?.category === "context") {
+			return null;
+		}
 		hide();
 		return selected ?? null;
 	}, [isShowing, suggestions, selectedIndex, hide]);

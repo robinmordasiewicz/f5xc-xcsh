@@ -27,7 +27,11 @@ import {
 	parseCreationFlagValues,
 	formatDefaultValue,
 } from "./flag-utils.js";
-import { getCreationFlags, hasCreationFlags } from "./creation-flags.js";
+import {
+	getCreationFlags,
+	hasCreationFlags,
+	getConflictsForFlag,
+} from "./creation-flags.js";
 
 /**
  * Context for resource completion
@@ -1275,6 +1279,17 @@ export class Completer {
 				}
 			}
 
+			// === CONFLICT-BASED CONDITIONS (spec-driven from x-f5xc-conflicts-with) ===
+			// Check if this flag conflicts with any already-used flags
+			const conflicts = getConflictsForFlag(flag.name, resourceType);
+			if (conflicts.length > 0) {
+				const hasConflict = conflicts.some((cf) => usedFlags.has(cf));
+				if (hasConflict) {
+					// A conflicting flag is already used - SKIP this flag
+					continue;
+				}
+			}
+
 			// Handle repeatable flags: check if max occurrences reached
 			if (flag.isRepeatable) {
 				const count = flagUsageCounts.get(flag.name) || 0;
@@ -1489,15 +1504,58 @@ export class Completer {
 				]);
 				const namespace = nsFromFlag || this.session.getNamespace();
 
-				if (resourceType && namespace) {
-					return this.completeResourceName(
-						resourceType, // Will be pluralized for API path (e.g., 'http_loadbalancer' → 'http_loadbalancers')
+				if (!resourceType || !namespace) {
+					return [];
+				}
+
+				// Check if this is a create/apply action
+				const action = resourceCtx.action;
+				if (action && CREATION_ACTIONS.has(action)) {
+					// For CREATE/APPLY: Show existing names as context, prompt for unique name
+					const existingNames = await this.completeResourceName(
 						resourceType,
-						valuePartial,
+						resourceType,
+						"", // Fetch all names, not filtered by partial
 						namespace,
 					);
+
+					if (existingNames.length === 0) {
+						// No existing resources - any name is valid
+						return [
+							{
+								text: "",
+								description:
+									"Enter a name for the new resource",
+								category: "context" as const,
+							},
+						];
+					}
+
+					// Show header + each existing name as a separate context item
+					const contextItems: CompletionSuggestion[] = [
+						{
+							text: "",
+							description:
+								"Enter a unique name (names already taken):",
+							category: "context" as const,
+						},
+						...existingNames.map((n) => ({
+							text: "",
+							description: `  • ${n.text}`,
+							category: "context" as const,
+						})),
+					];
+
+					return contextItems;
 				}
-				return [];
+
+				// For GET/DELETE/LIST: Show existing resource names as selectable
+				return this.completeResourceName(
+					resourceType, // Will be pluralized for API path (e.g., 'http_loadbalancer' → 'http_loadbalancers')
+					resourceType,
+					valuePartial,
+					namespace,
+				);
 			}
 
 			case "--limit":

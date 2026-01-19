@@ -124,10 +124,10 @@ export function buildHealthcheckRequest(
 				path: path,
 			};
 
-			// host_header_choice OneOf: Only one should be set
+			// host_header_choice: Only one should be set (x-f5xc-conflicts-with)
 			// - use_origin_server_name: Empty object type (uses origin server hostname)
 			// - host_header: String value (custom Host header)
-			// Mutual exclusivity is validated in validateHealthcheckFlags()
+			// Mutual exclusivity is validated via conflictsWith in flag-parser and validateHealthcheckFlags()
 			if (isFlagSet(flags, "--use-origin-server-name")) {
 				request.spec.http_health_check.use_origin_server_name = {};
 			} else {
@@ -325,7 +325,7 @@ export function validateHealthcheckFlags(
 
 	// Type-specific validation
 	if (type === "http") {
-		// Check for mutually exclusive host header options (host_header_choice OneOf)
+		// Check for mutually exclusive host header options (x-f5xc-conflicts-with)
 		if (
 			isFlagSet(flags, "--use-origin-server-name") &&
 			getFlagValue(flags, "--host-header")

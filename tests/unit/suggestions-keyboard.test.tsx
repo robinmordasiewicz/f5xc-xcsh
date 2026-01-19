@@ -246,6 +246,98 @@ describe("Suggestions Keyboard Behavior", () => {
 		});
 	});
 
+	describe("Context-Only Mode", () => {
+		const contextOnlySuggestions: Suggestion[] = [
+			{ label: "Enter a unique name (names already taken):", value: "", description: "", category: "context" },
+			{ label: "• test-http-debug", value: "", description: "", category: "context" },
+			{ label: "• test-http-ok", value: "", description: "", category: "context" },
+			{ label: "• my-healthcheck", value: "", description: "", category: "context" },
+		];
+
+		it("should display context-only help text when all suggestions are context category", () => {
+			const { lastFrame } = render(
+				<Suggestions
+					suggestions={contextOnlySuggestions}
+					selectedIndex={0}
+					onSelect={onSelect}
+					onNavigate={onNavigate}
+					onCancel={onCancel}
+				/>,
+			);
+
+			const output = lastFrame();
+
+			// Verify context-only help text
+			expect(output).toContain("↑↓: scroll");
+			expect(output).toContain("Esc: close");
+			// Should NOT contain selectable mode help text
+			expect(output).not.toContain("Tab/→: select");
+			expect(output).not.toContain("Enter: execute");
+		});
+
+		it("should NOT display selection indicator (▶) for context-only suggestions", () => {
+			const { lastFrame } = render(
+				<Suggestions
+					suggestions={contextOnlySuggestions}
+					selectedIndex={0}
+					onSelect={onSelect}
+					onNavigate={onNavigate}
+					onCancel={onCancel}
+				/>,
+			);
+
+			const output = lastFrame();
+
+			// Should NOT contain the selection arrow
+			expect(output).not.toContain("▶");
+		});
+
+		it("should display normal help text when mixed categories present", () => {
+			const mixedSuggestions: Suggestion[] = [
+				{ label: "hint text", value: "", description: "", category: "context" },
+				{ label: "actual-resource", value: "actual-resource", description: "Resource", category: "value" },
+			];
+
+			const { lastFrame } = render(
+				<Suggestions
+					suggestions={mixedSuggestions}
+					selectedIndex={1}
+					onSelect={onSelect}
+					onNavigate={onNavigate}
+					onCancel={onCancel}
+				/>,
+			);
+
+			const output = lastFrame();
+
+			// Should contain selectable mode help text for mixed suggestions
+			expect(output).toContain("Tab/→: select");
+			expect(output).toContain("Enter: execute");
+		});
+
+		it("should display selection indicator for mixed category suggestions", () => {
+			const mixedSuggestions: Suggestion[] = [
+				{ label: "hint text", value: "", description: "", category: "context" },
+				{ label: "actual-resource", value: "actual-resource", description: "Resource", category: "value" },
+			];
+
+			const { lastFrame } = render(
+				<Suggestions
+					suggestions={mixedSuggestions}
+					selectedIndex={1}
+					onSelect={onSelect}
+					onNavigate={onNavigate}
+					onCancel={onCancel}
+				/>,
+			);
+
+			const output = lastFrame();
+
+			// Should contain selection arrow for selectable items
+			expect(output).toContain("▶");
+		});
+	});
+
 	describe("Multiple Key Press Sequence", () => {
 		// SKIPPED: ink-testing-library doesn't trigger useInput callbacks via stdin.write()
 		// Actual keyboard behavior verified by tests/integration/completion-flow.test.ts

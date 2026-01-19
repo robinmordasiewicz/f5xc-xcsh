@@ -19,7 +19,8 @@ export interface CompletionSuggestion {
 		| "subcommand"
 		| "command"
 		| "resource"
-		| "resource-name";
+		| "resource-name"
+		| "context"; // Non-selectable informational items (e.g., showing taken names)
 	isPrimary?: boolean; // For primary resources - renders with brighter styling
 	priority?: number; // For priority-based sorting
 }
