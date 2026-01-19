@@ -219,23 +219,24 @@ export function parseCreationFlags(
 		}
 	}
 
-	// Validate OneOf mutual exclusivity
-	// Group flags by their oneOfGroup and check for violations
-	const oneOfGroups = new Map<string, string[]>();
+	// Validate conflictsWith - direct field conflicts from x-f5xc-conflicts-with
+	const reportedConflicts = new Set<string>();
 	for (const def of flagDefs) {
-		if (def.oneOfGroup && result.values.has(def.name)) {
-			const group = oneOfGroups.get(def.oneOfGroup) ?? [];
-			group.push(def.name);
-			oneOfGroups.set(def.oneOfGroup, group);
-		}
-	}
-
-	// Check for violations (more than one flag in same OneOf group)
-	for (const [groupName, usedFlags] of oneOfGroups) {
-		if (usedFlags.length > 1) {
-			result.errors.push(
-				`Flags ${usedFlags.join(" and ")} are mutually exclusive (OneOf group: ${groupName})`,
-			);
+		if (def.conflictsWith && result.values.has(def.name)) {
+			for (const conflictingFlag of def.conflictsWith) {
+				if (result.values.has(conflictingFlag)) {
+					// Create a normalized key to deduplicate bidirectional conflicts
+					const conflictKey = [def.name, conflictingFlag]
+						.sort()
+						.join("|");
+					if (!reportedConflicts.has(conflictKey)) {
+						reportedConflicts.add(conflictKey);
+						result.errors.push(
+							`Flags ${def.name} and ${conflictingFlag} are mutually exclusive`,
+						);
+					}
+				}
+			}
 		}
 	}
 

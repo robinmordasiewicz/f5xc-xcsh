@@ -40,6 +40,8 @@ function getCategoryColor(category?: string): string {
 			return "#ffc107"; // Yellow
 		case "value":
 			return "#9c27b0"; // Purple
+		case "context":
+			return "#888888"; // Gray - informational, dimmed
 		default:
 			return "#ffffff"; // White
 	}
@@ -52,20 +54,26 @@ function SuggestionItem({
 	suggestion,
 	isSelected,
 	maxLabelWidth,
+	isContextOnly,
 }: {
 	suggestion: Suggestion;
 	isSelected: boolean;
 	index: number;
 	maxLabelWidth: number;
+	isContextOnly?: boolean;
 }): React.ReactElement {
 	const categoryColor = getCategoryColor(suggestion.category);
 
 	return (
 		<Box>
-			{/* Selection indicator - use 3 chars for alignment (▶ may render as wide char) */}
-			<Text color={isSelected ? "#CA260A" : "#333333"}>
-				{isSelected ? "▶ " : "   "}
-			</Text>
+			{/* Selection indicator - hide for context-only mode (informational lists) */}
+			{isContextOnly ? (
+				<Text>{"   "}</Text>
+			) : (
+				<Text color={isSelected ? "#CA260A" : "#333333"}>
+					{isSelected ? "▶ " : "   "}
+				</Text>
+			)}
 
 			{/* Label with category color - padded to align descriptions */}
 			<Text color={categoryColor} bold={isSelected} inverse={isSelected}>
@@ -99,6 +107,11 @@ export function Suggestions({
 	maxVisible = 20,
 	isActive = true,
 }: SuggestionsProps): React.ReactElement | null {
+	// Detect if all suggestions are context-only (informational, non-selectable)
+	const isContextOnlyMode = suggestions.every(
+		(s) => s.category === "context",
+	);
+
 	// Handle keyboard navigation
 	useInput(
 		(_input, key) => {
@@ -115,7 +128,11 @@ export function Suggestions({
 			}
 
 			// Only Tab selects suggestions - Enter should execute command
+			// In context-only mode, Tab does nothing (items are informational only)
 			if (key.tab) {
+				if (isContextOnlyMode) {
+					return; // Don't select in context-only mode
+				}
 				const selected = suggestions.at(selectedIndex);
 				if (selected) {
 					onSelect(selected);
@@ -176,11 +193,12 @@ export function Suggestions({
 			{/* Suggestion items */}
 			{visibleSuggestions.map((suggestion, index) => (
 				<SuggestionItem
-					key={suggestion.value}
+					key={suggestion.value || `context-${startIndex + index}`}
 					suggestion={suggestion}
 					isSelected={startIndex + index === selectedIndex}
 					index={startIndex + index}
 					maxLabelWidth={maxLabelWidth}
+					isContextOnly={isContextOnlyMode}
 				/>
 			))}
 
@@ -192,10 +210,12 @@ export function Suggestions({
 				</Text>
 			)}
 
-			{/* Help text */}
+			{/* Help text - different for context-only mode */}
 			<Box marginTop={1}>
 				<Text color="#666666" dimColor>
-					Tab/→: select | Enter: execute | ↑↓: navigate | Esc: cancel
+					{isContextOnlyMode
+						? "↑↓: scroll | Esc: close"
+						: "Tab/→: select | Enter: execute | ↑↓: navigate | Esc: cancel"}
 				</Text>
 			</Box>
 		</Box>

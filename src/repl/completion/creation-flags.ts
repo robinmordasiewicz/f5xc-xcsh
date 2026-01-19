@@ -6,6 +6,8 @@
  * creation flags (--name, --type, etc.) instead of existing resource names.
  */
 
+import { getConflictsForFlag as getGeneratedConflicts } from "../../types/conflicts_generated.js";
+
 /**
  * Definition for a creation flag
  */
@@ -79,14 +81,14 @@ export interface CreationFlagDefinition {
 	 */
 	priority?: number;
 	/**
-	 * OneOf group name for mutually exclusive flags.
-	 * Flags with the same oneOfGroup value cannot be used together.
-	 * Based on F5 XC API x-ves-oneof-field annotations.
+	 * List of flag names that conflict with this flag.
+	 * Derived from x-f5xc-conflicts-with API extension.
+	 * When this flag is used, none of the conflicting flags can be used.
 	 *
 	 * @example
-	 * oneOfGroup: "host_header_choice" // Cannot use with other flags in same group
+	 * conflictsWith: ["--use-origin-server-name"] // Cannot use with this flag
 	 */
-	oneOfGroup?: string;
+	conflictsWith?: string[];
 }
 
 /**
@@ -201,13 +203,13 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	{
 		name: "--host-header",
 		description:
-			"Custom Host header value (exclusive with --use-origin-server-name)",
+			"Custom Host header value (conflicts with --use-origin-server-name)",
 		required: false,
 		hasValue: true,
 		valueType: "string",
 		applicableTypes: ["http"],
 		priority: 5,
-		oneOfGroup: "host_header_choice",
+		conflictsWith: ["--use-origin-server-name"],
 	},
 	{
 		name: "--headers",
@@ -225,14 +227,14 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	{
 		name: "--use-origin-server-name",
 		description:
-			"Use origin server hostname as Host header (exclusive with --host-header, recommended)",
+			"Use origin server hostname as Host header (conflicts with --host-header, recommended)",
 		required: false,
 		hasValue: false,
 		applicableTypes: ["http"],
 		priority: 5,
 		hasServerDefault: true,
 		defaultValue: {},
-		oneOfGroup: "host_header_choice",
+		conflictsWith: ["--host-header"],
 	},
 	{
 		name: "--use-http2",
@@ -793,4 +795,41 @@ export function getAllCreationFlagNames(resourceType: string): Set<string> {
 	}
 
 	return names;
+}
+
+/**
+ * Get conflicts for a flag, combining static definitions and spec-generated data.
+ *
+ * Priority:
+ * 1. Static conflicts from flag's `conflictsWith` property (manual overrides)
+ * 2. Dynamic conflicts from x-f5xc-conflicts-with in OpenAPI spec
+ *
+ * @param flagName - The flag name (e.g., "--host-header")
+ * @param resourceType - Optional resource type to look up static conflicts
+ * @returns Array of conflicting flag names (e.g., ["--use-origin-server-name"])
+ */
+export function getConflictsForFlag(
+	flagName: string,
+	resourceType?: string,
+): string[] {
+	const conflicts = new Set<string>();
+
+	// First, check static conflicts from flag definitions
+	if (resourceType) {
+		const flags = getCreationFlags(resourceType);
+		const flagDef = flags.find((f) => f.name === flagName);
+		if (flagDef?.conflictsWith) {
+			for (const conflict of flagDef.conflictsWith) {
+				conflicts.add(conflict);
+			}
+		}
+	}
+
+	// Then, add dynamic conflicts from generated spec data
+	const generatedConflicts = getGeneratedConflicts(flagName);
+	for (const conflict of generatedConflicts) {
+		conflicts.add(conflict);
+	}
+
+	return Array.from(conflicts);
 }

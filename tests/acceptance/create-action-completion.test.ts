@@ -418,18 +418,22 @@ describe("Origin Pool Create Action Completion", () => {
 			expect(result).toContain("--health-check");
 		});
 
-		it("multiple origin types can be mixed", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create origin_pool --public-ip 1.2.3.4 --public-name example.com ",
+		it("conflicting origin types are filtered out per x-f5xc-conflicts-with", async () => {
+			// When --public-ip is used, --public-name should be hidden (they conflict per spec)
+			const suggestionsAfterPublicIp = await completer.complete(
+				"/virtual create origin_pool --public-ip 1.2.3.4 ",
 			);
-			const result = suggestions.map((s) => s.text);
+			const resultAfterPublicIp = suggestionsAfterPublicIp.map((s) => s.text);
 
-			// Both should still appear (repeatable)
-			expect(result).toContain("--public-ip");
-			expect(result).toContain("--public-name");
-			// Other origin types should also appear
-			expect(result).toContain("--private-ip");
-			expect(result).toContain("--k8s-service");
+			// --public-ip is repeatable so can appear again
+			expect(resultAfterPublicIp).toContain("--public-ip");
+			// --public-name conflicts with --public-ip per x-f5xc-conflicts-with
+			expect(resultAfterPublicIp).not.toContain("--public-name");
+			// Non-conflicting types should still appear
+			// Note: --private-ip also conflicts with --public-ip per spec
+			expect(resultAfterPublicIp).not.toContain("--private-ip");
+			// Global flags and non-conflicting flags should remain
+			expect(resultAfterPublicIp).toContain("--namespace");
 		});
 	});
 

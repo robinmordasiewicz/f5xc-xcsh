@@ -1,5 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { Completer } from "../../src/repl/completion/completer.js";
+import type { REPLSession } from "../../src/repl/session.js";
+import { getConflictsForFlag } from "../../src/repl/completion/creation-flags.js";
 
 describe("Completer with trailing spaces", () => {
 	let completer: Completer;
@@ -125,5 +127,242 @@ describe("Login domain action group completion (bug fix)", () => {
 		const texts = suggestions.map((s) => s.text);
 		// Should show "use" as completion
 		expect(texts).toContain("use");
+	});
+});
+
+describe("--name flag completion for create vs get/delete actions", () => {
+	let completer: Completer;
+	let mockSession: Partial<REPLSession>;
+
+	beforeEach(() => {
+		completer = new Completer();
+
+		// Create a mock session with the necessary methods
+		mockSession = {
+			getNamespace: vi.fn().mockReturnValue("default"),
+			getContextPath: vi.fn().mockReturnValue({ domain: null, action: null }),
+			getAPIClient: vi.fn().mockReturnValue(null),
+		};
+
+		completer.setSession(mockSession as REPLSession);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("shows context prompt when creating resource with existing resources", async () => {
+		// Mock completeResourceName to return existing resource names
+		const existingNames = [
+			{ text: "hc-prod", description: "Healthcheck", category: "resource-name" as const },
+			{ text: "hc-staging", description: "Healthcheck", category: "resource-name" as const },
+		];
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue(existingNames);
+
+		const suggestions = await completer.complete("/virtual create healthcheck --name ");
+
+		// Should return header + each existing name as separate context items
+		expect(suggestions).toHaveLength(3); // header + 2 names
+		expect(suggestions.every((s) => s.category === "context")).toBe(true);
+		expect(suggestions.every((s) => s.text === "")).toBe(true);
+		expect(suggestions[0].description).toContain("Enter a unique name");
+		expect(suggestions[1].description).toContain("hc-prod");
+		expect(suggestions[2].description).toContain("hc-staging");
+	});
+
+	it("shows simple prompt when creating resource with no existing resources", async () => {
+		// Mock completeResourceName to return empty array (no existing resources)
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue([]);
+
+		const suggestions = await completer.complete("/virtual create healthcheck --name ");
+
+		// Should return a simple context prompt
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0].category).toBe("context");
+		expect(suggestions[0].text).toBe("");
+		expect(suggestions[0].description).toBe("Enter a name for the new resource");
+	});
+
+	it("shows selectable names for get action with --name flag", async () => {
+		// Mock completeResourceName to return existing resource names
+		const existingNames = [
+			{ text: "hc-prod", description: "Healthcheck", category: "resource-name" as const },
+			{ text: "hc-staging", description: "Healthcheck", category: "resource-name" as const },
+		];
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue(existingNames);
+
+		const suggestions = await completer.complete("/virtual get healthcheck --name ");
+
+		// Should return selectable names, not context
+		expect(suggestions).toHaveLength(2);
+		expect(suggestions.map((s) => s.text)).toContain("hc-prod");
+		expect(suggestions.map((s) => s.text)).toContain("hc-staging");
+		expect(suggestions[0].category).toBe("resource-name");
+	});
+
+	it("shows selectable names for delete action with --name flag", async () => {
+		// Mock completeResourceName to return existing resource names
+		const existingNames = [
+			{ text: "hc-prod", description: "Healthcheck", category: "resource-name" as const },
+		];
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue(existingNames);
+
+		const suggestions = await completer.complete("/virtual delete healthcheck --name ");
+
+		// Should return selectable names for delete
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0].text).toBe("hc-prod");
+		expect(suggestions[0].category).toBe("resource-name");
+	});
+
+	it("shows all taken names as individual list items", async () => {
+		// Mock completeResourceName to return many existing resource names
+		const existingNames = [
+			{ text: "healthcheck-very-long-name-1", description: "Healthcheck", category: "resource-name" as const },
+			{ text: "healthcheck-very-long-name-2", description: "Healthcheck", category: "resource-name" as const },
+			{ text: "healthcheck-very-long-name-3", description: "Healthcheck", category: "resource-name" as const },
+		];
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue(existingNames);
+
+		const suggestions = await completer.complete("/virtual create healthcheck --name ");
+
+		// Should show header + each name on its own line
+		expect(suggestions).toHaveLength(4); // header + 3 names
+		expect(suggestions.every((s) => s.category === "context")).toBe(true);
+		expect(suggestions[0].description).toContain("Enter a unique name");
+		expect(suggestions[1].description).toContain("healthcheck-very-long-name-1");
+		expect(suggestions[2].description).toContain("healthcheck-very-long-name-2");
+		expect(suggestions[3].description).toContain("healthcheck-very-long-name-3");
+	});
+
+	it("treats apply action same as create action", async () => {
+		// Mock completeResourceName to return existing resource names
+		const existingNames = [
+			{ text: "hc-prod", description: "Healthcheck", category: "resource-name" as const },
+		];
+		vi.spyOn(completer, "completeResourceName").mockResolvedValue(existingNames);
+
+		const suggestions = await completer.complete("/virtual apply healthcheck --name ");
+
+		// Apply should behave like create - show context, not selectable names
+		expect(suggestions).toHaveLength(2); // header + 1 name
+		expect(suggestions.every((s) => s.category === "context")).toBe(true);
+		expect(suggestions[0].description).toContain("Enter a unique name");
+		expect(suggestions[1].description).toContain("hc-prod");
+	});
+});
+
+describe("Conflict filtering in completion suggestions (spec-driven)", () => {
+	let completer: Completer;
+	let mockSession: Partial<REPLSession>;
+
+	beforeEach(() => {
+		completer = new Completer();
+
+		// Create a mock session with the necessary methods
+		mockSession = {
+			getNamespace: vi.fn().mockReturnValue("default"),
+			getContextPath: vi.fn().mockReturnValue({ domain: null, action: null }),
+			getAPIClient: vi.fn().mockReturnValue(null),
+		};
+
+		completer.setSession(mockSession as REPLSession);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	describe("getConflictsForFlag helper", () => {
+		it("should return conflicts from generated data for --host-header", () => {
+			const conflicts = getConflictsForFlag("--host-header", "healthcheck");
+			expect(conflicts).toContain("--use-origin-server-name");
+		});
+
+		it("should return conflicts from generated data for --use-origin-server-name", () => {
+			const conflicts = getConflictsForFlag("--use-origin-server-name", "healthcheck");
+			expect(conflicts).toContain("--host-header");
+		});
+
+		it("should return static conflicts from flag definitions", () => {
+			// The static conflictsWith in healthcheck flags should be included
+			const conflicts = getConflictsForFlag("--host-header", "healthcheck");
+			// Both static (from flag definition) and generated (from spec) should be merged
+			expect(conflicts).toContain("--use-origin-server-name");
+		});
+
+		it("should return empty array for flag with no conflicts", () => {
+			// Use a non-existent flag that won't have conflicts in the spec
+			const conflicts = getConflictsForFlag("--nonexistent-flag-12345", "healthcheck");
+			expect(conflicts).toEqual([]);
+		});
+	});
+
+	describe("completion filtering with conflicts", () => {
+		it("should hide --host-header when --use-origin-server-name is used", () => {
+			const suggestions = completer.getCreationFlagSuggestions(
+				"healthcheck",
+				["create", "healthcheck", "--type", "http", "--use-origin-server-name"],
+			);
+			const flagNames = suggestions.map((s) => s.text);
+
+			// --host-header should NOT be in suggestions (conflicts)
+			expect(flagNames).not.toContain("--host-header");
+			// Other HTTP flags should still be available
+			expect(flagNames).toContain("--path");
+		});
+
+		it("should hide --use-origin-server-name when --host-header is used", () => {
+			const suggestions = completer.getCreationFlagSuggestions(
+				"healthcheck",
+				["create", "healthcheck", "--type", "http", "--host-header", "example.com"],
+			);
+			const flagNames = suggestions.map((s) => s.text);
+
+			// --use-origin-server-name should NOT be in suggestions (conflicts)
+			expect(flagNames).not.toContain("--use-origin-server-name");
+			// Other HTTP flags should still be available
+			expect(flagNames).toContain("--path");
+		});
+
+		it("should show both --host-header and --use-origin-server-name when neither is used", () => {
+			const suggestions = completer.getCreationFlagSuggestions(
+				"healthcheck",
+				["create", "healthcheck", "--type", "http"],
+			);
+			const flagNames = suggestions.map((s) => s.text);
+
+			// Both should be available when neither is used
+			expect(flagNames).toContain("--host-header");
+			expect(flagNames).toContain("--use-origin-server-name");
+		});
+
+		it("should handle multiple conflicts correctly", () => {
+			// When --host-header is used, only its conflicts should be hidden
+			const suggestions = completer.getCreationFlagSuggestions(
+				"healthcheck",
+				["create", "healthcheck", "--type", "http", "--host-header", "test.com"],
+			);
+			const flagNames = suggestions.map((s) => s.text);
+
+			// Only the conflicting flag should be hidden
+			expect(flagNames).not.toContain("--use-origin-server-name");
+			// Non-conflicting flags should remain
+			expect(flagNames).toContain("--use-http2");
+			expect(flagNames).toContain("--expected-status-codes");
+		});
+
+		it("should not filter flags without conflicts", () => {
+			const suggestions = completer.getCreationFlagSuggestions(
+				"healthcheck",
+				["create", "healthcheck", "--type", "http", "--path", "/health"],
+			);
+			const flagNames = suggestions.map((s) => s.text);
+
+			// Flags without conflicts should still be available
+			expect(flagNames).toContain("--host-header");
+			expect(flagNames).toContain("--use-origin-server-name");
+			expect(flagNames).toContain("--use-http2");
+		});
 	});
 });
