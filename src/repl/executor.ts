@@ -48,14 +48,9 @@ import {
 	substitutePathParams,
 	hasUnsubstitutedParams,
 } from "../operations/index.js";
-import { promises as fs } from "fs";
-import { resolve } from "path";
-import YAML from "yaml";
 import {
 	parseCreationFlags,
 	hasCreationFlagsInArgs,
-	hasFileFlag,
-	getFilePath,
 	hasResourceBuilder,
 	buildResource,
 	validateResourceFlags,
@@ -620,11 +615,8 @@ async function handleDirectNavigation(
 	}
 
 	// Check for --help or -h flag on API/extension domains - show domain-specific help
-	if (
-		cmd.targetAction === "--help" ||
-		cmd.targetAction === "-h" ||
-		cmd.targetAction === "help"
-	) {
+	// Note: "help" without dashes is treated as an action verb, not a flag
+	if (cmd.targetAction === "--help" || cmd.targetAction === "-h") {
 		const domainInfo = getDomainInfo(cmd.targetDomain);
 		if (domainInfo) {
 			return {
@@ -740,6 +732,31 @@ async function handleDirectNavigation(
 		return await executeAPICommand(session, ctx, apiCmd);
 	}
 
+	// Special handling for help action - execute even without args
+	// e.g., /virtual help -> show domain help, don't navigate
+	if (cmd.targetAction === "help") {
+		const domainInfo = getDomainInfo(cmd.targetDomain);
+		const domainResourceTypes = new Set(
+			domainInfo?.primaryResources?.map((r) => r.name) ?? [],
+		);
+
+		// Parse args to extract resourceType (e.g., /virtual help healthcheck)
+		const { resourceType } = parseCommandArgs(
+			cmd.args,
+			domainResourceTypes,
+		);
+
+		const { handleHelpVerb } = await import("./help/verb-handler.js");
+		return handleHelpVerb({
+			session,
+			ctx,
+			domain: cmd.targetDomain,
+			resourceType: resourceType ?? "",
+			args: cmd.args,
+			domainResourceTypes,
+		});
+	}
+
 	// Navigate to domain (API domain or merged domain with API support)
 	ctx.reset();
 	ctx.setDomain(cmd.targetDomain);
@@ -812,8 +829,9 @@ async function handleDomainNavigation(
 	}
 
 	// Check for --help or -h flag on API/extension domains - show domain-specific help
+	// Note: "help" without dashes is treated as an action verb, not a flag
 	const firstArg = args[0]?.toLowerCase() ?? "";
-	if (firstArg === "--help" || firstArg === "-h" || firstArg === "help") {
+	if (firstArg === "--help" || firstArg === "-h") {
 		const domainInfo = getDomainInfo(domain);
 		if (domainInfo) {
 			return {
@@ -917,9 +935,8 @@ async function handleDomainNavigation(
 	// If there are remaining args, check if first is an action to execute
 	if (args.length > 0) {
 		const firstArg = args[0]?.toLowerCase() ?? "";
-		const resourceActions = new Set(["list", "get", "delete", "status"]);
 
-		if (resourceActions.has(firstArg)) {
+		if (validActions.has(firstArg)) {
 			// Create a ParsedCommand from the args and execute API command
 			const cmd: ParsedCommand = {
 				raw: args.join(" "),
@@ -1150,7 +1167,14 @@ export function parseCommandArgs(
 		}
 	}
 
-	return { resourceType, name, namespace, outputFormat, spec, noColor };
+	return {
+		resourceType,
+		name,
+		namespace,
+		outputFormat,
+		spec,
+		noColor,
+	};
 }
 
 /**
@@ -1236,8 +1260,14 @@ async function executeAPICommand(
 	);
 
 	// Parse arguments (with resource type detection)
-	const { resourceType, name, namespace, outputFormat, spec, noColor } =
-		parseCommandArgs(args, domainResourceTypes);
+	const {
+		resourceType = "",
+		name,
+		namespace,
+		outputFormat,
+		spec,
+		noColor,
+	} = parseCommandArgs(args, domainResourceTypes);
 	const effectiveNamespace = namespace ?? session.getNamespace();
 
 	// Validate namespace name for CLI safety (security: prevent injection attacks)
@@ -1315,7 +1345,11 @@ async function executeAPICommand(
 	}
 
 	// Check operation safety and show warnings for dangerous operations
-	const safetyCheck = checkOperationSafety(canonicalDomain, action);
+	const safetyCheck = checkOperationSafety(
+		canonicalDomain,
+		action,
+		resourceType ?? "",
+	);
 	const warningOutput: string[] = [];
 	if (safetyCheck.warning) {
 		warningOutput.push(safetyCheck.warning);
@@ -1375,7 +1409,7 @@ async function executeAPICommand(
 	let effectiveResourceType = resourceType;
 	if (!effectiveResourceType && args.length > 0) {
 		// The first positional arg might be a resource type
-		effectiveResourceType = args[0]?.toLowerCase();
+		effectiveResourceType = args[0]?.toLowerCase() ?? "";
 	}
 
 	const operation = getOperationDefinition(
@@ -1470,60 +1504,12 @@ async function executeAPICommand(
 			case "replace":
 			case "apply": {
 				// For create/replace/apply, we need a request body
-				// Check for flag-based creation or --file
+				// Check for flag-based creation
 
 				let requestBody: Record<string, unknown> | null = null;
 
-				// First priority: Check for --file flag
-				if (hasFileFlag(args)) {
-					const filePath = getFilePath(args);
-					if (!filePath) {
-						return {
-							output: ["Error: --file requires a file path"],
-							shouldExit: false,
-							shouldClear: false,
-							contextChanged: false,
-						};
-					}
-
-					try {
-						const absolutePath = resolve(filePath);
-						const fileContent = await fs.readFile(
-							absolutePath,
-							"utf-8",
-						);
-
-						// Parse as YAML (also handles JSON since JSON is valid YAML)
-						requestBody = YAML.parse(fileContent) as Record<
-							string,
-							unknown
-						>;
-
-						if (!requestBody || typeof requestBody !== "object") {
-							return {
-								output: [
-									"Error: File must contain a valid YAML/JSON object",
-								],
-								shouldExit: false,
-								shouldClear: false,
-								contextChanged: false,
-							};
-						}
-					} catch (error) {
-						const errMsg =
-							error instanceof Error
-								? error.message
-								: String(error);
-						return {
-							output: [`Error reading file: ${errMsg}`],
-							shouldExit: false,
-							shouldClear: false,
-							contextChanged: false,
-						};
-					}
-				}
-				// Second priority: Check for creation flags
-				else if (
+				// Check for creation flags
+				if (
 					effectiveResourceType &&
 					hasResourceBuilder(effectiveResourceType) &&
 					hasCreationFlagsInArgs(args, effectiveResourceType)
@@ -1544,6 +1530,7 @@ async function executeAPICommand(
 							shouldExit: false,
 							shouldClear: false,
 							contextChanged: false,
+							error: "Parse error",
 						};
 					}
 
@@ -1561,6 +1548,7 @@ async function executeAPICommand(
 							shouldExit: false,
 							shouldClear: false,
 							contextChanged: false,
+							error: "Validation failed",
 						};
 					}
 
@@ -1689,6 +1677,19 @@ async function executeAPICommand(
 				const response = await client.get(apiPath);
 				result = response.data;
 				break;
+			}
+
+			case "help": {
+				const { handleHelpVerb } =
+					await import("./help/verb-handler.js");
+				return handleHelpVerb({
+					session,
+					ctx,
+					domain: canonicalDomain,
+					resourceType: resourceType ?? "",
+					args,
+					domainResourceTypes,
+				});
 			}
 
 			default: {

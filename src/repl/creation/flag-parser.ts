@@ -33,13 +33,10 @@ export function hasCreationFlagsInArgs(
 	const flagDefs = getCreationFlags(resourceType);
 	if (flagDefs.length === 0) return false;
 
-	// Build set of all flag names and aliases
+	// Build set of all flag names
 	const flagNames = new Set<string>();
 	for (const def of flagDefs) {
 		flagNames.add(def.name);
-		if (def.shortName) {
-			flagNames.add(def.shortName);
-		}
 	}
 
 	// Check if any arg starts with a known flag
@@ -53,31 +50,6 @@ export function hasCreationFlagsInArgs(
 	}
 
 	return false;
-}
-
-/**
- * Check if args contain --file flag
- */
-export function hasFileFlag(args: string[]): boolean {
-	return args.some((arg) => arg === "--file" || arg.startsWith("--file="));
-}
-
-/**
- * Get file path from args if --file flag is present
- */
-export function getFilePath(args: string[]): string | null {
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
-		if (!arg) continue;
-		if (arg === "--file" && i + 1 < args.length) {
-			const nextArg = args[i + 1];
-			return nextArg ?? null;
-		}
-		if (arg.startsWith("--file=")) {
-			return arg.substring("--file=".length);
-		}
-	}
-	return null;
 }
 
 /**
@@ -105,14 +77,10 @@ export function parseCreationFlags(
 		return result;
 	}
 
-	// Build lookup maps
+	// Build lookup map
 	const flagByName = new Map<string, CreationFlagDefinition>();
-	const flagByShortName = new Map<string, CreationFlagDefinition>();
 	for (const def of flagDefs) {
 		flagByName.set(def.name, def);
-		if (def.shortName) {
-			flagByShortName.set(def.shortName, def);
-		}
 	}
 
 	// Track usage counts for repeatable flags
@@ -147,13 +115,13 @@ export function parseCreationFlags(
 		}
 
 		// Skip --namespace flag (handled separately in executor)
-		if (flagName === "--namespace" || flagName === "-ns") {
+		if (flagName === "--namespace") {
 			i += inlineValue !== undefined ? 1 : 2;
 			continue;
 		}
 
 		// Look up flag definition
-		const def = flagByName.get(flagName) ?? flagByShortName.get(flagName);
+		const def = flagByName.get(flagName);
 		if (!def) {
 			// Unknown flag - skip but don't error (might be for different purpose)
 			i++;

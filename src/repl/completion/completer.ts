@@ -24,6 +24,8 @@ import {
 	extractUsedFlags,
 	filterUsedFlags,
 	countFlagUsage,
+	parseCreationFlagValues,
+	formatDefaultValue,
 } from "./flag-utils.js";
 import { getCreationFlags, hasCreationFlags } from "./creation-flags.js";
 
@@ -52,6 +54,7 @@ const RESOURCE_ACTIONS = new Set([
 	"patch",
 	"add-labels",
 	"remove-labels",
+	"help",
 ]);
 
 /**
@@ -188,18 +191,12 @@ export function parseInput(text: string): ParsedInput {
 	// Flags that expect values (not boolean flags)
 	const valueFlagPatterns = [
 		"--namespace",
-		"-ns",
 		"--output",
-		"-o",
 		"--name",
-		"-n",
-		"--file",
-		"-f",
 		"--limit",
 		"--label",
 		// Creation flags for healthcheck
 		"--type",
-		"-t",
 		"--interval",
 		"--timeout",
 		"--healthy-threshold",
@@ -347,6 +344,22 @@ export class Completer {
 		// Completing a flag - pass detected action for action-specific flags
 		// Also filter out flags that have already been used in the command
 		if (parsed.isCompletingFlag) {
+			// For creation actions with creation flags, use those instead of generic flags
+			if (
+				resourceCtx.resourceType &&
+				resourceCtx.action &&
+				CREATION_ACTIONS.has(resourceCtx.action) &&
+				hasCreationFlags(resourceCtx.resourceType)
+			) {
+				const creationSuggestions = this.getCreationFlagSuggestions(
+					resourceCtx.resourceType,
+					parsed.args,
+				);
+				return this.filterSuggestions(
+					creationSuggestions,
+					parsed.currentWord,
+				);
+			}
 			return this.getAvailableFlagCompletions(
 				parsed.currentWord,
 				resourceCtx.action ?? undefined,
@@ -395,6 +408,26 @@ export class Completer {
 			RESOURCE_ACTIONS.has(resourceCtx.action) &&
 			!resourceCtx.resourceType
 		) {
+			// Special handling for "help" action - suggest resource types, not instances
+			if (resourceCtx.action === "help") {
+				const domainInfo = getDomainInfo(resourceCtx.domain);
+				const suggestions: CompletionSuggestion[] = [];
+
+				if (domainInfo?.primaryResources) {
+					for (const resource of domainInfo.primaryResources) {
+						suggestions.push({
+							text: resource.name,
+							description:
+								resource.descriptionShort ||
+								resource.description,
+							category: "resource",
+						});
+					}
+				}
+
+				return suggestions;
+			}
+
 			const resourceTypes = this.getResourceTypeSuggestions(
 				resourceCtx.domain,
 			);
@@ -804,11 +837,6 @@ export class Completer {
 				description: `Output format (${OUTPUT_FORMAT_HELP})`,
 				category: "flag",
 			},
-			{
-				text: "-o",
-				description: "Output format (short)",
-				category: "flag",
-			},
 		];
 	}
 
@@ -1049,20 +1077,10 @@ export class Completer {
 		// Common flags that apply to most actions
 		const commonFlags: CompletionSuggestion[] = [
 			{ text: "--name", description: "Resource name", category: "flag" },
-			{
-				text: "-n",
-				description: "Resource name (short)",
-				category: "flag",
-			},
 			{ text: "--namespace", description: "Namespace", category: "flag" },
 			{
 				text: "--output",
 				description: `Output format (${OUTPUT_FORMAT_HELP})`,
-				category: "flag",
-			},
-			{
-				text: "-o",
-				description: "Output format (short)",
 				category: "flag",
 			},
 		];
@@ -1096,21 +1114,6 @@ export class Completer {
 					category: "flag",
 				});
 				break;
-			case "create":
-			case "apply":
-				actionFlags.push(
-					{
-						text: "--file",
-						description: "Configuration file path",
-						category: "flag",
-					},
-					{
-						text: "-f",
-						description: "Configuration file (short)",
-						category: "flag",
-					},
-				);
-				break;
 			case "delete":
 				actionFlags.push(
 					{
@@ -1131,6 +1134,73 @@ export class Completer {
 	}
 
 	/**
+	 * Priority-aware sorting function for flag suggestions.
+	 *
+	 * Sorts by priority (lower number = higher priority), then alphabetically.
+	 * This creates logical flag ordering: --name → --type → type-specific → required → optional → global
+	 *
+	 * @param a - First suggestion
+	 * @param b - Second suggestion
+	 * @returns -1 if a comes first, 1 if b comes first, 0 if equal
+	 *
+	 * Priority defaults applied before sorting:
+	 * - --name (priority 1) and --type (priority 2) explicitly set
+	 * - Type-specific flags (priority 5) - HTTP/TCP/DNS specific options
+	 * - Required flags without priority default to 10
+	 * - Optional flags without priority default to 50
+	 * - Global flags without priority default to 100
+	 *
+	 * @example
+	 * prioritySort(
+	 *   { text: "--name", priority: 1 },
+	 *   { text: "--type", priority: 2 }
+	 * ) // Returns -1 (--name comes first)
+	 *
+	 * @example
+	 * // Equal priority: alphabetical order
+	 * prioritySort(
+	 *   { text: "--zebra", priority: 10 },
+	 *   { text: "--alpha", priority: 10 }
+	 * ) // Returns 1 (--alpha comes first alphabetically)
+	 */
+	private prioritySort = (
+		a: CompletionSuggestion,
+		b: CompletionSuggestion,
+	): number => {
+		// Get priority values (should already have defaults applied)
+		const aPriority = a.priority ?? 999; // Fallback for safety
+		const bPriority = b.priority ?? 999;
+
+		// If priorities differ, lower priority comes first
+		if (aPriority !== bPriority) {
+			return aPriority - bPriority;
+		}
+
+		// Same priority: fall back to alphabetical order
+		return a.text.localeCompare(b.text);
+	};
+
+	/**
+	 * Apply default priorities based on flag group
+	 */
+	private applyDefaultPriority = (
+		suggestion: CompletionSuggestion,
+		group: "required" | "optional" | "global",
+	): CompletionSuggestion => {
+		if (suggestion.priority !== undefined) {
+			return suggestion; // Already has priority
+		}
+
+		const defaults = {
+			required: 10,
+			optional: 50,
+			global: 100,
+		};
+
+		return { ...suggestion, priority: defaults[group] };
+	};
+
+	/**
 	 * Get creation flag suggestions for a resource type
 	 * Shows flags needed to create a new resource (--name, --type, etc.)
 	 * instead of existing resource names
@@ -1138,9 +1208,17 @@ export class Completer {
 	 * Handles repeatable flags (e.g., --public-ip can be specified multiple times)
 	 * by checking maxOccurrences instead of simply filtering out used flags.
 	 *
+	 * Phase 2 Enhancement: Sorts suggestions with required flags first,
+	 * contextual flags next, and global flags last.
+	 *
+	 * Sorting order:
+	 * 1. Required flags (alphabetically)
+	 * 2. Optional contextual flags (alphabetically) - includes --file and resource-specific flags
+	 * 3. Global flags (alphabetically) - --namespace, --output, -o, -ns
+	 *
 	 * @param resourceType - The resource type being created
 	 * @param args - Current command arguments to filter out used flags
-	 * @returns Array of flag suggestions for resource creation
+	 * @returns Array of flag suggestions for resource creation, sorted by importance
 	 */
 	getCreationFlagSuggestions(
 		resourceType: string,
@@ -1149,19 +1227,54 @@ export class Completer {
 		const creationFlags = getCreationFlags(resourceType);
 		const usedFlags = extractUsedFlags(args);
 		const flagUsageCounts = countFlagUsage(args);
-		const suggestions: CompletionSuggestion[] = [];
 
-		// Add --file prominently for create/apply (allows YAML/JSON configuration)
-		if (!usedFlags.has("--file") && !usedFlags.has("-f")) {
-			suggestions.push({
-				text: "--file",
-				description: "Configuration file (YAML/JSON)",
-				category: "flag",
-			});
-		}
+		// Parse flag values for conditional filtering
+		const flagValues = parseCreationFlagValues(args);
+
+		// Get current --type value
+		const currentType = flagValues.get("--type");
+
+		// Track three groups for sorting: required, optional contextual, global
+		const requiredFlagSuggestions: CompletionSuggestion[] = [];
+		const optionalContextualSuggestions: CompletionSuggestion[] = [];
+		const globalFlagSuggestions: CompletionSuggestion[] = [];
 
 		// Add resource-specific creation flags
 		for (const flag of creationFlags) {
+			// === TYPE-BASED CONDITIONS (existing logic) ===
+			// Check conditional applicability based on --type flag
+			if (flag.applicableTypes && flag.applicableTypes.length > 0) {
+				// This flag only applies to specific types
+
+				if (!currentType) {
+					// --type not yet specified - SKIP type-specific flags
+					continue;
+				}
+
+				if (!flag.applicableTypes.includes(currentType)) {
+					// Current --type doesn't match - SKIP this flag
+					continue;
+				}
+			}
+
+			// === VALUE-BASED CONDITIONS (new logic for hierarchical flags) ===
+			// Check conditional visibility based on parent flag value
+			if (flag.conditionalOn) {
+				const parentFlagValue = flagValues.get(
+					flag.conditionalOn.flagName,
+				);
+
+				if (!parentFlagValue) {
+					// Parent flag not specified - SKIP child flags
+					continue;
+				}
+
+				if (!flag.conditionalOn.values.includes(parentFlagValue)) {
+					// Parent flag value doesn't match required values - SKIP child flag
+					continue;
+				}
+			}
+
 			// Handle repeatable flags: check if max occurrences reached
 			if (flag.isRepeatable) {
 				const count = flagUsageCounts.get(flag.name) || 0;
@@ -1169,35 +1282,114 @@ export class Completer {
 				if (count >= max) continue; // Skip if maxed out
 
 				// Repeatable flags should still be shown even if used before
-				const marker = " (repeatable)";
-				suggestions.push({
+				// Format suffix with max occurrences info if available
+				const repeatableSuffix = flag.maxOccurrences
+					? ` (repeatable, max ${flag.maxOccurrences})`
+					: " (repeatable)";
+				let desc = flag.description + repeatableSuffix;
+
+				// Prefer recommendedValue over defaultValue when both exist
+				const displayValue = flag.recommendedValue ?? flag.defaultValue;
+				if (displayValue !== undefined) {
+					const formattedDefault = formatDefaultValue(displayValue);
+					if (formattedDefault !== null) {
+						desc += ` [default: ${formattedDefault}]`;
+					}
+				}
+				optionalContextualSuggestions.push({
 					text: flag.name,
-					description: flag.description + marker,
+					description: desc,
 					category: "flag",
+					...(flag.priority !== undefined && {
+						priority: flag.priority,
+					}),
 				});
 			} else {
 				// Non-repeatable: skip if already used
 				if (usedFlags.has(flag.name)) continue;
-				if (flag.shortName && usedFlags.has(flag.shortName)) continue;
 
-				const marker = flag.required ? " (required)" : "";
-				suggestions.push({
-					text: flag.name,
-					description: flag.description + marker,
-					category: "flag",
-				});
+				if (flag.required) {
+					// Required flag not yet provided - show with "(required)" marker
+					requiredFlagSuggestions.push({
+						text: flag.name,
+						description: flag.description + " (required)",
+						category: "flag",
+						...(flag.priority !== undefined && {
+							priority: flag.priority,
+						}),
+					});
+				} else {
+					// Optional flag - add default hint if present
+					// Prefer recommendedValue over defaultValue when both exist
+					let desc = flag.description;
+					const displayValue =
+						flag.recommendedValue ?? flag.defaultValue;
+					if (displayValue !== undefined) {
+						const formattedDefault =
+							formatDefaultValue(displayValue);
+						if (formattedDefault !== null) {
+							desc += ` (default: ${formattedDefault})`;
+						}
+					}
+					optionalContextualSuggestions.push({
+						text: flag.name,
+						description: desc,
+						category: "flag",
+						...(flag.priority !== undefined && {
+							priority: flag.priority,
+						}),
+					});
+				}
 			}
 		}
 
-		// Add common flags (--namespace, --output)
-		const commonFlags = this.getCommonFlagSuggestions();
-		for (const flag of commonFlags) {
+		// Add global flags (--namespace, --output) - these go last
+		const globalFlags = this.getGlobalFlagSuggestions();
+		for (const flag of globalFlags) {
 			if (!usedFlags.has(flag.text)) {
-				suggestions.push(flag);
+				globalFlagSuggestions.push(flag);
 			}
 		}
 
-		return suggestions;
+		// Apply default priorities to all suggestions
+		const withPriorities = [
+			...requiredFlagSuggestions.map((s) =>
+				this.applyDefaultPriority(s, "required"),
+			),
+			...optionalContextualSuggestions.map((s) =>
+				this.applyDefaultPriority(s, "optional"),
+			),
+			...globalFlagSuggestions.map((s) =>
+				this.applyDefaultPriority(s, "global"),
+			),
+		];
+
+		// Sort all suggestions globally by priority
+		// This allows type-specific flags (priority 5) to appear before required flags (priority 10)
+		withPriorities.sort(this.prioritySort);
+
+		return withPriorities;
+	}
+
+	/**
+	 * Get global flag suggestions that apply to all commands
+	 * These are shown last in completion to prioritize contextual flags
+	 */
+	getGlobalFlagSuggestions(): CompletionSuggestion[] {
+		// Get namespace from session (profile default or "default")
+		const namespace = this.session?.getNamespace() ?? "default";
+		return [
+			{
+				text: "--namespace",
+				description: `Namespace (default: ${namespace})`,
+				category: "flag",
+			},
+			{
+				text: "--output",
+				description: `Output format (${OUTPUT_FORMAT_HELP})`,
+				category: "flag",
+			},
+		];
 	}
 
 	/**
@@ -1266,7 +1458,6 @@ export class Completer {
 
 		switch (flag) {
 			case "--output":
-			case "-o":
 				return ALL_OUTPUT_FORMATS.map((fmt) => ({
 					text: fmt,
 					description: `${fmt.toUpperCase()} format`,
@@ -1276,11 +1467,9 @@ export class Completer {
 				);
 
 			case "--namespace":
-			case "-ns":
 				return this.completeNamespace(valuePartial);
 
-			case "--name":
-			case "-n": {
+			case "--name": {
 				// Resource name completion - use command context for resource type
 				if (!this.session) {
 					return [];
@@ -1297,7 +1486,6 @@ export class Completer {
 				// Get namespace from --namespace flag in args, or session default
 				const nsFromFlag = this.extractFlagValue(parsed.args, [
 					"--namespace",
-					"-ns",
 				]);
 				const namespace = nsFromFlag || this.session.getNamespace();
 
@@ -1339,7 +1527,6 @@ export class Completer {
 
 			// Creation flag value completions for healthcheck
 			case "--type":
-			case "-t":
 				return [
 					{
 						text: "http",
@@ -1349,11 +1536,6 @@ export class Completer {
 					{
 						text: "tcp",
 						description: "TCP health check",
-						category: "value" as const,
-					},
-					{
-						text: "dns",
-						description: "DNS health check",
 						category: "value" as const,
 					},
 					{
@@ -1692,7 +1874,7 @@ export class Completer {
 		// Check for namespace in flags
 		for (let i = 0; i < parsed.args.length; i++) {
 			const arg = parsed.args[i];
-			if (arg === "--namespace" || arg === "-ns") {
+			if (arg === "--namespace") {
 				const nsValue = parsed.args[i + 1];
 				if (nsValue) {
 					diagnostic.namespace.fromFlag = nsValue;

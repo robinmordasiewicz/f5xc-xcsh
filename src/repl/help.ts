@@ -83,7 +83,7 @@ export function formatRootHelp(): string[] {
 		`  ${CLI_NAME} tenant_and_identity list namespace   List all namespaces`,
 		`  ${CLI_NAME} virtual get http_loadbalancer        Get a specific load balancer`,
 		`  ${CLI_NAME} dns list                             List DNS zones`,
-		`  ${CLI_NAME} waf list -ns prod                    List WAF policies in prod`,
+		`  ${CLI_NAME} waf list --namespace prod            List WAF policies in prod`,
 		"",
 		...formatDomainsSection(),
 		"",
@@ -125,11 +125,11 @@ export function formatRootHelp(): string[] {
 export function formatGlobalFlags(): string[] {
 	return [
 		"GLOBAL FLAGS",
-		"  -v, --version         Show version number",
-		"  -h, --help            Show this help",
+		"  --version             Show version number",
+		"  --help                Show this help",
 		"  --no-color            Disable color output",
-		`  -o, --output <fmt>    Output format (${OUTPUT_FORMAT_HELP})`,
-		"  -ns, --namespace <ns> Target namespace",
+		`  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`,
+		"  --namespace <ns>      Target namespace",
 		"  --spec                Output command specification as JSON (for AI)",
 	];
 }
@@ -310,7 +310,7 @@ export function formatDomainHelp(domain: DomainInfo): string[] {
 	output.push(`  ${CLI_NAME} ${domain.name} list`);
 	output.push(`  ${CLI_NAME} ${domain.name} get my-resource`);
 	output.push(
-		`  ${CLI_NAME} ${domain.name} create my-resource -f config.yaml`,
+		`  ${CLI_NAME} ${domain.name} create --name my-resource --type http`,
 	);
 	output.push(`  ${CLI_NAME} ${domain.name} delete my-resource`);
 	output.push("");
@@ -382,13 +382,13 @@ export function formatActionHelp(domainName: string, action: string): string[] {
 	// Default usage patterns
 	const usagePatterns: Record<string, string> = {
 		list: `${CLI_NAME} ${domainName} list [--limit N] [--label key=value]`,
-		get: `${CLI_NAME} ${domainName} get <name> [-o json|yaml|table]`,
-		create: `${CLI_NAME} ${domainName} create <name> -f <file.yaml>`,
+		get: `${CLI_NAME} ${domainName} get <name> [--output json|yaml|table]`,
+		create: `${CLI_NAME} ${domainName} create <resource-type> --name <name> [options]`,
 		delete: `${CLI_NAME} ${domainName} delete <name>`,
-		replace: `${CLI_NAME} ${domainName} replace <name> -f <file.yaml>`,
-		apply: `${CLI_NAME} ${domainName} apply -f <file.yaml>`,
+		replace: `${CLI_NAME} ${domainName} replace <resource-type> --name <name> [options]`,
+		apply: `${CLI_NAME} ${domainName} apply <resource-type> --name <name> [options]`,
 		status: `${CLI_NAME} ${domainName} status <name>`,
-		patch: `${CLI_NAME} ${domainName} patch <name> -f <patch.yaml>`,
+		patch: `${CLI_NAME} ${domainName} patch <resource-type> --name <name> [options]`,
 		"add-labels": `${CLI_NAME} ${domainName} add-labels <name> key=value`,
 		"remove-labels": `${CLI_NAME} ${domainName} remove-labels <name> key`,
 	};
@@ -499,12 +499,11 @@ export function formatActionHelp(domainName: string, action: string): string[] {
 	}
 
 	output.push("OPTIONS");
-	output.push("  -n, --name <name>     Resource name");
-	output.push("  -ns, --namespace <ns> Target namespace");
+	output.push("  --name <name>         Resource name");
+	output.push("  --namespace <ns>      Target namespace");
 	output.push(
-		`  -o, --output <fmt>    Output format (${OUTPUT_FORMAT_HELP})`,
+		`  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`,
 	);
-	output.push("  -f, --file <path>     Configuration file");
 	output.push("");
 
 	// External documentation link (from upstream enrichment)
@@ -621,7 +620,7 @@ export function formatActionsHelp(): string[] {
 		"",
 		"  list              List all resources in the namespace",
 		"  get               Get a specific resource by name",
-		"  create            Create a new resource from a file",
+		"  create            Create a new resource with flags",
 		"  delete            Delete a resource by name",
 		"  replace           Replace a resource configuration",
 		"  apply             Apply configuration (create or update)",
@@ -636,7 +635,7 @@ export function formatActionsHelp(): string[] {
 		"EXAMPLES",
 		`  ${CLI_NAME} dns list`,
 		`  ${CLI_NAME} lb get my-loadbalancer`,
-		`  ${CLI_NAME} waf create my-policy -f policy.yaml`,
+		`  ${CLI_NAME} virtual create healthcheck --name my-hc --type http`,
 		"",
 	];
 }

@@ -5,6 +5,105 @@ All notable changes to xcsh (F5 Distributed Cloud Shell) will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added - Healthcheck Enhancements (API Spec v2.0.31)
+
+**New Features**:
+
+- ✨ New `--headers` flag for custom HTTP headers
+  - Format: `--headers "Key:Value"` (repeatable, max 16)
+  - Different from `--request-headers-to-remove` (which removes headers)
+  - Example: `--headers "X-API-Key:secret123" --headers "X-Debug:true"`
+
+- ✨ New `--expected-status-codes` flag with repeatable array and range support
+  - Repeatable array syntax: `--expected-status-codes 200 --expected-status-codes 201`
+  - Supports ranges: `--expected-status-codes 200-299`
+  - Max 16 codes/ranges
+
+**Enhanced Documentation**:
+
+- 📝 Server defaults documented for 6 fields (jitter_percent, expected_status_codes, headers, request_headers_to_remove, use_http2, use_origin_server_name)
+- 📝 Recommended production values added to flag descriptions:
+  - `--interval 15` (seconds)
+  - `--timeout 3` (seconds)
+  - `--healthy-threshold 3`
+  - `--unhealthy-threshold 1`
+  - `--jitter-percent 30`
+
+**Technical Improvements**:
+
+- ⚙️  jitter_percent now correctly included in API requests
+- ⚙️  Added `recommendedValue` field to type system for production best practices
+
+### Changed
+
+- ♻️  Updated healthcheck flag descriptions with recommended values
+- ✨ **Simplified Healthcheck Creation**: Made 4 flags optional with production-ready defaults
+  - **Previous behavior**: Required `--interval`, `--timeout`, `--healthy-threshold`, `--unhealthy-threshold` on every create
+  - **New behavior**: Smart defaults applied automatically
+  - **Defaults**:
+    - `--interval`: 15 seconds
+    - `--timeout`: 3 seconds
+    - `--healthy-threshold`: 3
+    - `--unhealthy-threshold`: 1
+  - **Examples**:
+
+    ```bash
+    # Minimal command with defaults
+    create healthcheck --name jazz --type tcp
+
+    # Override specific values as needed
+    create healthcheck --name jazz --type tcp --interval 30 --timeout 5
+    ```
+
+### Removed - BREAKING CHANGES
+
+- 🔴 **BREAKING**: Removed `--expected-status` flag
+  - Replaced by `--expected-status-codes` (repeatable array with range support)
+  - **Migration required**: See examples below
+
+### Migration Guide
+
+**⚠️ BREAKING CHANGE**: The `--expected-status` flag has been removed.
+
+**Old Syntax** (no longer supported):
+
+```bash
+create healthcheck --expected-status "200,201,204"  # ❌ WILL NOT WORK
+```
+
+**New Syntax** (required):
+
+```bash
+# Individual codes
+create healthcheck \
+  --expected-status-codes 200 \
+  --expected-status-codes 201 \
+  --expected-status-codes 204
+
+# Or with ranges
+create healthcheck \
+  --expected-status-codes 200-299 \
+  --expected-status-codes 404
+```
+
+**Custom Headers** (new feature):
+
+```bash
+create healthcheck \
+  --type http \
+  --name my-hc \
+  --interval 15 \
+  --timeout 3 \
+  --healthy-threshold 3 \
+  --unhealthy-threshold 1 \
+  --path /health \
+  --headers "X-API-Key:secret123" \
+  --headers "X-Request-ID:12345" \
+  --expected-status-codes 200-299
+```
+
 ## [5.1.0] - 2025-12-24
 
 ### Added

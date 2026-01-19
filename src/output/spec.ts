@@ -92,7 +92,6 @@ export function formatSpec(spec: CommandSpec): string {
 export const GLOBAL_FLAGS: FlagSpec[] = [
 	{
 		name: "--output",
-		alias: "-o",
 		description: "Output format",
 		type: "string",
 		default: "table",
@@ -100,7 +99,6 @@ export const GLOBAL_FLAGS: FlagSpec[] = [
 	},
 	{
 		name: "--namespace",
-		alias: "-ns",
 		description: "Namespace to use for the operation",
 		type: "string",
 	},
@@ -117,13 +115,11 @@ export const GLOBAL_FLAGS: FlagSpec[] = [
 	},
 	{
 		name: "--help",
-		alias: "-h",
 		description: "Show help information",
 		type: "boolean",
 	},
 	{
 		name: "--version",
-		alias: "-v",
 		description: "Show version number",
 		type: "boolean",
 	},

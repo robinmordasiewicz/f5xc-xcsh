@@ -144,6 +144,7 @@ export const validActions = new Set([
 	"patch",
 	"add-labels",
 	"remove-labels",
+	"help",
 ]);
 
 /**

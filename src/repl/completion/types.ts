@@ -21,6 +21,7 @@ export interface CompletionSuggestion {
 		| "resource"
 		| "resource-name";
 	isPrimary?: boolean; // For primary resources - renders with brighter styling
+	priority?: number; // For priority-based sorting
 }
 
 /**
