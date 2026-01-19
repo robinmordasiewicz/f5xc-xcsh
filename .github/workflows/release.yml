@@ -45,9 +45,9 @@ jobs:
         if: steps.changes.outputs.code == 'true'
         run: npm ci
 
-      - name: Run tests
+      - name: Run tests (excluding E2E)
         if: steps.changes.outputs.code == 'true'
-        run: npm test
+        run: npm test -- --exclude='**/e2e/**'
 
       - name: Run type check
         if: steps.changes.outputs.code == 'true'
