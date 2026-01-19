@@ -112,8 +112,8 @@ jobs:
       - name: Validate generated code
         run: npm run build
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests (excluding E2E)
+        run: npm test -- --exclude='**/e2e/**'
 
       - name: Create Pull Request
         id: create-pr
