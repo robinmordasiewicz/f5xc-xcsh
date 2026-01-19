@@ -1,6 +1,11 @@
 /**
  * Whoami Formatter
  * Format whoami info for display in various formats
+ *
+ * @deprecated This module is deprecated. Use formatConnectionTable from
+ * "../profile/connection-table.js" for consistent "Connection Summary" display.
+ * The functions here are kept for backward compatibility but should not be used
+ * for new code.
  */
 
 import type { WhoamiInfo, WhoamiOptions } from "./types.js";
@@ -10,6 +15,8 @@ import { colors } from "../../../branding/index.js";
  * Format whoami info as text for display
  * Returns array of lines to display
  * Omits fields that are undefined (no "Unknown" placeholders)
+ *
+ * @deprecated Use formatConnectionTable from "../profile/connection-table.js" instead.
  */
 export function formatWhoami(
 	info: WhoamiInfo,
@@ -142,6 +149,8 @@ function formatWhoamiBox(info: WhoamiInfo): string[] {
 /**
  * Format whoami for compact banner display
  * Single line or minimal output
+ *
+ * @deprecated Use formatConnectionTable from "../profile/connection-table.js" instead.
  */
 export function formatWhoamiCompact(info: WhoamiInfo): string {
 	if (!info.isAuthenticated) {
