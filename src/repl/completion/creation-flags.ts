@@ -78,6 +78,15 @@ export interface CreationFlagDefinition {
 	 * @default 10 for required flags, 50 for optional flags
 	 */
 	priority?: number;
+	/**
+	 * OneOf group name for mutually exclusive flags.
+	 * Flags with the same oneOfGroup value cannot be used together.
+	 * Based on F5 XC API x-ves-oneof-field annotations.
+	 *
+	 * @example
+	 * oneOfGroup: "host_header_choice" // Cannot use with other flags in same group
+	 */
+	oneOfGroup?: string;
 }
 
 /**
@@ -191,12 +200,14 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	},
 	{
 		name: "--host-header",
-		description: "Host header value",
+		description:
+			"Custom Host header value (exclusive with --use-origin-server-name)",
 		required: false,
 		hasValue: true,
 		valueType: "string",
 		applicableTypes: ["http"],
-		priority: 5, // Type-specific flags appear after --type but before other required
+		priority: 5,
+		oneOfGroup: "host_header_choice",
 	},
 	{
 		name: "--headers",
@@ -213,13 +224,15 @@ export const HEALTHCHECK_CREATION_FLAGS: CreationFlagDefinition[] = [
 	},
 	{
 		name: "--use-origin-server-name",
-		description: "Use origin server hostname",
+		description:
+			"Use origin server hostname as Host header (exclusive with --host-header, recommended)",
 		required: false,
 		hasValue: false,
 		applicableTypes: ["http"],
-		priority: 5, // Type-specific flags appear after --type but before other required
+		priority: 5,
 		hasServerDefault: true,
 		defaultValue: {},
+		oneOfGroup: "host_header_choice",
 	},
 	{
 		name: "--use-http2",

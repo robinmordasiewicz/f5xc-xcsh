@@ -26,7 +26,8 @@ export interface HealthcheckRequestBody {
 	spec: {
 		http_health_check?: {
 			path?: string;
-			use_origin_server_name?: Record<string, unknown>; // Empty object choice field
+			use_origin_server_name?: Record<string, unknown>; // Empty object choice field (host_header_choice OneOf)
+			host_header?: string; // Custom host header value (host_header_choice OneOf)
 			use_http2?: boolean;
 			expected_status_codes?: string[];
 			headers?: Record<string, string>;
@@ -123,10 +124,17 @@ export function buildHealthcheckRequest(
 				path: path,
 			};
 
-			// use_origin_server_name: Empty object type (choice field)
-			// Only include when flag is set
+			// host_header_choice OneOf: Only one should be set
+			// - use_origin_server_name: Empty object type (uses origin server hostname)
+			// - host_header: String value (custom Host header)
+			// Mutual exclusivity is validated in validateHealthcheckFlags()
 			if (isFlagSet(flags, "--use-origin-server-name")) {
 				request.spec.http_health_check.use_origin_server_name = {};
+			} else {
+				const hostHeader = getFlagValue(flags, "--host-header");
+				if (hostHeader) {
+					request.spec.http_health_check.host_header = hostHeader;
+				}
 			}
 
 			// use_http2: Boolean type
@@ -155,14 +163,9 @@ export function buildHealthcheckRequest(
 			}
 
 			// Parse custom headers from --headers flags
+			// Note: Host header is handled separately via host_header_choice OneOf above
 			const customHeaders = getFlagValues(flags, "--headers");
 			const headersObj: Record<string, string> = {};
-
-			// Add Host header if specified via --host-header
-			const hostHeader = getFlagValue(flags, "--host-header");
-			if (hostHeader) {
-				headersObj.Host = hostHeader;
-			}
 
 			// Parse and add custom headers from --headers flags
 			for (const headerStr of customHeaders) {
@@ -322,6 +325,16 @@ export function validateHealthcheckFlags(
 
 	// Type-specific validation
 	if (type === "http") {
+		// Check for mutually exclusive host header options (host_header_choice OneOf)
+		if (
+			isFlagSet(flags, "--use-origin-server-name") &&
+			getFlagValue(flags, "--host-header")
+		) {
+			errors.push(
+				"--use-origin-server-name and --host-header are mutually exclusive",
+			);
+		}
+
 		// Path should start with /
 		const path = getFlagValue(flags, "--path");
 		if (path && !path.startsWith("/")) {
