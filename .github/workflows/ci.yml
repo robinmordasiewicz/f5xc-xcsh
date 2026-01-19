@@ -141,7 +141,7 @@ jobs:
       - name: Check if F5 XC credentials are available
         id: check
         run: |
-          if [ -n "${{ secrets.F5_XC_API_TOKEN }}" ]; then
+          if [ -n "${{ secrets.F5XC_API_TOKEN }}" ]; then
             echo "has-credentials=true" >> $GITHUB_OUTPUT
             echo "✅ F5 XC credentials available - E2E tests will run"
           else
@@ -170,7 +170,7 @@ jobs:
       - name: Configure F5 XC credentials
         run: |
           mkdir -p ~/.xcsh
-          echo "${{ secrets.F5_XC_API_TOKEN }}" > ~/.xcsh/token
+          echo "${{ secrets.F5XC_API_TOKEN }}" > ~/.xcsh/token
 
       - name: Run E2E tests
         run: npm test -- tests/e2e/ --run
