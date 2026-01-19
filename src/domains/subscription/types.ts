@@ -140,7 +140,7 @@ export interface QuotaLimitsResponse {
 }
 
 /**
- * Quota Usage - Current usage against limits
+ * Quota Usage - Current usage against limits (normalized format)
  */
 export interface QuotaUsage {
 	name: string;
@@ -153,9 +153,25 @@ export interface QuotaUsage {
 }
 
 /**
- * Quota Usage Response
+ * Raw quota item from API response
+ */
+export interface RawQuotaItem {
+	limit: { maximum: number };
+	usage: { current: number };
+	api_limit?: unknown;
+	display_name?: string;
+	description?: string;
+}
+
+/**
+ * Quota Usage Response from API
+ *
+ * The API returns a map of quota names to quota data objects,
+ * wrapped in a "quota_usage" key.
  */
 export interface QuotaUsageResponse {
+	quota_usage?: Record<string, RawQuotaItem>;
+	/** Normalized usage array (populated after transformation) */
 	usage?: QuotaUsage[];
 	tenant_name?: string;
 	as_of?: string;

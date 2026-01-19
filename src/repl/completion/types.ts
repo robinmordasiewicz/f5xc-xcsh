@@ -23,6 +23,27 @@ export interface CompletionSuggestion {
 		| "context"; // Non-selectable informational items (e.g., showing taken names)
 	isPrimary?: boolean; // For primary resources - renders with brighter styling
 	priority?: number; // For priority-based sorting
+	quotaLevel?: "none" | "warning" | "error"; // For quota status coloring in descriptions
+	quotaInfo?: string; // Quota display info (e.g., "149/150") - shown right-justified
+}
+
+/**
+ * Resource quota information for status line display
+ */
+export interface ResourceQuotaInfo {
+	resourceType: string; // e.g., "healthcheck"
+	displayName: string; // e.g., "Health Checks"
+	current: number;
+	limit: number;
+	level: "none" | "warning" | "error";
+}
+
+/**
+ * Completion result with suggestions and optional metadata
+ */
+export interface CompletionResult {
+	suggestions: CompletionSuggestion[];
+	resourceQuotaInfo?: ResourceQuotaInfo; // Quota for current resource type (when showing creation flags)
 }
 
 /**

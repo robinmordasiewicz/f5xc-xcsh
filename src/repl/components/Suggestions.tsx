@@ -15,6 +15,19 @@ export interface Suggestion {
 	description?: string; // Optional description
 	category?: string; // e.g., "domain", "action", "flag"
 	isPrimary?: boolean; // Primary resources get brighter styling
+	quotaLevel?: "none" | "warning" | "error"; // Quota status for coloring
+	quotaInfo?: string; // Quota display info (e.g., "149/150") - shown right-justified
+}
+
+/**
+ * Resource quota information for status line display
+ */
+export interface ResourceQuotaInfo {
+	resourceType: string; // e.g., "healthcheck"
+	displayName: string; // e.g., "Health Checks"
+	current: number;
+	limit: number;
+	level: "none" | "warning" | "error";
 }
 
 interface SuggestionsProps {
@@ -25,6 +38,7 @@ interface SuggestionsProps {
 	onCancel: () => void;
 	maxVisible?: number;
 	isActive?: boolean;
+	resourceQuotaInfo?: ResourceQuotaInfo; // Quota info for status line
 }
 
 /**
@@ -48,6 +62,27 @@ function getCategoryColor(category?: string): string {
 }
 
 /**
+ * Get quota-based color for description text
+ * Returns null if no quota-specific coloring needed
+ */
+function getQuotaColor(
+	quotaLevel?: "none" | "warning" | "error",
+): string | null {
+	if (quotaLevel === "error") return "#CA260A"; // Red (matches brand)
+	if (quotaLevel === "warning") return "#ffc107"; // Yellow (matches flag color)
+	return null; // Use default coloring
+}
+
+/**
+ * Get quota indicator emoji based on level
+ */
+function getQuotaIndicator(quotaLevel?: "none" | "warning" | "error"): string {
+	if (quotaLevel === "error") return " ❌";
+	if (quotaLevel === "warning") return " ⚠️";
+	return "";
+}
+
+/**
  * Single suggestion item
  */
 function SuggestionItem({
@@ -63,32 +98,54 @@ function SuggestionItem({
 	isContextOnly?: boolean;
 }): React.ReactElement {
 	const categoryColor = getCategoryColor(suggestion.category);
+	const quotaColor = getQuotaColor(suggestion.quotaLevel);
+	const quotaIndicator = getQuotaIndicator(suggestion.quotaLevel);
 
 	return (
-		<Box>
-			{/* Selection indicator - hide for context-only mode (informational lists) */}
-			{isContextOnly ? (
-				<Text>{"   "}</Text>
-			) : (
-				<Text color={isSelected ? "#CA260A" : "#333333"}>
-					{isSelected ? "▶ " : "   "}
-				</Text>
-			)}
+		<Box justifyContent="space-between" width="100%">
+			{/* Left side: Selection indicator + Label + Description */}
+			<Box>
+				{/* Selection indicator - hide for context-only mode (informational lists) */}
+				{isContextOnly ? (
+					<Text>{"   "}</Text>
+				) : (
+					<Text color={isSelected ? "#CA260A" : "#333333"}>
+						{isSelected ? "▶ " : "   "}
+					</Text>
+				)}
 
-			{/* Label with category color - padded to align descriptions */}
-			<Text color={categoryColor} bold={isSelected} inverse={isSelected}>
-				{suggestion.label.padEnd(maxLabelWidth)}
-			</Text>
-
-			{/* Description if present - primary resources get brighter color */}
-			{suggestion.description && (
+				{/* Label with category color - padded to align descriptions */}
 				<Text
-					color={suggestion.isPrimary ? "#ffffff" : "#666666"}
-					bold={suggestion.isPrimary || false}
+					color={categoryColor}
+					bold={isSelected}
+					inverse={isSelected}
 				>
-					{" - "}
-					{suggestion.description}
+					{suggestion.label.padEnd(maxLabelWidth)}
 				</Text>
+
+				{/* Description if present - primary resources get brighter color */}
+				{suggestion.description && (
+					<Text
+						color={suggestion.isPrimary ? "#ffffff" : "#666666"}
+						bold={suggestion.isPrimary || false}
+					>
+						{" - "}
+						{suggestion.description}
+					</Text>
+				)}
+			</Box>
+
+			{/* Right side: Quota info (if present) */}
+			{suggestion.quotaInfo && (
+				<Box marginLeft={2}>
+					<Text
+						color={quotaColor ?? "#666666"}
+						bold={suggestion.quotaLevel === "error"}
+					>
+						({suggestion.quotaInfo}
+						{quotaIndicator})
+					</Text>
+				</Box>
 			)}
 		</Box>
 	);
@@ -106,6 +163,7 @@ export function Suggestions({
 	onCancel,
 	maxVisible = 20,
 	isActive = true,
+	resourceQuotaInfo,
 }: SuggestionsProps): React.ReactElement | null {
 	// Detect if all suggestions are context-only (informational, non-selectable)
 	const isContextOnlyMode = suggestions.every(
@@ -211,12 +269,25 @@ export function Suggestions({
 			)}
 
 			{/* Help text - different for context-only mode */}
-			<Box marginTop={1}>
+			<Box marginTop={1} justifyContent="space-between" width="100%">
 				<Text color="#666666" dimColor>
 					{isContextOnlyMode
 						? "↑↓: scroll | Esc: close"
 						: "Tab/→: select | Enter: execute | ↑↓: navigate | Esc: cancel"}
 				</Text>
+				{/* Resource quota info in status line */}
+				{resourceQuotaInfo && (
+					<Text
+						color={
+							getQuotaColor(resourceQuotaInfo.level) ?? "#666666"
+						}
+						bold={resourceQuotaInfo.level === "error"}
+					>
+						{resourceQuotaInfo.displayName}:{" "}
+						{resourceQuotaInfo.current}/{resourceQuotaInfo.limit}
+						{getQuotaIndicator(resourceQuotaInfo.level)}
+					</Text>
+				)}
 			</Box>
 		</Box>
 	);

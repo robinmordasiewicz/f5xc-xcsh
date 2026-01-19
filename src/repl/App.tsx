@@ -65,14 +65,30 @@ function toUISuggestions(
 		text: string;
 		description: string;
 		category?: string;
+		isPrimary?: boolean;
+		quotaLevel?: "none" | "warning" | "error";
+		quotaInfo?: string;
 	}>,
 ): Suggestion[] {
-	return suggestions.map((s) => ({
-		label: s.text,
-		value: s.text,
-		description: s.description,
-		category: s.category ?? "builtin", // Provide default to avoid undefined
-	}));
+	return suggestions.map((s) => {
+		const suggestion: Suggestion = {
+			label: s.text,
+			value: s.text,
+			description: s.description,
+			category: s.category ?? "builtin", // Provide default to avoid undefined
+		};
+		// Only set optional properties if they have values
+		if (s.isPrimary !== undefined) {
+			suggestion.isPrimary = s.isPrimary;
+		}
+		if (s.quotaLevel !== undefined) {
+			suggestion.quotaLevel = s.quotaLevel;
+		}
+		if (s.quotaInfo !== undefined) {
+			suggestion.quotaInfo = s.quotaInfo;
+		}
+		return suggestion;
+	});
 }
 
 /**
@@ -759,6 +775,12 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 								onCancel={completion.hide}
 								maxVisible={20}
 								isActive={false} // Let App handle keyboard
+								{...(completion.resourceQuotaInfo
+									? {
+											resourceQuotaInfo:
+												completion.resourceQuotaInfo,
+										}
+									: {})}
 							/>
 						) : (
 							<StatusBar

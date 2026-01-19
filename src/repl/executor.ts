@@ -1623,6 +1623,45 @@ async function executeAPICommand(
 					};
 				}
 
+				// Quota pre-check for create operations
+				if (action === "create" && effectiveResourceType) {
+					const { SubscriptionClient } =
+						await import("../domains/subscription/client.js");
+					const { checkQuotaBeforeCreate, formatQuotaWarning } =
+						await import("../quota/index.js");
+
+					const subscriptionClient = new SubscriptionClient(client);
+					const forceFlag = args.some(
+						(a) => a === "--force" || a === "-f",
+					);
+					const quotaResult = await checkQuotaBeforeCreate(
+						subscriptionClient,
+						{
+							resourceType: effectiveResourceType,
+							namespace: effectiveNamespace,
+							force: forceFlag,
+						},
+					);
+
+					if (quotaResult.level !== "none") {
+						const quotaWarningLines =
+							formatQuotaWarning(quotaResult);
+
+						if (!quotaResult.proceed) {
+							return {
+								output: quotaWarningLines,
+								shouldExit: false,
+								shouldClear: false,
+								contextChanged: false,
+								error: "Quota exceeded",
+							};
+						}
+
+						// Show warning before proceeding
+						warningOutput.push(...quotaWarningLines, "");
+					}
+				}
+
 				// Execute the API call
 				if (action === "create") {
 					const response = await client.post(apiPath, requestBody);
