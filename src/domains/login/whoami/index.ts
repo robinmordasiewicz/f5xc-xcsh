@@ -6,7 +6,10 @@
 import type { CommandDefinition } from "../../registry.js";
 import { successResult, errorResult } from "../../registry.js";
 import { getWhoamiInfo } from "./service.js";
-import { formatWhoami } from "./formatter.js";
+import {
+	buildConnectionInfo,
+	formatConnectionTable,
+} from "../profile/connection-table.js";
 import {
 	parseDomainOutputFlags,
 	formatKeyValueOutput,
@@ -16,6 +19,7 @@ import type { WhoamiInfo } from "./types.js";
 // Re-export types and utilities for external use (e.g., Banner)
 export type { WhoamiInfo, WhoamiOptions } from "./types.js";
 export { getWhoamiInfo, getWhoamiInfoBasic } from "./service.js";
+// Deprecated: Use formatConnectionTable from connection-table.js instead
 export { formatWhoami, formatWhoamiCompact } from "./formatter.js";
 
 /**
@@ -41,6 +45,7 @@ function whoamiToKeyValue(
 
 /**
  * Show command - displays connection and identity information
+ * Uses the unified Connection Summary format for consistency
  */
 export const whoamiCommand: CommandDefinition = {
 	name: "show",
@@ -75,13 +80,25 @@ export const whoamiCommand: CommandDefinition = {
 				return successResult(
 					formatKeyValueOutput(keyValueData, {
 						...options,
-						title: "Connection Info",
+						title: "Connection Summary",
 					}),
 				);
 			}
 
-			// Table format (default) - use the original beautiful box formatter
-			const output = formatWhoami(info);
+			// Table format (default) - use unified Connection Summary format
+			const connectionInfo = buildConnectionInfo(
+				session.getActiveProfileName() || "(environment)",
+				session.getServerUrl(),
+				session.isAuthenticated(),
+				session.getNamespace(),
+				!session.isOfflineMode(),
+				session.isTokenValidated(),
+				session.getValidationError() || undefined,
+				session.getAuthSource() || undefined,
+				session.getEnvVarsPresent(),
+			);
+
+			const output = formatConnectionTable(connectionInfo);
 			return successResult(output);
 		} catch (error) {
 			return errorResult(

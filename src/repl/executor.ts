@@ -13,7 +13,10 @@ import {
 	getDomainAliases,
 } from "../domains/index.js";
 import { extensionRegistry } from "../extensions/index.js";
-import { getWhoamiInfo, formatWhoami } from "../domains/login/whoami/index.js";
+import {
+	buildConnectionInfo,
+	formatConnectionTable,
+} from "../domains/login/profile/connection-table.js";
 import { APIError } from "../api/index.js";
 import {
 	formatDomainOutput,
@@ -391,9 +394,9 @@ function executeBuiltin(
 	}
 
 	// Show current user and connection info
+	// Uses unified Connection Summary format for consistency
 	if (command === "whoami" || command.startsWith("whoami ")) {
-		// Parse flags from command with quote handling
-		const parts = parseInputArgs(command).slice(1); // Skip "whoami"
+		// Use pre-parsed args from cmd (already parsed by parseCommand)
 		const options: {
 			includeQuotas?: boolean;
 			includeAddons?: boolean;
@@ -401,7 +404,7 @@ function executeBuiltin(
 			json?: boolean;
 		} = {};
 
-		for (const arg of parts) {
+		for (const arg of cmd.args) {
 			const lowerArg = arg.toLowerCase();
 			switch (lowerArg) {
 				case "--quota":
@@ -425,24 +428,47 @@ function executeBuiltin(
 			}
 		}
 
-		// getWhoamiInfo is async, but executeBuiltin is sync
-		// Return a promise-based result that will be handled by the caller
-		return getWhoamiInfo(session, options)
-			.then((info) => ({
-				output: formatWhoami(info, options),
+		// Build connection info using the unified format
+		// All data comes from session, no async API call needed
+		const connectionInfo = buildConnectionInfo(
+			session.getActiveProfileName() || "(environment)",
+			session.getServerUrl(),
+			session.isAuthenticated(),
+			session.getNamespace(),
+			!session.isOfflineMode(),
+			session.isTokenValidated(),
+			session.getValidationError() || undefined,
+			session.getAuthSource() || undefined,
+			session.getEnvVarsPresent(),
+		);
+
+		// Handle JSON output format
+		if (options.json) {
+			const jsonOutput = {
+				profileName: connectionInfo.profileName,
+				tenant: connectionInfo.tenant,
+				apiUrl: connectionInfo.apiUrl,
+				namespace: connectionInfo.namespace,
+				isAuthenticated: connectionInfo.hasToken,
+				isConnected: connectionInfo.isConnected,
+				isValidated: connectionInfo.isValidated,
+				authSource: connectionInfo.authSource,
+			};
+			return {
+				output: [JSON.stringify(jsonOutput, null, 2)],
 				shouldExit: false,
 				shouldClear: false,
 				contextChanged: false,
-			}))
-			.catch((error: unknown) => ({
-				output: [
-					`Failed to get whoami info: ${error instanceof Error ? error.message : "Unknown error"}`,
-				],
-				shouldExit: false,
-				shouldClear: false,
-				contextChanged: false,
-				error: "whoami failed",
-			}));
+			};
+		}
+
+		// Table format (default) - use unified Connection Summary
+		return {
+			output: formatConnectionTable(connectionInfo),
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+		};
 	}
 
 	// Debug completion system
