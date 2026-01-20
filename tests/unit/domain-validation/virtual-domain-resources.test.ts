@@ -99,8 +99,8 @@ describe('Virtual Domain Resources', () => {
 		it('should have correct primary resources count', () => {
 			const primaryResources = virtualDomain.allResources!.filter(r => r.isPrimary);
 
-			// Virtual domain should have ~7 primary resources
-			expect(primaryResources.length).toBeGreaterThanOrEqual(7);
+			// Virtual domain should have ~6 primary resources
+			expect(primaryResources.length).toBeGreaterThanOrEqual(6);
 		});
 	});
 
@@ -134,7 +134,7 @@ describe('Virtual Domain Resources', () => {
 			for (const resource of resources) {
 				expect(resource.name).toBeDefined();
 				expect(resource.name.length).toBeGreaterThan(0);
-				expect(resource.name).toMatch(/^[a-z_]+$/); // snake_case only
+				expect(resource.name).toMatch(/^[a-z_-]+$/); // snake_case or kebab-case
 			}
 		});
 

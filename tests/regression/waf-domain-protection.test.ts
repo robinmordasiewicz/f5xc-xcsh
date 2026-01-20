@@ -95,7 +95,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 
 	describe('CRITICAL: No WAF References', () => {
 		it('REGRESSION: Domain keys must not include WAF', () => {
-			const domainKeys = Object.keys(generatedDomains);
+			const domainKeys = Array.from(generatedDomains.keys());
 
 			for (const key of domainKeys) {
 				expect(key).not.toBe('waf');
@@ -104,7 +104,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 		});
 
 		it('REGRESSION: Domain display names must not be WAF', () => {
-			for (const [name, domain] of Object.entries(generatedDomains)) {
+			for (const [name, domain] of generatedDomains.entries()) {
 				expect(domain.displayName).not.toBe('WAF');
 				expect(domain.displayName.toLowerCase()).not.toBe('waf');
 			}

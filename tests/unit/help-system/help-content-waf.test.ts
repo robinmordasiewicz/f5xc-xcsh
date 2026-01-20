@@ -133,7 +133,7 @@ describe('Help System - WAF Removal', () => {
 		});
 
 		it('should not have WAF domain at all', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 			expect(domainNames).not.toContain('waf');
 		});
 	});
@@ -170,7 +170,7 @@ describe('Help System - WAF Removal', () => {
 			const helpText = help.join('\n');
 
 			// Check that domains mentioned in help actually exist
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 
 			// Help should reference existing domains
 			for (const domainName of domainNames) {

@@ -95,20 +95,20 @@ describe('Domain Registry', () => {
 
 	describe('Domain Resources', () => {
 		it('should have all domains with resources', () => {
-			for (const [name, domain] of Object.entries(generatedDomains)) {
+			for (const [name, domain] of generatedDomains.entries()) {
 				expect(domain.allResources).toBeDefined();
 				expect(Array.isArray(domain.allResources)).toBe(true);
 			}
 		});
 
 		it('should have no domain with zero resources', () => {
-			for (const [name, domain] of Object.entries(generatedDomains)) {
+			for (const [name, domain] of generatedDomains.entries()) {
 				expect(domain.allResources!.length).toBeGreaterThan(0);
 			}
 		});
 
 		it('should have resources with valid structures', () => {
-			for (const [domainName, domain] of Object.entries(generatedDomains)) {
+			for (const [domainName, domain] of generatedDomains.entries()) {
 				for (const resource of domain.allResources || []) {
 					expect(resource.name).toBeDefined();
 					expect(resource.tier).toBeDefined();
@@ -140,14 +140,14 @@ describe('Domain Registry', () => {
 
 	describe('Domain Consistency', () => {
 		it('should have unique domain names', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 			const uniqueNames = new Set(domainNames);
 
 			expect(uniqueNames.size).toBe(domainNames.length);
 		});
 
 		it('should have consistent naming between key and name', () => {
-			for (const [key, domain] of Object.entries(generatedDomains)) {
+			for (const [key, domain] of generatedDomains.entries()) {
 				expect(domain.name).toBe(key);
 			}
 		});
@@ -164,7 +164,7 @@ describe('Domain Registry', () => {
 				'Storage',
 			];
 
-			for (const [name, domain] of Object.entries(generatedDomains)) {
+			for (const [name, domain] of generatedDomains.entries()) {
 				if (domain.category) {
 					// Category should be one of the known categories or undefined
 					expect([...validCategories, undefined]).toContain(domain.category);
@@ -179,7 +179,7 @@ describe('Domain Registry', () => {
 		});
 
 		it('REGRESSION: WAF domain must stay removed', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 			expect(domainNames).not.toContain('waf');
 		});
 
