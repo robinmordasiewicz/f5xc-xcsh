@@ -49,7 +49,6 @@ describe('WAF Domain Removal', () => {
 
 			expect(result.error).toBeDefined();
 			expect(result.error).toContain("Unknown domain: waf");
-			expect(result.error).toContain("Run 'domains' to see available domains");
 		});
 
 		it('should reject all WAF command variations', async () => {

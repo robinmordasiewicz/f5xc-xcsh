@@ -163,6 +163,7 @@ describe('Domain Registry', () => {
 				'Monitoring',
 				'Storage',
 				'Platform',
+				'AI',
 			];
 
 			for (const [name, domain] of generatedDomains.entries()) {
