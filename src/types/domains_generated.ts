@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.0.43
+ * Generated from .specs/index.json v2.0.45
  * WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  * Run: npx tsx scripts/generate-domains.ts
  */
@@ -24,7 +24,7 @@ export type {
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.0.43";
+export const SPEC_VERSION = "2.0.45";
 
 /**
  * Generated domain data from upstream API specifications
@@ -296,7 +296,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Manage API credentials",
 				"Define API groups and testing policies",
 			],
-			relatedDomains: ["waf", "network_security"],
+			relatedDomains: ["virtual", "network_security"],
 			cliMetadata: {
 				quick_start: {
 					command:
@@ -1381,7 +1381,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Provision API keys for automated defense systems",
 				"Integrate threat intelligence services",
 			],
-			relatedDomains: ["bot_defense", "shape", "waf"],
+			relatedDomains: ["bot_defense", "shape", "virtual"],
 			icon: "🦠",
 			logoSvg:
 				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23EF4444'%3E%3Cpath d='M19.5 5.5 18 4l-1.5 1.5L18 7l1.5-1.5zM12 2v3m0 14v3m10-10h-3M5 12H2m15.5 6.5L18 20l1.5-1.5L18 17l-1.5 1.5zm-11 0L6 20l-1.5-1.5L6 17l-1.5 1.5zm0-11L6 4l-1.5 1.5L6 7 4.5 5.5zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z'/%3E%3C/svg%3E",
@@ -4121,7 +4121,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Define network segments and policies",
 				"Configure forward proxy policies",
 			],
-			relatedDomains: ["waf", "api", "network"],
+			relatedDomains: ["virtual", "api", "network"],
 			icon: "🔒",
 			logoSvg:
 				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F59E0B'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E",
@@ -5175,7 +5175,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Manage incident response workflows",
 				"Apply blocking or rate limiting to threats",
 			],
-			relatedDomains: ["bot_defense", "waf", "network_security"],
+			relatedDomains: ["bot_defense", "virtual", "network_security"],
 			icon: "🚨",
 			logoSvg:
 				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23DC2626'%3E%3Cpath d='M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83-3.45-1.13-6-4.82-6-8.83V6.31l6-2.25 6 2.25v4.78zM11 7h2v6h-2zm0 8h2v2h-2z'/%3E%3C/svg%3E",
@@ -5514,7 +5514,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				"Configure SafeAP policies",
 				"Enable threat recognition",
 			],
-			relatedDomains: ["bot_defense", "waf"],
+			relatedDomains: ["bot_defense", "virtual"],
 			icon: "🎭",
 			logoSvg:
 				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23A855F7'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9c.83 0 1.5-.67 1.5-1.5S7.83 8 7 8s-1.5.67-1.5 1.5S6.17 11 7 11zm10 0c.83 0 1.5-.67 1.5-1.5S17.83 8 17 8s-1.5.67-1.5 1.5.67 1.5 1.5 1.5zM12 17.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z'/%3E%3C/svg%3E",
@@ -10274,8 +10274,91 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					supportsLogs: false,
 					supportsMetrics: true,
 				},
+				{
+					name: "app_firewall",
+					description:
+						"Web Application Firewall policy for HTTP traffic protection",
+					descriptionShort: "WAF policy",
+					tier: "Advanced" as const,
+					icon: "🛡️",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: true,
+					dependencies: { optional: ["service_policy"] },
+					relationshipHints: [
+						"service_policy: Fine-grained access control rules",
+					],
+				},
+				{
+					name: "service_policy",
+					description:
+						"Service-level access control and traffic management rules",
+					descriptionShort: "Service policy",
+					tier: "Advanced" as const,
+					icon: "📋",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: false,
+				},
+				{
+					name: "malicious_user_detection",
+					description:
+						"Automated detection and mitigation of malicious user behavior",
+					descriptionShort: "Malicious user detection",
+					tier: "Advanced" as const,
+					icon: "🚨",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: true,
+				},
 			],
 			allResources: [
+				{
+					name: "active_staged_signature",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
+					tier: "Standard" as const,
+					operations: ["list"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "aggregation",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "all_ns_event",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "app_firewall",
+					description:
+						"Web Application Firewall policy for HTTP traffic protection",
+					descriptionShort:
+						"Web application firewall for threat protection",
+					tier: "Advanced" as const,
+					icon: "🛡️",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: true,
+					dependencies: { optional: ["service_policy"] },
+					relationshipHints: [
+						"service_policy: Fine-grained access control rules",
+					],
+					operations: ["create", "replace", "list", "get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: true,
+				},
 				{
 					name: "ca_certificate",
 					description:
@@ -10305,6 +10388,25 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 						"Automated DDoS mitigation rule configuration",
 					tier: "Standard" as const,
 					operations: ["get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "enhanced_firewall_policy",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
+					tier: "Standard" as const,
+					operations: ["create", "replace", "list", "get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "event",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
 					resourceCategory: "crud" as const,
 					isPrimary: false,
 				},
@@ -10353,6 +10455,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					isPrimary: true,
 				},
 				{
+					name: "hit",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
 					name: "http_loadbalancer",
 					description:
 						"Layer 7 HTTP/HTTPS load balancer for application traffic distribution",
@@ -10386,10 +10497,30 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					isPrimary: true,
 				},
 				{
+					name: "incident",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
 					name: "l7ddos_rps_threshold",
 					description: "Layer 7 DDoS requests-per-second threshold",
 					descriptionShort:
 						"Layer 7 DDoS requests-per-second threshold",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "loadbalancer",
+					description:
+						"Load balancing configuration for traffic distribution",
+					descriptionShort:
+						"Load balancing configuration for traffic distribution",
 					tier: "Standard" as const,
 					operations: ["create"],
 					resourceCategory: "crud" as const,
@@ -10415,6 +10546,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					isPrimary: true,
 				},
 				{
+					name: "protocol_inspection",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create", "replace", "list", "get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
 					name: "proxy",
 					description:
 						"Traffic proxy for request forwarding and transformation",
@@ -10436,14 +10576,55 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					isPrimary: false,
 				},
 				{
-					name: "service_policy",
-					description: "Traffic control policy with allow/deny rules",
-					descriptionShort:
-						"Traffic control policy with allow/deny rules",
+					name: "released_signature",
+					description: "Resource retrieval operation",
+					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
-					operations: ["create", "replace", "list", "get", "delete"],
+					operations: ["list"],
 					resourceCategory: "crud" as const,
 					isPrimary: false,
+				},
+				{
+					name: "rule_hit",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "scroll",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["list", "create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "security_event",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "service_policy",
+					description:
+						"Service-level access control and traffic management rules",
+					descriptionShort:
+						"Traffic control policy with allow/deny rules",
+					tier: "Advanced" as const,
+					icon: "📋",
+					category: "Security",
+					supportsLogs: true,
+					supportsMetrics: false,
+					operations: ["create", "replace", "list", "get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: true,
 				},
 				{
 					name: "service_policy_rule",
@@ -10462,6 +10643,25 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 						"Collection of service policies for grouped application",
 					tier: "Standard" as const,
 					operations: ["list", "get"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "suggestion",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "suspicious_user_log",
+					description: "Logging configuration for audit and analysis",
+					descriptionShort:
+						"Logging configuration for audit and analysis",
+					tier: "Standard" as const,
+					operations: ["create"],
 					resourceCategory: "crud" as const,
 					isPrimary: false,
 				},
@@ -10508,6 +10708,25 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					tier: "Standard" as const,
 					operations: ["create", "replace", "list", "get", "delete"],
 					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "waf_exclusion_policy",
+					description: "Configuration policy for resource behavior",
+					descriptionShort:
+						"Configuration policy for resource behavior",
+					tier: "Standard" as const,
+					operations: ["create", "replace", "list", "get", "delete"],
+					resourceCategory: "crud" as const,
+					isPrimary: false,
+				},
+				{
+					name: "all_ns_metric",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "analytics" as const,
 					isPrimary: false,
 				},
 				{
@@ -10559,6 +10778,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					isPrimary: false,
 				},
 				{
+					name: "metric",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
+					resourceCategory: "analytics" as const,
+					isPrimary: false,
+				},
+				{
 					name: "pdf",
 					description: "Resource retrieval operation",
 					descriptionShort: "Resource retrieval operation",
@@ -10573,6 +10801,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 					descriptionShort: "Resource retrieval operation",
 					tier: "Standard" as const,
 					operations: ["get"],
+					resourceCategory: "analytics" as const,
+					isPrimary: false,
+				},
+				{
+					name: "staged_signature",
+					description: "Resource creation operation",
+					descriptionShort: "Resource creation operation",
+					tier: "Standard" as const,
+					operations: ["create"],
 					resourceCategory: "analytics" as const,
 					isPrimary: false,
 				},
@@ -10695,37 +10932,57 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 				},
 			],
 			validationWarnings: [
-				"34 resources discovered but not in primaryResources: ca_certificate, cluster, dos_automitigation_rule, geo_location_set, get_security_config...",
+				"52 resources discovered but not in primaryResources: active_staged_signature, aggregation, all_ns_event, ca_certificate, cluster...",
 			],
 			resourceCategories: {
 				crud: [
+					"active_staged_signature",
+					"aggregation",
+					"all_ns_event",
+					"app_firewall",
 					"ca_certificate",
 					"cluster",
 					"dos_automitigation_rule",
+					"enhanced_firewall_policy",
+					"event",
 					"geo_location_set",
 					"get_security_config",
 					"get-dns-info",
 					"healthcheck",
+					"hit",
 					"http_loadbalancer",
+					"incident",
 					"l7ddos_rps_threshold",
+					"loadbalancer",
 					"origin_pool",
+					"protocol_inspection",
 					"proxy",
 					"rate_limiter_policy",
+					"released_signature",
+					"rule_hit",
+					"scroll",
+					"security_event",
 					"service_policy",
 					"service_policy_rule",
 					"service_policy_set",
+					"suggestion",
+					"suspicious_user_log",
 					"tcp_loadbalancer",
 					"udp_loadbalancer",
 					"virtual_host",
+					"waf_exclusion_policy",
 				],
 				analytics: [
+					"all_ns_metric",
 					"api_endpoint",
 					"calls_by_response_code",
 					"create_ticket",
 					"get_schema_update",
 					"learnt_schema",
+					"metric",
 					"pdf",
 					"sources_openapi_schema",
+					"staged_signature",
 					"stat",
 					"swagger_spec",
 					"top_active",
@@ -10811,290 +11068,9 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 			},
 		},
 	],
-	[
-		"waf",
-		{
-			name: "waf",
-			displayName: "Waf",
-			description:
-				"Signature-based attack detection with customizable blocking responses. Attack type classification, protocol inspection, and AI-driven risk assessment. Exclusion policies override default blocking for trusted traffic. Staged signature testing validates rules before enforcement. Security event metrics track rule hits and blocked requests across namespaces.",
-			descriptionShort:
-				"Request inspection, attack signatures, and bot mitigation.",
-			descriptionMedium:
-				"Application firewall rules with signature-based detection. Exclusion policies, blocking pages, and anomaly prevention.",
-			aliases: [],
-			complexity: "advanced" as const,
-			isPreview: false,
-			requiresTier: "Advanced",
-			category: "Security",
-			useCases: [
-				"Configure web application firewall rules",
-				"Manage application security policies",
-				"Enable enhanced firewall capabilities",
-				"Configure protocol inspection",
-			],
-			relatedDomains: ["api", "network_security", "virtual"],
-			icon: "🛡️",
-			logoSvg:
-				"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310B981'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3E%3C/svg%3E",
-			primaryResources: [
-				{
-					name: "app_firewall",
-					description:
-						"Web Application Firewall policy for HTTP traffic protection",
-					descriptionShort: "WAF policy",
-					tier: "Advanced" as const,
-					icon: "🛡️",
-					category: "Security",
-					supportsLogs: true,
-					supportsMetrics: true,
-					dependencies: { optional: ["service_policy"] },
-					relationshipHints: [
-						"service_policy: Fine-grained access control rules",
-					],
-				},
-				{
-					name: "service_policy",
-					description:
-						"Service-level access control and traffic management rules",
-					descriptionShort: "Service policy",
-					tier: "Advanced" as const,
-					icon: "📋",
-					category: "Security",
-					supportsLogs: true,
-					supportsMetrics: false,
-				},
-				{
-					name: "malicious_user_detection",
-					description:
-						"Automated detection and mitigation of malicious user behavior",
-					descriptionShort: "Malicious user detection",
-					tier: "Advanced" as const,
-					icon: "🚨",
-					category: "Security",
-					supportsLogs: true,
-					supportsMetrics: true,
-				},
-			],
-			allResources: [
-				{
-					name: "active_staged_signature",
-					description: "Resource retrieval operation",
-					descriptionShort: "Resource retrieval operation",
-					tier: "Standard" as const,
-					operations: ["list"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "aggregation",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "all_ns_event",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "app_firewall",
-					description:
-						"Web Application Firewall policy for HTTP traffic protection",
-					descriptionShort:
-						"Web application firewall for threat protection",
-					tier: "Advanced" as const,
-					icon: "🛡️",
-					category: "Security",
-					supportsLogs: true,
-					supportsMetrics: true,
-					dependencies: { optional: ["service_policy"] },
-					relationshipHints: [
-						"service_policy: Fine-grained access control rules",
-					],
-					operations: ["create", "replace", "list", "get", "delete"],
-					resourceCategory: "crud" as const,
-					isPrimary: true,
-				},
-				{
-					name: "enhanced_firewall_policy",
-					description: "Configuration policy for resource behavior",
-					descriptionShort:
-						"Configuration policy for resource behavior",
-					tier: "Standard" as const,
-					operations: ["create", "replace", "list", "get", "delete"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "event",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "hit",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "incident",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "loadbalancer",
-					description:
-						"Load balancing configuration for traffic distribution",
-					descriptionShort:
-						"Load balancing configuration for traffic distribution",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "protocol_inspection",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create", "replace", "list", "get", "delete"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "released_signature",
-					description: "Resource retrieval operation",
-					descriptionShort: "Resource retrieval operation",
-					tier: "Standard" as const,
-					operations: ["list"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "rule_hit",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "scroll",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["list", "create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "security_event",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "suspicious_user_log",
-					description: "Logging configuration for audit and analysis",
-					descriptionShort:
-						"Logging configuration for audit and analysis",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "waf_exclusion_policy",
-					description: "Configuration policy for resource behavior",
-					descriptionShort:
-						"Configuration policy for resource behavior",
-					tier: "Standard" as const,
-					operations: ["create", "replace", "list", "get", "delete"],
-					resourceCategory: "crud" as const,
-					isPrimary: false,
-				},
-				{
-					name: "all_ns_metric",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "analytics" as const,
-					isPrimary: false,
-				},
-				{
-					name: "metric",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "analytics" as const,
-					isPrimary: false,
-				},
-				{
-					name: "staged_signature",
-					description: "Resource creation operation",
-					descriptionShort: "Resource creation operation",
-					tier: "Standard" as const,
-					operations: ["create"],
-					resourceCategory: "analytics" as const,
-					isPrimary: false,
-				},
-			],
-			validationWarnings: [
-				"18 resources discovered but not in primaryResources: active_staged_signature, aggregation, all_ns_event, enhanced_firewall_policy, event...",
-			],
-			resourceCategories: {
-				crud: [
-					"active_staged_signature",
-					"aggregation",
-					"all_ns_event",
-					"app_firewall",
-					"enhanced_firewall_policy",
-					"event",
-					"hit",
-					"incident",
-					"loadbalancer",
-					"protocol_inspection",
-					"released_signature",
-					"rule_hit",
-					"scroll",
-					"security_event",
-					"suspicious_user_log",
-					"waf_exclusion_policy",
-				],
-				analytics: ["all_ns_metric", "metric", "staged_signature"],
-				utilities: [],
-				management: [],
-			},
-		},
-	],
 ]);
 
 /**
  * Total domain count
  */
-export const DOMAIN_COUNT = 38;
+export const DOMAIN_COUNT = 37;

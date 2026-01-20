@@ -64,7 +64,6 @@ complete -c xcsh -n "__fish_use_subcommand" -a "threat_campaign" -d 'Attack dete
 complete -c xcsh -n "__fish_use_subcommand" -a "users" -d 'Account tokens, labels, and cloud-init config.'
 complete -c xcsh -n "__fish_use_subcommand" -a "virtual" -d 'HTTP, TCP, UDP load balancing with origin pools.'
 complete -c xcsh -n "__fish_use_subcommand" -a "vpm_and_node_management" -d 'Node lifecycle, fleet grouping, and orchestration.'
-complete -c xcsh -n "__fish_use_subcommand" -a "waf" -d 'Request inspection, attack signatures, and bot mitigation.'
 
 # Alias completions
 
@@ -470,16 +469,6 @@ complete -c xcsh -n "__fish_seen_subcommand_from vpm_and_node_management" -a "st
 complete -c xcsh -n "__fish_seen_subcommand_from vpm_and_node_management" -a "patch" -d 'Patch a resource'
 complete -c xcsh -n "__fish_seen_subcommand_from vpm_and_node_management" -a "add-labels" -d 'Add labels to a resource'
 complete -c xcsh -n "__fish_seen_subcommand_from vpm_and_node_management" -a "remove-labels" -d 'Remove labels from a resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "list" -d 'List resources'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "get" -d 'Get a specific resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "create" -d 'Create a new resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "delete" -d 'Delete a resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "replace" -d 'Replace a resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "apply" -d 'Apply configuration from file'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "status" -d 'Get resource status'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "patch" -d 'Patch a resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "add-labels" -d 'Add labels to a resource'
-complete -c xcsh -n "__fish_seen_subcommand_from waf" -a "remove-labels" -d 'Remove labels from a resource'
 
 # Action-specific flags
 complete -c xcsh -l name -s n -d 'Resource name'
