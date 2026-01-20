@@ -15,7 +15,7 @@ import { formatRootHelp } from '../../src/repl/help.js';
 describe('WAF Domain Removal - Regression Protection', () => {
 	describe('CRITICAL: Domain Registry Protection', () => {
 		it('REGRESSION: WAF domain must not exist', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 			expect(domainNames).not.toContain('waf');
 		});
 
@@ -24,12 +24,12 @@ describe('WAF Domain Removal - Regression Protection', () => {
 		});
 
 		it('REGRESSION: Generated domains must match count', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 			expect(domainNames.length).toBe(37);
 		});
 
 		it('REGRESSION: WAF must not be in any variation', () => {
-			const domainNames = Object.keys(generatedDomains);
+			const domainNames = Array.from(generatedDomains.keys());
 
 			// Check for any case variation
 			const lowerNames = domainNames.map(n => n.toLowerCase());
@@ -39,7 +39,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 
 	describe('CRITICAL: Virtual Domain Protection', () => {
 		it('REGRESSION: app_firewall must be in virtual domain', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			expect(virtualDomain).toBeDefined();
 
 			const resourceNames = virtualDomain.allResources!.map(r => r.name);
@@ -47,7 +47,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 		});
 
 		it('REGRESSION: app_firewall must be marked as primary', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const appFirewall = virtualDomain.allResources!.find(r => r.name === 'app_firewall');
 
 			expect(appFirewall).toBeDefined();
@@ -55,7 +55,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 		});
 
 		it('REGRESSION: virtual domain must exist', () => {
-			expect(generatedDomains['virtual']).toBeDefined();
+			expect(generatedDomains.get('virtual')).toBeDefined();
 		});
 	});
 
@@ -119,7 +119,7 @@ describe('WAF Domain Removal - Regression Protection', () => {
 		});
 
 		it('REGRESSION: Virtual domain should remain consolidated', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 
 			// Virtual domain should have app_firewall among many resources
 			expect(virtualDomain.allResources!.length).toBeGreaterThan(50);
