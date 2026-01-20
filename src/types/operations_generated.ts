@@ -1,7 +1,7 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
  * Generated from .specs/domains/*.json OpenAPI specifications
- * Spec version: 2.0.28
+ * Spec version: 2.0.45
  * Run: npx tsx scripts/generate-operations.ts
  */
 
@@ -88,7 +88,7 @@ export interface DomainOperationsInfo {
 /**
  * Spec version used for generation
  */
-export const OPERATIONS_SPEC_VERSION = "2.0.28";
+export const OPERATIONS_SPEC_VERSION = "2.0.45";
 
 /**
  * Generated operations data from upstream OpenAPI specifications
@@ -93269,7 +93269,12 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 			descriptionShort:
 				"Load balancing for HTTP, TCP, and UDP traffic with config...",
 			resourceTypes: [
+				"active_staged_signature",
+				"aggregation",
+				"all_ns_event",
+				"all_ns_metric",
 				"api_endpoint",
+				"app_firewall",
 				"assign",
 				"available",
 				"ca_certificate",
@@ -93277,24 +93282,38 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 				"cluster",
 				"create_ticket",
 				"dos_automitigation_rule",
+				"enhanced_firewall_policy",
+				"event",
 				"geo_location_set",
 				"get-dns-info",
 				"get_schema_update",
 				"get_security_config",
 				"healthcheck",
+				"hit",
 				"http_loadbalancer",
+				"incident",
 				"l7ddos_rps_threshold",
 				"learnt_schema",
+				"loadbalancer",
+				"metric",
 				"origin_pool",
 				"pdf",
+				"protocol_inspection",
 				"proxy",
 				"rate_limiter_policy",
+				"released_signature",
+				"rule_hit",
+				"scroll",
+				"security_event",
 				"service_policy",
 				"service_policy_rule",
 				"service_policy_set",
 				"sources_openapi_schema",
+				"staged_signature",
 				"stat",
 				"subscribe",
+				"suggestion",
+				"suspicious_user_log",
 				"swagger_spec",
 				"tcp_loadbalancer",
 				"top_active",
@@ -93307,8 +93326,1843 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 				"update_state",
 				"virtual_host",
 				"vulnerability",
+				"waf_exclusion_policy",
 			],
 			operations: [
+				{
+					action: "create",
+					resourceType: "all_ns_metric",
+					operationId:
+						"ves.io.schema.app_firewall.CustomDataAPI.MetricsAllNamespaces",
+					summary: "MetricsAllNamespaces.",
+					description: "App Firewall metrics.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/system/app_firewall/all_ns_metrics",
+					dangerLevel: "medium",
+					requiredFields: ["metadata.name", "metadata.namespace"],
+					sideEffects: { creates: ["all-ns-metric"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-customdataapi-metricsallnamespaces",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "app_firewall",
+					operationId: "ves.io.schema.app_firewall.API.Create",
+					summary: "Create Application Firewall.",
+					description: "Create Application Firewall.",
+					purpose: "Web application firewall for threat protection",
+					path: "/api/config/namespaces/{metadata.namespace}/app_firewalls",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.metadata.namespace",
+					],
+					sideEffects: { creates: ["app-firewall"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-create",
+						description: "Examples of this operation.",
+					},
+					fieldDefaults: {
+						allow_all_response_codes: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						default_anonymization: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						default_bot_setting: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						default_detection_settings: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						monitoring: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						use_default_blocking_page: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+					},
+				},
+				{
+					action: "replace",
+					resourceType: "app_firewall",
+					operationId: "ves.io.schema.app_firewall.API.Replace",
+					summary: "Replace Application Firewall.",
+					description: "Replace Application Firewall.",
+					purpose: "Web application firewall for threat protection",
+					path: "/api/config/namespaces/{metadata.namespace}/app_firewalls/{metadata.name}",
+					dangerLevel: "medium",
+					requiredFields: [
+						"path.metadata.name",
+						"path.metadata.namespace",
+					],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-replace",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "metric",
+					operationId:
+						"ves.io.schema.app_firewall.CustomDataAPI.Metrics",
+					summary: "Metrics",
+					description: "App Firewall metrics.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_firewall/metrics",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["metric"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-customdataapi-metrics",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "app_firewall",
+					operationId: "ves.io.schema.app_firewall.API.List",
+					summary: "List Application Firewall.",
+					description: "List the set of app_firewall in a namespace.",
+					purpose: "Web application firewall for threat protection",
+					path: "/api/config/namespaces/{namespace}/app_firewalls",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-list",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "get",
+					resourceType: "app_firewall",
+					operationId: "ves.io.schema.app_firewall.API.Get",
+					summary: "GET Application Firewall.",
+					description: "GET Application Firewall.",
+					purpose: "Web application firewall for threat protection",
+					path: "/api/config/namespaces/{namespace}/app_firewalls/{name}",
+					dangerLevel: "low",
+					requiredFields: ["path.name", "path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-get",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "delete",
+					resourceType: "app_firewall",
+					operationId: "ves.io.schema.app_firewall.API.Delete",
+					summary: "DELETE Application Firewall.",
+					description: "DELETE the specified app_firewall.",
+					purpose: "Web application firewall for threat protection",
+					path: "/api/config/namespaces/{namespace}/app_firewalls/{name}",
+					dangerLevel: "high",
+					requiredFields: ["path.name", "path.namespace"],
+					sideEffects: {
+						deletes: ["app-firewall", "contained_resources"],
+					},
+					confirmationRequired: true,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-delete",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "all_ns_event",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsQueryAllNamespaces",
+					summary: "Security Events Query All Namespaces.",
+					description:
+						"GET security events for the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be returned in the response. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`. This API is specific to system namespace.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/system/app_security/all_ns_events",
+					dangerLevel: "medium",
+					requiredFields: ["metadata.name", "metadata.namespace"],
+					sideEffects: { creates: ["all-ns-event"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsqueryallnamespaces",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "aggregation",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsAggregationQueryAllNamespaces",
+					summary:
+						"Security Events Aggregation Query All Namespaces.",
+					description:
+						"GET summary/aggregation data for security events in the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/system/app_security/all_ns_events/aggregation",
+					dangerLevel: "medium",
+					requiredFields: ["metadata.name", "metadata.namespace"],
+					sideEffects: { creates: ["aggregation"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsaggregationqueryallnamespaces",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "loadbalancer",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SearchLoadBalancersAllNamespaces",
+					summary: "Search load balancers All Namespaces.",
+					description:
+						"GET list of virtual hosts matching label filter.",
+					purpose:
+						"Load balancing configuration for traffic distribution",
+					path: "/api/data/namespaces/system/app_security/all_ns_search/loadbalancers",
+					dangerLevel: "medium",
+					requiredFields: ["metadata.name", "metadata.namespace"],
+					sideEffects: { creates: ["loadbalancer"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-searchloadbalancersallnamespaces",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "event",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsQuery",
+					summary: "Security Events Query.",
+					description:
+						"GET security events for the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be returned in the response. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/events",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["event"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "aggregation",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsAggregationQuery",
+					summary: "Security Events Aggregation Query.",
+					description:
+						"GET summary/aggregation data for security events in the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/events/aggregation",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["aggregation"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsaggregationquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "scroll",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsScrollQuery",
+					summary: "Security Event Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityEventScrollRequest. Use the scroll_id returned in the SecurityEventResponse to fetch the next batch of security events and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
+					purpose: "Resource retrieval operation",
+					path: "/api/data/namespaces/{namespace}/app_security/events/scroll",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "scroll",
+					operationId:
+						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsScrollQuery",
+					summary: "Security Event Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityEventScrollRequest. Use the scroll_id returned in the SecurityEventResponse to fetch the next batch of security events and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/events/scroll",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["scroll"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "incident",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsQuery",
+					summary: "Security Incidents Query.",
+					description:
+						"GET security incidents for the given namespace. For `system` namespace, all security incidents for the tenant matching the query specified in the request will be returned in the response. User may query security incidents that matches various fields such as `vh_name`, `intent`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/incidents",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["incident"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "aggregation",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsAggregationQuery",
+					summary: "Security Incidents Aggregation Query.",
+					description:
+						"GET summary/aggregation data for security incidents in the given namespace. For `system` namespace, all security incidents for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `intent`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/incidents/aggregation",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["aggregation"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsaggregationquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "scroll",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsScrollQuery",
+					summary: "Security Incidents Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of security incidents in multiple batches with each SecurityIncidentsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityIncidentsScrollRequest. Use the scroll_id returned in the SecurityIncidentsResponse to fetch the next batch of security incidents and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
+					purpose: "Resource retrieval operation",
+					path: "/api/data/namespaces/{namespace}/app_security/incidents/scroll",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "scroll",
+					operationId:
+						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsScrollQuery",
+					summary: "Security Incidents Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of security incidents in multiple batches with each SecurityIncidentsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityIncidentsScrollRequest. Use the scroll_id returned in the SecurityIncidentsResponse to fetch the next batch of security incidents and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/incidents/scroll",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["scroll"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "metric",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsMetrics",
+					summary: "Security Events Metrics.",
+					description:
+						"GET the number of security events for a given namespace. Security events can be aggregated across multiple dimensions like VIRTUAL_HOST, SITE, SEC_EVENT_TYPE, etc.,.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/metrics",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["metric"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsmetrics",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "loadbalancer",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SearchLoadBalancers",
+					summary: "Search load balancers.",
+					description:
+						"GET list of virtual hosts matching label filter.",
+					purpose:
+						"Load balancing configuration for traffic distribution",
+					path: "/api/data/namespaces/{namespace}/app_security/search/loadbalancers",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["loadbalancer"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-searchloadbalancers",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suspicious_user_log",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsQuery",
+					summary: "Suspicious User Logs Query.",
+					description:
+						"GET suspicious user logs for the given namespace. For `system` namespace, all suspicious users logs for the tenant matching the query specified in the request will be returned in the response. User may query suspicious user logs that matches various fields such as `vh_name`, `user`, `site`, `city`, `country`.",
+					purpose: "Logging configuration for audit and analysis",
+					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suspicious-user-log"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "aggregation",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsAggregationQuery",
+					summary: "Suspicious User Logs Aggregation Query.",
+					description:
+						"GET summary/aggregation data for suspicious user logs in the given namespace. For `system` namespace, all suspicious user logs for the tenant matching the query specified in the request will be considered for aggregation. User may query suspicious user logs that matches various fields such as `vh_name`, `user`, `site`, `city`, `country`.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/aggregation",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["aggregation"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsaggregationquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "scroll",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsScrollQuery",
+					summary: "Suspicious User Logs Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of suspicious user logs in multiple batches with each SuspiciousUserLogsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SuspiciousUserLogsScrollRequest. Use the scroll_id returned in the SuspiciousUserLogsResponse to fetch the next batch of logs and one can continue this process till the scroll_id returned is "" which indicates no more logs to scroll.',
+					purpose: "Resource retrieval operation",
+					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/scroll",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "scroll",
+					operationId:
+						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsScrollQuery",
+					summary: "Suspicious User Logs Scroll Query.",
+					description:
+						'Scroll request is used to fetch large number of suspicious user logs in multiple batches with each SuspiciousUserLogsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SuspiciousUserLogsScrollRequest. Use the scroll_id returned in the SuspiciousUserLogsResponse to fetch the next batch of logs and one can continue this process till the scroll_id returned is "" which indicates no more logs to scroll.',
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/scroll",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["scroll"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsscrollquery",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.APIEndpointProtectionRuleSuggestionAPI.GetSuggestedAPIEndpointProtectionRule",
+					summary: "Suggest API endpoint protection rule.",
+					description:
+						"Suggest API endpoint protection rule for a given path DEPRECATED. Use api_sec.rule_suggestion.rulesuggestionapi.getsuggestedapiendpointprotectionrule.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/api_endpoint_protection/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-apiendpointprotectionrulesuggestionapi-getsuggestedapiendpointprotectionrule",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityClientRuleAPI.GetSuggestedBlockClientRule",
+					summary: "Suggest block client rule.",
+					description:
+						"Suggest blocking SimpleClientSrcRule for a given IP/ASN.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/block_client/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.APISensitiveDataRuleSuggestionAPI.GetSuggestedSensitiveDataRule",
+					summary: "Suggest sensitive data rule.",
+					description:
+						"Suggest sensitive data rule for a given path DEPRECATED. Use api_sec.rule_suggestion.rulesuggestionapi.getsuggestedsensitivedatarule.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/data_exposure/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-apisensitivedatarulesuggestionapi-getsuggestedsensitivedatarule",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityClientRuleAPI.GetSuggestedDDoSMitigationRule",
+					summary: "Suggest DDoS Mitigation rule.",
+					description:
+						"Suggest DDoSMitigatonRule to mitigate a given IP/ASN/Region/TLS.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/ddos_mitigation/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecurityclientruleapi-getsuggestedddosmitigationrule",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.OasValidationSuggestionAPI.GetSuggestedOasValidationRule",
+					summary: "Suggest Open API specification validation rule.",
+					description:
+						"Suggest Open API specification validation rule for a given path DEPRECATED. Use api_sec.rule_suggestion.rulesuggestionapi.getsuggestedoasvalidationrule.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/oas_validation/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-oasvalidationsuggestionapi-getsuggestedoasvalidationrule",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.APIRateLimitRuleSuggestionAPI.GetSuggestedRateLimitRule",
+					summary: "Suggest rate limit rule.",
+					description:
+						"Suggest rate limit rule for a given path DEPRECATED. Use api_sec.rule_suggestion.rulesuggestionapi.getsuggestedratelimitrule.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/rate_limit/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-apiratelimitrulesuggestionapi-getsuggestedratelimitrule",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityClientRuleAPI.GetSuggestedTrustClientRule",
+					summary: "Suggest trust client rule.",
+					description:
+						"Suggest SimpleClientSrcRule to trust a given IP/ASN.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/trust_client/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+				},
+				{
+					action: "create",
+					resourceType: "suggestion",
+					operationId:
+						"ves.io.schema.app_security.AppSecurityWafExclusionAPI.GetSuggestedWAFExclusionRule",
+					summary: "Suggest WAF Exclusion Rule.",
+					description:
+						"Suggest service policy rule to set up WAF exclusion for a given WAF security event.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{namespace}/http_loadbalancers/{name}/waf_exclusion/suggestion",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.name",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["suggestion"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritywafexclusionapi-getsuggestedwafexclusionrule",
+						description: "Examples of this operation.",
+					},
+				},
 				{
 					action: "create",
 					resourceType: "cluster",
@@ -94496,6 +96350,276 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 				},
 				{
 					action: "create",
+					resourceType: "protocol_inspection",
+					operationId: "ves.io.schema.protocol_inspection.API.Create",
+					summary: "Create Protocol Inspection.",
+					description:
+						"Create Protocol Inspection Specification in a given namespace. If one already exists it will give an error.",
+					purpose: "Resource creation operation",
+					path: "/api/config/namespaces/{metadata.namespace}/protocol_inspections",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.metadata.namespace",
+					],
+					sideEffects: { creates: ["protocol-inspection"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-create",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "replace",
+					resourceType: "protocol_inspection",
+					operationId:
+						"ves.io.schema.protocol_inspection.API.Replace",
+					summary: "Replace Protocol Inspection.",
+					description:
+						"Replace Protocol Inspection specification in a given namespace.",
+					purpose: "Resource replacement operation",
+					path: "/api/config/namespaces/{metadata.namespace}/protocol_inspections/{metadata.name}",
+					dangerLevel: "medium",
+					requiredFields: [
+						"path.metadata.name",
+						"path.metadata.namespace",
+					],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-replace",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "protocol_inspection",
+					operationId: "ves.io.schema.protocol_inspection.API.List",
+					summary: "List Configure Protocol Inspection.",
+					description:
+						"List the set of protocol_inspection in a namespace.",
+					purpose: "Resource retrieval operation",
+					path: "/api/config/namespaces/{namespace}/protocol_inspections",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-list",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "get",
+					resourceType: "protocol_inspection",
+					operationId: "ves.io.schema.protocol_inspection.API.Get",
+					summary: "GET Protocol Inspection.",
+					description: "GET Protocol Inspection details.",
+					purpose: "Resource retrieval operation",
+					path: "/api/config/namespaces/{namespace}/protocol_inspections/{name}",
+					dangerLevel: "low",
+					requiredFields: ["path.name", "path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-get",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "delete",
+					resourceType: "protocol_inspection",
+					operationId: "ves.io.schema.protocol_inspection.API.Delete",
+					summary: "DELETE Configure Protocol Inspection.",
+					description: "DELETE the specified protocol_inspection.",
+					purpose: "Resource deletion operation",
+					path: "/api/config/namespaces/{namespace}/protocol_inspections/{name}",
+					dangerLevel: "high",
+					requiredFields: ["path.name", "path.namespace"],
+					sideEffects: {
+						deletes: ["protocol-inspection", "contained_resources"],
+					},
+					confirmationRequired: true,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-delete",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
 					resourceType: "tcp_loadbalancer",
 					operationId:
 						"ves.io.schema.views.tcp_loadbalancer.API.Create",
@@ -95150,6 +97274,343 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 					],
 					externalDocs: {
 						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-views-udp_loadbalancer-customapi-getdnsinfo",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "enhanced_firewall_policy",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.API.Create",
+					summary: "Create Enhanced Firewall Policy.",
+					description:
+						"Shape of Enhanced Firewall Policy specification.",
+					purpose: "Configuration policy for resource behavior",
+					path: "/api/config/namespaces/{metadata.namespace}/enhanced_firewall_policys",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.metadata.namespace",
+					],
+					sideEffects: { creates: ["enhanced-firewall-policy"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-create",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "replace",
+					resourceType: "enhanced_firewall_policy",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.API.Replace",
+					summary: "Replace Enhanced Firewall Policy.",
+					description:
+						"Shape of Enhanced Firewall Policy replace specification.",
+					purpose: "Configuration policy for resource behavior",
+					path: "/api/config/namespaces/{metadata.namespace}/enhanced_firewall_policys/{metadata.name}",
+					dangerLevel: "medium",
+					requiredFields: [
+						"path.metadata.name",
+						"path.metadata.namespace",
+					],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-replace",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "create",
+					resourceType: "hit",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.CustomDataAPI.EnhancedFirewallPolicyHits",
+					summary: "Enhanced Firewall Policy Hits.",
+					description:
+						"GET the counter for Enhanced Firewall Policy hits for a given namespace.",
+					purpose: "Resource creation operation",
+					path: "/api/data/namespaces/{namespace}/enhanced_firewall_policy/hits",
+					dangerLevel: "medium",
+					requiredFields: [
+						"metadata.name",
+						"metadata.namespace",
+						"path.namespace",
+					],
+					sideEffects: { creates: ["hit"] },
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-customdataapi-enhancedfirewallpolicyhits",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "list",
+					resourceType: "enhanced_firewall_policy",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.API.List",
+					summary: "List Enhanced Firewall Policy.",
+					description:
+						"List the set of enhanced_firewall_policy in a namespace.",
+					purpose: "Configuration policy for resource behavior",
+					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys",
+					dangerLevel: "low",
+					requiredFields: ["path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-list",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "get",
+					resourceType: "enhanced_firewall_policy",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.API.Get",
+					summary: "GET Enhanced Firewall Policy.",
+					description:
+						"Shape of the Enhanced Firewall Policy specification.",
+					purpose: "Configuration policy for resource behavior",
+					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys/{name}",
+					dangerLevel: "low",
+					requiredFields: ["path.name", "path.namespace"],
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-get",
+						description: "Examples of this operation.",
+					},
+				},
+				{
+					action: "delete",
+					resourceType: "enhanced_firewall_policy",
+					operationId:
+						"ves.io.schema.enhanced_firewall_policy.API.Delete",
+					summary: "DELETE Enhanced Firewall Policy.",
+					description:
+						"DELETE the specified enhanced_firewall_policy.",
+					purpose: "Configuration policy for resource behavior",
+					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys/{name}",
+					dangerLevel: "high",
+					requiredFields: ["path.name", "path.namespace"],
+					sideEffects: {
+						deletes: [
+							"enhanced-firewall-policy",
+							"contained_resources",
+						],
+					},
+					confirmationRequired: true,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-delete",
 						description: "Examples of this operation.",
 					},
 				},
@@ -95858,6 +98319,33 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 					externalDocs: {
 						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-views-origin_pool-api-create",
 						description: "Examples of this operation.",
+					},
+					fieldDefaults: {
+						endpoint_selection: {
+							value: "DISTRIBUTED",
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						healthcheck: {
+							value: [],
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						loadbalancer_algorithm: {
+							value: "ROUND_ROBIN",
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						no_tls: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
+						same_as_endpoint_port: {
+							value: {},
+							serverDefault: true,
+							requiredForCreate: false,
+						},
 					},
 				},
 				{
@@ -98675,2082 +101163,6 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 						description: "Examples of this operation.",
 					},
 				},
-			],
-		},
-	],
-	[
-		"vpm_and_node_management",
-		{
-			domain: "vpm_and_node_management",
-			displayName: "Vpm And Node Management",
-			description:
-				"APIs for configuring node policies, fleet management, and lifecycle operations. Supports node registration, configuration deployment, and status monitoring across distributed infrastructure.",
-			descriptionShort:
-				"APIs for configuring node policies, fleet management, and...",
-			resourceTypes: ["upgrade_statu"],
-			operations: [
-				{
-					action: "list",
-					resourceType: "upgrade_statu",
-					operationId:
-						"ves.io.schema.maintenance_status.CustomAPI.GetUpgradeStatus",
-					summary: "Upgrade Status.",
-					description: "Request to GET the upgrade status.",
-					purpose: "Resource retrieval operation",
-					path: "/api/data/namespaces/system/upgrade_status",
-					dangerLevel: "low",
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-maintenance_status-customapi-getupgradestatus",
-						description: "Examples of this operation.",
-					},
-				},
-			],
-		},
-	],
-	[
-		"waf",
-		{
-			domain: "waf",
-			displayName: "Waf",
-			description:
-				"Signature-based attack detection with customizable blocking responses. Attack type classification, protocol inspection, and AI-driven risk assessment. Exclusion policies override default blocking for trusted traffic. Staged signature testing validates rules before enforcement. Security event metrics track rule hits and blocked requests across namespaces.",
-			descriptionShort:
-				"Signature-based attack detection with customizable blocki...",
-			resourceTypes: [
-				"active_staged_signature",
-				"aggregation",
-				"all_ns_event",
-				"all_ns_metric",
-				"app_firewall",
-				"enhanced_firewall_policy",
-				"event",
-				"hit",
-				"incident",
-				"loadbalancer",
-				"metric",
-				"protocol_inspection",
-				"released_signature",
-				"rule_hit",
-				"scroll",
-				"security_event",
-				"staged_signature",
-				"suspicious_user_log",
-				"waf_exclusion_policy",
-			],
-			operations: [
-				{
-					action: "create",
-					resourceType: "all_ns_metric",
-					operationId:
-						"ves.io.schema.app_firewall.CustomDataAPI.MetricsAllNamespaces",
-					summary: "MetricsAllNamespaces.",
-					description: "App Firewall metrics.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/system/app_firewall/all_ns_metrics",
-					dangerLevel: "medium",
-					requiredFields: ["metadata.name", "metadata.namespace"],
-					sideEffects: { creates: ["all-ns-metric"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-customdataapi-metricsallnamespaces",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "app_firewall",
-					operationId: "ves.io.schema.app_firewall.API.Create",
-					summary: "Create Application Firewall.",
-					description: "Create Application Firewall.",
-					purpose: "Web application firewall for threat protection",
-					path: "/api/config/namespaces/{metadata.namespace}/app_firewalls",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.metadata.namespace",
-					],
-					sideEffects: { creates: ["app-firewall"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-create",
-						description: "Examples of this operation.",
-					},
-					fieldDefaults: {
-						allow_all_response_codes: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-						default_anonymization: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-						default_bot_setting: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-						default_detection_settings: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-						monitoring: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-						use_default_blocking_page: {
-							value: {},
-							serverDefault: true,
-							requiredForCreate: false,
-						},
-					},
-				},
-				{
-					action: "replace",
-					resourceType: "app_firewall",
-					operationId: "ves.io.schema.app_firewall.API.Replace",
-					summary: "Replace Application Firewall.",
-					description: "Replace Application Firewall.",
-					purpose: "Web application firewall for threat protection",
-					path: "/api/config/namespaces/{metadata.namespace}/app_firewalls/{metadata.name}",
-					dangerLevel: "medium",
-					requiredFields: [
-						"path.metadata.name",
-						"path.metadata.namespace",
-					],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-replace",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "metric",
-					operationId:
-						"ves.io.schema.app_firewall.CustomDataAPI.Metrics",
-					summary: "Metrics",
-					description: "App Firewall metrics.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_firewall/metrics",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["metric"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-customdataapi-metrics",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "app_firewall",
-					operationId: "ves.io.schema.app_firewall.API.List",
-					summary: "List Application Firewall.",
-					description: "List the set of app_firewall in a namespace.",
-					purpose: "Web application firewall for threat protection",
-					path: "/api/config/namespaces/{namespace}/app_firewalls",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-list",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "get",
-					resourceType: "app_firewall",
-					operationId: "ves.io.schema.app_firewall.API.Get",
-					summary: "GET Application Firewall.",
-					description: "GET Application Firewall.",
-					purpose: "Web application firewall for threat protection",
-					path: "/api/config/namespaces/{namespace}/app_firewalls/{name}",
-					dangerLevel: "low",
-					requiredFields: ["path.name", "path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-get",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "delete",
-					resourceType: "app_firewall",
-					operationId: "ves.io.schema.app_firewall.API.Delete",
-					summary: "DELETE Application Firewall.",
-					description: "DELETE the specified app_firewall.",
-					purpose: "Web application firewall for threat protection",
-					path: "/api/config/namespaces/{namespace}/app_firewalls/{name}",
-					dangerLevel: "high",
-					requiredFields: ["path.name", "path.namespace"],
-					sideEffects: {
-						deletes: ["app-firewall", "contained_resources"],
-					},
-					confirmationRequired: true,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_firewall-api-delete",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "all_ns_event",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsQueryAllNamespaces",
-					summary: "Security Events Query All Namespaces.",
-					description:
-						"GET security events for the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be returned in the response. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`. This API is specific to system namespace.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/system/app_security/all_ns_events",
-					dangerLevel: "medium",
-					requiredFields: ["metadata.name", "metadata.namespace"],
-					sideEffects: { creates: ["all-ns-event"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsqueryallnamespaces",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "aggregation",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsAggregationQueryAllNamespaces",
-					summary:
-						"Security Events Aggregation Query All Namespaces.",
-					description:
-						"GET summary/aggregation data for security events in the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/system/app_security/all_ns_events/aggregation",
-					dangerLevel: "medium",
-					requiredFields: ["metadata.name", "metadata.namespace"],
-					sideEffects: { creates: ["aggregation"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsaggregationqueryallnamespaces",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "loadbalancer",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SearchLoadBalancersAllNamespaces",
-					summary: "Search load balancers All Namespaces.",
-					description:
-						"GET list of virtual hosts matching label filter.",
-					purpose:
-						"Load balancing configuration for traffic distribution",
-					path: "/api/data/namespaces/system/app_security/all_ns_search/loadbalancers",
-					dangerLevel: "medium",
-					requiredFields: ["metadata.name", "metadata.namespace"],
-					sideEffects: { creates: ["loadbalancer"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-searchloadbalancersallnamespaces",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "event",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsQuery",
-					summary: "Security Events Query.",
-					description:
-						"GET security events for the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be returned in the response. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/events",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["event"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "aggregation",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsAggregationQuery",
-					summary: "Security Events Aggregation Query.",
-					description:
-						"GET summary/aggregation data for security events in the given namespace. For `system` namespace, all security events for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `sec_event_type`, `src_site`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/events/aggregation",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["aggregation"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsaggregationquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "scroll",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsScrollQuery",
-					summary: "Security Event Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityEventScrollRequest. Use the scroll_id returned in the SecurityEventResponse to fetch the next batch of security events and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
-					purpose: "Resource retrieval operation",
-					path: "/api/data/namespaces/{namespace}/app_security/events/scroll",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "scroll",
-					operationId:
-						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsScrollQuery",
-					summary: "Security Event Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of security events in multiple batches with each SecurityEventResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityEventScrollRequest. Use the scroll_id returned in the SecurityEventResponse to fetch the next batch of security events and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/events/scroll",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["scroll"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "incident",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsQuery",
-					summary: "Security Incidents Query.",
-					description:
-						"GET security incidents for the given namespace. For `system` namespace, all security incidents for the tenant matching the query specified in the request will be returned in the response. User may query security incidents that matches various fields such as `vh_name`, `intent`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/incidents",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["incident"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "aggregation",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsAggregationQuery",
-					summary: "Security Incidents Aggregation Query.",
-					description:
-						"GET summary/aggregation data for security incidents in the given namespace. For `system` namespace, all security incidents for the tenant matching the query specified in the request will be considered for aggregation. User may query security events that matches various fields such as `vh_name`, `intent`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/incidents/aggregation",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["aggregation"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsaggregationquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "scroll",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsScrollQuery",
-					summary: "Security Incidents Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of security incidents in multiple batches with each SecurityIncidentsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityIncidentsScrollRequest. Use the scroll_id returned in the SecurityIncidentsResponse to fetch the next batch of security incidents and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
-					purpose: "Resource retrieval operation",
-					path: "/api/data/namespaces/{namespace}/app_security/incidents/scroll",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "scroll",
-					operationId:
-						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityIncidentsScrollQuery",
-					summary: "Security Incidents Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of security incidents in multiple batches with each SecurityIncidentsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SecurityIncidentsScrollRequest. Use the scroll_id returned in the SecurityIncidentsResponse to fetch the next batch of security incidents and one can continue this process till the scroll_id returned is "" which indicates no more events to scroll.',
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/incidents/scroll",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["scroll"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityincidentsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "metric",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SecurityEventsMetrics",
-					summary: "Security Events Metrics.",
-					description:
-						"GET the number of security events for a given namespace. Security events can be aggregated across multiple dimensions like VIRTUAL_HOST, SITE, SEC_EVENT_TYPE, etc.,.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/metrics",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["metric"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-securityeventsmetrics",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "loadbalancer",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SearchLoadBalancers",
-					summary: "Search load balancers.",
-					description:
-						"GET list of virtual hosts matching label filter.",
-					purpose:
-						"Load balancing configuration for traffic distribution",
-					path: "/api/data/namespaces/{namespace}/app_security/search/loadbalancers",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["loadbalancer"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-searchloadbalancers",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "suspicious_user_log",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsQuery",
-					summary: "Suspicious User Logs Query.",
-					description:
-						"GET suspicious user logs for the given namespace. For `system` namespace, all suspicious users logs for the tenant matching the query specified in the request will be returned in the response. User may query suspicious user logs that matches various fields such as `vh_name`, `user`, `site`, `city`, `country`.",
-					purpose: "Logging configuration for audit and analysis",
-					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["suspicious-user-log"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "aggregation",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsAggregationQuery",
-					summary: "Suspicious User Logs Aggregation Query.",
-					description:
-						"GET summary/aggregation data for suspicious user logs in the given namespace. For `system` namespace, all suspicious user logs for the tenant matching the query specified in the request will be considered for aggregation. User may query suspicious user logs that matches various fields such as `vh_name`, `user`, `site`, `city`, `country`.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/aggregation",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["aggregation"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsaggregationquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "scroll",
-					operationId:
-						"ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsScrollQuery",
-					summary: "Suspicious User Logs Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of suspicious user logs in multiple batches with each SuspiciousUserLogsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SuspiciousUserLogsScrollRequest. Use the scroll_id returned in the SuspiciousUserLogsResponse to fetch the next batch of logs and one can continue this process till the scroll_id returned is "" which indicates no more logs to scroll.',
-					purpose: "Resource retrieval operation",
-					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/scroll",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "scroll",
-					operationId:
-						"docs_cloud_f5_com_0020_public_ves_io_schema_app_security_ves_swagger_ves.io.schema.app_security.AppSecurityMonitoringAPI.SuspiciousUserLogsScrollQuery",
-					summary: "Suspicious User Logs Scroll Query.",
-					description:
-						'Scroll request is used to fetch large number of suspicious user logs in multiple batches with each SuspiciousUserLogsResponse containing no more than 500 messages. To scroll through more than 500 or all messages, one can use the SuspiciousUserLogsScrollRequest. Use the scroll_id returned in the SuspiciousUserLogsResponse to fetch the next batch of logs and one can continue this process till the scroll_id returned is "" which indicates no more logs to scroll.',
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/app_security/suspicious_user_logs/scroll",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["scroll"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-app_security-appsecuritymonitoringapi-suspicioususerlogsscrollquery",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "protocol_inspection",
-					operationId: "ves.io.schema.protocol_inspection.API.Create",
-					summary: "Create Protocol Inspection.",
-					description:
-						"Create Protocol Inspection Specification in a given namespace. If one already exists it will give an error.",
-					purpose: "Resource creation operation",
-					path: "/api/config/namespaces/{metadata.namespace}/protocol_inspections",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.metadata.namespace",
-					],
-					sideEffects: { creates: ["protocol-inspection"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-create",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "replace",
-					resourceType: "protocol_inspection",
-					operationId:
-						"ves.io.schema.protocol_inspection.API.Replace",
-					summary: "Replace Protocol Inspection.",
-					description:
-						"Replace Protocol Inspection specification in a given namespace.",
-					purpose: "Resource replacement operation",
-					path: "/api/config/namespaces/{metadata.namespace}/protocol_inspections/{metadata.name}",
-					dangerLevel: "medium",
-					requiredFields: [
-						"path.metadata.name",
-						"path.metadata.namespace",
-					],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-replace",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "protocol_inspection",
-					operationId: "ves.io.schema.protocol_inspection.API.List",
-					summary: "List Configure Protocol Inspection.",
-					description:
-						"List the set of protocol_inspection in a namespace.",
-					purpose: "Resource retrieval operation",
-					path: "/api/config/namespaces/{namespace}/protocol_inspections",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-list",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "get",
-					resourceType: "protocol_inspection",
-					operationId: "ves.io.schema.protocol_inspection.API.Get",
-					summary: "GET Protocol Inspection.",
-					description: "GET Protocol Inspection details.",
-					purpose: "Resource retrieval operation",
-					path: "/api/config/namespaces/{namespace}/protocol_inspections/{name}",
-					dangerLevel: "low",
-					requiredFields: ["path.name", "path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-get",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "delete",
-					resourceType: "protocol_inspection",
-					operationId: "ves.io.schema.protocol_inspection.API.Delete",
-					summary: "DELETE Configure Protocol Inspection.",
-					description: "DELETE the specified protocol_inspection.",
-					purpose: "Resource deletion operation",
-					path: "/api/config/namespaces/{namespace}/protocol_inspections/{name}",
-					dangerLevel: "high",
-					requiredFields: ["path.name", "path.namespace"],
-					sideEffects: {
-						deletes: ["protocol-inspection", "contained_resources"],
-					},
-					confirmationRequired: true,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-protocol_inspection-api-delete",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "enhanced_firewall_policy",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.API.Create",
-					summary: "Create Enhanced Firewall Policy.",
-					description:
-						"Shape of Enhanced Firewall Policy specification.",
-					purpose: "Configuration policy for resource behavior",
-					path: "/api/config/namespaces/{metadata.namespace}/enhanced_firewall_policys",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.metadata.namespace",
-					],
-					sideEffects: { creates: ["enhanced-firewall-policy"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-create",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "replace",
-					resourceType: "enhanced_firewall_policy",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.API.Replace",
-					summary: "Replace Enhanced Firewall Policy.",
-					description:
-						"Shape of Enhanced Firewall Policy replace specification.",
-					purpose: "Configuration policy for resource behavior",
-					path: "/api/config/namespaces/{metadata.namespace}/enhanced_firewall_policys/{metadata.name}",
-					dangerLevel: "medium",
-					requiredFields: [
-						"path.metadata.name",
-						"path.metadata.namespace",
-					],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-replace",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "create",
-					resourceType: "hit",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.CustomDataAPI.EnhancedFirewallPolicyHits",
-					summary: "Enhanced Firewall Policy Hits.",
-					description:
-						"GET the counter for Enhanced Firewall Policy hits for a given namespace.",
-					purpose: "Resource creation operation",
-					path: "/api/data/namespaces/{namespace}/enhanced_firewall_policy/hits",
-					dangerLevel: "medium",
-					requiredFields: [
-						"metadata.name",
-						"metadata.namespace",
-						"path.namespace",
-					],
-					sideEffects: { creates: ["hit"] },
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-customdataapi-enhancedfirewallpolicyhits",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "list",
-					resourceType: "enhanced_firewall_policy",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.API.List",
-					summary: "List Enhanced Firewall Policy.",
-					description:
-						"List the set of enhanced_firewall_policy in a namespace.",
-					purpose: "Configuration policy for resource behavior",
-					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys",
-					dangerLevel: "low",
-					requiredFields: ["path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-list",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "get",
-					resourceType: "enhanced_firewall_policy",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.API.Get",
-					summary: "GET Enhanced Firewall Policy.",
-					description:
-						"Shape of the Enhanced Firewall Policy specification.",
-					purpose: "Configuration policy for resource behavior",
-					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys/{name}",
-					dangerLevel: "low",
-					requiredFields: ["path.name", "path.namespace"],
-					confirmationRequired: false,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-get",
-						description: "Examples of this operation.",
-					},
-				},
-				{
-					action: "delete",
-					resourceType: "enhanced_firewall_policy",
-					operationId:
-						"ves.io.schema.enhanced_firewall_policy.API.Delete",
-					summary: "DELETE Enhanced Firewall Policy.",
-					description:
-						"DELETE the specified enhanced_firewall_policy.",
-					purpose: "Configuration policy for resource behavior",
-					path: "/api/config/namespaces/{namespace}/enhanced_firewall_policys/{name}",
-					dangerLevel: "high",
-					requiredFields: ["path.name", "path.namespace"],
-					sideEffects: {
-						deletes: [
-							"enhanced-firewall-policy",
-							"contained_resources",
-						],
-					},
-					confirmationRequired: true,
-					commonErrors: [
-						{
-							code: 401,
-							message: "Authentication required",
-							solution: "Provide valid API credentials",
-						},
-						{
-							code: 403,
-							message: "Permission denied",
-							solution:
-								"Check access permissions for this operation",
-						},
-						{
-							code: 404,
-							message: "Resource not found",
-							solution:
-								"Verify resource name, namespace, and path",
-						},
-						{
-							code: 409,
-							message: "Resource already exists",
-							solution:
-								"Use different name or update existing resource",
-						},
-						{
-							code: 429,
-							message: "Rate limit exceeded",
-							solution: "Wait before retrying the operation",
-						},
-						{
-							code: 500,
-							message: "Server error",
-							solution: "Retry operation or contact support",
-						},
-					],
-					externalDocs: {
-						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-enhanced_firewall_policy-api-delete",
-						description: "Examples of this operation.",
-					},
-				},
 				{
 					action: "create",
 					resourceType: "rule_hit",
@@ -101421,15 +101833,80 @@ export const generatedOperations: Map<string, DomainOperationsInfo> = new Map([
 			],
 		},
 	],
+	[
+		"vpm_and_node_management",
+		{
+			domain: "vpm_and_node_management",
+			displayName: "Vpm And Node Management",
+			description:
+				"APIs for configuring node policies, fleet management, and lifecycle operations. Supports node registration, configuration deployment, and status monitoring across distributed infrastructure.",
+			descriptionShort:
+				"APIs for configuring node policies, fleet management, and...",
+			resourceTypes: ["upgrade_statu"],
+			operations: [
+				{
+					action: "list",
+					resourceType: "upgrade_statu",
+					operationId:
+						"ves.io.schema.maintenance_status.CustomAPI.GetUpgradeStatus",
+					summary: "Upgrade Status.",
+					description: "Request to GET the upgrade status.",
+					purpose: "Resource retrieval operation",
+					path: "/api/data/namespaces/system/upgrade_status",
+					dangerLevel: "low",
+					confirmationRequired: false,
+					commonErrors: [
+						{
+							code: 401,
+							message: "Authentication required",
+							solution: "Provide valid API credentials",
+						},
+						{
+							code: 403,
+							message: "Permission denied",
+							solution:
+								"Check access permissions for this operation",
+						},
+						{
+							code: 404,
+							message: "Resource not found",
+							solution:
+								"Verify resource name, namespace, and path",
+						},
+						{
+							code: 409,
+							message: "Resource already exists",
+							solution:
+								"Use different name or update existing resource",
+						},
+						{
+							code: 429,
+							message: "Rate limit exceeded",
+							solution: "Wait before retrying the operation",
+						},
+						{
+							code: 500,
+							message: "Server error",
+							solution: "Retry operation or contact support",
+						},
+					],
+					externalDocs: {
+						url: "https://docs.cloud.f5.com/docs-v2/platform/reference/api-ref/ves-io-schema-maintenance_status-customapi-getupgradestatus",
+						description: "Examples of this operation.",
+					},
+				},
+			],
+		},
+	],
 ]);
 
 /**
  * Total statistics
  */
 export const OPERATIONS_STATS = {
-	domainCount: 38,
-	operationCount: 1830,
-	resourceTypeCount: 787,
+	domainCount: 37,
+	operationCount: 1838,
+	resourceTypeCount: 788,
 };
 
 /**

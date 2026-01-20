@@ -1,0 +1,9 @@
+metadata:
+  name: claude-test-waf
+  namespace: r-mordasiewicz
+spec:
+  blocking_mode: BLOCKING
+  detection_mode: HIGH
+  enable_sql_injection: true
+  enable_xss: true
+  enable_command_injection: true

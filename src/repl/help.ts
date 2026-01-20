@@ -83,7 +83,7 @@ export function formatRootHelp(): string[] {
 		`  ${CLI_NAME} tenant_and_identity list namespace   List all namespaces`,
 		`  ${CLI_NAME} virtual get http_loadbalancer        Get a specific load balancer`,
 		`  ${CLI_NAME} dns list                             List DNS zones`,
-		`  ${CLI_NAME} waf list --namespace prod            List WAF policies in prod`,
+		`  ${CLI_NAME} virtual list app_firewall --namespace prod   List app firewalls in prod`,
 		"",
 		...formatDomainsSection(),
 		"",
@@ -461,29 +461,6 @@ export function formatActionHelp(domainName: string, action: string): string[] {
 			);
 		}
 		output.push("");
-	}
-
-	// Side effects warning (from upstream enrichment)
-	if (opInfo?.sideEffects) {
-		const { creates, updates, deletes } = opInfo.sideEffects;
-		const hasSideEffects =
-			(creates && creates.length > 0) ||
-			(updates && updates.length > 0) ||
-			(deletes && deletes.length > 0);
-
-		if (hasSideEffects) {
-			output.push("SIDE EFFECTS");
-			if (creates && creates.length > 0) {
-				output.push(`  Creates: ${creates.join(", ")}`);
-			}
-			if (updates && updates.length > 0) {
-				output.push(`  Updates: ${updates.join(", ")}`);
-			}
-			if (deletes && deletes.length > 0) {
-				output.push(colorYellow(`  Deletes: ${deletes.join(", ")}`));
-			}
-			output.push("");
-		}
 	}
 
 	// Common errors with solutions (from upstream enrichment)

@@ -46,6 +46,7 @@ import {
 	checkOperationSafety,
 	validateResourceName,
 } from "../validation/index.js";
+import { loadSettingsSync } from "../config/settings.js";
 import {
 	getOperationDefinition,
 	substitutePathParams,
@@ -1281,8 +1282,24 @@ async function executeAPICommand(
 
 	// Get valid resource types for this domain
 	const domainInfo = getDomainInfo(canonicalDomain);
+
+	// Validate domain exists (prevent unknown domain API calls)
+	if (!domainInfo) {
+		return {
+			output: [
+				`ERROR: Unknown domain '${canonicalDomain}'`,
+				"",
+				"Tip: Run 'domains' to see available domains",
+			],
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: false,
+			error: `Unknown domain: ${canonicalDomain}`,
+		};
+	}
+
 	const domainResourceTypes = new Set(
-		domainInfo?.primaryResources?.map((r) => r.name) ?? [],
+		domainInfo.primaryResources?.map((r) => r.name) ?? [],
 	);
 
 	// Parse arguments (with resource type detection)
@@ -1377,7 +1394,15 @@ async function executeAPICommand(
 		resourceType ?? "",
 	);
 	const warningOutput: string[] = [];
-	if (safetyCheck.warning) {
+
+	// Load settings to check warning mode
+	const settings = loadSettingsSync();
+	const shouldShowWarning =
+		settings.safetyWarnings === "enabled" ||
+		(settings.safetyWarnings === "high-only" &&
+			safetyCheck.dangerLevel === "high");
+
+	if (safetyCheck.warning && shouldShowWarning) {
 		warningOutput.push(safetyCheck.warning);
 		warningOutput.push("");
 	}

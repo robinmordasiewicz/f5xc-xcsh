@@ -7,7 +7,11 @@
 import { ENV_PREFIX, DOCS_URL } from "../branding/index.js";
 import { paths } from "./paths.js";
 import { OUTPUT_FORMAT_HELP } from "../output/types.js";
-import { LOGO_MODE_HELP } from "./settings.js";
+import {
+	LOGO_MODE_HELP,
+	SAFETY_WARNING_MODE_HELP,
+	COMPLETION_MODE_HELP,
+} from "./settings.js";
 
 export interface EnvVar {
 	name: string;
@@ -81,6 +85,16 @@ export function formatConfigSection(): string[] {
 		"CONFIGURATION",
 		`  Config file:  ${paths.settings}`,
 		"  Priority:     CLI flags > environment variables > config file > defaults",
+		"",
+		"  Available settings (in config.yaml):",
+		`    logo:            Logo display mode (${LOGO_MODE_HELP})`,
+		`    completionMode:  Completion mode (${COMPLETION_MODE_HELP})`,
+		`    safetyWarnings:  Safety warning mode (${SAFETY_WARNING_MODE_HELP})`,
+		"",
+		"  Example config.yaml:",
+		"    logo: image",
+		"    completionMode: standard",
+		"    safetyWarnings: enabled  # or 'high-only', 'disabled'",
 		"",
 		"DOCUMENTATION",
 		`  ${DOCS_URL}`,
