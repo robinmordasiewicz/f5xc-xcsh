@@ -120,18 +120,18 @@ describe('Domain Registry', () => {
 
 	describe('Virtual Domain Special Cases', () => {
 		it('should have virtual domain defined', () => {
-			expect(generatedDomains['virtual']).toBeDefined();
+			expect(generatedDomains.get('virtual')).toBeDefined();
 		});
 
 		it('should have app_firewall in virtual domain', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const resourceNames = virtualDomain.allResources!.map(r => r.name);
 
 			expect(resourceNames).toContain('app_firewall');
 		});
 
 		it('should have large resource count in virtual', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 
 			// Virtual domain is large with 50+ resources
 			expect(virtualDomain.allResources!.length).toBeGreaterThan(50);
@@ -184,7 +184,7 @@ describe('Domain Registry', () => {
 		});
 
 		it('REGRESSION: app_firewall must stay in virtual', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const resourceNames = virtualDomain.allResources!.map(r => r.name);
 
 			expect(resourceNames).toContain('app_firewall');

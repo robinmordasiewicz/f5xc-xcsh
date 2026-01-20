@@ -16,7 +16,7 @@ describe('Virtual Domain Resources', () => {
 
 	// Load virtual domain before tests
 	beforeAll(() => {
-		virtualDomain = generatedDomains['virtual'];
+		virtualDomain = generatedDomains.get('virtual');
 	});
 
 	describe('Domain Structure', () => {

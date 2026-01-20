@@ -80,7 +80,7 @@ describe('Help System - WAF Removal', () => {
 
 	describe('Virtual Domain Help', () => {
 		it('should include app_firewall in virtual domain resources', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			expect(virtualDomain).toBeDefined();
 
 			const resourceNames = virtualDomain.allResources!.map(r => r.name);
@@ -88,7 +88,7 @@ describe('Help System - WAF Removal', () => {
 		});
 
 		it('should have app_firewall with proper metadata', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const appFirewall = virtualDomain.allResources!.find(r => r.name === 'app_firewall');
 
 			expect(appFirewall).toBeDefined();
@@ -98,14 +98,14 @@ describe('Help System - WAF Removal', () => {
 		});
 
 		it('should show app_firewall as primary resource', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const appFirewall = virtualDomain.allResources!.find(r => r.name === 'app_firewall');
 
 			expect(appFirewall?.isPrimary).toBe(true);
 		});
 
 		it('should have app_firewall with operations', () => {
-			const virtualDomain = generatedDomains['virtual'];
+			const virtualDomain = generatedDomains.get('virtual');
 			const appFirewall = virtualDomain.allResources!.find(r => r.name === 'app_firewall');
 
 			expect(appFirewall?.operations).toContain('list');
@@ -117,7 +117,7 @@ describe('Help System - WAF Removal', () => {
 
 	describe('Other Domains Help', () => {
 		it('should not have app_firewall in network domain', () => {
-			const networkDomain = generatedDomains['network'];
+			const networkDomain = generatedDomains.get('network');
 			if (networkDomain && networkDomain.allResources) {
 				const resourceNames = networkDomain.allResources.map(r => r.name);
 				expect(resourceNames).not.toContain('app_firewall');
@@ -125,7 +125,7 @@ describe('Help System - WAF Removal', () => {
 		});
 
 		it('should not have app_firewall in security domain', () => {
-			const securityDomain = generatedDomains['network_security'];
+			const securityDomain = generatedDomains.get('network_security');
 			if (securityDomain && securityDomain.allResources) {
 				const resourceNames = securityDomain.allResources.map(r => r.name);
 				expect(resourceNames).not.toContain('app_firewall');
