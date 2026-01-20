@@ -20,9 +20,7 @@ export {
 	getOperationDangerLevel,
 	requiresConfirmation,
 	formatSafetyWarning,
-	getOperationSideEffects,
 	type DangerLevel,
-	type SideEffects,
 	type SafetyCheckResult,
 } from "./safety.js";
 

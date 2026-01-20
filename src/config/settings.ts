@@ -90,6 +90,49 @@ export const COMPLETION_MODE_HELP = COMPLETION_MODES.map((m) => m.mode).join(
 );
 
 /**
+ * Safety warning mode definition with descriptions.
+ * Single source of truth for safety warning display modes.
+ */
+export interface SafetyWarningModeDefinition {
+	/** Mode identifier */
+	mode: string;
+	/** Human-readable description */
+	description: string;
+}
+
+/**
+ * All supported safety warning display modes with descriptions.
+ * This is the canonical definition - used for validation and help generation.
+ */
+export const SAFETY_WARNING_MODES: readonly SafetyWarningModeDefinition[] = [
+	{
+		mode: "enabled",
+		description: "Show all warnings (default)",
+	},
+	{
+		mode: "high-only",
+		description: "Show only HIGH DANGER warnings",
+	},
+	{
+		mode: "disabled",
+		description: "Show no warnings",
+	},
+] as const;
+
+/**
+ * Safety warning mode type - derived from SAFETY_WARNING_MODES for type safety.
+ */
+export type SafetyWarningMode = (typeof SAFETY_WARNING_MODES)[number]["mode"];
+
+/**
+ * Helper string for help text generation
+ * Automatically derived from SAFETY_WARNING_MODES constant
+ */
+export const SAFETY_WARNING_MODE_HELP = SAFETY_WARNING_MODES.map(
+	(m) => m.mode,
+).join(", ");
+
+/**
  * Application settings from .xcshconfig file.
  */
 export interface AppSettings {
@@ -97,6 +140,8 @@ export interface AppSettings {
 	logo: LogoDisplayMode;
 	/** Completion resource display mode */
 	completionMode: CompletionMode;
+	/** Safety warning display mode */
+	safetyWarnings: SafetyWarningMode;
 }
 
 /**
@@ -105,6 +150,7 @@ export interface AppSettings {
 export const DEFAULT_SETTINGS: AppSettings = {
 	logo: "image",
 	completionMode: "standard",
+	safetyWarnings: "enabled",
 };
 
 /**
@@ -138,6 +184,25 @@ export function getCompletionModeDescription(mode: string): string | undefined {
 }
 
 /**
+ * Validate if a string is a valid safety warning mode.
+ * Uses SAFETY_WARNING_MODES as single source of truth.
+ */
+export function isValidSafetyWarningMode(
+	mode: string,
+): mode is SafetyWarningMode {
+	return SAFETY_WARNING_MODES.some((m) => m.mode === mode);
+}
+
+/**
+ * Get safety warning mode description for help text.
+ */
+export function getSafetyWarningModeDescription(
+	mode: string,
+): string | undefined {
+	return SAFETY_WARNING_MODES.find((m) => m.mode === mode)?.description;
+}
+
+/**
  * Validate and sanitize settings from config file.
  * Invalid values are ignored and defaults are used.
  */
@@ -155,6 +220,13 @@ function validateSettings(
 		isValidCompletionMode(settings.completionMode)
 	) {
 		validated.completionMode = settings.completionMode;
+	}
+
+	if (
+		settings.safetyWarnings &&
+		isValidSafetyWarningMode(settings.safetyWarnings)
+	) {
+		validated.safetyWarnings = settings.safetyWarnings;
 	}
 
 	return validated;

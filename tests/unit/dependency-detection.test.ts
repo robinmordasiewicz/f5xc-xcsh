@@ -363,8 +363,8 @@ describe("Dependency Detection", () => {
 
 			expect(result.found).toBe(false);
 			expect(result.searchedDomains.length).toBeGreaterThan(0);
-			// Should search all available domains (38 domains)
-			expect(result.searchedDomains.length).toBeGreaterThanOrEqual(38);
+			// Should search all available domains (37 domains after WAF removal)
+			expect(result.searchedDomains.length).toBeGreaterThanOrEqual(37);
 		});
 	});
 });

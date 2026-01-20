@@ -16,6 +16,11 @@ import {
 	validateOriginPoolFlags,
 	OriginPoolRequestBody,
 } from "./origin-pool-builder.js";
+import {
+	buildAppFirewallRequest,
+	validateAppFirewallFlags,
+	AppFirewallRequestBody,
+} from "./app-firewall-builder.js";
 
 /**
  * Generic validation result
@@ -53,6 +58,14 @@ const BUILDERS_REGISTRY: Record<string, ResourceBuilder> = {
 				unknown
 			>,
 		validate: validateOriginPoolFlags,
+	},
+	app_firewall: {
+		build: (flags, namespace) =>
+			buildAppFirewallRequest(flags, namespace) as unknown as Record<
+				string,
+				unknown
+			>,
+		validate: validateAppFirewallFlags,
 	},
 };
 
@@ -127,4 +140,8 @@ export function validateResourceFlags(
 }
 
 // Re-export types for convenience
-export type { HealthcheckRequestBody, OriginPoolRequestBody };
+export type {
+	HealthcheckRequestBody,
+	OriginPoolRequestBody,
+	AppFirewallRequestBody,
+};
