@@ -63,7 +63,7 @@ export interface OriginPoolRequestBody {
 		lb_port?: Record<string, unknown>;
 		loadbalancer_algorithm?:
 			| "ROUND_ROBIN"
-			| "LEAST_ACTIVE"
+			| "LEAST_REQUEST"
 			| "RANDOM"
 			| "SOURCE_IP_STICKINESS"
 			| "COOKIE_STICKINESS"
@@ -282,7 +282,7 @@ export function buildOriginPoolRequest(
 	if (algorithm) {
 		request.spec.loadbalancer_algorithm = algorithm as
 			| "ROUND_ROBIN"
-			| "LEAST_ACTIVE"
+			| "LEAST_REQUEST"
 			| "RANDOM"
 			| "SOURCE_IP_STICKINESS"
 			| "COOKIE_STICKINESS"

@@ -54,10 +54,27 @@ export async function getQuotaForResourceType(
 			mapping.quotaName,
 		);
 
-		if (!usage || usage.limit <= 0) {
+		if (!usage) {
 			return null; // No quota data available
 		}
 
+		// Handle unlimited quotas (limit = -1)
+		if (usage.limit < 0) {
+			return {
+				current: usage.current,
+				limit: usage.limit,
+				percentage: 0,
+				level: "none" as const,
+				display: `${usage.current} (unlimited)`,
+			};
+		}
+
+		// Handle zero or invalid limit
+		if (usage.limit === 0) {
+			return null;
+		}
+
+		// Normal finite quota
 		const percentage = Math.round((usage.current / usage.limit) * 100);
 		const level: QuotaInfo["level"] =
 			percentage >= 100 ? "error" : percentage >= 90 ? "warning" : "none";

@@ -217,12 +217,16 @@ describe("hasCreationFlags", () => {
 		expect(hasCreationFlags("origin_pool")).toBe(true);
 	});
 
-	it("returns false for unknown resource type", () => {
-		expect(hasCreationFlags("unknown_type")).toBe(false);
+	it("returns true for http_loadbalancer", () => {
+		expect(hasCreationFlags("http_loadbalancer")).toBe(true);
 	});
 
-	it("returns false for http_loadbalancer (not yet implemented)", () => {
-		expect(hasCreationFlags("http_loadbalancer")).toBe(false);
+	it("returns true for app_firewall", () => {
+		expect(hasCreationFlags("app_firewall")).toBe(true);
+	});
+
+	it("returns false for unknown resource type", () => {
+		expect(hasCreationFlags("unknown_type")).toBe(false);
 	});
 
 	it("is case-sensitive", () => {
@@ -313,7 +317,7 @@ describe("getCreationFlags", () => {
 			expect(algoFlag).toBeDefined();
 			expect(algoFlag?.valueType).toBe("enum");
 			expect(algoFlag?.enumValues).toContain("ROUND_ROBIN");
-			expect(algoFlag?.enumValues).toContain("LEAST_ACTIVE");
+			expect(algoFlag?.enumValues).toContain("LEAST_REQUEST");
 		});
 
 		it("includes --health-check flag with max 4", () => {

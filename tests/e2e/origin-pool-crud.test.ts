@@ -236,6 +236,25 @@ describe("Origin Pool CRUD End-to-End Tests", () => {
 			expect(resource.spec?.port).toBe(443);
 			expect(resource.spec?.use_tls).toBeDefined();
 		}, 60000);
+
+	it("✓ CREATE: --algorithm LEAST_REQUEST works", async () => {
+		const name = generateResourceName("algo-least-req");
+		createdResources.push(name);
+
+		const createResult = await xcsh(
+			`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --port 8080 --algorithm LEAST_REQUEST --namespace ${TEST_NAMESPACE}`,
+		);
+
+		expect(createResult.exitCode).toBe(0);
+		await waitForAPI();
+
+		const readResult = await xcsh(
+			`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+		);
+
+		const resource = parseJSON(readResult.stdout);
+		expect(resource.spec?.loadbalancer_algorithm).toBe("LEAST_REQUEST");
+	}, 60000);
 	});
 
 	// ============================================================================
@@ -514,6 +533,261 @@ describe("Origin Pool CRUD End-to-End Tests", () => {
 			const names = list.items.map((item: any) => item.name);
 			expect(names).toContain(name1);
 			expect(names).toContain(name2);
+		}, 60000);
+	});
+
+	// ============================================================================
+	// CATEGORY 9: ADDITIONAL ORIGIN SERVER TYPES
+	// ============================================================================
+
+	describe("CATEGORY 9: Additional Origin Server Types", () => {
+		it("✓ CREATE: --private-ip with --site works", async () => {
+			const name = generateResourceName("private-ip");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --private-ip 10.0.1.10 --site test-site --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(1);
+			expect(resource.spec?.origin_servers[0]?.private_ip).toBeDefined();
+			expect(resource.spec?.origin_servers[0]?.private_ip?.ip).toBe("10.0.1.10");
+		}, 60000);
+
+		it("✓ CREATE: --private-name with --site works", async () => {
+			const name = generateResourceName("private-name");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --private-name backend.internal --site test-site --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(1);
+			expect(resource.spec?.origin_servers[0]?.private_name).toBeDefined();
+			expect(resource.spec?.origin_servers[0]?.private_name?.dns_name).toBe(
+				"backend.internal",
+			);
+		}, 60000);
+
+		it("✓ CREATE: --k8s-service with --site works", async () => {
+			const name = generateResourceName("k8s-svc");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --k8s-service nginx-service --site test-site --port 80 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(1);
+			expect(resource.spec?.origin_servers[0]?.k8s_service).toBeDefined();
+			expect(resource.spec?.origin_servers[0]?.k8s_service?.service_name).toBe(
+				"nginx-service",
+			);
+		}, 60000);
+
+		it("✓ CREATE: --vn-private-ip works", async () => {
+			const name = generateResourceName("vn-ip");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --vn-private-ip 10.10.1.10 --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(1);
+			expect(resource.spec?.origin_servers[0]?.vn_private_ip).toBeDefined();
+			expect(resource.spec?.origin_servers[0]?.vn_private_ip?.ip).toBe(
+				"10.10.1.10",
+			);
+		}, 60000);
+
+		it("✓ CREATE: --vn-private-name works", async () => {
+			const name = generateResourceName("vn-name");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --vn-private-name app.vn.local --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(1);
+			expect(resource.spec?.origin_servers[0]?.vn_private_name).toBeDefined();
+			expect(resource.spec?.origin_servers[0]?.vn_private_name?.dns_name).toBe(
+				"app.vn.local",
+			);
+		}, 60000);
+
+		it("✓ CREATE: Multiple origin server types can be mixed", async () => {
+			const name = generateResourceName("mixed");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --public-name example.com --vn-private-ip 10.10.1.20 --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			expect(resource.spec?.origin_servers).toHaveLength(3);
+			expect(resource.spec?.origin_servers[0]?.public_ip).toBeDefined();
+			expect(resource.spec?.origin_servers[1]?.public_name).toBeDefined();
+			expect(resource.spec?.origin_servers[2]?.vn_private_ip).toBeDefined();
+		}, 60000);
+	});
+
+	// ============================================================================
+	// CATEGORY 10: SERVER DEFAULTS VERIFICATION
+	// ============================================================================
+
+	describe("CATEGORY 10: Server Defaults Verification", () => {
+		it("✓ CREATE: Server defaults ROUND_ROBIN algorithm when not specified", async () => {
+			const name = generateResourceName("default-algo");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// Server should apply ROUND_ROBIN default
+			expect(
+				resource.spec?.loadbalancer_algorithm === "ROUND_ROBIN" ||
+					resource.spec?.loadbalancer_algorithm === undefined,
+			).toBe(true);
+		}, 60000);
+
+		it("✓ CREATE: Server defaults DISTRIBUTED endpoint selection when not specified", async () => {
+			const name = generateResourceName("default-endpoint");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// Server should apply DISTRIBUTED default
+			expect(
+				resource.spec?.endpoint_selection === "DISTRIBUTED" ||
+					resource.spec?.endpoint_selection === undefined,
+			).toBe(true);
+		}, 60000);
+
+		it("✓ CREATE: Smart default port 80 applied when no port specified", async () => {
+			const name = generateResourceName("default-port");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// Smart default applies port 80
+			expect(resource.spec?.port).toBe(80);
+		}, 60000);
+
+		it("✓ CREATE: Smart default no_tls applied for non-443 ports", async () => {
+			const name = generateResourceName("default-notls");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-ip 192.0.2.10 --port 8080 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// Smart default applies no_tls for non-443 ports
+			expect(resource.spec?.no_tls).toBeDefined();
+			expect(resource.spec?.use_tls).toBeUndefined();
+		}, 60000);
+
+		it("✓ CREATE: Smart default use_tls applied for port 443", async () => {
+			const name = generateResourceName("default-tls");
+			createdResources.push(name);
+
+			const createResult = await xcsh(
+				`virtual create origin_pool --name ${name} --public-name example.com --port 443 --namespace ${TEST_NAMESPACE}`,
+			);
+
+			expect(createResult.exitCode).toBe(0);
+			await waitForAPI();
+
+			const readResult = await xcsh(
+				`virtual get origin_pool --name ${name} --namespace ${TEST_NAMESPACE} -o json`,
+			);
+
+			const resource = parseJSON(readResult.stdout);
+			// Smart default applies use_tls for port 443
+			expect(resource.spec?.use_tls).toBeDefined();
+			expect(resource.spec?.no_tls).toBeUndefined();
 		}, 60000);
 	});
 });
