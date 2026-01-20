@@ -164,6 +164,11 @@ export function validateAppFirewallFlags(
 ): BuilderValidationResult {
 	const errors: string[] = [];
 
+	// Include any parsing errors from flag-parser
+	if (flags.errors && flags.errors.length > 0) {
+		errors.push(...flags.errors);
+	}
+
 	// Check required fields
 	const name = getFlagValue(flags, "--name");
 	if (!name) {
