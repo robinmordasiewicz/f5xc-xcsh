@@ -134,7 +134,7 @@ describe('Virtual Domain Resources', () => {
 			for (const resource of resources) {
 				expect(resource.name).toBeDefined();
 				expect(resource.name.length).toBeGreaterThan(0);
-				expect(resource.name).toMatch(/^[a-z_-]+$/); // snake_case or kebab-case
+				expect(resource.name).toMatch(/^[a-z0-9_-]+$/); // snake_case, kebab-case, with digits
 			}
 		});
 
