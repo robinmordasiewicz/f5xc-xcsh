@@ -1806,8 +1806,8 @@ export class Completer {
 						category: "value" as const,
 					},
 					{
-						text: "LEAST_ACTIVE",
-						description: "Least active connections",
+						text: "LEAST_REQUEST",
+						description: "Least request algorithm",
 						category: "value" as const,
 					},
 					{

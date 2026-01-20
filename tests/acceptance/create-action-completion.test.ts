@@ -445,7 +445,7 @@ describe("Origin Pool Create Action Completion", () => {
 			const result = suggestions.map((s) => s.text);
 
 			expect(result).toContain("ROUND_ROBIN");
-			expect(result).toContain("LEAST_ACTIVE");
+			expect(result).toContain("LEAST_REQUEST");
 			expect(result).toContain("RANDOM");
 			expect(result).toContain("SOURCE_IP_STICKINESS");
 			expect(result).toContain("COOKIE_STICKINESS");
@@ -461,7 +461,7 @@ describe("Origin Pool Create Action Completion", () => {
 			expect(result).toContain("ROUND_ROBIN");
 			expect(result).toContain("RANDOM");
 			expect(result).toContain("RING_HASH");
-			expect(result).not.toContain("LEAST_ACTIVE");
+			expect(result).not.toContain("LEAST_REQUEST");
 		});
 	});
 

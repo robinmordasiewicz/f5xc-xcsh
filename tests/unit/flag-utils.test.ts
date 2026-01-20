@@ -313,7 +313,7 @@ describe("getCreationFlags", () => {
 			expect(algoFlag).toBeDefined();
 			expect(algoFlag?.valueType).toBe("enum");
 			expect(algoFlag?.enumValues).toContain("ROUND_ROBIN");
-			expect(algoFlag?.enumValues).toContain("LEAST_ACTIVE");
+			expect(algoFlag?.enumValues).toContain("LEAST_REQUEST");
 		});
 
 		it("includes --health-check flag with max 4", () => {

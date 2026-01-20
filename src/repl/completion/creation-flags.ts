@@ -298,28 +298,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		priority: 1, // Highest priority - always first
 	},
 
-	// Port configuration (mutually exclusive group)
-	{
-		name: "--port",
-		description: "Backend port (1-65535)",
-		required: false,
-		hasValue: true,
-		valueType: "integer",
-	},
-	{
-		name: "--automatic-port",
-		description: "Use automatic port selection",
-		required: false,
-		hasValue: false,
-	},
-	{
-		name: "--lb-port",
-		description: "Use load balancer port",
-		required: false,
-		hasValue: false,
-	},
-
-	// Origin Server Types (ALL 10 - REPEATABLE)
+	// Origin Server Types (ALL 10 - REPEATABLE) - Priority 15-20
 	{
 		name: "--public-ip",
 		description: "Public IP origin server",
@@ -328,6 +307,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 15,
 	},
 	{
 		name: "--public-name",
@@ -337,6 +317,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 15,
 	},
 	{
 		name: "--private-ip",
@@ -346,6 +327,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 16,
 	},
 	{
 		name: "--private-name",
@@ -355,6 +337,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 16,
 	},
 	{
 		name: "--k8s-service",
@@ -364,6 +347,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 17,
 	},
 	{
 		name: "--consul-service",
@@ -373,33 +357,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
-	},
-	{
-		name: "--custom-endpoint",
-		description: "Custom endpoint object reference",
-		required: false,
-		hasValue: true,
-		valueType: "string",
-		isRepeatable: true,
-		maxOccurrences: 32,
-	},
-	{
-		name: "--vn-private-ip",
-		description: "Virtual network private IP",
-		required: false,
-		hasValue: true,
-		valueType: "string",
-		isRepeatable: true,
-		maxOccurrences: 32,
-	},
-	{
-		name: "--vn-private-name",
-		description: "Virtual network private DNS name",
-		required: false,
-		hasValue: true,
-		valueType: "string",
-		isRepeatable: true,
-		maxOccurrences: 32,
+		priority: 17,
 	},
 	{
 		name: "--cbip-service",
@@ -409,9 +367,91 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 32,
+		priority: 17,
+	},
+	{
+		name: "--custom-endpoint",
+		description: "Custom endpoint object reference",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		isRepeatable: true,
+		maxOccurrences: 32,
+		priority: 18,
+	},
+	{
+		name: "--vn-private-ip",
+		description: "Virtual network private IP",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		isRepeatable: true,
+		maxOccurrences: 32,
+		priority: 19,
+	},
+	{
+		name: "--vn-private-name",
+		description: "Virtual network private DNS name",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		isRepeatable: true,
+		maxOccurrences: 32,
+		priority: 19,
 	},
 
-	// Load Balancing Algorithm
+	// Site reference (for private origins) - Priority 20
+	{
+		name: "--site",
+		description: "Site reference for private origins",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 20,
+	},
+
+	// Port configuration (mutually exclusive group) - Priority 25-26
+	{
+		name: "--port",
+		description: "Backend port (1-65535)",
+		required: false,
+		hasValue: true,
+		valueType: "integer",
+		recommendedValue: 443,
+		priority: 25,
+	},
+	{
+		name: "--automatic-port",
+		description: "Use automatic port selection",
+		required: false,
+		hasValue: false,
+		priority: 26,
+	},
+	{
+		name: "--lb-port",
+		description: "Use load balancer port",
+		required: false,
+		hasValue: false,
+		priority: 26,
+	},
+
+	// TLS Configuration - Priority 32
+	{
+		name: "--no-tls",
+		description: "Disable TLS for origin connections",
+		required: false,
+		hasValue: false,
+		priority: 32,
+	},
+	{
+		name: "--use-tls",
+		description: "Enable TLS for origin connections",
+		required: false,
+		hasValue: false,
+		priority: 32,
+	},
+
+	// Load Balancing Algorithm - Priority 35
 	{
 		name: "--algorithm",
 		description: "Load balancing algorithm",
@@ -420,15 +460,20 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "enum",
 		enumValues: [
 			"ROUND_ROBIN",
-			"LEAST_ACTIVE",
+			"LEAST_REQUEST",
 			"RANDOM",
 			"SOURCE_IP_STICKINESS",
 			"COOKIE_STICKINESS",
 			"RING_HASH",
+			"LB_OVERRIDE",
 		],
+		defaultValue: "ROUND_ROBIN",
+		hasServerDefault: true,
+		recommendedValue: "LB_OVERRIDE",
+		priority: 35,
 	},
 
-	// Health Checks (repeatable, max 4)
+	// Health Checks (repeatable, max 4) - Priority 38
 	{
 		name: "--health-check",
 		description: "Health check reference",
@@ -437,29 +482,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		valueType: "string",
 		isRepeatable: true,
 		maxOccurrences: 4,
-	},
-
-	// TLS Configuration
-	{
-		name: "--no-tls",
-		description: "Disable TLS for origin connections",
-		required: false,
-		hasValue: false,
-	},
-	{
-		name: "--use-tls",
-		description: "Enable TLS for origin connections",
-		required: false,
-		hasValue: false,
-	},
-
-	// Site reference (for private origins)
-	{
-		name: "--site",
-		description: "Site reference for private origins",
-		required: false,
-		hasValue: true,
-		valueType: "string",
+		priority: 38,
 	},
 
 	// Connection Pool - Parent Flag (Priority 30)
@@ -470,6 +493,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		hasValue: true,
 		valueType: "enum",
 		enumValues: ["default", "enable-reuse", "disable-reuse"],
+		recommendedValue: "enable-reuse",
 		priority: 30,
 	},
 
@@ -508,6 +532,7 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 		enumValues: ["DISTRIBUTED", "LOCAL_ONLY", "LOCAL_PREFERRED"],
 		defaultValue: "DISTRIBUTED",
 		hasServerDefault: true,
+		recommendedValue: "LOCAL_PREFERRED",
 		priority: 40,
 	},
 
@@ -752,6 +777,253 @@ export const ORIGIN_POOL_CREATION_FLAGS: CreationFlagDefinition[] = [
 ];
 
 /**
+ * HTTP Load Balancer creation flags
+ * Based on F5 XC http_loadbalancer resource schema
+ *
+ * Core flags for creating an HTTP/HTTPS load balancer with virtual hosts,
+ * origin pools, and advanced traffic management features.
+ */
+export const HTTP_LOADBALANCER_CREATION_FLAGS: CreationFlagDefinition[] = [
+	// Required - Name
+	{
+		name: "--name",
+		description: "HTTP load balancer name",
+		required: true,
+		hasValue: true,
+		valueType: "string",
+		priority: 1,
+	},
+
+	// Domains (virtual hosts) - Priority 10
+	{
+		name: "--domain",
+		description: "Domain name for virtual host (e.g., example.com)",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		isRepeatable: true,
+		maxOccurrences: 64,
+		priority: 10,
+	},
+
+	// Port Configuration - Priority 15
+	{
+		name: "--http-port",
+		description: "HTTP listening port (default: 80)",
+		required: false,
+		hasValue: true,
+		valueType: "integer",
+		defaultValue: 80,
+		hasServerDefault: true,
+		priority: 15,
+	},
+	{
+		name: "--https-port",
+		description: "HTTPS listening port (default: 443)",
+		required: false,
+		hasValue: true,
+		valueType: "integer",
+		defaultValue: 443,
+		hasServerDefault: true,
+		recommendedValue: 443,
+		priority: 15,
+	},
+
+	// TLS Configuration - Priority 20
+	{
+		name: "--tls-certificate",
+		description: "TLS certificate reference for HTTPS",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 20,
+	},
+	{
+		name: "--http-redirect",
+		description: "Redirect HTTP to HTTPS automatically",
+		required: false,
+		hasValue: false,
+		priority: 21,
+	},
+
+	// Origin Pool - Priority 25
+	{
+		name: "--origin-pool",
+		description: "Default origin pool for backend traffic",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 25,
+	},
+
+	// Advertise Policy - Priority 30
+	{
+		name: "--advertise-policy",
+		description: "Where to advertise this load balancer",
+		required: false,
+		hasValue: true,
+		valueType: "enum",
+		enumValues: ["INTERNET", "VIRTUAL_SITE", "CUSTOM"],
+		recommendedValue: "INTERNET",
+		priority: 30,
+	},
+
+	// WAF/Security - Priority 40
+	{
+		name: "--app-firewall",
+		description: "Application firewall (WAF) policy reference",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 40,
+	},
+	{
+		name: "--service-policy",
+		description: "Service policy reference for rate limiting",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 41,
+	},
+
+	// Advanced Features - Priority 50+
+	{
+		name: "--enable-api-discovery",
+		description: "Enable automatic API endpoint discovery",
+		required: false,
+		hasValue: false,
+		priority: 50,
+	},
+	{
+		name: "--bot-defense",
+		description: "Bot defense policy reference",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 51,
+	},
+	{
+		name: "--enable-ddos",
+		description: "Enable DDoS protection",
+		required: false,
+		hasValue: false,
+		priority: 52,
+	},
+];
+
+/**
+ * Application Firewall (WAF) creation flags
+ * Based on F5 XC app_firewall resource schema
+ *
+ * Core flags for creating a Web Application Firewall policy with
+ * detection controls, blocking modes, and attack signatures.
+ */
+export const APP_FIREWALL_CREATION_FLAGS: CreationFlagDefinition[] = [
+	// Required - Name
+	{
+		name: "--name",
+		description: "Application firewall name",
+		required: true,
+		hasValue: true,
+		valueType: "string",
+		priority: 1,
+	},
+
+	// Blocking Mode - Priority 10
+	{
+		name: "--blocking-mode",
+		description: "WAF enforcement mode",
+		required: false,
+		hasValue: true,
+		valueType: "enum",
+		enumValues: ["MONITORING", "BLOCKING"],
+		defaultValue: "MONITORING",
+		hasServerDefault: true,
+		recommendedValue: "BLOCKING",
+		priority: 10,
+	},
+
+	// Detection Settings - Priority 15
+	{
+		name: "--detection-mode",
+		description: "Attack detection sensitivity",
+		required: false,
+		hasValue: true,
+		valueType: "enum",
+		enumValues: ["LOW", "MEDIUM", "HIGH", "CUSTOM"],
+		defaultValue: "MEDIUM",
+		hasServerDefault: true,
+		recommendedValue: "HIGH",
+		priority: 15,
+	},
+
+	// Attack Types - Priority 20
+	{
+		name: "--enable-sql-injection",
+		description: "Enable SQL injection detection",
+		required: false,
+		hasValue: false,
+		priority: 20,
+	},
+	{
+		name: "--enable-xss",
+		description: "Enable cross-site scripting (XSS) detection",
+		required: false,
+		hasValue: false,
+		priority: 20,
+	},
+	{
+		name: "--enable-command-injection",
+		description: "Enable command injection detection",
+		required: false,
+		hasValue: false,
+		priority: 20,
+	},
+
+	// Violation Settings - Priority 30
+	{
+		name: "--allowed-response-codes",
+		description: "Allowed HTTP response codes (comma-separated)",
+		required: false,
+		hasValue: true,
+		valueType: "string",
+		priority: 30,
+	},
+	{
+		name: "--max-request-size",
+		description: "Maximum request size in bytes",
+		required: false,
+		hasValue: true,
+		valueType: "integer",
+		defaultValue: 10485760,
+		priority: 31,
+	},
+
+	// Advanced Features - Priority 40+
+	{
+		name: "--enable-api-protection",
+		description: "Enable API-specific protection",
+		required: false,
+		hasValue: false,
+		priority: 40,
+	},
+	{
+		name: "--enable-bot-protection",
+		description: "Enable bot detection integration",
+		required: false,
+		hasValue: false,
+		priority: 41,
+	},
+	{
+		name: "--enable-threat-campaigns",
+		description: "Enable threat campaign protection",
+		required: false,
+		hasValue: false,
+		priority: 42,
+	},
+];
+
+/**
  * Registry mapping resource types to their creation flags
  */
 export const CREATION_FLAGS_REGISTRY = new Map<
@@ -760,6 +1032,8 @@ export const CREATION_FLAGS_REGISTRY = new Map<
 >([
 	["healthcheck", HEALTHCHECK_CREATION_FLAGS],
 	["origin_pool", ORIGIN_POOL_CREATION_FLAGS],
+	["http_loadbalancer", HTTP_LOADBALANCER_CREATION_FLAGS],
+	["app_firewall", APP_FIREWALL_CREATION_FLAGS],
 ]);
 
 /**
