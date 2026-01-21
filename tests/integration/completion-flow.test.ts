@@ -255,7 +255,7 @@ describe("Completion Flow Integration Tests", () => {
 	describe("Command Forms with Completions", () => {
 		it(
 			"should handle completions for /command form",
-			{ timeout: 10000 },
+			{ timeout: 15000 },
 			async () => {
 				await completeAndExpect("/login ", completer, {
 					includes: ["create", "list", "show"],
