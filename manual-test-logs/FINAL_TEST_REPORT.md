@@ -18,7 +18,7 @@
 
 ### Overall Assessment
 
-**✅ RECOMMENDATION: APPROVE with corrective action**
+## RECOMMENDATION: APPROVE with corrective action
 
 The `app_firewall` resource implementation is **functionally complete and working correctly**. All tested features operate as expected when using the correct domain (`waf`). However, a critical domain routing issue was discovered that requires correction in documentation and potentially in code.
 
@@ -45,7 +45,7 @@ Result: Creates origin_pool instead of app_firewall
 # ✅ WORKS: WAF domain creates correct resource
 $ ./dist/index.js waf create app_firewall --name test --namespace default
 Result: Creates app_firewall with proper spec structure
-```
+```text
 
 #### Root Cause Analysis
 
@@ -244,11 +244,11 @@ See: `manual-test-logs/CRITICAL_FINDING.md`
 
 ### Resource Quota Status
 
-```
+```text
 ⚠️  Quota Warning: Application Firewalls
     Usage: 103/115 (90%)
     ██████████████████░░
-```
+```text
 
 **Note**: Test namespace approaching quota limit. Consider cleanup of old test resources.
 
@@ -271,7 +271,7 @@ See: `manual-test-logs/CRITICAL_FINDING.md`
     "use_default_blocking_page": {}
   }
 }
-```
+```text
 
 ### API Response Structure (Verified)
 
@@ -315,7 +315,7 @@ waf list app_firewall --namespace default
 
 # Deletion
 waf delete app_firewall --name test-waf --namespace default
-```
+```text
 
 ---
 
@@ -351,7 +351,7 @@ app_firewall: {
     buildAppFirewallRequest(flags, namespace) as unknown as Record<string, unknown>,
   validate: validateAppFirewallFlags,
 },
-```
+```text
 
 ### Flag Definitions
 
@@ -441,9 +441,9 @@ Verified in `src/repl/completion/creation-flags.ts`:
    npm test tests/e2e/app-firewall-crud.test.ts
    ```
 
-   - Validates all flags not covered in manual testing
-   - Ensures no regressions
-   - Provides additional confidence
+- Validates all flags not covered in manual testing
+- Ensures no regressions
+- Provides additional confidence
 
 5. 🧪 **TEST ADVANCED FEATURES**: Verify untested flags
    - Response code parsing ("200,201-204,301")
@@ -526,14 +526,14 @@ Verified in `src/repl/completion/creation-flags.ts`:
 
 ### Detailed Execution Timeline
 
-```
+```text
 02:28:25 - Test environment setup
 02:30:08 - Discovery: Domain routing issue (virtual vs waf)
 02:30:08 - First test resource created (wrong domain)
 02:32:25 - Confirmed working in waf domain
 02:34:13 - Streamlined test execution started
 02:34:49 - All tests completed successfully
-```
+```text
 
 ---
 

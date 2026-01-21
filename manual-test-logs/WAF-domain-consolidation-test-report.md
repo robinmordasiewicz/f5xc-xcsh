@@ -13,7 +13,7 @@
 
 Successfully completed comprehensive manual testing of the WAF domain consolidation (v2.0.45). The WAF domain has been removed and app_firewall functionality migrated to the virtual domain. **7 of 10 test phases completed with 3 requiring manual TTY testing**.
 
-### Overall Status: ✅ **PASS WITH MINOR ISSUES**
+## Overall Status: ✅ **PASS WITH MINOR ISSUES**
 
 **Critical Success Criteria Met**:
 
@@ -29,7 +29,7 @@ Successfully completed comprehensive manual testing of the WAF domain consolidat
 
 ## Test Phases Summary
 
-### ✅ Phase 1: Domain Validation Testing (CRITICAL)
+## ✅ Phase 1: Domain Validation Testing (CRITICAL)
 
 **Status**: PASSED
 **Tests**: 3/3 passed
@@ -41,28 +41,28 @@ Successfully completed comprehensive manual testing of the WAF domain consolidat
 - ✅ app_firewall visible in virtual domain help with correct metadata
 - ✅ Non-existent domains handled consistently
 
-**Test 1.1: WAF Domain Rejection**
+## Test 1.1: WAF Domain Rejection
 
 ```bash
 ./dist/index.js waf --help
 # ERROR: Unknown domain 'waf'
 # Tip: Run 'domains' to see available domains
-```
+```text
 
-**Test 1.2: Virtual Domain Acceptance**
+## Test 1.2: Virtual Domain Acceptance
 
 - app_firewall listed in Core Resources
 - Icon: 🛡️ (shield)
 - Marked as [Advanced] with ⭐ (primary resource)
 - Description: "Web application firewall for threat protection"
 
-**Test 1.3: Non-existent Domain Rejection**
+## Test 1.3: Non-existent Domain Rejection
 
 - Consistent error handling for invalid domain names
 
 ---
 
-### ✅ Phase 2: Help System Testing
+## ✅ Phase 2: Help System Testing
 
 **Status**: PASSED (with fix applied)
 **Tests**: 5/5 passed
@@ -82,18 +82,18 @@ Successfully completed comprehensive manual testing of the WAF domain consolidat
 - ✅ Virtual domain help shows correct metadata and resources
 - ✅ Other domains (dns, network, certificates) have correct help
 
-**Test 2.2: Virtual Domain Metadata**
+## Test 2.2: Virtual Domain Metadata
 
-```
+```text
 Category: Networking
 Complexity: advanced
 Tier: Advanced
 Total Resources: 58 (7 primary + 51 discovered)
-```
+```text
 
 ---
 
-### ✅ Phase 3: Interactive REPL Testing
+## ✅ Phase 3: Interactive REPL Testing
 
 **Status**: PARTIAL - Non-interactive commands tested
 **Tests**: 1/5 completed (TTY required for full testing)
@@ -116,7 +116,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ⏭️ Phase 4: Tab Completion Testing
+## ⏭️ Phase 4: Tab Completion Testing
 
 **Status**: SKIPPED
 **Tests**: 0/4 (requires interactive terminal)
@@ -132,7 +132,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ✅ Phase 5: CRUD Operations Matrix
+## ✅ Phase 5: CRUD Operations Matrix
 
 **Status**: PASSED
 **Tests**: 5/6 passed (file-based creation skipped by design)
@@ -174,7 +174,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ✅ Phase 6: Builder Flag Validation
+## ✅ Phase 6: Builder Flag Validation
 
 **Status**: PASSED (with issues identified)
 **Tests**: 6/6 completed
@@ -226,7 +226,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ✅ Phase 7: Output Format Testing
+## ✅ Phase 7: Output Format Testing
 
 **Status**: PASSED
 **Tests**: 3/3 passed
@@ -254,7 +254,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ⏭️ Phase 8: Error Handling Testing
+## ⏭️ Phase 8: Error Handling Testing
 
 **Status**: SKIPPED (time constraint)
 **Tests**: 0/5 planned
@@ -269,7 +269,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ⏭️ Phase 9: Navigation Edge Cases
+## ⏭️ Phase 9: Navigation Edge Cases
 
 **Status**: SKIPPED (requires TTY + time constraint)
 **Tests**: 0/3 planned
@@ -282,7 +282,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### ✅ Phase 10: Cross-Domain Verification
+## ✅ Phase 10: Cross-Domain Verification
 
 **Status**: PASSED
 **Tests**: 3/3 passed
@@ -313,7 +313,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ## Issues Summary
 
-### Issue #1: WAF Example in Root Help (FIXED) ✅
+## Issue #1: WAF Example in Root Help (FIXED) ✅
 
 **Severity**: Low
 **Status**: ✅ Fixed in src/repl/help.ts:86
@@ -324,20 +324,20 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ```typescript
 `  ${CLI_NAME} waf list --namespace prod            List WAF policies in prod`,
-```
+```text
 
 **After**:
 
 ```typescript
 `  ${CLI_NAME} virtual list app_firewall --namespace prod   List app firewalls in prod`,
-```
+```text
 
 **Impact**: User-facing documentation inconsistency
 **Resolution**: Updated example command to use virtual domain
 
 ---
 
-### Issue #2: Response Codes Validation Failing (OPEN) ⚠️
+## Issue #2: Response Codes Validation Failing (OPEN) ⚠️
 
 **Severity**: Medium
 **Status**: ⚠️ Requires investigation
@@ -352,7 +352,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 --allowed-response-codes "200,201,204"   # HTTP 400
 --allowed-response-codes "200-299"       # HTTP 400
 --allowed-response-codes "200,201-204,301-303,400"  # HTTP 400
-```
+```text
 
 **Possible Root Causes**:
 
@@ -372,7 +372,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 
 ---
 
-### Issue #3: Request Size Range Validation Missing (OPEN) ⚠️
+## Issue #3: Request Size Range Validation Missing (OPEN) ⚠️
 
 **Severity**: Low
 **Status**: ⚠️ Requires implementation
@@ -391,7 +391,7 @@ Total Resources: 58 (7 primary + 51 discovered)
 ```bash
 --max-request-size 0          # Accepted (should reject)
 --max-request-size 999999999  # Accepted (should reject)
-```
+```text
 
 **Impact**:
 
@@ -407,13 +407,13 @@ if (maxRequestSize !== undefined) {
     throw new Error('--max-request-size must be between 1 and 10485760 (10 MB)');
   }
 }
-```
+```text
 
 ---
 
 ## Action Items
 
-### Immediate (P0)
+## Immediate (P0)
 
 1. ✅ Fix WAF example in help (DONE - src/repl/help.ts:86)
 2. ⚠️ Create GitHub issue: Remove --file based config creation entirely
@@ -421,7 +421,7 @@ if (maxRequestSize !== undefined) {
    - Phase 5.3 confirms it's currently disabled
    - Need to clean up related code
 
-### High Priority (P1)
+## High Priority (P1)
 
 3. ⚠️ Investigate Issue #2: Response codes validation failing
    - Debug builder implementation
@@ -434,7 +434,7 @@ if (maxRequestSize !== undefined) {
    - Test edge cases (0, 1, max, max+1)
    - Update error messages
 
-### Medium Priority (P2)
+## Medium Priority (P2)
 
 5. 📋 Manual testing required:
    - Phase 3 (Tests 3.2-3.5): Interactive REPL navigation
@@ -447,7 +447,7 @@ if (maxRequestSize !== undefined) {
    - Use headless mode for REPL testing where possible
    - Add CI/CD integration
 
-### Low Priority (P3)
+## Low Priority (P3)
 
 7. 📝 Update user documentation:
    - Migration guide from WAF domain to virtual domain
@@ -497,7 +497,7 @@ echo "yes" | ./dist/index.js virtual delete app_firewall test-required --namespa
 echo "yes" | ./dist/index.js virtual delete app_firewall test-size-min --namespace r-mordasiewicz
 echo "yes" | ./dist/index.js virtual delete app_firewall test-size-1mb --namespace r-mordasiewicz
 echo "yes" | ./dist/index.js virtual delete app_firewall test-size-max --namespace r-mordasiewicz
-```
+```text
 
 ---
 
@@ -532,7 +532,7 @@ echo "yes" | ./dist/index.js virtual delete app_firewall test-size-max --namespa
 
 ## Recommendations
 
-### For Release
+## For Release
 
 1. ✅ **Ship with current state** - Critical functionality working
 2. ⚠️ Document known limitations:
@@ -541,7 +541,7 @@ echo "yes" | ./dist/index.js virtual delete app_firewall test-size-max --namespa
 3. 📋 Include migration guide in release notes
 4. 🔧 Plan hotfix for Issue #2 if high user impact
 
-### For Future
+## For Future
 
 1. 🤖 Implement automated E2E testing framework
 2. 📊 Add regression test suite for domain changes

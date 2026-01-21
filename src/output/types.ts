@@ -150,6 +150,290 @@ export interface CommandSpec {
 	related?: string[];
 	/** Command category/domain */
 	category?: string;
+	/** Resource-specific information for creation commands */
+	resourceSpec?: ResourceSpec;
+	/** AI assistant guide for progressive disclosure (NEW) */
+	aiAssistantGuide?: AIAssistantGuide;
+}
+
+/**
+ * Field constraint information extracted from OpenAPI schema
+ */
+export interface FieldConstraints {
+	/** Type: string, integer, boolean, array, object */
+	type: string;
+
+	/** For strings: minimum length */
+	minLength?: number;
+
+	/** For strings: maximum length */
+	maxLength?: number;
+
+	/** For numbers: minimum value */
+	minimum?: number;
+
+	/** For numbers: maximum value */
+	maximum?: number;
+
+	/** For arrays: maximum items */
+	maxItems?: number;
+
+	/** For arrays: unique items required */
+	uniqueItems?: boolean;
+
+	/** Regular expression pattern for validation */
+	pattern?: string;
+
+	/** Format hint (e.g., "int64", "date-time") */
+	format?: string;
+
+	/** Allowed enum values */
+	enum?: string[];
+}
+
+/**
+ * OneOf group representing mutually exclusive field choices
+ */
+export interface OneOfGroup {
+	/** Name of the oneOf choice field (e.g., "health_check", "host_header_choice") */
+	groupName: string;
+
+	/** Field names that are part of this oneOf group */
+	variants: string[];
+
+	/** Recommended variant to use (from x-f5xc-recommended-oneof-variant) */
+	recommendedVariant?: string;
+
+	/** Human-readable description of the choice */
+	description?: string;
+}
+
+/**
+ * F5 XC-specific extensions from OpenAPI schema
+ */
+export interface F5XCExtensions {
+	/** Server applies default if omitted (x-f5xc-server-default) */
+	serverDefault?: boolean;
+
+	/** Recommended value for console pre-population (x-f5xc-recommended-value) */
+	recommendedValue?: unknown;
+
+	/** Fields that conflict with this field (x-f5xc-conflicts-with) */
+	conflictsWith?: string[];
+
+	/** Short description for tooltips */
+	descriptionShort?: string;
+
+	/** Medium description for documentation */
+	descriptionMedium?: string;
+
+	/** Required for specific operations */
+	requiredFor?: {
+		minimum_config?: boolean;
+		create?: boolean;
+		update?: boolean;
+		read?: boolean;
+	};
+
+	/** Example value */
+	example?: string;
+}
+
+/**
+ * Complete field specification for resource properties
+ */
+export interface FieldSpec {
+	/** Field name (e.g., "timeout", "path", "use_origin_server_name") */
+	name: string;
+
+	/** Field description */
+	description: string;
+
+	/** Type information and constraints */
+	constraints: FieldConstraints;
+
+	/** Is this field required */
+	required: boolean;
+
+	/** Default value if not specified */
+	default?: unknown;
+
+	/** F5 XC-specific extensions */
+	extensions: F5XCExtensions;
+
+	/** If this field is part of a oneOf group, which group */
+	oneOfGroup?: string;
+}
+
+/**
+ * Resource specification for AI assistants
+ * Enhanced version of CommandSpec for resource creation
+ */
+export interface ResourceSpec {
+	/** Resource type (e.g., "healthcheck", "origin_pool") */
+	resourceType: string;
+
+	/** All fields available for this resource */
+	fields: FieldSpec[];
+
+	/** OneOf groups representing mutually exclusive choices */
+	oneOfGroups: OneOfGroup[];
+
+	/** Minimum configuration required */
+	minimumConfiguration?: {
+		description: string;
+		requiredFields: string[];
+		mutuallyExclusiveGroups: Array<{
+			fields: string[];
+			reason: string;
+		}>;
+		exampleYaml?: string;
+		exampleJson?: string;
+	};
+}
+
+/**
+ * Field information for AI assistant guide
+ * Simplified field info with AI-specific hints
+ */
+export interface FieldInfo {
+	/** Field path (e.g., "spec.timeout") */
+	path: string;
+
+	/** Field name (e.g., "timeout") */
+	name: string;
+
+	/** Field type (e.g., "integer", "string") */
+	type: string;
+
+	/** Human-readable description */
+	description: string;
+
+	/** AI-specific guidance for this field */
+	aiHint: string;
+
+	/** Recommended value for this field */
+	recommendedValue?: unknown;
+
+	/** Example value */
+	example?: unknown;
+
+	/** Field constraints (min, max, enum, etc.) */
+	constraints?: {
+		min?: number;
+		max?: number;
+		enum?: unknown[];
+		pattern?: string;
+	};
+}
+
+/**
+ * Quick start guide for immediate productivity
+ */
+export interface QuickStart {
+	/** Description of the quickest path to success */
+	description: string;
+
+	/** Minimum required fields to create a working resource */
+	minimumRequiredFields: string[];
+
+	/** Recommended default values for optional fields */
+	recommendedDefaults: Record<string, unknown>;
+
+	/** Simple working example */
+	simpleExample: {
+		description: string;
+		yaml?: string;
+		json?: string;
+	};
+}
+
+/**
+ * Common pattern for specific use cases
+ */
+export interface CommonPattern {
+	/** Pattern name (e.g., "simple-http-check") */
+	name: string;
+
+	/** What this pattern does */
+	description: string;
+
+	/** When to use this pattern */
+	useCase: string;
+
+	/** Complete working example */
+	example: {
+		yaml?: string;
+		json?: string;
+	};
+}
+
+/**
+ * Field guide organized by importance
+ */
+export interface FieldGuide {
+	/** Required fields that must be provided */
+	required: FieldInfo[];
+
+	/** Recommended fields with good defaults */
+	recommended: FieldInfo[];
+
+	/** Optional fields for advanced use cases */
+	optional: FieldInfo[];
+}
+
+/**
+ * Validation rules and constraints
+ */
+export interface ValidationRules {
+	/** Mutually exclusive field groups (oneOf) */
+	mutuallyExclusive: Array<{
+		fields: string[];
+		reason: string;
+		recommendation: string;
+	}>;
+
+	/** Field dependencies (requires other fields) */
+	dependencies: Array<{
+		field: string;
+		requires: string[];
+		reason: string;
+	}>;
+}
+
+/**
+ * Troubleshooting common issues
+ */
+export interface Troubleshooting {
+	/** Description of the issue */
+	issue: string;
+
+	/** How to resolve it */
+	solution: string;
+
+	/** Related fields involved */
+	relatedFields: string[];
+}
+
+/**
+ * AI Assistant Guide for progressive disclosure
+ * Provides AI-friendly structured information beyond raw schema
+ */
+export interface AIAssistantGuide {
+	/** Quick start for immediate productivity */
+	quickStart: QuickStart;
+
+	/** Common patterns for specific use cases */
+	commonPatterns: CommonPattern[];
+
+	/** Field guide organized by importance */
+	fieldGuide: FieldGuide;
+
+	/** Validation rules and constraints */
+	validationRules: ValidationRules;
+
+	/** Troubleshooting common issues */
+	troubleshooting: Troubleshooting[];
 }
 
 /**
