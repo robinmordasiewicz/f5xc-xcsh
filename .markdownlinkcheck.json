@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "replacementPatterns": [
+    {
+      "pattern": "^docs/",
+      "replacement": "https://raw.githubusercontent.com/robinmordasiewicz/f5xc-xcsh/main/docs/"
+    },
+    {
+      "pattern": "^claudedocs/",
+      "replacement": "https://raw.githubusercontent.com/robinmordasiewicz/f5xc-xcsh/main/claudedocs/"
+    }
+  ],
+  "ignorePatterns": [
+    {
+      "pattern": "^https://github.com/robinmordasiewicz/f5xc-xcsh/blob/main/"
+    },
+    {
+      "pattern": "^http://localhost"
+    }
+  ],
+  "timeout": 10,
+  "retryOn429": true,
+  "retryCount": 2,
+  "fallbackRecursionCheck": false
+}

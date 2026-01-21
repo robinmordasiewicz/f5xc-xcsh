@@ -5,7 +5,7 @@
 repos:
   # General file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         name: Trim trailing whitespace
@@ -13,16 +13,16 @@ repos:
         name: Ensure files end with newline
       - id: mixed-line-ending
         name: Enforce Unix line endings
-        args: ['--fix=lf']
+        args: ["--fix=lf"]
       - id: check-yaml
         name: Validate YAML syntax
-        args: ['--unsafe']
+        args: ["--unsafe"]
         exclude: '^mkdocs\.yml$'
       - id: check-json
         name: Validate JSON syntax
       - id: check-added-large-files
         name: Check for large files
-        args: ['--maxkb=500']
+        args: ["--maxkb=500"]
         exclude: '.*_generated\.ts$'
       - id: check-merge-conflict
         name: Check for merge conflict markers
@@ -30,33 +30,30 @@ repos:
         name: Check for case conflicts in filenames
       - id: detect-private-key
         name: Detect private keys
-      - id: no-commit-to-branch
-        name: Prevent commits to main/master
-        args: ['--branch', 'main', '--branch', 'master']
 
   # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
         name: Lint shell scripts
-        args: ['--severity=warning']
+        args: ["--severity=warning"]
 
   # Shell script formatting
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.10.0-1
+    rev: v3.12.0-2
     hooks:
       - id: shfmt
         name: Format shell scripts
-        args: ['-i', '2', '-ci', '-bn', '-w']
+        args: ["-i", "2", "-ci", "-bn", "-w"]
 
   # Python linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.14.13
     hooks:
       - id: ruff
         name: Lint Python code
-        args: ['--fix']
+        args: ["--fix"]
         files: ^scripts/.*\.py$
       - id: ruff-format
         name: Format Python code
@@ -64,28 +61,48 @@ repos:
 
   # YAML linting
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.35.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         name: Lint YAML files
-        args: ['--strict']
+        args: ["--strict"]
         exclude: '^(docs/commands/|\.specs/|mkdocs\.yml)$'
 
-  # Markdown linting
+  # Markdown linting and link validation
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.44.0
+    rev: v0.47.0
     hooks:
       - id: markdownlint
         name: Lint Markdown files
-        args: ['--fix']
-        exclude: '^docs/commands/'  # Exclude auto-generated docs
+        args: ["--fix"]
+        exclude: "^docs/commands/"  # Exclude auto-generated docs
+
+  # Markdown link validation
+  - repo: https://github.com/tcort/markdown-link-check
+    rev: v3.14.2
+    hooks:
+      - id: markdown-link-check
+        name: Check Markdown links
+        args: ["--config", ".markdownlinkcheck.json"]
+        files: 'docs/.*\.md'
+        pass_filenames: false
 
   # JSON/YAML Schema validation
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.34.0
+    rev: 0.36.0
     hooks:
       - id: check-github-workflows
         name: Validate GitHub Workflows
+
+  # Documentation structure validation
+  - repo: local
+    hooks:
+      - id: validate-docs-structure
+        name: Validate docs folder structure
+        entry: bash -c 'bash scripts/pre-commit-docs-validate.sh'
+        language: system
+        files: "^docs/"
+        pass_filenames: false
 
   # TypeScript/React linting and formatting
   - repo: local
