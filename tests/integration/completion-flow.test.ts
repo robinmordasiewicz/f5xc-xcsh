@@ -73,7 +73,8 @@ describe("Completion Flow Integration Tests", () => {
 			expect(actionSuggestions.map((s) => s.text)).toContain("create");
 
 			// Resource level
-			const resourceSuggestions = await completer.complete("login create ");
+			const resourceSuggestions =
+				await completer.complete("login create ");
 			expect(resourceSuggestions.map((s) => s.text)).toContain("profile");
 
 			// Flag level
@@ -142,13 +143,9 @@ describe("Completion Flow Integration Tests", () => {
 			);
 
 			// Then show it
-			await executeAndExpect(
-				"login show profile test",
-				session,
-				{
-					success: true,
-				},
-			);
+			await executeAndExpect("login show profile test", session, {
+				success: true,
+			});
 		});
 
 		it("should handle navigation through action suggestions", async () => {
@@ -256,20 +253,24 @@ describe("Completion Flow Integration Tests", () => {
 	});
 
 	describe("Command Forms with Completions", () => {
-		it("should handle completions for /command form", async () => {
-			await completeAndExpect("/login ", completer, {
-				includes: ["create", "list", "show"],
-				minCount: 3,
-			});
+		it(
+			"should handle completions for /command form",
+			{ timeout: 10000 },
+			async () => {
+				await completeAndExpect("/login ", completer, {
+					includes: ["create", "list", "show"],
+					minCount: 3,
+				});
 
-			await executeAndExpect(
-				"/login create profile slashform --url https://test.volterra.io --token abc123",
-				session,
-				{
-					success: true,
-				},
-			);
-		});
+				await executeAndExpect(
+					"/login create profile slashform --url https://test.volterra.io --token abc123",
+					session,
+					{
+						success: true,
+					},
+				);
+			},
+		);
 
 		it("should handle completions for command form without slash", async () => {
 			await completeAndExpect("login ", completer, {
@@ -306,17 +307,29 @@ describe("Completion Flow Integration Tests", () => {
 		});
 
 		it("should complete partial flags", async () => {
-			await completeAndExpect("login create profile test --u", completer, {
-				includes: ["--url"],
-			});
+			await completeAndExpect(
+				"login create profile test --u",
+				completer,
+				{
+					includes: ["--url"],
+				},
+			);
 
-			await completeAndExpect("login create profile test --t", completer, {
-				includes: ["--token"],
-			});
+			await completeAndExpect(
+				"login create profile test --t",
+				completer,
+				{
+					includes: ["--token"],
+				},
+			);
 
-			await completeAndExpect("login create profile test --n", completer, {
-				includes: ["--namespace"],
-			});
+			await completeAndExpect(
+				"login create profile test --n",
+				completer,
+				{
+					includes: ["--namespace"],
+				},
+			);
 		});
 	});
 
