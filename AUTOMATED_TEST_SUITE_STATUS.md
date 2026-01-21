@@ -37,11 +37,11 @@ Implemented comprehensive automated testing suite to validate WAF domain consoli
 
 ## Test Results (Current)
 
-```
+```text
 ✓ 98 tests passed
 ✗ 40 tests failing (all due to Map syntax - easy fix)
 ⏸️ 5 tests marked as .failing() (tracking known issues #2 and #3)
-```
+```text
 
 ### Passing Tests (98 total)
 
@@ -112,7 +112,7 @@ Object.keys(generatedDomains) → Array.from(generatedDomains.keys())
 Object.entries(generatedDomains) → generatedDomains.entries()
 generatedDomains['virtual'] → generatedDomains.get('virtual')
 generatedDomains['network'] → generatedDomains.get('network')
-```
+```text
 
 **Files to Fix**:
 

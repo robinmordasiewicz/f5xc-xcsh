@@ -12,6 +12,29 @@ Version v2.0.21 includes updated API specifications for enhanced functionality.
 
 Full documentation is available at **[robinmordasiewicz.github.io/f5xc-xcsh](https://robinmordasiewicz.github.io/f5xc-xcsh)**
 
+## Claude Code Integration
+
+This project includes a Claude Code skill for seamless AI assistant interaction with your locally installed xcsh binary.
+
+### /xcsh Skill
+
+The `/xcsh` skill enables AI assistants to:
+
+- Access real-time xcsh capabilities from your local installation
+- Query resource specifications with field constraints and recommendations
+- Generate valid F5 XC configurations with proper validation
+- Provide intelligent suggestions based on F5 best practices
+
+**Quick Start** (in Claude Code):
+
+```bash
+/xcsh version    # Check installation
+/xcsh domains    # List available domains
+/xcsh spec healthcheck create  # Get resource spec (when routing is connected)
+```
+
+See [docs/SKILLS.md](docs/SKILLS.md) for complete documentation.
+
 ## Installation
 
 ### Homebrew

@@ -86,7 +86,7 @@ waf create app_firewall \
   --blocking-mode BLOCKING \
   --detection-mode HIGH \
   --namespace default
-```
+```text
 
 ### WAF with Multiple Protections
 
@@ -99,7 +99,7 @@ waf create app_firewall \
   --enable-xss \
   --enable-command-injection \
   --namespace default
-```
+```text
 
 ### WAF with Advanced Features
 
@@ -116,31 +116,31 @@ waf create app_firewall \
   --allowed-response-codes "200,201,204,301,302" \
   --max-request-size 5242880 \
   --namespace default
-```
+```text
 
 ### Create from YAML File
 
 ```bash
 waf create app_firewall --file test-configs/app-firewall.yaml
-```
+```text
 
 ### Read WAF Policy
 
 ```bash
 waf get app_firewall --name my-waf --namespace default -o json
-```
+```text
 
 ### List WAF Policies
 
 ```bash
 waf list app_firewall --namespace default
-```
+```text
 
 ### Delete WAF Policy
 
 ```bash
 waf delete app_firewall --name my-waf --namespace default
-```
+```text
 
 ## Architecture
 
@@ -167,7 +167,7 @@ interface AppFirewallRequestBody {
     enable_threat_campaigns?: boolean;
   };
 }
-```
+```text
 
 ### Validation Rules
 
@@ -203,7 +203,7 @@ There's a pre-existing issue in the executor where resource type names aren't no
 if (domainResourceTypes?.has(arg.toLowerCase().replace(/-/g, '_'))) {
   resourceType = arg.toLowerCase().replace(/-/g, '_');
 }
-```
+```text
 
 ## Testing
 
@@ -211,7 +211,7 @@ if (domainResourceTypes?.has(arg.toLowerCase().replace(/-/g, '_'))) {
 
 ```bash
 npm test tests/e2e/app-firewall-crud.test.ts
-```
+```text
 
 **Prerequisites**:
 
@@ -279,7 +279,7 @@ npx tsc --noEmit tests/e2e/app-firewall-crud.test.ts
 
 # Check flag definitions
 grep -A 5 "APP_FIREWALL_CREATION_FLAGS" src/repl/completion/creation-flags.ts
-```
+```text
 
 ## Conclusion
 
@@ -309,7 +309,7 @@ waf create app_firewall --name my-waf --namespace default
 waf list app_firewall --namespace default
 waf get app_firewall my-waf --namespace default
 waf delete app_firewall my-waf --namespace default
-```
+```text
 
 **NEW (v2.0.45 and later)**:
 
@@ -318,7 +318,7 @@ virtual create app_firewall --name my-waf --namespace default
 virtual list app_firewall --namespace default
 virtual get app_firewall my-waf --namespace default
 virtual delete app_firewall my-waf --namespace default
-```
+```text
 
 ## ✅ Testing Complete
 

@@ -12,10 +12,10 @@ The manual testing plan specifies testing `app_firewall` in the `virtual` domain
 
 ### Test Plan Statement
 
-```
+```text
 **Branch**: `feature/sync-specs-v2.0.45`
 **Resource**: `app_firewall` (moved to `virtual` domain in v2.0.45)
-```
+```text
 
 ### Actual Behavior
 
@@ -35,7 +35,7 @@ Result: Creates app_firewall with correct spec:
     "use_default_blocking_page": {}
   }
 }
-```
+```text
 
 #### ❌ Virtual Domain (INCORRECT)
 
@@ -53,7 +53,7 @@ Result: Creates origin_pool instead (WRONG):
     ...
   }
 }
-```
+```text
 
 ## Root Cause Analysis
 
@@ -86,13 +86,13 @@ Result: Creates origin_pool instead (WRONG):
 
 ```bash
 ./dist/index.js virtual create app_firewall --name test --namespace default
-```
+```text
 
 **TO:**
 
 ```bash
 ./dist/index.js waf create app_firewall --name test --namespace default
-```
+```text
 
 This affects **ALL 13 testing phases** with 100+ test cases.
 

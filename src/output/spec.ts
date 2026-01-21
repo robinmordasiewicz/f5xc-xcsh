@@ -3,12 +3,24 @@
  * Generates AI-friendly JSON schema output for --spec flag
  */
 
-import type { CommandSpec, ExampleSpec, FlagSpec } from "./types.js";
+import type {
+	CommandSpec,
+	ExampleSpec,
+	FlagSpec,
+	ResourceSpec,
+} from "./types.js";
 import { ALL_OUTPUT_FORMATS } from "./types.js";
 import { CLI_VERSION } from "../branding/index.js";
 import { EXIT_CODE_HELP } from "../cloudstatus/types.js";
 import { customDomains } from "../domains/registry.js";
 import { domainRegistry, validActions } from "../types/domains.js";
+import {
+	extractFieldSpecs,
+	extractOneOfGroups,
+	loadOpenApiSpec,
+} from "./schema-extractor.js";
+import { buildResourceSpec } from "./resource-spec-builder.js";
+import { buildAIAssistantGuide } from "./ai-guide-builder.js";
 
 /**
  * Full CLI specification for documentation generation
@@ -596,6 +608,42 @@ export function getCommandSpec(commandPath: string): CommandSpec | undefined {
 	// Normalize command path
 	const normalized = commandPath.toLowerCase().trim();
 
+	// Handle generic resource create commands (e.g., "healthcheck create", "origin_pool create")
+	if (normalized.includes(" create")) {
+		const parts = normalized.split(" ");
+		if (parts.length >= 2 && parts[parts.length - 1] === "create") {
+			// Extract domain/resource type (everything before "create")
+			const resourceType = parts.slice(0, -1).join("_");
+
+			// Try to build resource spec from OpenAPI schema
+			const resourceSpec = buildResourceSpec(resourceType);
+
+			if (resourceSpec) {
+				// Build AI assistant guide
+				const aiAssistantGuide = buildAIAssistantGuide(
+					resourceType,
+					resourceSpec.fields,
+					resourceSpec.oneOfGroups,
+				);
+
+				return {
+					command: `${resourceType.replace(/_/g, " ")} create`,
+					description: `Create ${resourceType.replace(/_/g, " ")} resource`,
+					usage: `xcsh ${resourceType.replace(/_/g, " ")} create [flags]`,
+					flags: buildResourceFlags(resourceSpec),
+					examples: buildResourceExamples(
+						resourceType,
+						aiAssistantGuide,
+					),
+					outputFormats: [...ALL_OUTPUT_FORMATS],
+					category: resourceType,
+					resourceSpec,
+					aiAssistantGuide,
+				};
+			}
+		}
+	}
+
 	// Check cloudstatus commands
 	if (normalized.startsWith("cloudstatus ")) {
 		const subcommand = normalized.replace("cloudstatus ", "");
@@ -706,6 +754,232 @@ function buildCustomDomainSpec(domainName: string): CLICommandSpec | null {
 		flags: [],
 		subcommands,
 	};
+}
+
+/**
+ * Build enhanced resource spec for healthcheck
+ */
+export function buildHealthcheckResourceSpec(): ResourceSpec {
+	const openApiSpec = loadOpenApiSpec();
+	const schemaName = "healthcheckCreateSpecType";
+
+	// Extract field specifications
+	const fields = extractFieldSpecs(schemaName, openApiSpec);
+
+	// Extract oneOf groups
+	const oneOfGroups = extractOneOfGroups(schemaName, openApiSpec);
+
+	return {
+		resourceType: "healthcheck",
+		fields,
+		oneOfGroups,
+		minimumConfiguration: {
+			description:
+				"Health check configuration for monitoring origin servers",
+			requiredFields: [
+				"metadata.name",
+				"metadata.namespace",
+				"spec.interval",
+				"spec.timeout",
+				"spec.healthy_threshold",
+				"spec.unhealthy_threshold",
+			],
+			mutuallyExclusiveGroups: [
+				{
+					fields: [
+						"spec.http_health_check",
+						"spec.tcp_health_check",
+						"spec.udp_icmp_health_check",
+					],
+					reason: "Choose exactly one health check type",
+				},
+			],
+			exampleJson: JSON.stringify(
+				{
+					metadata: {
+						name: "http-health",
+						namespace: "default",
+					},
+					spec: {
+						http_health_check: {
+							path: "/health",
+							use_origin_server_name: {},
+						},
+						interval: 15,
+						timeout: 3,
+						unhealthy_threshold: 1,
+						healthy_threshold: 3,
+						jitter_percent: 30,
+					},
+				},
+				null,
+				2,
+			),
+		},
+	};
+}
+
+/**
+ * Map constraint type to flag type
+ */
+function mapConstraintTypeToFlagType(
+	type: string,
+): "string" | "boolean" | "number" {
+	if (type === "integer" || type === "number") return "number";
+	if (type === "boolean") return "boolean";
+	return "string";
+}
+
+/**
+ * Build CLI flags from field specifications
+ */
+export function buildHealthcheckFlags(resourceSpec: ResourceSpec): FlagSpec[] {
+	const flags: FlagSpec[] = [
+		{
+			name: "--name",
+			description: "Health check resource name",
+			type: "string",
+			required: true,
+		},
+		{
+			name: "--namespace",
+			description: "Namespace for the health check",
+			type: "string",
+		},
+		{
+			name: "--type",
+			description: "Health check type",
+			type: "string",
+			default: "http",
+			choices: ["http", "tcp", "udp-icmp"],
+		},
+	];
+
+	// Add flags from field specs (only top-level fields)
+	for (const field of resourceSpec.fields) {
+		// Skip oneOf variant fields - they're handled by --type
+		if (field.oneOfGroup === "health_check") continue;
+
+		const flagName = `--${field.name.replace(/_/g, "-")}`;
+		const flag: FlagSpec = {
+			name: flagName,
+			description: field.extensions.descriptionShort || field.description,
+			type: mapConstraintTypeToFlagType(field.constraints.type),
+			required: field.required,
+		};
+
+		if (field.default !== undefined) {
+			flag.default = String(field.default);
+		}
+
+		if (field.constraints.enum) {
+			flag.choices = field.constraints.enum;
+		}
+
+		flags.push(flag);
+	}
+
+	return flags;
+}
+
+/**
+ * Build example invocations for healthcheck creation
+ */
+export function buildHealthcheckExamples(): ExampleSpec[] {
+	return [
+		{
+			command:
+				"xcsh healthcheck create --name http-health --type http --path /health --interval 15 --timeout 3",
+			description: "Create HTTP health check with recommended values",
+		},
+		{
+			command:
+				'xcsh healthcheck create --name tcp-health --type tcp --interval 10 --timeout 5 --send-payload "0x48454C4C4F"',
+			description: "Create TCP health check with hex payload",
+		},
+		{
+			command:
+				"xcsh healthcheck create --name ping-health --type udp-icmp --interval 30 --timeout 10",
+			description: "Create UDP/ICMP health check",
+		},
+	];
+}
+
+/**
+ * Build generic resource flags from resource spec
+ * Generic version of buildHealthcheckFlags for all resource types
+ */
+function buildResourceFlags(resourceSpec: ResourceSpec): FlagSpec[] {
+	const flags: FlagSpec[] = [
+		{
+			name: "--name",
+			description: "Resource name",
+			type: "string",
+			required: true,
+		},
+		{
+			name: "--namespace",
+			description: "Namespace for the resource",
+			type: "string",
+		},
+	];
+
+	// Add flags from field specs
+	for (const field of resourceSpec.fields) {
+		// Skip oneOf variant fields - they should be handled specially
+		if (field.oneOfGroup) continue;
+
+		const flagName = `--${field.name.replace(/_/g, "-")}`;
+		const flag: FlagSpec = {
+			name: flagName,
+			description: field.extensions.descriptionShort || field.description,
+			type: mapConstraintTypeToFlagType(field.constraints.type),
+			required: field.required,
+		};
+
+		if (field.default !== undefined) {
+			flag.default = String(field.default);
+		}
+
+		if (field.constraints.enum) {
+			flag.choices = field.constraints.enum;
+		}
+
+		flags.push(flag);
+	}
+
+	return flags;
+}
+
+/**
+ * Build generic resource examples from AI assistant guide
+ * Uses common patterns from aiAssistantGuide if available
+ */
+function buildResourceExamples(
+	resourceType: string,
+	aiAssistantGuide: any,
+): ExampleSpec[] {
+	const examples: ExampleSpec[] = [];
+
+	// Use common patterns from AI guide if available
+	if (aiAssistantGuide?.commonPatterns) {
+		for (const pattern of aiAssistantGuide.commonPatterns.slice(0, 3)) {
+			examples.push({
+				command: `xcsh ${resourceType.replace(/_/g, " ")} create --from-pattern ${pattern.name}`,
+				description: pattern.description,
+			});
+		}
+	}
+
+	// Fallback: create a basic example
+	if (examples.length === 0) {
+		examples.push({
+			command: `xcsh ${resourceType.replace(/_/g, " ")} create --name my-${resourceType} --namespace default`,
+			description: `Create ${resourceType.replace(/_/g, " ")} resource`,
+		});
+	}
+
+	return examples;
 }
 
 /**
