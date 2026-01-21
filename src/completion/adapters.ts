@@ -29,6 +29,7 @@ const actionDescriptions: Record<string, string> = {
 	patch: "Patch a resource",
 	"add-labels": "Add labels to a resource",
 	"remove-labels": "Remove labels from a resource",
+	spec: "Show resource specification (schema and AI guide)",
 };
 
 /**

@@ -3,7 +3,7 @@
  * Builds ResourceSpec for any F5 XC resource type from OpenAPI schema
  */
 
-import type { ResourceSpec } from "./types.js";
+import type { ResourceSpec, FieldSpec, OneOfGroup } from "./types.js";
 import {
 	extractFieldSpecs,
 	extractOneOfGroups,
@@ -64,10 +64,11 @@ function buildResourceSpecUncached(
 ): ResourceSpec | null {
 	// Get schema name: resourceType + "CreateSpecType"
 	// e.g., "healthcheck" -> "healthcheckCreateSpecType"
-	const schemaName = getCreateSchemaName(resourceType);
+	// Try multiple schema name patterns
+	const schemaName = findCreateSchemaName(resourceType, openApiSpec);
 
 	// Check if schema exists
-	if (!openApiSpec.components?.schemas?.[schemaName]) {
+	if (!schemaName || !openApiSpec.components?.schemas?.[schemaName]) {
 		return null;
 	}
 
@@ -82,18 +83,107 @@ function buildResourceSpecUncached(
 		oneOfGroups,
 	);
 
-	// Build complete resource spec
-	const resourceSpec: ResourceSpec = {
+	// Build minimum configuration
+	const minimumConfiguration = buildMinimumConfiguration(
 		resourceType,
 		fields,
 		oneOfGroups,
-	};
+	);
+
+	// Build complete resource spec
+	const resourceSpec = {
+		resourceType,
+		fields,
+		oneOfGroups,
+		...(minimumConfiguration !== undefined && { minimumConfiguration }),
+	} as ResourceSpec;
 
 	// Attach AI guide to resource spec (for backward compatibility with existing code)
 	// The AI guide will also be attached to CommandSpec in spec.ts
 	(resourceSpec as any).aiAssistantGuide = aiAssistantGuide;
 
 	return resourceSpec;
+}
+
+/**
+ * Build minimum configuration for a resource type
+ */
+function buildMinimumConfiguration(
+	resourceType: string,
+	fields: FieldSpec[],
+	oneOfGroups: OneOfGroup[],
+): ResourceSpec["minimumConfiguration"] {
+	// Collect required fields
+	const requiredFields = fields
+		.filter((f) => f.required || f.extensions.requiredFor?.create)
+		.map((f) => `spec.${f.name}`);
+
+	// Always include metadata fields
+	requiredFields.unshift("metadata.name", "metadata.namespace");
+
+	// Build mutually exclusive groups from oneOf
+	const mutuallyExclusiveGroups = oneOfGroups.map((group) => ({
+		fields: group.variants.map((v) => `spec.${v}`),
+		reason: `Choose exactly one ${group.groupName} type`,
+	}));
+
+	// Build a simple example
+	const exampleObject: any = {
+		metadata: {
+			name: `example-${resourceType}`,
+			namespace: "default",
+		},
+		spec: {},
+	};
+
+	// Add required fields to example
+	for (const field of fields) {
+		if (field.required || field.extensions.requiredFor?.create) {
+			if (field.extensions.recommendedValue !== undefined) {
+				exampleObject.spec[field.name] =
+					field.extensions.recommendedValue;
+			} else if (field.extensions.example !== undefined) {
+				exampleObject.spec[field.name] = field.extensions.example;
+			}
+		}
+	}
+
+	return {
+		description: `Minimum configuration required for ${resourceType} resource`,
+		requiredFields,
+		mutuallyExclusiveGroups,
+		exampleJson: JSON.stringify(exampleObject, null, 2),
+	};
+}
+
+/**
+ * Find the create schema name for a resource type by trying multiple patterns
+ * @param resourceType - Resource type (e.g., "healthcheck", "origin_pool")
+ * @param openApiSpec - Full OpenAPI specification
+ * @returns OpenAPI schema name if found, null otherwise
+ */
+function findCreateSchemaName(
+	resourceType: string,
+	openApiSpec: any,
+): string | null {
+	const normalized = normalizeResourceType(resourceType);
+	const schemas = openApiSpec.components?.schemas || {};
+
+	// Try multiple patterns in order of likelihood
+	const patterns = [
+		`${normalized}CreateSpecType`, // Standard pattern: healthcheckCreateSpecType
+		`views${normalized}CreateSpecType`, // Views prefix: viewsorigin_poolCreateSpecType
+		`${normalized}SpecType`, // Without Create: healthcheckSpecType
+		`views${normalized}SpecType`, // Views prefix without Create
+	];
+
+	for (const pattern of patterns) {
+		if (schemas[pattern]) {
+			return pattern;
+		}
+	}
+
+	return null;
 }
 
 /**
