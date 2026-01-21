@@ -28,12 +28,71 @@ export function buildAIAssistantGuide(
 	oneOfGroups: OneOfGroup[],
 ): AIAssistantGuide {
 	return {
+		purpose: buildPurpose(resourceType),
 		quickStart: buildQuickStart(resourceType, fields),
 		commonPatterns: buildCommonPatterns(resourceType, fields),
 		fieldGuide: buildFieldGuide(fields),
-		validationRules: buildValidationRules(oneOfGroups, fields),
+		validationSteps: buildValidationRules(oneOfGroups, fields),
+		bestPractices: buildBestPractices(resourceType),
 		troubleshooting: buildTroubleshooting(resourceType),
 	};
+}
+
+/**
+ * Build purpose statement for a resource type
+ */
+function buildPurpose(resourceType: string): string {
+	const purposes: Record<string, string> = {
+		healthcheck:
+			"Health checks monitor the health of origin servers to ensure traffic is only sent to healthy endpoints.",
+		origin_pool:
+			"Origin pools define groups of backend servers that handle requests, with load balancing and health checking.",
+		app_firewall:
+			"Web Application Firewalls protect applications from common web attacks and vulnerabilities.",
+		http_loadbalancer:
+			"HTTP load balancers distribute traffic across origin pools with advanced routing and security features.",
+		tcp_loadbalancer:
+			"TCP load balancers handle Layer 4 traffic distribution for non-HTTP protocols.",
+	};
+
+	return (
+		purposes[resourceType] ||
+		`${resourceType.replace(/_/g, " ")} resource for F5 Distributed Cloud configuration.`
+	);
+}
+
+/**
+ * Build best practices for a resource type
+ */
+function buildBestPractices(resourceType: string): string[] {
+	const practicesByType: Record<string, string[]> = {
+		healthcheck: [
+			"Set timeout < interval (recommended: timeout = interval / 5)",
+			"Use healthy_threshold >= 2 to avoid flapping",
+			"Match health check type to your backend protocol",
+			"Test health check endpoints independently before deployment",
+		],
+		origin_pool: [
+			"Always attach health checks to monitor origin server health",
+			"Use LEAST_REQUEST algorithm for better performance distribution",
+			"Group similar origins in the same pool (same protocol, similar latency)",
+			"Set appropriate connection timeouts based on backend response times",
+		],
+		app_firewall: [
+			"Start with monitoring mode before enabling blocking",
+			"Review and tune signature selection for your application",
+			"Use custom rules for application-specific protection",
+			"Regularly review and update WAF policies",
+		],
+	};
+
+	return (
+		practicesByType[resourceType] || [
+			`Follow F5 XC documentation for ${resourceType.replace(/_/g, " ")} configuration`,
+			"Test configuration changes in non-production environments first",
+			"Use meaningful names and labels for resource organization",
+		]
+	);
 }
 
 /**

@@ -420,6 +420,9 @@ export interface Troubleshooting {
  * Provides AI-friendly structured information beyond raw schema
  */
 export interface AIAssistantGuide {
+	/** Purpose and overview of this resource type */
+	purpose: string;
+
 	/** Quick start for immediate productivity */
 	quickStart: QuickStart;
 
@@ -429,8 +432,11 @@ export interface AIAssistantGuide {
 	/** Field guide organized by importance */
 	fieldGuide: FieldGuide;
 
-	/** Validation rules and constraints */
-	validationRules: ValidationRules;
+	/** Validation steps and constraints */
+	validationSteps: ValidationRules;
+
+	/** Best practices for using this resource */
+	bestPractices: string[];
 
 	/** Troubleshooting common issues */
 	troubleshooting: Troubleshooting[];

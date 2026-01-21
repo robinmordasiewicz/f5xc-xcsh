@@ -7,7 +7,7 @@ _xcsh_completions() {
   _init_completion || return
 
   local commands="admin_console_and_ui ai_services api authentication bigip billing_and_usage blindfold bot_and_threat_defense cdn ce_management certificates cloud_infrastructure cloudstatus completion container_services data_and_privacy_security data_intelligence ddos dns login managed_kubernetes marketplace network network_security nginx_one object_storage observability rate_limiting secops_and_incident_response service_mesh shape sites statistics subscription support telemetry_and_insights tenant_and_identity threat_campaign users virtual vpm_and_node_management  help quit exit clear history refresh"
-  local actions="list get create delete replace apply status patch add-labels remove-labels"
+  local actions="list get create delete replace apply status patch add-labels remove-labels spec"
   local builtins="help quit exit clear history context ctx refresh"
   local global_flags="--help -h --version -v --no-color --output -o --namespace -ns --spec"
 

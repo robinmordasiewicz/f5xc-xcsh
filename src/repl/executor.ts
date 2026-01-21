@@ -1409,7 +1409,9 @@ async function executeAPICommand(
 
 	// Handle --spec flag: return command specification for AI assistants
 	if (spec) {
-		const commandPath = `${canonicalDomain} ${action}`;
+		// Use effectiveResource (resourceType or domain) for proper spec lookup
+		// e.g., "healthcheck create" instead of "virtual create"
+		const commandPath = `${effectiveResource} ${action}`;
 		const cmdSpec = getCommandSpec(commandPath);
 		if (cmdSpec) {
 			return {
@@ -1780,6 +1782,61 @@ async function executeAPICommand(
 					args,
 					domainResourceTypes,
 				});
+			}
+
+			case "spec": {
+				// Extract resource type from args
+				const { resourceType: specResourceType } = parseCommandArgs(
+					args,
+					domainResourceTypes,
+				);
+
+				if (!specResourceType) {
+					const primaryResources = domainInfo.primaryResources ?? [];
+					return {
+						output: [
+							"ERROR: Resource type required",
+							"",
+							`Usage: ${canonicalDomain} spec <resource-type>`,
+							"",
+							"Available resources:",
+							...primaryResources.map(
+								(r) => `  - ${r.name}: ${r.description}`,
+							),
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: "Resource type required for spec action",
+					};
+				}
+
+				// Build command path for spec lookup
+				const commandPath = `${specResourceType} create`;
+				const cmdSpec = getCommandSpec(commandPath);
+
+				if (cmdSpec) {
+					// Format and return spec
+					return {
+						output: [formatSpec(cmdSpec)],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+					};
+				}
+
+				// Fallback: No spec available
+				return {
+					output: [
+						`⚠ No specification available for ${specResourceType}`,
+						"",
+						`Try: ${canonicalDomain} create ${specResourceType} --spec`,
+					],
+					shouldExit: false,
+					shouldClear: false,
+					contextChanged: false,
+					error: `No specification available for ${specResourceType}`,
+				};
 			}
 
 			default: {

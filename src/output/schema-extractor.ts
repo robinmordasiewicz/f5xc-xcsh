@@ -3,9 +3,7 @@
  * Extract field specifications, constraints, and F5 XC extensions from OpenAPI schema
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import openApiSpec from "../../.specs/openapi.json" with { type: "json" };
 import type {
 	FieldSpec,
 	OneOfGroup,
@@ -14,16 +12,11 @@ import type {
 } from "./types.js";
 import { PROPERTY_CONFLICTS } from "../types/conflicts_generated.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /**
- * Load OpenAPI specification from .specs/openapi.json
+ * Load OpenAPI specification (embedded at build time)
  */
 export function loadOpenApiSpec(): any {
-	const specsPath = path.resolve(__dirname, "../../.specs/openapi.json");
-	const content = fs.readFileSync(specsPath, "utf-8");
-	return JSON.parse(content);
+	return openApiSpec;
 }
 
 /**
