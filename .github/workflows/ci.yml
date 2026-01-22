@@ -15,7 +15,7 @@ on:
     paths-ignore:
       - "**.md"
       - "docs/**"
-  workflow_dispatch:  # Allows manual/programmatic trigger for automated PRs
+  workflow_dispatch: # Allows manual/programmatic trigger for automated PRs
 
 permissions:
   contents: read
@@ -117,8 +117,9 @@ jobs:
       - name: Check for uncommitted domain changes
         run: |
           if ! git diff --quiet src/types/domains_generated.ts; then
-            echo "::warning::Domain file differs from regenerated output"
+            echo "::error::Domain file differs from regenerated output - commit the changes"
             git diff src/types/domains_generated.ts | head -50
+            exit 1
           else
             echo "✅ Domains are up to date."
           fi
@@ -126,8 +127,9 @@ jobs:
       - name: Check for uncommitted completion changes
         run: |
           if ! git diff --quiet completions/; then
-            echo "::warning::Completion files differ from regenerated output"
+            echo "::error::Completion files differ from regenerated output - commit the changes"
             git diff completions/ | head -50
+            exit 1
           else
             echo "✅ Completions are up to date."
           fi

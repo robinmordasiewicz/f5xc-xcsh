@@ -1,33 +1,16 @@
 name: Documentation
 
 on:
-  release:
-    types: [published]
-  workflow_run:
-    workflows: ["Release"]
-    types: [completed]
-  workflow_dispatch:
-    inputs:
-      force_regenerate:
-        description: 'Force documentation regeneration'
-        required: false
-        default: false
-        type: boolean
-      test_homebrew:
-        description: 'Test Homebrew installation and update docs'
-        required: false
-        default: false
-        type: boolean
   push:
     branches: [main]
     paths:
-      - 'docs/**'
-      - '!docs/commands/**'
-      - 'mkdocs.yml'
-      - 'scripts/generate-homebrew-docs.py'
-      - 'scripts/generate-source-docs.py'
-      - 'scripts/templates/**'
-      - '.github/workflows/docs.yml'
+      - "docs/**"
+      - "!docs/commands/**"
+      - "mkdocs.yml"
+      - "scripts/generate-homebrew-docs.py"
+      - "scripts/generate-source-docs.py"
+      - "scripts/templates/**"
+      - ".github/workflows/docs.yml"
 
 permissions:
   contents: write
@@ -37,8 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
-  PYTHON_VERSION: '3.13'
+  NODE_VERSION: "22"
+  PYTHON_VERSION: "3.13"
 
 jobs:
   wait-for-release:
@@ -139,7 +122,7 @@ jobs:
       (github.event_name != 'workflow_run' || needs.check-release.outputs.recent_release == 'true')
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -277,7 +260,7 @@ jobs:
             --output docs/install/windows.md
 
       - name: Upload Windows docs artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: windows-docs
           path: docs/install/windows.md
@@ -291,13 +274,13 @@ jobs:
     if: always() && !failure() && !cancelled() && needs.check-release.result == 'success'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Download Windows docs
         if: needs.build-windows-docs.result == 'success'
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: windows-docs
           path: docs/install/

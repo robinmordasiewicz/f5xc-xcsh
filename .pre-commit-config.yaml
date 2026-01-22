@@ -30,6 +30,9 @@ repos:
         name: Check for case conflicts in filenames
       - id: detect-private-key
         name: Detect private keys
+      - id: no-commit-to-branch
+        name: Prevent commits to main/master
+        args: ["--branch", "main", "--branch", "master"]
 
   # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py
