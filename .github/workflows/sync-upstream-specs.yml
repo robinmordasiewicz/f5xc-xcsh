@@ -3,7 +3,7 @@ name: Sync Upstream Specs
 on:
   # Run daily at 6 AM UTC to check for upstream updates
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
 
   # Allow manual trigger for immediate sync
   workflow_dispatch:
@@ -15,10 +15,10 @@ on:
   # Trigger on domain config or documentation config changes
   push:
     paths:
-      - '.specs/domain_config.yaml'
-      - 'scripts/generate-domains.ts'
-      - 'scripts/generate-docs.ts'
-      - 'docs/config/cli-examples.yaml'
+      - ".specs/domain_config.yaml"
+      - "scripts/generate-domains.ts"
+      - "scripts/generate-docs.ts"
+      - "docs/config/cli-examples.yaml"
 
 jobs:
   # Step 1: Check if upstream has new version
@@ -89,8 +89,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -134,7 +134,7 @@ jobs:
 
             Co-Authored-By: Upstream Sync Bot <noreply@github.com>
           branch: sync/upstream-${{ needs.check-upstream.outputs.new_version }}
-          title: 'chore: sync upstream specs ${{ needs.check-upstream.outputs.new_version }}'
+          title: "chore: sync upstream specs ${{ needs.check-upstream.outputs.new_version }}"
           body: |
             ## 🔄 Automated Upstream Specification Sync
 
@@ -169,39 +169,6 @@ jobs:
             chore
           reviewers: |
             robinmordasiewicz
-
-      - name: Enable Auto-Merge
-        if: steps.create-pr.outputs.pull-request-number
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "🔄 Enabling auto-merge for PR #${{ steps.create-pr.outputs.pull-request-number }}"
-          gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} \
-            --auto \
-            --squash \
-            --delete-branch
-          echo "✅ Auto-merge enabled - PR will merge automatically when CI passes"
-
-      - name: Set Commit Status for Branch Protection
-        if: steps.create-pr.outputs.pull-request-number
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Get the PR head SHA
-          PR_SHA=$(gh pr view ${{ steps.create-pr.outputs.pull-request-number }} --json headRefOid -q '.headRefOid')
-          echo "🔄 Setting commit statuses for SHA: $PR_SHA"
-
-          # Set success status for each required check
-          # These match the branch protection requirements
-          for context in "Lint" "Test (ubuntu-latest, 22)" "Test (macos-latest, 22)" "Test (windows-latest, 22)" "Build"; do
-            gh api repos/${{ github.repository }}/statuses/$PR_SHA \
-              -f state=success \
-              -f context="$context" \
-              -f description="Validated by sync workflow" \
-              -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo "✅ Set status: $context"
-          done
-          echo "✅ All commit statuses set - PR will auto-merge"
 
   # Step 3: Report if no updates
   no-updates:
