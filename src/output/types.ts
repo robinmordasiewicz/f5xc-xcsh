@@ -154,6 +154,19 @@ export interface CommandSpec {
 	resourceSpec?: ResourceSpec;
 	/** AI assistant guide for progressive disclosure (NEW) */
 	aiAssistantGuide?: AIAssistantGuide;
+	/** Resource information for discovery commands */
+	resources?: {
+		total: number;
+		primary: number;
+		discovered: number;
+		categories: unknown;
+		list: Array<{
+			name: string;
+			description: string;
+			operations: string[];
+			category: string;
+		}>;
+	};
 }
 
 /**
@@ -188,7 +201,7 @@ export interface FieldConstraints {
 	format?: string;
 
 	/** Allowed enum values */
-	enum?: string[];
+	enum?: unknown[];
 }
 
 /**
@@ -278,6 +291,9 @@ export interface ResourceSpec {
 
 	/** OneOf groups representing mutually exclusive choices */
 	oneOfGroups: OneOfGroup[];
+
+	/** AI assistant guide for this resource */
+	aiAssistantGuide?: string | AIAssistantGuide;
 
 	/** Minimum configuration required */
 	minimumConfiguration?: {

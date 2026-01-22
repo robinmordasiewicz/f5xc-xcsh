@@ -61,7 +61,7 @@ export function buildResourceSpec(resourceType: string): ResourceSpec | null {
  */
 function buildResourceSpecUncached(
 	resourceType: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): ResourceSpec | null {
 	// Get schema name: resourceType + "CreateSpecType"
 	// e.g., "healthcheck" -> "healthcheckCreateSpecType"
@@ -101,7 +101,7 @@ function buildResourceSpecUncached(
 
 	// Attach AI guide to resource spec (for backward compatibility with existing code)
 	// The AI guide will also be attached to CommandSpec in spec.ts
-	(resourceSpec as any).aiAssistantGuide = aiAssistantGuide;
+	resourceSpec.aiAssistantGuide = aiAssistantGuide;
 
 	return resourceSpec;
 }
@@ -129,7 +129,10 @@ function buildMinimumConfiguration(
 	}));
 
 	// Build a simple example
-	const exampleObject: any = {
+	const exampleObject: {
+		metadata: { name: string; namespace: string };
+		spec: Record<string, unknown>;
+	} = {
 		metadata: {
 			name: `example-${resourceType}`,
 			namespace: "default",
@@ -165,7 +168,7 @@ function buildMinimumConfiguration(
  */
 function findCreateSchemaName(
 	resourceType: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): string | null {
 	const normalized = normalizeResourceType(resourceType);
 	const schemas = openApiSpec.components?.schemas || {};
