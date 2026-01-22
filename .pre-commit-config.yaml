@@ -97,6 +97,15 @@ repos:
       - id: check-github-workflows
         name: Validate GitHub Workflows
 
+  # Generated file drift detection
+  - repo: local
+    hooks:
+      - id: check-generated-files
+        name: Check for generated file drift
+        entry: bash scripts/pre-commit-generated-check.sh
+        language: system
+        pass_filenames: false
+
   # Documentation structure validation
   - repo: local
     hooks:
