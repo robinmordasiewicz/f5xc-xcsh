@@ -130,11 +130,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts') }}
+          restore-keys: |
+            xcsh-dist-${{ runner.os }}-
+
       - name: Build TypeScript
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -175,11 +189,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts') }}
+          restore-keys: |
+            xcsh-dist-${{ runner.os }}-
+
       - name: Build TypeScript
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -221,12 +249,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-\${{ runner.os }}-\${{ hashFiles('package-lock.json', 'src/**/*.ts') }}
+          restore-keys: |
+            xcsh-dist-\${{ runner.os }}-
+
       - name: Build TypeScript
         shell: bash
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          XCSH_VERSION: ${{ needs.version.outputs.version }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          XCSH_VERSION: \${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        shell: bash
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
