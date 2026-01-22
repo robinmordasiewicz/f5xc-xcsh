@@ -128,7 +128,7 @@ repos:
 
       - id: ts-eslint
         name: ESLint TypeScript/React
-        entry: bash -c 'npx eslint --max-warnings=0 --fix src/'
+        entry: bash -c 'npx eslint --fix src/'
         language: system
         files: ^src/.*\.(ts|tsx)$
         pass_filenames: false

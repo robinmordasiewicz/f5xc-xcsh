@@ -379,7 +379,7 @@ export async function detectDependencies(
 				searchTimeMs,
 			};
 		} catch (error) {
-			console.debug(`Dependency detection error: ${error}`);
+			console.warn(`Dependency detection error: ${error}`);
 			const searchTimeMs = Date.now() - startTime;
 			return {
 				found: false,
