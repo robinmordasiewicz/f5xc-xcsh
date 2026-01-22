@@ -12,11 +12,58 @@ import type {
 } from "./types.js";
 import { PROPERTY_CONFLICTS } from "../types/conflicts_generated.js";
 
+interface OpenApiSchemaProperty {
+	description?: string;
+	default?: unknown;
+	type?: string;
+	required?: boolean | string[];
+	"x-f5xc"?: F5XCExtensions;
+	"x-f5xc-server-default"?: boolean;
+	"x-f5xc-recommended-value"?: unknown;
+	"x-f5xc-conflicts-with"?: string[];
+	"x-f5xc-description-short"?: string;
+	"x-f5xc-description-medium"?: string;
+	"x-f5xc-required-for"?: {
+		minimum_config?: boolean;
+		create?: boolean;
+		update?: boolean;
+		read?: boolean;
+	};
+	"x-f5xc-example"?: string;
+	"x-ves-example"?: string;
+	"x-f5xc-recommended-oneof-variant"?: Record<string, string>;
+	"x-ves-oneof-field-*"?: string;
+	[key: string]: unknown;
+	enum?: unknown[];
+	format?: string;
+	minimum?: number;
+	maximum?: number;
+	minLength?: number;
+	maxLength?: number;
+	pattern?: string;
+	items?: OpenApiSchemaProperty;
+	oneOf?: Array<{ properties?: Record<string, OpenApiSchemaProperty> }>;
+	properties?: Record<string, OpenApiSchemaProperty>;
+}
+
+interface OpenApiComponentSchemas {
+	[key: string]: OpenApiSchemaProperty;
+}
+
+interface OpenApiComponents {
+	schemas?: OpenApiComponentSchemas;
+}
+
+export interface OpenApiSpec {
+	components?: OpenApiComponents;
+	[key: string]: unknown;
+}
+
 /**
  * Load OpenAPI specification (embedded at build time)
  */
-export function loadOpenApiSpec(): any {
-	return openApiSpec;
+export function loadOpenApiSpec(): OpenApiSpec {
+	return openApiSpec as OpenApiSpec;
 }
 
 /**
@@ -27,7 +74,7 @@ export function loadOpenApiSpec(): any {
  */
 export function extractFieldSpecs(
 	schemaName: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): FieldSpec[] {
 	const schema = openApiSpec.components?.schemas?.[schemaName];
 	if (!schema || !schema.properties) {
@@ -35,10 +82,12 @@ export function extractFieldSpecs(
 	}
 
 	const fields: FieldSpec[] = [];
-	const required = new Set(schema.required || []);
+	const required = new Set(
+		Array.isArray(schema.required) ? schema.required : [],
+	);
 
 	for (const [fieldName, property] of Object.entries(
-		schema.properties as Record<string, any>,
+		schema.properties as Record<string, OpenApiSchemaProperty>,
 	)) {
 		const fieldSpec: FieldSpec = {
 			name: fieldName,
@@ -69,7 +118,7 @@ export function extractFieldSpecs(
  */
 export function extractOneOfGroups(
 	schemaName: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): OneOfGroup[] {
 	const schema = openApiSpec.components?.schemas?.[schemaName];
 	if (!schema) {
@@ -91,7 +140,7 @@ export function extractOneOfGroups(
 			groups.push({
 				groupName,
 				variants,
-				recommendedVariant,
+				...(recommendedVariant && { recommendedVariant }),
 				description: `Choose exactly one of: ${variants.join(", ")}`,
 			});
 		}
@@ -103,31 +152,38 @@ export function extractOneOfGroups(
 /**
  * Extract constraints from property definition
  */
-export function extractConstraints(property: any): FieldConstraints {
+export function extractConstraints(
+	property: OpenApiSchemaProperty,
+): FieldConstraints {
 	const constraints: FieldConstraints = {
-		type: property.type || "unknown",
+		type: (property.type as string) || "unknown",
 	};
 
 	// String constraints
-	if (property.minLength !== undefined)
-		constraints.minLength = property.minLength;
-	if (property.maxLength !== undefined)
-		constraints.maxLength = property.maxLength;
-	if (property.pattern !== undefined) constraints.pattern = property.pattern;
-	if (property.format !== undefined) constraints.format = property.format;
+	if (property.minLength !== undefined && property.minLength !== null)
+		constraints.minLength = property.minLength as number;
+	if (property.maxLength !== undefined && property.maxLength !== null)
+		constraints.maxLength = property.maxLength as number;
+	if (property.pattern !== undefined && property.pattern !== null)
+		constraints.pattern = property.pattern as string;
+	if (property.format !== undefined && property.format !== null)
+		constraints.format = property.format as string;
 
 	// Number constraints
-	if (property.minimum !== undefined) constraints.minimum = property.minimum;
-	if (property.maximum !== undefined) constraints.maximum = property.maximum;
+	if (property.minimum !== undefined && property.minimum !== null)
+		constraints.minimum = property.minimum as number;
+	if (property.maximum !== undefined && property.maximum !== null)
+		constraints.maximum = property.maximum as number;
 
 	// Array constraints
-	if (property.maxItems !== undefined)
-		constraints.maxItems = property.maxItems;
-	if (property.uniqueItems !== undefined)
-		constraints.uniqueItems = property.uniqueItems;
+	if (property.maxItems !== undefined && property.maxItems !== null)
+		constraints.maxItems = property.maxItems as number;
+	if (property.uniqueItems !== undefined && property.uniqueItems !== null)
+		constraints.uniqueItems = property.uniqueItems as boolean;
 
 	// Enum values
-	if (property.enum !== undefined) constraints.enum = property.enum;
+	if (property.enum !== undefined && property.enum !== null)
+		constraints.enum = property.enum as unknown[];
 
 	return constraints;
 }
@@ -135,11 +191,13 @@ export function extractConstraints(property: any): FieldConstraints {
 /**
  * Extract F5 XC extensions from property definition
  */
-export function extractF5XCExtensions(property: any): F5XCExtensions {
+export function extractF5XCExtensions(
+	property: OpenApiSchemaProperty,
+): F5XCExtensions {
 	const extensions: F5XCExtensions = {};
 
 	if (property["x-f5xc-server-default"] !== undefined) {
-		extensions.serverDefault = property["x-f5xc-server-default"];
+		extensions.serverDefault = property["x-f5xc-server-default"] as boolean;
 	}
 
 	if (property["x-f5xc-recommended-value"] !== undefined) {
@@ -147,19 +205,31 @@ export function extractF5XCExtensions(property: any): F5XCExtensions {
 	}
 
 	if (property["x-f5xc-conflicts-with"] !== undefined) {
-		extensions.conflictsWith = property["x-f5xc-conflicts-with"];
+		extensions.conflictsWith = property[
+			"x-f5xc-conflicts-with"
+		] as string[];
 	}
 
 	if (property["x-f5xc-description-short"] !== undefined) {
-		extensions.descriptionShort = property["x-f5xc-description-short"];
+		extensions.descriptionShort = property[
+			"x-f5xc-description-short"
+		] as string;
 	}
 
 	if (property["x-f5xc-description-medium"] !== undefined) {
-		extensions.descriptionMedium = property["x-f5xc-description-medium"];
+		extensions.descriptionMedium = property[
+			"x-f5xc-description-medium"
+		] as string;
 	}
 
 	if (property["x-f5xc-required-for"] !== undefined) {
-		extensions.requiredFor = property["x-f5xc-required-for"];
+		const requiredFor = property["x-f5xc-required-for"];
+		if (requiredFor) {
+			extensions.requiredFor = requiredFor as Exclude<
+				typeof requiredFor,
+				undefined
+			>;
+		}
 	}
 
 	if (
@@ -167,7 +237,8 @@ export function extractF5XCExtensions(property: any): F5XCExtensions {
 		property["x-ves-example"] !== undefined
 	) {
 		extensions.example =
-			property["x-f5xc-example"] || property["x-ves-example"];
+			(property["x-f5xc-example"] as string) ||
+			(property["x-ves-example"] as string);
 	}
 
 	return extensions;
@@ -176,7 +247,10 @@ export function extractF5XCExtensions(property: any): F5XCExtensions {
 /**
  * Find oneOf group that contains the given field
  */
-function findOneOfGroup(fieldName: string, schema: any): string | undefined {
+function findOneOfGroup(
+	fieldName: string,
+	schema: OpenApiSchemaProperty,
+): string | undefined {
 	for (const [key, value] of Object.entries(schema)) {
 		if (key.startsWith("x-ves-oneof-field-")) {
 			const groupName = key.replace("x-ves-oneof-field-", "");

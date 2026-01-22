@@ -4,6 +4,7 @@
  */
 
 import type {
+	AIAssistantGuide,
 	CommandSpec,
 	ExampleSpec,
 	FlagSpec,
@@ -56,6 +57,20 @@ export interface CLICommandSpec {
 	aliases: string[];
 	flags: GlobalFlagSpec[];
 	subcommands: CLICommandSpec[];
+	resources?: {
+		total: number;
+		primary: number;
+		discovered: number;
+		categories: unknown;
+		list: Array<{
+			name: string;
+			description: string;
+			operations: string[] | undefined;
+			category: unknown;
+			isPrimary?: boolean | undefined;
+			tier?: unknown;
+		}>;
+	};
 }
 
 /**
@@ -873,7 +888,7 @@ export function buildHealthcheckFlags(resourceSpec: ResourceSpec): FlagSpec[] {
 		}
 
 		if (field.constraints.enum) {
-			flag.choices = field.constraints.enum;
+			flag.choices = field.constraints.enum as string[];
 		}
 
 		flags.push(flag);
@@ -942,7 +957,7 @@ function buildResourceFlags(resourceSpec: ResourceSpec): FlagSpec[] {
 		}
 
 		if (field.constraints.enum) {
-			flag.choices = field.constraints.enum;
+			flag.choices = field.constraints.enum as string[];
 		}
 
 		flags.push(flag);
@@ -957,7 +972,7 @@ function buildResourceFlags(resourceSpec: ResourceSpec): FlagSpec[] {
  */
 function buildResourceExamples(
 	resourceType: string,
-	aiAssistantGuide: any,
+	aiAssistantGuide: AIAssistantGuide | undefined,
 ): ExampleSpec[] {
 	const examples: ExampleSpec[] = [];
 
@@ -1020,7 +1035,7 @@ function buildApiDomainSpec(domainName: string): CLICommandSpec | null {
 	const resources = info.allResources || info.primaryResources;
 	if (resources && resources.length > 0) {
 		// Add as metadata in the spec (extend the type if needed via casting)
-		(spec as any).resources = {
+		spec.resources = {
 			total: resources.length,
 			primary: info.primaryResources?.length || 0,
 			discovered: resources.length - (info.primaryResources?.length || 0),
