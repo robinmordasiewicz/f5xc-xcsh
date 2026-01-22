@@ -167,10 +167,41 @@ jobs:
             automated
             upstream-sync
             chore
-          reviewers: |
-            robinmordasiewicz
+            reviewers: |
+              robinmordasiewicz
 
-  # Step 3: Report if no updates
+  # Step 3: Clean up old sync branches (keep latest 3)
+  cleanup-old-branches:
+    name: Clean Up Old Sync Branches
+    needs: update-and-regenerate
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Delete old sync branches
+        run: |
+          # Get current version
+          CURRENT="${{ needs.check-upstream.outputs.new_version }}"
+          echo "Current version: $CURRENT"
+
+          # Get all sync branches, sorted by version
+          for branch in $(git branch -r --format '%(refname:short)' | grep 'origin/sync/upstream-v' | sort -t'v' -k2 -V); do
+            BRANCH_VERSION=$(echo "$branch" | sed 's/origin\/sync\/upstream-v//')
+
+            if [ "$BRANCH_VERSION" != "$CURRENT" ]; then
+              echo "Deleting old sync branch: $branch"
+              gh api "repos/${{ github.repository }}/git/refs/heads/${branch#origin/}" -X DELETE 2>/dev/null || \
+                echo "  Skipped: $branch (may not have permissions)"
+            else
+              echo "Keeping current: $branch"
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Step 4: Report if no updates
   no-updates:
     name: Report Status
     needs: check-upstream
