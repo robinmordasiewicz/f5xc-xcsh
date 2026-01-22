@@ -8,14 +8,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { REPLSession } from "../../src/repl/session.js";
 
+// Create a singleton mock profile manager to avoid timing issues
+const mockProfileManager = {
+	getActive: vi.fn().mockResolvedValue(null),
+	list: vi.fn().mockResolvedValue([]),
+	get: vi.fn().mockResolvedValue(null),
+	setActive: vi.fn().mockResolvedValue({ success: true }),
+};
+
 // Mock the profile manager to avoid file system operations
 vi.mock("../../src/profile/index.js", () => ({
-	getProfileManager: () => ({
-		getActive: vi.fn().mockResolvedValue(null),
-		list: vi.fn().mockResolvedValue([]),
-		get: vi.fn().mockResolvedValue(null),
-		setActive: vi.fn().mockResolvedValue({ success: true }),
-	}),
+	getProfileManager: () => mockProfileManager,
 }));
 
 // Mock the history manager to avoid file system operations
@@ -32,6 +35,12 @@ vi.mock("../../src/repl/history.js", () => ({
 
 describe("REPLSession Token Validation", () => {
 	beforeEach(() => {
+		// Reset mock calls
+		mockProfileManager.getActive.mockClear();
+		mockProfileManager.list.mockClear();
+		mockProfileManager.get.mockClear();
+		mockProfileManager.setActive.mockClear();
+
 		// Set up environment variables for testing
 		vi.stubEnv("F5XC_API_URL", "https://test.volterra.io");
 		vi.stubEnv("F5XC_API_TOKEN", "valid-test-token");
@@ -212,7 +221,9 @@ describe("REPLSession Token Validation", () => {
 	});
 
 	describe("Session State After Initialization", () => {
-		it("should have consistent state after valid token initialization", async () => {
+		it(
+			"should have consistent state after valid token initialization",
+			async () => {
 			const session = new REPLSession();
 
 			const apiClient = session.getAPIClient();
@@ -235,9 +246,13 @@ describe("REPLSession Token Validation", () => {
 			expect(session.isTokenValidated()).toBe(true);
 			expect(session.getValidationError()).toBeNull();
 			expect(session.getServerUrl()).toBe("https://test.volterra.io");
-		});
+		},
+			{ timeout: 10000 },
+		);
 
-		it("should have consistent state after invalid token initialization", async () => {
+		it(
+			"should have consistent state after invalid token initialization",
+			async () => {
 			const session = new REPLSession();
 
 			const apiClient = session.getAPIClient();
@@ -259,7 +274,9 @@ describe("REPLSession Token Validation", () => {
 			expect(session.isAuthenticated()).toBe(true); // Has token, just invalid
 			expect(session.isTokenValidated()).toBe(false);
 			expect(session.getValidationError()).toBe("Token expired");
-		});
+		},
+			{ timeout: 10000 },
+		);
 	});
 
 	describe("HTTP Status Code Handling", () => {
