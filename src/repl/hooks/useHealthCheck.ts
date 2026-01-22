@@ -41,6 +41,8 @@ interface UseHealthCheckResult {
 	refresh: () => void;
 	/** Timestamp of the last refresh */
 	lastRefresh: number;
+	/** Current poll interval in milliseconds */
+	pollIntervalMs: number;
 }
 
 /** Default polling interval: 30 seconds */
@@ -99,6 +101,7 @@ export function useHealthCheck(
 	const [lastRefresh, setLastRefresh] = useState<number>(0);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 	const isCheckingRef = useRef<boolean>(false);
+	const consecutiveFailuresRef = useRef<number>(0);
 
 	/**
 	 * Perform health check using the session's API client
@@ -124,16 +127,42 @@ export function useHealthCheck(
 
 		try {
 			const result: HealthCheckResult = await client.healthCheck();
-			setHealth({
-				status: result.status,
-				latencyMs: result.latencyMs,
-				isChecking: false,
-			});
-			setLastRefresh(Date.now());
+
+			// Handle offline status with warning progression
+			// healthCheck() returns { status: "offline" } on network failure (doesn't throw)
+			if (result.status === "offline") {
+				// First failure: show warning (yellow)
+				// Second consecutive failure: show offline (red)
+				const newStatus =
+					consecutiveFailuresRef.current === 0
+						? "warning"
+						: "offline";
+				consecutiveFailuresRef.current += 1;
+				setHealth({
+					status: newStatus,
+					latencyMs: undefined,
+					isChecking: false,
+				});
+				setLastRefresh(Date.now());
+			} else {
+				// Success - reset failure counter
+				consecutiveFailuresRef.current = 0;
+				setHealth({
+					status: result.status,
+					latencyMs: result.latencyMs,
+					isChecking: false,
+				});
+				setLastRefresh(Date.now());
+			}
 		} catch {
-			// On error, mark as offline
+			// Handle unexpected exceptions (not normal offline status)
+			// First failure: show warning (yellow)
+			// Second consecutive failure: show offline (red)
+			const newStatus =
+				consecutiveFailuresRef.current === 0 ? "warning" : "offline";
+			consecutiveFailuresRef.current += 1;
 			setHealth({
-				status: "offline",
+				status: newStatus,
 				latencyMs: undefined,
 				isChecking: false,
 			});
@@ -196,7 +225,7 @@ export function useHealthCheck(
 		};
 	}, [enabled, pollIntervalMs, session, performHealthCheck]);
 
-	return { health, refresh, lastRefresh };
+	return { health, refresh, lastRefresh, pollIntervalMs };
 }
 
 export default useHealthCheck;

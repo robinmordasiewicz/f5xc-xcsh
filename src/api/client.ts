@@ -35,8 +35,12 @@ const HEALTH_CHECK_TIMEOUT = 3000; // 3 second health check timeout
 
 /**
  * Health check result status
+ * - connected: API reachable and authenticated
+ * - warning: First network failure (retrying)
+ * - offline: Confirmed network failure (2+ consecutive)
+ * - auth_error: Network OK but authentication failed
  */
-export type HealthStatus = "connected" | "offline" | "auth_error";
+export type HealthStatus = "connected" | "warning" | "offline" | "auth_error";
 
 /**
  * Health check result

@@ -23,6 +23,7 @@ import { useHistory } from "./hooks/useHistory.js";
 import { useCompletion } from "./hooks/useCompletion.js";
 import { useGitStatus } from "./hooks/useGitStatus.js";
 import { useHealthCheck } from "./hooks/useHealthCheck.js";
+import { useInactivityDetection } from "./hooks/useInactivityDetection.js";
 import { executeCommand } from "./executor.js";
 import { isCustomDomain } from "../domains/index.js";
 import { domainRegistry } from "../types/domains.js";
@@ -171,9 +172,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	// Git status hook - auto-refresh on timer and manual refresh via Ctrl+G or command
 	const gitStatus = useGitStatus({ enabled: isInitialized });
 
+	// Inactivity detection hook - pauses health checks when user is inactive
+	const inactivity = useInactivityDetection({ enabled: isInitialized });
+
 	// Health check hook - auto-refresh on timer and manual refresh via Ctrl+H or command
+	// Paused when user is inactive (sleeping) to reduce unnecessary API calls
 	const healthCheck = useHealthCheck({
-		enabled: isInitialized,
+		enabled: isInitialized && !inactivity.isSleeping,
 		session: isInitialized ? session : null,
 	});
 
@@ -502,6 +507,9 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	// Handle input change
 	const handleInputChange = useCallback(
 		(newValue: string) => {
+			// Track user activity for inactivity detection
+			inactivity.recordActivity();
+
 			const oldValue = input;
 			setInput(newValue);
 
@@ -539,7 +547,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 				}
 			}
 		},
-		[input, completion, setInput],
+		[input, completion, setInput, inactivity],
 	);
 
 	// Handle input submission
@@ -565,6 +573,9 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 
 	// Keyboard input handling
 	useInput((char, key) => {
+		// Track user activity for inactivity detection
+		inactivity.recordActivity();
+
 		// Ctrl+C - double press to exit
 		if (key.ctrl && char === "c") {
 			ctrlC.handleCtrlC();
@@ -817,8 +828,14 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 								gitInfo={gitStatus.gitInfo}
 								width={width}
 								hint={statusHint}
-								connectionStatus={healthCheck.health.status}
+								connectionStatus={
+									inactivity.isSleeping
+										? "unknown"
+										: healthCheck.health.status
+								}
 								isCheckingHealth={healthCheck.health.isChecking}
+								lastRefresh={healthCheck.lastRefresh}
+								pollIntervalMs={healthCheck.pollIntervalMs}
 							/>
 						)}
 					</>
