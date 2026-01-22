@@ -130,11 +130,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
+          restore-keys: |
+            xcsh-dist-${{ runner.os }}-
+
       - name: Build TypeScript
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -152,7 +166,7 @@ jobs:
           retention-days: 1
 
   build-macos:
-    name: Build macOS Binaries
+    name: Build and Sign macOS Binaries
     runs-on: macos-latest
     needs: version
     steps:
@@ -175,11 +189,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
+          restore-keys: |
+            xcsh-dist-${{ runner.os }}-
+
       - name: Build TypeScript
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -189,7 +217,166 @@ jobs:
       - name: Build macOS binaries
         run: ./scripts/build-binaries.sh --platform darwin
 
-      - name: Upload macOS binaries
+      - name: Import Code Signing Certificate
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          # Store for later steps
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
+          # Decode certificate
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          echo "Certificate decoded, checking..."
+
+          # Verify p12 is valid
+          openssl pkcs12 -info -in $RUNNER_TEMP/certificate.p12 -noout -passin pass:"$APPLE_CERTIFICATE_PASSWORD" || {
+            echo "ERROR: Invalid p12 file or wrong password"
+            exit 1
+          }
+
+          # Create and configure keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate with proper options
+          echo "Importing certificate..."
+          security import $RUNNER_TEMP/certificate.p12 \
+            -k $KEYCHAIN_PATH \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          # Allow codesign to access the keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Add to search list
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # Verify import worked
+          echo "Verifying certificate import..."
+          security find-identity -v -p codesigning $KEYCHAIN_PATH
+
+          # Clean up certificate file
+          rm $RUNNER_TEMP/certificate.p12
+
+      - name: Sign macOS Binaries
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # Unlock keychain for this step
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Find the Developer ID Application certificate from our keychain
+          echo "Available signing identities:"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep "Developer ID" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          if [ -z "$SIGNING_IDENTITY" ]; then
+            echo "ERROR: No Developer ID signing identity found"
+            exit 1
+          fi
+          echo "Using signing identity: $SIGNING_IDENTITY"
+
+          # Sign each macOS binary
+          for ARCH in x64 arm64; do
+            BINARY_PATH="binaries/xcsh-macos-${ARCH}"
+
+            if [ ! -f "$BINARY_PATH" ]; then
+              echo "ERROR: Binary not found: $BINARY_PATH"
+              exit 1
+            fi
+
+            echo "Signing $BINARY_PATH..."
+            codesign --force --options runtime \
+              --entitlements scripts/entitlements.plist \
+              --sign "$SIGNING_IDENTITY" \
+              --timestamp "$BINARY_PATH"
+
+            # Health Check 1: Verify code signature
+            echo "Health Check 1: Verifying code signature..."
+            codesign --verify --verbose "$BINARY_PATH" || {
+              echo "::error::Code signature verification failed for $ARCH"
+              exit 1
+            }
+
+            # Health Check 2: Verify Developer ID authority chain
+            echo "Health Check 2: Verifying Developer ID authority chain..."
+            AUTHORITY=$(codesign -dvvv "$BINARY_PATH" 2>&1 | grep "Authority=Developer ID Application" || true)
+            if [ -z "$AUTHORITY" ]; then
+              echo "::error::Binary not signed with Developer ID Application certificate"
+              exit 1
+            fi
+            echo "  ✓ Signed with: $AUTHORITY"
+
+            # Health Check 3: Verify hardened runtime is enabled
+            echo "Health Check 3: Verifying hardened runtime..."
+            FLAGS=$(codesign -dvvv "$BINARY_PATH" 2>&1 | grep "flags=" || true)
+            if ! echo "$FLAGS" | grep -q "runtime"; then
+              echo "::error::Hardened runtime not enabled"
+              exit 1
+            fi
+            echo "  ✓ Hardened runtime enabled"
+
+            echo "✓ $ARCH signed successfully"
+          done
+
+      - name: Notarize macOS Binaries
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          for ARCH in x64 arm64; do
+            BINARY_PATH="binaries/xcsh-macos-${ARCH}"
+            ZIP_PATH="$RUNNER_TEMP/xcsh-${ARCH}.zip"
+
+            # Create ZIP for notarization
+            ditto -c -k --keepParent "$BINARY_PATH" "$ZIP_PATH"
+
+            echo "Submitting $ARCH for notarization..."
+            NOTARY_OUTPUT=$(xcrun notarytool submit "$ZIP_PATH" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" \
+              --wait 2>&1)
+            echo "$NOTARY_OUTPUT"
+
+            # Health Check 4: Verify notarization succeeded
+            echo "Health Check 4: Verifying notarization status..."
+            if ! echo "$NOTARY_OUTPUT" | grep -q "status: Accepted"; then
+              echo "::error::Notarization failed or not accepted for $ARCH"
+              echo "$NOTARY_OUTPUT"
+              exit 1
+            fi
+            echo "  ✓ Notarization accepted for $ARCH"
+
+            # Attempt to staple the notarization ticket to the binary
+            # Note: Bare Mach-O command-line binaries (like xcsh) cannot be stapled (Error 73)
+            # Only .app bundles, .dmg, and .pkg files support stapling
+            # Without stapling, Gatekeeper will verify notarization online (requires network)
+            echo "Health Check 5: Attempting to staple notarization ticket..."
+            STAPLE_OUTPUT=$(xcrun stapler staple "$BINARY_PATH" 2>&1) || true
+            if echo "$STAPLE_OUTPUT" | grep -q "The staple and validate action worked"; then
+              echo "  ✓ Notarization ticket stapled successfully"
+            else
+              echo "  ⚠ Stapling not supported for bare Mach-O binaries (expected for CLI tools)"
+              echo "  Note: Binary is signed and notarized - Gatekeeper will verify online"
+            fi
+
+            echo "✓ All health checks passed for $ARCH"
+          done
+
+      - name: Upload macOS binaries (SIGNED)
         uses: actions/upload-artifact@v4
         with:
           name: binaries-macos
@@ -221,12 +408,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/download-specs.sh
 
+      - name: Restore TypeScript build cache
+        id: cache-typescript
+        uses: actions/cache@v4
+        with:
+          path: dist/
+          key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
+          restore-keys: |
+            xcsh-dist-${{ runner.os }}-
+
       - name: Build TypeScript
         shell: bash
+        if: steps.cache-typescript.outputs.cache-hit != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           XCSH_VERSION: ${{ needs.version.outputs.version }}
         run: npm run build
+
+      - name: Restore dist from cache
+        shell: bash
+        if: steps.cache-typescript.outputs.cache-hit == 'true'
+        run: echo "Using cached TypeScript build"
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -442,253 +644,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  sign-macos:
-    name: Sign macOS Binaries
-    runs-on: macos-latest
+  update-homebrew:
+    name: Update Homebrew Cask
+    runs-on: ubuntu-latest
     needs: create-release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Import Code Signing Certificate
-        env:
-          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-        run: |
-          # Create temporary keychain
-          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
-          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
-
-          # Store for later steps
-          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
-          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
-
-          # Decode certificate
-          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.p12
-          echo "Certificate decoded, checking..."
-
-          # Verify p12 is valid
-          openssl pkcs12 -info -in $RUNNER_TEMP/certificate.p12 -noout -passin pass:"$APPLE_CERTIFICATE_PASSWORD" || {
-            echo "ERROR: Invalid p12 file or wrong password"
-            exit 1
-          }
-
-          # Create and configure keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security default-keychain -s $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Import certificate with proper options
-          echo "Importing certificate..."
-          security import $RUNNER_TEMP/certificate.p12 \
-            -k $KEYCHAIN_PATH \
-            -P "$APPLE_CERTIFICATE_PASSWORD" \
-            -T /usr/bin/codesign \
-            -T /usr/bin/security
-
-          # Allow codesign to access the keychain
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Add to search list
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # Verify import worked
-          echo "Verifying certificate import..."
-          security find-identity -v -p codesigning $KEYCHAIN_PATH
-
-          # Clean up certificate file
-          rm $RUNNER_TEMP/certificate.p12
-
-      - name: Download and Sign macOS Binaries
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: |
-          VERSION="${{ needs.create-release.outputs.version }}"
-          echo "Signing version: $VERSION"
-
-          # Retry function with exponential backoff
-          retry_with_backoff() {
-            local max_attempts=5
-            local base_delay=5
-            local attempt=1
-
-            while [ $attempt -le $max_attempts ]; do
-              if "$@"; then
-                return 0
-              fi
-
-              if [ $attempt -lt $max_attempts ]; then
-                delay=$((base_delay * (2 ** (attempt - 1))))
-                echo "::warning::Attempt $attempt failed, retrying in ${delay}s..."
-                sleep $delay
-              fi
-              attempt=$((attempt + 1))
-            done
-
-            echo "::error::All $max_attempts attempts failed"
-            return 1
-          }
-
-          # Unlock keychain for this step
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          # Find the Developer ID Application certificate from our keychain
-          echo "Available signing identities:"
-          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
-
-          SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep "Developer ID" | head -1 | sed 's/.*"\(.*\)".*/\1/')
-          if [ -z "$SIGNING_IDENTITY" ]; then
-            echo "ERROR: No Developer ID signing identity found"
-            exit 1
-          fi
-          echo "Using signing identity: $SIGNING_IDENTITY"
-
-          # Process each macOS architecture
-          for ARCH in amd64 arm64; do
-            ASSET_NAME="xcsh_${VERSION}_darwin_${ARCH}.tar.gz"
-            echo "Processing $ASSET_NAME..."
-
-            # Download release asset with retry
-            retry_with_backoff gh release download "${VERSION}" -p "$ASSET_NAME" -D $RUNNER_TEMP
-
-            # Extract
-            mkdir -p $RUNNER_TEMP/sign_${ARCH}
-            tar -xzf $RUNNER_TEMP/$ASSET_NAME -C $RUNNER_TEMP/sign_${ARCH}
-
-            # Sign the binary
-            BINARY_PATH="$RUNNER_TEMP/sign_${ARCH}/xcsh"
-            echo "Signing $BINARY_PATH..."
-
-            codesign --force --options runtime --entitlements scripts/entitlements.plist --sign "$SIGNING_IDENTITY" --timestamp "$BINARY_PATH"
-
-            # Health Check 1: Verify code signature
-            echo "Health Check 1: Verifying code signature..."
-            codesign --verify --verbose "$BINARY_PATH" || {
-              echo "::error::Code signature verification failed for $ARCH"
-              exit 1
-            }
-
-            # Health Check 2: Verify Developer ID authority chain
-            echo "Health Check 2: Verifying Developer ID authority chain..."
-            AUTHORITY=$(codesign -dvvv "$BINARY_PATH" 2>&1 | grep "Authority=Developer ID Application" || true)
-            if [ -z "$AUTHORITY" ]; then
-              echo "::error::Binary not signed with Developer ID Application certificate"
-              exit 1
-            fi
-            echo "  ✓ Signed with: $AUTHORITY"
-
-            # Health Check 3: Verify hardened runtime is enabled
-            echo "Health Check 3: Verifying hardened runtime..."
-            FLAGS=$(codesign -dvvv "$BINARY_PATH" 2>&1 | grep "flags=" || true)
-            if ! echo "$FLAGS" | grep -q "runtime"; then
-              echo "::error::Hardened runtime not enabled"
-              exit 1
-            fi
-            echo "  ✓ Hardened runtime enabled"
-
-            # Create ZIP for notarization
-            ZIP_PATH="$RUNNER_TEMP/xcsh_${ARCH}.zip"
-            ditto -c -k --keepParent "$BINARY_PATH" "$ZIP_PATH"
-
-            # Submit for notarization and wait for completion
-            echo "Submitting for notarization..."
-            NOTARY_OUTPUT=$(xcrun notarytool submit "$ZIP_PATH" \
-              --apple-id "$APPLE_ID" \
-              --password "$APPLE_PASSWORD" \
-              --team-id "$APPLE_TEAM_ID" \
-              --wait 2>&1)
-            echo "$NOTARY_OUTPUT"
-
-            # Health Check 4: Verify notarization succeeded
-            echo "Health Check 4: Verifying notarization status..."
-            if ! echo "$NOTARY_OUTPUT" | grep -q "status: Accepted"; then
-              echo "::error::Notarization failed or not accepted for $ARCH"
-              echo "$NOTARY_OUTPUT"
-              exit 1
-            fi
-            echo "  ✓ Notarization accepted"
-
-            # Attempt to staple the notarization ticket to the binary
-            # Note: Bare Mach-O command-line binaries (like xcsh) cannot be stapled (Error 73)
-            # Only .app bundles, .dmg, and .pkg files support stapling
-            # Without stapling, Gatekeeper will verify notarization online (requires network)
-            echo "Health Check 5: Attempting to staple notarization ticket..."
-            STAPLE_OUTPUT=$(xcrun stapler staple "$BINARY_PATH" 2>&1) || true
-            if echo "$STAPLE_OUTPUT" | grep -q "The staple and validate action worked"; then
-              echo "  ✓ Notarization ticket stapled successfully"
-            else
-              echo "  ⚠ Stapling not supported for bare Mach-O binaries (expected for CLI tools)"
-              echo "  Note: Binary is signed and notarized - Gatekeeper will verify online"
-              echo "  Stapler output: $STAPLE_OUTPUT"
-            fi
-
-            echo "✓ All health checks passed for $ARCH"
-
-            # Repackage as tar.gz
-            cd $RUNNER_TEMP/sign_${ARCH}
-            tar -czf $RUNNER_TEMP/${ASSET_NAME} *
-            cd -
-
-            # Upload signed binary to release (replace unsigned)
-            echo "Uploading signed $ASSET_NAME..."
-            gh release upload "${VERSION}" $RUNNER_TEMP/$ASSET_NAME --clobber
-          done
-
-          echo "macOS binaries signed and uploaded successfully!"
-
-      - name: Regenerate checksums.txt with signed binary hashes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ needs.create-release.outputs.version }}"
-          echo "Regenerating checksums.txt for version $VERSION..."
-
-          # Retry function with exponential backoff
-          retry_with_backoff() {
-            local max_attempts=5
-            local base_delay=5
-            local attempt=1
-
-            while [ $attempt -le $max_attempts ]; do
-              if "$@"; then
-                return 0
-              fi
-
-              if [ $attempt -lt $max_attempts ]; then
-                delay=$((base_delay * (2 ** (attempt - 1))))
-                echo "::warning::Attempt $attempt failed, retrying in ${delay}s..."
-                sleep $delay
-              fi
-              attempt=$((attempt + 1))
-            done
-
-            echo "::error::All $max_attempts attempts failed"
-            return 1
-          }
-
-          # Create working directory
-          mkdir -p $RUNNER_TEMP/checksums
-          cd $RUNNER_TEMP/checksums
-
-          # Download all release assets with retry
-          echo "Downloading all release assets..."
-          retry_with_backoff sh -c "GH_TOKEN=\"\$GITHUB_TOKEN\" gh release download \"${VERSION}\" --repo \"${{ github.repository }}\""
-
-          # Generate new checksums.txt
-          echo "Computing SHA256 checksums..."
-          shasum -a 256 xcsh_${VERSION}_*.tar.gz xcsh_${VERSION}_*.zip 2>/dev/null | tee checksums.txt
-
-          # Upload new checksums.txt to replace the old one
-          echo "Uploading updated checksums.txt..."
-          GH_TOKEN="$GITHUB_TOKEN" gh release upload "${VERSION}" checksums.txt --clobber --repo "${{ github.repository }}"
-
-          echo "checksums.txt regenerated successfully!"
-
-      - name: Update Homebrew cask with signed binary hashes
+      - name: Compute SHA256 hashes and update Homebrew
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
@@ -728,7 +692,7 @@ jobs:
           for PLATFORM in darwin_amd64 darwin_arm64 linux_amd64 linux_arm64; do
             ASSET="xcsh_${VERSION}_${PLATFORM}.tar.gz"
             echo "Downloading $ASSET..."
-            retry_with_backoff sh -c "GH_TOKEN=\"\$GITHUB_TOKEN\" gh release download \"${VERSION}\" --pattern \"$ASSET\" --repo \"${{ github.repository }}\""
+            retry_with_backoff gh release download "${VERSION}" --pattern "$ASSET" --repo "${{ github.repository }}"
             HASH=$(shasum -a 256 "$ASSET" | cut -d' ' -f1)
             export "HASH_${PLATFORM}=${HASH}"
             echo "$PLATFORM: $HASH"
@@ -740,7 +704,7 @@ jobs:
           cd homebrew-tap
 
           # Update the cask file with correct hashes
-          cat > Casks/xcsh.rb << CASKEOF
+          cat > Casks/xcsh.rb << 'CASKEOF'
           cask "xcsh" do
             name "xcsh"
             desc "Command-line interface for F5 Distributed Cloud"
@@ -850,8 +814,17 @@ jobs:
           end
           CASKEOF
 
-          # Remove leading whitespace from heredoc
-          sed -i '' 's/^          //' Casks/xcsh.rb
+          # Remove leading whitespace from heredoc (12 spaces)
+          sed -i 's/^          //' Casks/xcsh.rb
+
+          # Substitute VERSION variable in cask file
+          sed -i "s/\${VERSION}/${VERSION}/g" Casks/xcsh.rb
+
+          # Substitute hash variables
+          sed -i "s/\${HASH_darwin_amd64}/${HASH_darwin_amd64}/g" Casks/xcsh.rb
+          sed -i "s/\${HASH_darwin_arm64}/${HASH_darwin_arm64}/g" Casks/xcsh.rb
+          sed -i "s/\${HASH_linux_amd64}/${HASH_linux_amd64}/g" Casks/xcsh.rb
+          sed -i "s/\${HASH_linux_arm64}/${HASH_linux_arm64}/g" Casks/xcsh.rb
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
