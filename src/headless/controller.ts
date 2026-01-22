@@ -108,7 +108,7 @@ export class HeadlessController {
 	 * Write output to stdout
 	 */
 	private write(output: ReturnType<typeof createOutputMessage>): void {
-		console.log(formatOutput(output));
+		console.warn(formatOutput(output));
 	}
 
 	/**

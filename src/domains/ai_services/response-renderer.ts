@@ -27,24 +27,28 @@ export function renderResponse(response: GenAIQueryResponse): string[] {
 
 	switch (responseType) {
 		case "generic_response":
-			lines.push(...renderGenericResponse(response.generic_response!));
+			lines.push(
+				...renderGenericResponse(response.generic_response ?? {}),
+			);
 			break;
 		case "explain_log":
-			lines.push(...renderExplainLog(response.explain_log!));
+			lines.push(...renderExplainLog(response.explain_log ?? {}));
 			break;
 		case "gen_dashboard_filter":
 			lines.push(
-				...renderDashboardFilter(response.gen_dashboard_filter!),
+				...renderDashboardFilter(response.gen_dashboard_filter ?? {}),
 			);
 			break;
 		case "list_response":
-			lines.push(...renderListResponse(response.list_response!));
+			lines.push(...renderListResponse(response.list_response ?? {}));
 			break;
 		case "site_analysis_response":
-			lines.push(...renderSiteAnalysis(response.site_analysis_response!));
+			lines.push(
+				...renderSiteAnalysis(response.site_analysis_response ?? {}),
+			);
 			break;
 		case "widget_response":
-			lines.push(...renderWidgetResponse(response.widget_response!));
+			lines.push(...renderWidgetResponse(response.widget_response ?? {}));
 			break;
 		default:
 			lines.push("No response content.");

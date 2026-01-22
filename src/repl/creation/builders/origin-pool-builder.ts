@@ -126,7 +126,15 @@ export function buildOriginPoolRequest(
 			private_ip: { ip },
 		};
 		if (site) {
-			origin.private_ip!.site_locator = {
+			(
+				origin as {
+					private_ip: {
+						site_locator: {
+							site: { name: string; namespace: string };
+						};
+					};
+				}
+			).private_ip.site_locator = {
 				site: { name: site, namespace: "system" },
 			};
 		}
@@ -140,7 +148,15 @@ export function buildOriginPoolRequest(
 			private_name: { dns_name: dnsName },
 		};
 		if (site) {
-			origin.private_name!.site_locator = {
+			(
+				origin as {
+					private_name: {
+						site_locator: {
+							site: { name: string; namespace: string };
+						};
+					};
+				}
+			).private_name.site_locator = {
 				site: { name: site, namespace: "system" },
 			};
 		}
@@ -154,7 +170,15 @@ export function buildOriginPoolRequest(
 			k8s_service: { service_name: svc },
 		};
 		if (site) {
-			origin.k8s_service!.site_locator = {
+			(
+				origin as {
+					k8s_service: {
+						site_locator: {
+							site: { name: string; namespace: string };
+						};
+					};
+				}
+			).k8s_service.site_locator = {
 				site: { name: site, namespace: "system" },
 			};
 		}
@@ -168,7 +192,15 @@ export function buildOriginPoolRequest(
 			consul_service: { service_name: svc },
 		};
 		if (site) {
-			origin.consul_service!.site_locator = {
+			(
+				origin as {
+					consul_service: {
+						site_locator: {
+							site: { name: string; namespace: string };
+						};
+					};
+				}
+			).consul_service.site_locator = {
 				site: { name: site, namespace: "system" },
 			};
 		}

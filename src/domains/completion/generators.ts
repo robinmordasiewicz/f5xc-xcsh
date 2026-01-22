@@ -137,7 +137,9 @@ export function generateZshCompletion(): string {
 	// Build alias descriptions
 	const aliasDescriptions = domains
 		.filter((d) => d.aliases && d.aliases.length > 0)
-		.flatMap((d) => d.aliases!.map((a) => `'${a}:Alias for ${d.name}'`))
+		.flatMap(
+			(d) => d.aliases?.map((a) => `'${a}:Alias for ${d.name}'`) ?? [],
+		)
 		.join("\n            ");
 
 	// Build action descriptions
@@ -271,11 +273,12 @@ export function generateFishCompletion(): string {
 	// Build alias completions
 	const aliasCompletions = domains
 		.filter((d) => d.aliases && d.aliases.length > 0)
-		.flatMap((d) =>
-			d.aliases!.map(
-				(a) =>
-					`complete -c xcsh -n "__fish_use_subcommand" -a "${a}" -d 'Alias for ${d.name}'`,
-			),
+		.flatMap(
+			(d) =>
+				d.aliases?.map(
+					(a) =>
+						`complete -c xcsh -n "__fish_use_subcommand" -a "${a}" -d 'Alias for ${d.name}'`,
+				) ?? [],
 		)
 		.join("\n");
 
