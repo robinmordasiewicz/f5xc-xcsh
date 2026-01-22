@@ -68,7 +68,7 @@ export function groupFlagsForHelp(
 			});
 		}
 
-		groups.get(groupId)!.flags.push(flag);
+		groups.get(groupId)?.flags.push(flag);
 	}
 
 	// Sort groups by priority, then flags within groups

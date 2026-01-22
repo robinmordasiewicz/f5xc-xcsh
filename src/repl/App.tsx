@@ -374,6 +374,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			// Increment key to force TextInput remount, moving cursor to end
 			setInputKey((k) => k + 1);
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[], // No dependencies needed since we use inputRef
 	);
 
@@ -494,6 +495,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			refreshHistory,
 			gitStatus,
 			healthCheck,
+			outputItems,
 		],
 	);
 
@@ -537,7 +539,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 				}
 			}
 		},
-		[input, completion],
+		[input, completion, setInput],
 	);
 
 	// Handle input submission
@@ -558,7 +560,7 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			// Execute command
 			await runCommand(value);
 		},
-		[completion, applyCompletion, runCommand, history],
+		[completion, runCommand, history, setInput],
 	);
 
 	// Keyboard input handling

@@ -43,7 +43,7 @@ export const createCommand: CommandDefinition = {
 			return errorResult(
 				generateUsageError(
 					"login create profile", // FIXED: Correct registry path (verb-first)
-					createCommand.usage!, // Single source of truth
+					createCommand.usage ?? "",
 					{
 						options: [
 							{

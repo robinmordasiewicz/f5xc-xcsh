@@ -101,14 +101,14 @@ program
 		) => {
 			// Handle root-level help (xcsh --help or xcsh -h with no domain)
 			if (options.help && commandArgs.length === 0) {
-				formatRootHelp().forEach((line) => console.log(line));
+				formatRootHelp().forEach((line) => console.warn(line));
 				process.exit(0);
 			}
 
 			// Handle root-level spec (xcsh --spec with no domain)
 			// Outputs full CLI specification for documentation generation
 			if (options.spec && commandArgs.length === 0) {
-				console.log(formatFullCLISpec());
+				console.warn(formatFullCLISpec());
 				process.exit(0);
 			}
 
@@ -210,7 +210,7 @@ program
 
 				// FLOW 1: Active profile exists - show connection summary table
 				if (activeProfile) {
-					console.log(""); // blank line after banner
+					console.warn(""); // blank line after banner
 
 					const connectionInfo = buildConnectionInfo(
 						session.getActiveProfileName() ||
@@ -228,30 +228,30 @@ program
 					);
 
 					const tableLines = formatConnectionTable(connectionInfo);
-					tableLines.forEach((line) => console.log(line));
+					tableLines.forEach((line) => console.warn(line));
 
 					// Show offline warning if applicable
 					if (session.isOfflineMode()) {
-						console.log("");
-						console.log(
+						console.warn("");
+						console.warn(
 							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
 						);
-						console.log(
+						console.warn(
 							`${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
 						);
 					}
 
 					// Show profile fallback info if applicable
 					if (session.getAuthSource() === "profile-fallback") {
-						console.log("");
-						console.log(
+						console.warn("");
+						console.warn(
 							`${colors.blue}Info: Using credentials from profile '${session.getActiveProfileName()}' (environment variables were invalid)${colors.reset}`,
 						);
 					}
 				}
 				// FLOW 2: No profiles, but env vars configured - show connection info
 				else if (envConfigured) {
-					console.log(""); // blank line after banner
+					console.warn(""); // blank line after banner
 
 					const connectionInfo = buildConnectionInfo(
 						"(environment)",
@@ -266,12 +266,12 @@ program
 					);
 
 					const tableLines = formatConnectionTable(connectionInfo);
-					tableLines.forEach((line) => console.log(line));
+					tableLines.forEach((line) => console.warn(line));
 
 					// Show warnings if applicable
 					if (session.isOfflineMode()) {
-						console.log("");
-						console.log(
+						console.warn("");
+						console.warn(
 							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
 						);
 					}
@@ -280,36 +280,36 @@ program
 						!session.isTokenValidated() &&
 						session.getValidationError()
 					) {
-						console.log("");
-						console.log(
+						console.warn("");
+						console.warn(
 							`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
 						);
 					}
 				}
 				// FLOW 3: No profiles and no env vars - show login wizard guidance
 				else {
-					console.log("");
-					console.log(
+					console.warn("");
+					console.warn(
 						`${colors.yellow}No connection profiles found.${colors.reset}`,
 					);
-					console.log("");
-					console.log(
+					console.warn("");
+					console.warn(
 						"Create a profile to connect to F5 Distributed Cloud:",
 					);
-					console.log("");
-					console.log(
+					console.warn("");
+					console.warn(
 						`  ${colors.blue}login profile create${colors.reset} <name> --url <api-url> --token <api-token>`,
 					);
-					console.log("");
-					console.log("Or set environment variables:");
-					console.log("");
-					console.log(
+					console.warn("");
+					console.warn("Or set environment variables:");
+					console.warn("");
+					console.warn(
 						`  ${colors.blue}export ${ENV_PREFIX}_API_URL${colors.reset}=https://tenant.console.ves.volterra.io`,
 					);
-					console.log(
+					console.warn(
 						`  ${colors.blue}export ${ENV_PREFIX}_API_TOKEN${colors.reset}=<your-api-token>`,
 					);
-					console.log("");
+					console.warn("");
 				}
 
 				// Enter interactive REPL mode with pre-initialized session
@@ -405,8 +405,7 @@ async function executeNonInteractive(args: string[]): Promise<void> {
 
 	// Output results
 	result.output.forEach((line) => {
-		// eslint-disable-next-line no-console
-		console.log(line);
+		console.warn(line);
 	});
 
 	// Exit with appropriate code

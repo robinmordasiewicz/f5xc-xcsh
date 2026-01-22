@@ -10,11 +10,12 @@ import {
 	loadOpenApiSpec,
 } from "./schema-extractor.js";
 import { buildAIAssistantGuide } from "./ai-guide-builder.js";
+import type { OpenApiSpec } from "./schema-extractor.js";
 
 /**
  * Cached OpenAPI specification (loaded once per process)
  */
-let cachedOpenApiSpec: any = null;
+let cachedOpenApiSpec: OpenApiSpec | null = null;
 
 /**
  * Cached resource specs (Map<resourceType, ResourceSpec>)
@@ -31,7 +32,7 @@ const specCache = new Map<string, ResourceSpec>();
 export function buildResourceSpec(resourceType: string): ResourceSpec | null {
 	// Check cache first
 	if (specCache.has(resourceType)) {
-		return specCache.get(resourceType)!;
+		return specCache.get(resourceType) ?? null;
 	}
 
 	// Load OpenAPI spec once (singleton pattern)
@@ -60,7 +61,7 @@ export function buildResourceSpec(resourceType: string): ResourceSpec | null {
  */
 function buildResourceSpecUncached(
 	resourceType: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): ResourceSpec | null {
 	// Get schema name: resourceType + "CreateSpecType"
 	// e.g., "healthcheck" -> "healthcheckCreateSpecType"
@@ -100,7 +101,7 @@ function buildResourceSpecUncached(
 
 	// Attach AI guide to resource spec (for backward compatibility with existing code)
 	// The AI guide will also be attached to CommandSpec in spec.ts
-	(resourceSpec as any).aiAssistantGuide = aiAssistantGuide;
+	resourceSpec.aiAssistantGuide = aiAssistantGuide;
 
 	return resourceSpec;
 }
@@ -128,7 +129,10 @@ function buildMinimumConfiguration(
 	}));
 
 	// Build a simple example
-	const exampleObject: any = {
+	const exampleObject: {
+		metadata: { name: string; namespace: string };
+		spec: Record<string, unknown>;
+	} = {
 		metadata: {
 			name: `example-${resourceType}`,
 			namespace: "default",
@@ -164,7 +168,7 @@ function buildMinimumConfiguration(
  */
 function findCreateSchemaName(
 	resourceType: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): string | null {
 	const normalized = normalizeResourceType(resourceType);
 	const schemas = openApiSpec.components?.schemas || {};

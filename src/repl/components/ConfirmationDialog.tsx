@@ -91,11 +91,11 @@ export function ConfirmationDialog({
 			</Box>
 
 			<Box paddingLeft={2} paddingTop={1} paddingBottom={1}>
-				<Text bold>Type "</Text>
+				<Text bold>Type &quot;</Text>
 				<Text bold color="yellow">
 					{confirmText}
 				</Text>
-				<Text bold>" to confirm: </Text>
+				<Text bold>&quot; to confirm: </Text>
 				<TextInput
 					value={input}
 					onChange={setInput}
@@ -112,7 +112,7 @@ export function ConfirmationDialog({
 			<Box paddingTop={1} paddingLeft={2}>
 				{input.length > 0 && !inputMatches ? (
 					<Text color="yellow">
-						⚠️ Input doesn't match. Press Enter to try again.
+						⚠️ Input doesn&apos;t match. Press Enter to try again.
 					</Text>
 				) : (
 					<Text color="dim">[ESC] Cancel</Text>

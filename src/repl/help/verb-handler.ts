@@ -2,10 +2,12 @@ import { getDomainInfo } from "../../types/domains.js";
 import { formatDomainHelp } from "../help.js";
 import { formatResourceHelp } from "./resource-help.js";
 import type { ExecutionResult } from "../executor.js";
+import type { REPLSession } from "../session.js";
+import type { ContextPath } from "../context.js";
 
 export interface HelpVerbOptions {
-	session: any;
-	ctx: any;
+	session: REPLSession;
+	ctx: ContextPath;
 	domain: string;
 	resourceType?: string;
 	args: string[];

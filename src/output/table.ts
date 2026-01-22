@@ -401,7 +401,7 @@ function calculateColumnWidths(
 		if (totalWidth > maxTableWidth) {
 			const ratio = (maxTableWidth - columns.length * 3 - 1) / totalWidth;
 			for (let i = 0; i < widths.length; i++) {
-				widths[i] = Math.max(5, Math.floor(widths[i]! * ratio));
+				widths[i] = Math.max(5, Math.floor((widths[i] ?? 0) * ratio));
 			}
 		}
 	}
@@ -482,7 +482,7 @@ export function formatBeautifulTable(
 
 	// Header row
 	const headerCells = config.columns.map((col, i) => {
-		const padding = widths[i]! - col.header.length;
+		const padding = (widths[i] ?? 0) - col.header.length;
 		const leftPad = Math.floor(padding / 2);
 		const rightPad = padding - leftPad;
 		const content = " ".repeat(leftPad) + col.header + " ".repeat(rightPad);
@@ -501,14 +501,14 @@ export function formatBeautifulTable(
 
 	// Data rows
 	for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
-		const row = data[rowIndex]!;
+		const row = data[rowIndex] ?? {};
 
 		// Get cell values and wrap text
 		const cellValues = config.columns.map((col, i) => {
 			const value = getValue(row, col.accessor) || "<None>";
 			return config.wrapText !== false
-				? wrapText(value, widths[i]!)
-				: [value.slice(0, widths[i]!)];
+				? wrapText(value, widths[i] ?? 0)
+				: [value.slice(0, widths[i] ?? 0)];
 		});
 
 		// Find max lines needed for this row
@@ -518,7 +518,7 @@ export function formatBeautifulTable(
 		for (let lineIndex = 0; lineIndex < maxLines; lineIndex++) {
 			const cells = cellValues.map((cellLines, i) => {
 				const text = cellLines[lineIndex] ?? "";
-				const padding = widths[i]! - text.length;
+				const padding = (widths[i] ?? 0) - text.length;
 				const align = config.columns[i]?.align ?? "left";
 
 				let content: string;
