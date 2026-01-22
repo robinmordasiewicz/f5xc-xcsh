@@ -1,12 +1,15 @@
 # Pre-commit hooks configuration
 # Install: pip install pre-commit && pre-commit install
 # Run manually: pre-commit run --all-files
-
+fail_fast: true
 repos:
   # General file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
+      - id: no-commit-to-branch
+        name: Prevent commits to main/master
+        args: ["--branch", "main", "--branch", "master"]
       - id: trailing-whitespace
         name: Trim trailing whitespace
       - id: end-of-file-fixer
@@ -30,9 +33,6 @@ repos:
         name: Check for case conflicts in filenames
       - id: detect-private-key
         name: Detect private keys
-      - id: no-commit-to-branch
-        name: Prevent commits to main/master
-        args: ["--branch", "main", "--branch", "master"]
 
   # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py

@@ -31,6 +31,20 @@ const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
 const STARTUP_TIMEOUT = 3000; // 3 second timeout (vs 15s default)
 const STARTUP_MAX_RETRIES = 0; // No retries during startup
 const CONNECTIVITY_TIMEOUT = 2000; // 2 second connectivity check
+const HEALTH_CHECK_TIMEOUT = 3000; // 3 second health check timeout
+
+/**
+ * Health check result status
+ */
+export type HealthStatus = "connected" | "offline" | "auth_error";
+
+/**
+ * Health check result
+ */
+export interface HealthCheckResult {
+	status: HealthStatus;
+	latencyMs?: number;
+}
 
 /**
  * Status codes that should trigger a retry
@@ -262,6 +276,80 @@ export class APIClient {
 		} catch {
 			clearTimeout(timeoutId);
 			return { reachable: false };
+		}
+	}
+
+	/**
+	 * Lightweight health check for background polling.
+	 * Two-phase check:
+	 * 1. Connectivity check with HEAD request (fast-fail)
+	 * 2. Auth validation with HEAD to /api/web/namespaces
+	 *
+	 * Returns status:
+	 * - 'connected': API reachable and authenticated
+	 * - 'offline': API unreachable (network/timeout)
+	 * - 'auth_error': API reachable but authentication failed (401/403)
+	 */
+	async healthCheck(): Promise<HealthCheckResult> {
+		const start = Date.now();
+
+		// Phase 1: Quick connectivity check
+		const connectivity = await this.checkConnectivity();
+		if (!connectivity.reachable) {
+			return { status: "offline" };
+		}
+
+		// Phase 2: Auth validation with HEAD request to namespaces endpoint
+		if (!this.apiToken) {
+			// No token configured - report as auth error
+			return { status: "auth_error", latencyMs: Date.now() - start };
+		}
+
+		const controller = new AbortController();
+		const timeoutId = setTimeout(
+			() => controller.abort(),
+			HEALTH_CHECK_TIMEOUT,
+		);
+
+		try {
+			const response = await fetch(
+				`${this.serverUrl}/api/web/namespaces`,
+				{
+					method: "HEAD",
+					headers: {
+						Authorization: `APIToken ${this.apiToken}`,
+						Accept: "application/json",
+					},
+					signal: controller.signal,
+				},
+			);
+			clearTimeout(timeoutId);
+
+			const latencyMs = Date.now() - start;
+
+			// Check status code
+			if (response.ok || response.status === 200) {
+				return { status: "connected", latencyMs };
+			}
+
+			// Auth errors
+			if (response.status === 401 || response.status === 403) {
+				return { status: "auth_error", latencyMs };
+			}
+
+			// Other errors - assume connected but with issues
+			// Don't treat 404, 500, etc. as offline
+			return { status: "connected", latencyMs };
+		} catch (error) {
+			clearTimeout(timeoutId);
+
+			// Timeout or network error
+			if (error instanceof Error && error.name === "AbortError") {
+				return { status: "offline" };
+			}
+
+			// Network errors
+			return { status: "offline" };
 		}
 	}
 
@@ -693,6 +781,6 @@ export function buildResourcePath(
 	return path;
 }
 
-// Re-export types
+// Re-export types from types.js
 export type { APIClientConfig, APIRequestOptions, APIResponse, HTTPMethod };
 export { APIError };

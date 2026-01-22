@@ -22,6 +22,7 @@ import { useDoubleCtrlC } from "./hooks/useDoubleCtrlC.js";
 import { useHistory } from "./hooks/useHistory.js";
 import { useCompletion } from "./hooks/useCompletion.js";
 import { useGitStatus } from "./hooks/useGitStatus.js";
+import { useHealthCheck } from "./hooks/useHealthCheck.js";
 import { executeCommand } from "./executor.js";
 import { isCustomDomain } from "../domains/index.js";
 import { domainRegistry } from "../types/domains.js";
@@ -169,6 +170,12 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 
 	// Git status hook - auto-refresh on timer and manual refresh via Ctrl+G or command
 	const gitStatus = useGitStatus({ enabled: isInitialized });
+
+	// Health check hook - auto-refresh on timer and manual refresh via Ctrl+H or command
+	const healthCheck = useHealthCheck({
+		enabled: isInitialized,
+		session: isInitialized ? session : null,
+	});
 
 	// Completion state
 	const completion = useCompletion({
@@ -471,10 +478,23 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 				gitStatus.refresh();
 			}
 
+			// Refresh health status if requested (e.g., after login)
+			if (result.refreshHealth) {
+				healthCheck.refresh();
+			}
+
 			// Refresh history
 			refreshHistory();
 		},
-		[session, prompt, addOutput, exit, refreshHistory, gitStatus],
+		[
+			session,
+			prompt,
+			addOutput,
+			exit,
+			refreshHistory,
+			gitStatus,
+			healthCheck,
+		],
 	);
 
 	// Handle input change
@@ -559,6 +579,14 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 		if (key.ctrl && char === "g") {
 			gitStatus.refresh();
 			setStatusHint("Git status refreshed");
+			setTimeout(() => setStatusHint("Ctrl+C twice to exit"), 2000);
+			return;
+		}
+
+		// Ctrl+H - refresh health status
+		if (key.ctrl && char === "h") {
+			healthCheck.refresh();
+			setStatusHint("Health check refreshed");
 			setTimeout(() => setStatusHint("Ctrl+C twice to exit"), 2000);
 			return;
 		}
@@ -787,6 +815,8 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 								gitInfo={gitStatus.gitInfo}
 								width={width}
 								hint={statusHint}
+								connectionStatus={healthCheck.health.status}
+								isCheckingHealth={healthCheck.health.isChecking}
 							/>
 						)}
 					</>
