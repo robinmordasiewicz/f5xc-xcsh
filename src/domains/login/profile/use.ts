@@ -56,7 +56,10 @@ export const useCommand: CommandDefinition = {
 
 			return successResult(
 				[`Switched to profile '${name}'.`, ``, ...tableLines],
-				true, // contextChanged - prompt should update
+				{
+					contextChanged: true, // prompt should update
+					refreshHealth: true, // refresh health indicator
+				},
 			);
 		} catch (error) {
 			return errorResult(

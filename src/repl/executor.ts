@@ -104,6 +104,8 @@ export interface ExecutionResult {
 	rawStdout?: string;
 	/** Whether to trigger git status refresh */
 	refreshGit?: boolean;
+	/** Whether to trigger health check refresh (e.g., after login) */
+	refreshHealth?: boolean;
 	/**
 	 * Signal to enter interactive chat mode.
 	 * When set, App.tsx will switch to ChatMode component.

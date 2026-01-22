@@ -35,6 +35,8 @@ export interface DomainCommandResult {
 	 * like the image banner.
 	 */
 	rawStdout?: string;
+	/** Whether to trigger health check refresh (e.g., after login) */
+	refreshHealth?: boolean;
 	/**
 	 * Signal to enter interactive chat mode.
 	 * When set, App.tsx will switch to ChatMode component.
@@ -715,18 +717,43 @@ class DomainRegistry {
 export const customDomains = new DomainRegistry();
 
 /**
+ * Options for successResult helper
+ */
+export interface SuccessResultOptions {
+	contextChanged?: boolean;
+	refreshHealth?: boolean;
+}
+
+/**
  * Helper to create a success result
  */
 export function successResult(
 	output: string[],
-	contextChanged: boolean = false,
+	options: boolean | SuccessResultOptions = false,
 ): DomainCommandResult {
-	return {
+	// Handle legacy boolean parameter for contextChanged
+	if (typeof options === "boolean") {
+		return {
+			output,
+			shouldExit: false,
+			shouldClear: false,
+			contextChanged: options,
+		};
+	}
+
+	// Handle options object
+	const result: DomainCommandResult = {
 		output,
 		shouldExit: false,
 		shouldClear: false,
-		contextChanged,
+		contextChanged: options.contextChanged ?? false,
 	};
+
+	if (options.refreshHealth) {
+		result.refreshHealth = true;
+	}
+
+	return result;
 }
 
 /**

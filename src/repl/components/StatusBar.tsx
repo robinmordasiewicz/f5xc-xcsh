@@ -1,12 +1,13 @@
 /**
- * StatusBar component - Displays git status and keyboard hints
- * Bottom bar with CLI name, git branch info, and help text
+ * StatusBar component - Displays connection status, git status and keyboard hints
+ * Bottom bar with connection indicator, git branch info, and help text
  */
 
 import React from "react";
 import { Box, Text, Spacer } from "ink";
 import { execSync } from "child_process";
 import { homedir } from "os";
+import type { HealthStatus } from "../../api/client.js";
 
 /**
  * Git repository status information
@@ -20,10 +21,19 @@ export interface GitInfo {
 	behind: number;
 }
 
+/**
+ * Connection status type for the status indicator
+ */
+export type ConnectionIndicatorStatus = HealthStatus | "unknown";
+
 interface StatusBarProps {
 	gitInfo?: GitInfo | undefined;
 	width?: number;
 	hint?: string;
+	/** Connection status for the indicator */
+	connectionStatus?: ConnectionIndicatorStatus;
+	/** Whether a health check is in progress */
+	isCheckingHealth?: boolean;
 }
 
 /**
@@ -75,15 +85,55 @@ function getFormattedCwd(): string {
 }
 
 /**
+ * Connection indicator colors
+ */
+const CONNECTION_COLORS = {
+	connected: "#00c853", // Green - connected and authenticated
+	auth_error: "#ffc107", // Yellow - connected but auth error
+	offline: "#ca260a", // Red - disconnected/unreachable
+	unknown: "#666666", // Gray - unknown/checking
+} as const;
+
+/**
+ * Get the connection indicator symbol and color
+ */
+function getConnectionIndicator(
+	status: ConnectionIndicatorStatus,
+	isChecking: boolean,
+): { symbol: string; color: string } {
+	// While checking, show outline circle
+	if (isChecking) {
+		return { symbol: "○", color: CONNECTION_COLORS.unknown };
+	}
+
+	// Filled circle with status-based color
+	return {
+		symbol: "●",
+		color: CONNECTION_COLORS[status],
+	};
+}
+
+/**
  * StatusBar component
- * Displays CLI name, git status, and keyboard hints
+ * Displays connection indicator, git status, and keyboard hints
  */
 export function StatusBar({
 	gitInfo,
 	width = 80,
 	hint = "Ctrl+C: quit",
+	connectionStatus = "unknown",
+	isCheckingHealth = false,
 }: StatusBarProps): React.ReactElement {
-	// Left side: repo/branch or current working directory
+	// Connection indicator
+	const renderConnectionIndicator = (): React.ReactElement => {
+		const { symbol, color } = getConnectionIndicator(
+			connectionStatus,
+			isCheckingHealth,
+		);
+		return <Text color={color}>{symbol}</Text>;
+	};
+
+	// Left side: connection indicator + repo/branch or current working directory
 	const renderLeft = (): React.ReactElement => {
 		if (gitInfo?.inRepo) {
 			const icon = getStatusIcon(gitInfo);
@@ -91,6 +141,8 @@ export function StatusBar({
 
 			return (
 				<Text>
+					{renderConnectionIndicator()}
+					<Text> </Text>
 					<Text color="#ffffff">{gitInfo.repoName}</Text>
 					<Text color="#666666">/</Text>
 					<Text color={color}>{gitInfo.branch}</Text>
@@ -101,7 +153,13 @@ export function StatusBar({
 		}
 
 		// Show current working directory when not in a git repo
-		return <Text color="#666666">{getFormattedCwd()}</Text>;
+		return (
+			<Text>
+				{renderConnectionIndicator()}
+				<Text> </Text>
+				<Text color="#666666">{getFormattedCwd()}</Text>
+			</Text>
+		);
 	};
 
 	// Right side: keyboard hints
