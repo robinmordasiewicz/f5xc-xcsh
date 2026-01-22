@@ -34,6 +34,10 @@ interface OriginServer {
 		service_name: string;
 		site_locator?: { site: { name: string; namespace: string } };
 	};
+	cbip_service?: {
+		service_name: string;
+		site_locator?: { site: { name: string; namespace: string } };
+	};
 	custom_endpoint_object?: { endpoint: { name: string; namespace: string } };
 	vn_private_ip?: {
 		ip: string;
@@ -77,6 +81,11 @@ export interface OriginPoolRequestBody {
 			skip_server_verification?: Record<string, unknown>;
 		};
 		healthcheck?: Array<{ name: string; namespace?: string }>;
+		endpoint_selection?: string;
+		advanced_options?: Record<string, unknown>;
+		same_as_endpoint_port?: Record<string, unknown>;
+		health_check_port?: number;
+		[key: string]: unknown;
 	};
 }
 
@@ -210,11 +219,19 @@ export function buildOriginPoolRequest(
 	// CBIP service origins
 	const cbipServices = getFlagValues(flags, "--cbip-service");
 	for (const svc of cbipServices) {
-		const origin = {
+		const origin: OriginServer = {
 			cbip_service: { service_name: svc },
-		} as unknown as OriginServer;
+		};
 		if (site) {
-			(origin as any).cbip_service.site_locator = {
+			(
+				origin as OriginServer & {
+					cbip_service: {
+						site_locator: {
+							site: { name: string; namespace: string };
+						};
+					};
+				}
+			).cbip_service.site_locator = {
 				site: { name: site, namespace: "system" },
 			};
 		}
@@ -342,7 +359,7 @@ export function buildOriginPoolRequest(
 	// Endpoint selection (at spec level, not advanced_options)
 	const endpointSelection = getFlagValue(flags, "--endpoint-selection");
 	if (endpointSelection) {
-		(request.spec as any).endpoint_selection = endpointSelection;
+		request.spec.endpoint_selection = endpointSelection;
 	}
 
 	// Advanced options (lazily initialized)
@@ -364,11 +381,11 @@ export function buildOriginPoolRequest(
 		"--health-check-port-source",
 	);
 	if (healthCheckPortSource === "same-as-endpoint") {
-		(request.spec as any).same_as_endpoint_port = {};
+		request.spec.same_as_endpoint_port = {};
 	} else if (healthCheckPortSource === "custom") {
 		const healthCheckPort = getFlagIntValue(flags, "--health-check-port");
 		if (healthCheckPort !== undefined) {
-			(request.spec as any).health_check_port = healthCheckPort;
+			request.spec.health_check_port = healthCheckPort;
 		}
 	}
 
@@ -551,7 +568,7 @@ export function buildOriginPoolRequest(
 
 	// Add advanced_options to request if any were set
 	if (advancedOptions && Object.keys(advancedOptions).length > 0) {
-		(request.spec as any).advanced_options = advancedOptions;
+		request.spec.advanced_options = advancedOptions;
 	}
 
 	// Health checks

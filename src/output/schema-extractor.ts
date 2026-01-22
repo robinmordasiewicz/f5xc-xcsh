@@ -12,11 +12,42 @@ import type {
 } from "./types.js";
 import { PROPERTY_CONFLICTS } from "../types/conflicts_generated.js";
 
+interface OpenApiSchemaProperty {
+	description?: string;
+	default?: unknown;
+	type?: string;
+	required?: boolean | string[];
+	"x-f5xc"?: F5XCExtensions;
+	enum?: unknown[];
+	format?: string;
+	minimum?: number;
+	maximum?: number;
+	minLength?: number;
+	maxLength?: number;
+	pattern?: string;
+	items?: OpenApiSchemaProperty;
+	oneOf?: Array<{ properties?: Record<string, OpenApiSchemaProperty> }>;
+	properties?: Record<string, OpenApiSchemaProperty>;
+}
+
+interface OpenApiComponentSchemas {
+	[key: string]: OpenApiSchemaProperty;
+}
+
+interface OpenApiComponents {
+	schemas?: OpenApiComponentSchemas;
+}
+
+export interface OpenApiSpec {
+	components?: OpenApiComponents;
+	[key: string]: unknown;
+}
+
 /**
  * Load OpenAPI specification (embedded at build time)
  */
-export function loadOpenApiSpec(): any {
-	return openApiSpec;
+export function loadOpenApiSpec(): OpenApiSpec {
+	return openApiSpec as OpenApiSpec;
 }
 
 /**
@@ -27,7 +58,7 @@ export function loadOpenApiSpec(): any {
  */
 export function extractFieldSpecs(
 	schemaName: string,
-	openApiSpec: any,
+	openApiSpec: OpenApiSpec,
 ): FieldSpec[] {
 	const schema = openApiSpec.components?.schemas?.[schemaName];
 	if (!schema || !schema.properties) {
@@ -35,10 +66,12 @@ export function extractFieldSpecs(
 	}
 
 	const fields: FieldSpec[] = [];
-	const required = new Set(schema.required || []);
+	const required = new Set(
+		Array.isArray(schema.required) ? schema.required : [],
+	);
 
 	for (const [fieldName, property] of Object.entries(
-		schema.properties as Record<string, any>,
+		schema.properties as Record<string, OpenApiSchemaProperty>,
 	)) {
 		const fieldSpec: FieldSpec = {
 			name: fieldName,

@@ -10,11 +10,12 @@ import {
 	loadOpenApiSpec,
 } from "./schema-extractor.js";
 import { buildAIAssistantGuide } from "./ai-guide-builder.js";
+import type { OpenApiSpec } from "./schema-extractor.js";
 
 /**
  * Cached OpenAPI specification (loaded once per process)
  */
-let cachedOpenApiSpec: any = null;
+let cachedOpenApiSpec: OpenApiSpec | null = null;
 
 /**
  * Cached resource specs (Map<resourceType, ResourceSpec>)
@@ -31,7 +32,7 @@ const specCache = new Map<string, ResourceSpec>();
 export function buildResourceSpec(resourceType: string): ResourceSpec | null {
 	// Check cache first
 	if (specCache.has(resourceType)) {
-		return specCache.get(resourceType)!;
+		return specCache.get(resourceType) ?? null;
 	}
 
 	// Load OpenAPI spec once (singleton pattern)
