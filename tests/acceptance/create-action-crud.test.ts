@@ -877,7 +877,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse(mockHC, 200);
 		session = createMockSession("json", "default", "virtual", "get");
-		result = await executeCommand("healthcheck --yes lifecycle-hc", session);
+		result = await executeCommand("healthcheck lifecycle-hc", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "GET")).toBeDefined();
 		expect(result.output.join("\n")).toContain("lifecycle-hc");
@@ -914,7 +914,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse(mockPool, 200);
 		session = createMockSession("json", "default", "virtual", "get");
-		result = await executeCommand("origin_pool --yes lifecycle-pool", session);
+		result = await executeCommand("origin_pool lifecycle-pool", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "GET")).toBeDefined();
 

@@ -1136,6 +1136,12 @@ export function parseCommandArgs(
 				case "no-color":
 					noColor = true;
 					break;
+				case "yes":
+				case "y":
+				case "force":
+				case "f":
+					// Boolean flags - don't consume next arg
+					break;
 				default:
 					// Skip other flags with values
 					if (nextArg && !nextArg.startsWith("--")) {
@@ -1164,6 +1170,10 @@ export function parseCommandArgs(
 						consumedAsValue.add(i + 1);
 						i++;
 					}
+					break;
+				case "y":
+				case "f":
+					// Boolean flags - don't consume next arg
 					break;
 				default:
 					// Skip other flags with values
