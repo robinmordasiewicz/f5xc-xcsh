@@ -191,7 +191,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create HTTP healthcheck with all required flags",
 				command:
-					"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/healthchecks$/,
@@ -210,7 +210,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create HTTP healthcheck with optional path flag",
 				command:
-					"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3 --path /health",
+					"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3 --path /health",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/healthchecks$/,
@@ -229,7 +229,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create TCP healthcheck",
 				command:
-					"healthcheck --name test-tcp-hc --type tcp --interval 15 --timeout 10 --healthy-threshold 3 --unhealthy-threshold 5",
+					"healthcheck --yes --name test-tcp-hc --type tcp --interval 15 --timeout 10 --healthy-threshold 3 --unhealthy-threshold 5",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/healthchecks$/,
@@ -248,7 +248,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create healthcheck with --flag=value syntax",
 				command:
-					"healthcheck --name=test-hc --type=http --interval=10 --timeout=5 --healthy-threshold=2 --unhealthy-threshold=3",
+					"healthcheck --yes --name=test-hc --type=http --interval=10 --timeout=5 --healthy-threshold=2 --unhealthy-threshold=3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/healthchecks$/,
@@ -267,7 +267,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create healthcheck with custom namespace",
 				command:
-					"healthcheck --namespace prod --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --namespace prod --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /namespaces\/prod\/healthchecks$/,
@@ -337,7 +337,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "missing required --name flag",
 				command:
-					"healthcheck --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["--name"],
@@ -347,7 +347,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "invalid --type value",
 				command:
-					"healthcheck --name test-hc --type invalid --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --name test-hc --type invalid --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["Invalid value"],
@@ -357,7 +357,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "invalid integer for --interval",
 				command:
-					"healthcheck --name test-hc --type http --interval abc --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --name test-hc --type http --interval abc --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["Invalid integer"],
@@ -367,7 +367,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "interval out of range (too high)",
 				command:
-					"healthcheck --name test-hc --type http --interval 1000 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --name test-hc --type http --interval 1000 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["interval", "600"],
@@ -377,7 +377,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "path must start with /",
 				command:
-					"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3 --path health",
+					"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3 --path health",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["--path must start with /"],
@@ -387,7 +387,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "duplicate non-repeatable flag",
 				command:
-					"healthcheck --name test-hc --name another-name --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+					"healthcheck --yes --name test-hc --name another-name --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["cannot be specified multiple times"],
@@ -427,7 +427,7 @@ describe("Acceptance: Create Action with Flags", () => {
 		const successMatrix: CreateActionTestCase[] = [
 			{
 				description: "create origin pool with single public IP",
-				command: "origin_pool --name test-pool --port 80 --public-ip 1.2.3.4",
+				command: "origin_pool --yes --yes --name test-pool --port 80 --public-ip 1.2.3.4",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -446,7 +446,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create origin pool with multiple public IPs (repeatable flag)",
 				command:
-					"origin_pool --name test-pool --port 80 --public-ip 1.2.3.4 --public-ip 5.6.7.8 --public-ip 9.10.11.12",
+					"origin_pool --yes --name test-pool --port 80 --public-ip 1.2.3.4 --public-ip 5.6.7.8 --public-ip 9.10.11.12",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -465,7 +465,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create origin pool with algorithm",
 				command:
-					"origin_pool --name test-pool --port 80 --public-ip 1.2.3.4 --algorithm ROUND_ROBIN",
+					"origin_pool --yes --name test-pool --port 80 --public-ip 1.2.3.4 --algorithm ROUND_ROBIN",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -484,7 +484,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create origin pool with --no-tls flag",
 				command:
-					"origin_pool --name test-pool --port 80 --public-ip 1.2.3.4 --no-tls",
+					"origin_pool --yes --name test-pool --port 80 --public-ip 1.2.3.4 --no-tls",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -503,7 +503,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create origin pool with public DNS name",
 				command:
-					"origin_pool --name test-pool --port 443 --public-name api.example.com --use-tls",
+					"origin_pool --yes --name test-pool --port 443 --public-name api.example.com --use-tls",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -522,7 +522,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "create origin pool with health check reference",
 				command:
-					"origin_pool --name test-pool --port 80 --public-ip 1.2.3.4 --health-check my-healthcheck",
+					"origin_pool --yes --name test-pool --port 80 --public-ip 1.2.3.4 --health-check my-healthcheck",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedAPICall: {
 					pathPattern: /\/origin_pools$/,
@@ -589,7 +589,7 @@ describe("Acceptance: Create Action with Flags", () => {
 		const failureMatrix: CreateActionTestCase[] = [
 			{
 				description: "missing required --name flag",
-				command: "origin_pool --port 80 --public-ip 1.2.3.4",
+				command: "origin_pool --yes --yes --port 80 --public-ip 1.2.3.4",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["--name"],
@@ -598,7 +598,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			},
 			{
 				description: "missing origin server (no --public-ip or similar)",
-				command: "origin_pool --name test-pool --port 80",
+				command: "origin_pool --yes --yes --name test-pool --port 80",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["origin server"],
@@ -608,7 +608,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "invalid algorithm value",
 				command:
-					"origin_pool --name test-pool --public-ip 1.2.3.4 --algorithm INVALID_ALGO",
+					"origin_pool --yes --name test-pool --public-ip 1.2.3.4 --algorithm INVALID_ALGO",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["Invalid value"],
@@ -618,7 +618,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			{
 				description: "mutually exclusive TLS flags",
 				command:
-					"origin_pool --name test-pool --public-ip 1.2.3.4 --no-tls --use-tls",
+					"origin_pool --yes --name test-pool --public-ip 1.2.3.4 --no-tls --use-tls",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["mutually exclusive"],
@@ -627,7 +627,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			},
 			{
 				description: "private IP without --site flag",
-				command: "origin_pool --name test-pool --private-ip 10.0.0.1",
+				command: "origin_pool --yes --yes --name test-pool --private-ip 10.0.0.1",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["--site is required"],
@@ -636,7 +636,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			},
 			{
 				description: "port out of range",
-				command: "origin_pool --name test-pool --public-ip 1.2.3.4 --port 99999",
+				command: "origin_pool --yes --yes --name test-pool --public-ip 1.2.3.4 --port 99999",
 				initialContext: { domain: "virtual", action: "create" },
 				expectedOutput: {
 					shouldContain: ["port", "65535"],
@@ -676,7 +676,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			const session = createMockSession("json", "default", "virtual", "create");
 
 			const result = await executeCommand(
-				"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+				"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				session,
 			);
 
@@ -688,7 +688,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			const session = createMockSession("json", "default", "virtual", "create");
 
 			const result = await executeCommand(
-				"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+				"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				session,
 			);
 
@@ -700,7 +700,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			const session = createMockSession("json", "default", "virtual", "create");
 
 			const result = await executeCommand(
-				"healthcheck --name existing-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+				"healthcheck --yes --name existing-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				session,
 			);
 
@@ -712,7 +712,7 @@ describe("Acceptance: Create Action with Flags", () => {
 			const session = createMockSession("json", "default", "virtual", "create");
 
 			const result = await executeCommand(
-				"healthcheck --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+				"healthcheck --yes --name test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 				session,
 			);
 
@@ -762,7 +762,7 @@ describe("Acceptance: Apply Action (Create or Update)", () => {
 		const session = createMockSession("json", "default", "virtual", "apply");
 
 		const result = await executeCommand(
-			"healthcheck --name apply-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+			"healthcheck --yes --name apply-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 			session,
 		);
 
@@ -801,7 +801,7 @@ describe("Acceptance: Apply Action (Create or Update)", () => {
 		} as unknown as REPLSession;
 
 		const result = await executeCommand(
-			"healthcheck --name apply-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+			"healthcheck --yes --name apply-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 			session,
 		);
 
@@ -829,7 +829,7 @@ describe("Acceptance: Replace Action", () => {
 		const session = createMockSession("json", "default", "virtual", "replace");
 
 		const result = await executeCommand(
-			"healthcheck --name replace-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+			"healthcheck --yes --name replace-test-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 			session,
 		);
 
@@ -867,7 +867,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		mockAPIResponse(mockHC, 200);
 		let session = createMockSession("json", "default", "virtual", "create");
 		let result = await executeCommand(
-			"healthcheck --name lifecycle-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
+			"healthcheck --yes --name lifecycle-hc --type http --interval 10 --timeout 5 --healthy-threshold 2 --unhealthy-threshold 3",
 			session,
 		);
 		expect(result.error).toBeUndefined();
@@ -877,7 +877,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse(mockHC, 200);
 		session = createMockSession("json", "default", "virtual", "get");
-		result = await executeCommand("healthcheck lifecycle-hc", session);
+		result = await executeCommand("healthcheck --yes lifecycle-hc", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "GET")).toBeDefined();
 		expect(result.output.join("\n")).toContain("lifecycle-hc");
@@ -886,7 +886,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse({ message: "Deleted" }, 200);
 		session = createMockSession("json", "default", "virtual", "delete");
-		result = await executeCommand("healthcheck lifecycle-hc", session);
+		result = await executeCommand("healthcheck --yes lifecycle-hc", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "DELETE")).toBeDefined();
 	});
@@ -904,7 +904,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		mockAPIResponse(mockPool, 200);
 		let session = createMockSession("json", "default", "virtual", "create");
 		let result = await executeCommand(
-			"origin_pool --name lifecycle-pool --port 80 --public-ip 1.2.3.4",
+			"origin_pool --yes --name lifecycle-pool --port 80 --public-ip 1.2.3.4",
 			session,
 		);
 		expect(result.error).toBeUndefined();
@@ -914,7 +914,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse(mockPool, 200);
 		session = createMockSession("json", "default", "virtual", "get");
-		result = await executeCommand("origin_pool lifecycle-pool", session);
+		result = await executeCommand("origin_pool --yes lifecycle-pool", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "GET")).toBeDefined();
 
@@ -922,7 +922,7 @@ describe("Acceptance: Full CRUD Lifecycle", () => {
 		capturedAPICalls = [];
 		mockAPIResponse({ message: "Deleted" }, 200);
 		session = createMockSession("json", "default", "virtual", "delete");
-		result = await executeCommand("origin_pool lifecycle-pool", session);
+		result = await executeCommand("origin_pool --yes lifecycle-pool", session);
 		expect(result.error).toBeUndefined();
 		expect(capturedAPICalls.find((c) => c.method === "DELETE")).toBeDefined();
 	});

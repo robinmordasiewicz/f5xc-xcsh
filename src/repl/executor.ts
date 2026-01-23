@@ -127,6 +127,23 @@ export interface ExecutionResult {
 		profileName: string;
 		isActive: boolean;
 	};
+	/**
+	 * Signal to enter resource create confirmation mode.
+	 * When set, App.tsx will switch to ResourceCreateConfirmation component.
+	 */
+	enterCreateConfirmMode?: boolean;
+	/**
+	 * Configuration for resource create confirmation (required when enterCreateConfirmMode is true)
+	 */
+	createConfirmConfig?: {
+		resourceType: string;
+		resourceName: string;
+		namespace: string;
+		domain: string;
+		requestBody: Record<string, unknown>;
+		onConfirm: () => Promise<ExecutionResult>;
+		onCancel: () => ExecutionResult;
+	};
 }
 
 /**
@@ -1693,6 +1710,82 @@ async function executeAPICommand(
 
 				// Execute the API call
 				if (action === "create") {
+					// Check for skip confirmation flags
+					const skipConfirmFlag = args.some(
+						(a) =>
+							a === "--yes" ||
+							a === "-y" ||
+							a === "--force" ||
+							a === "-f",
+					);
+
+					// If no skip flag, enter confirmation mode
+					if (!skipConfirmFlag && requestBody) {
+						const resourceName =
+							(requestBody.metadata as Record<string, unknown>)
+								?.name ??
+							name ??
+							"";
+						const effectiveNs =
+							(requestBody.metadata as Record<string, unknown>)
+								?.namespace ??
+							effectiveNamespace ??
+							"";
+
+						return {
+							output: [],
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+							enterCreateConfirmMode: true,
+							createConfirmConfig: {
+								resourceType: effectiveResourceType ?? "",
+								resourceName: String(resourceName),
+								namespace: String(effectiveNs),
+								domain: canonicalDomain,
+								requestBody,
+								onConfirm:
+									async (): Promise<ExecutionResult> => {
+										const response = await client.post(
+											apiPath,
+											requestBody,
+										);
+										const createResult = response.data ?? {
+											message: `Created ${canonicalDomain}`,
+										};
+										const formatted = formatDomainOutput(
+											createResult,
+											{
+												format: "text",
+												noColor: false,
+											},
+										);
+										return {
+											output: [
+												...warningOutput,
+												...(formatted.length > 0
+													? formatted
+													: [
+															`Created ${canonicalDomain}`,
+														]),
+											],
+											shouldExit: false,
+											shouldClear: false,
+											contextChanged: false,
+										};
+									},
+								onCancel: (): ExecutionResult => {
+									return {
+										output: ["Operation cancelled."],
+										shouldExit: false,
+										shouldClear: false,
+										contextChanged: false,
+									};
+								},
+							},
+						};
+					}
+
 					const response = await client.post(apiPath, requestBody);
 					result = response.data ?? {
 						message: `Created ${canonicalDomain}`,

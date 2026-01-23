@@ -12,6 +12,7 @@ import {
 	Suggestions,
 	ChatMode,
 	ProfileDeleteWizard,
+	ResourceCreateConfirmation,
 } from "./components/index.js";
 import type { ChatModeConfig } from "./executor.js";
 import type { Suggestion } from "./components/Suggestions.js";
@@ -141,13 +142,32 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 	);
 
 	// Mode state (repl, chat, profile-delete)
-	const [mode, setMode] = useState<"repl" | "chat" | "profile-delete">(
-		"repl",
-	);
+	const [mode, setMode] = useState<
+		"repl" | "chat" | "profile-delete" | "create-confirm"
+	>("repl");
 	const [chatConfig, setChatConfig] = useState<ChatModeConfig | null>(null);
 	const [profileDeleteConfig, setProfileDeleteConfig] = useState<{
 		profileName: string;
 		isActive: boolean;
+	} | null>(null);
+	const [createConfirmConfig, setCreateConfirmConfig] = useState<{
+		resourceType: string;
+		resourceName: string;
+		namespace: string;
+		domain: string;
+		requestBody: Record<string, unknown>;
+		onConfirm: () => Promise<{
+			output: string[];
+			shouldExit: boolean;
+			shouldClear: boolean;
+			contextChanged: boolean;
+		}>;
+		onCancel: () => {
+			output: string[];
+			shouldExit: boolean;
+			shouldClear: boolean;
+			contextChanged: boolean;
+		};
 	} | null>(null);
 
 	// Effect to handle raw stdout writing when status bar is hidden
@@ -436,6 +456,13 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 			if (result.enterProfileDeleteMode && result.profileDeleteConfig) {
 				setMode("profile-delete");
 				setProfileDeleteConfig(result.profileDeleteConfig);
+				return;
+			}
+
+			// Handle entering create confirmation mode
+			if (result.enterCreateConfirmMode && result.createConfirmConfig) {
+				setMode("create-confirm");
+				setCreateConfirmConfig(result.createConfirmConfig);
 				return;
 			}
 
@@ -789,6 +816,25 @@ export function App({ initialSession }: AppProps = {}): React.ReactElement {
 						session={session}
 						width={width}
 						onExit={handleProfileDeleteExit}
+					/>
+				) : mode === "create-confirm" && createConfirmConfig ? (
+					<ResourceCreateConfirmation
+						resourceType={createConfirmConfig.resourceType}
+						resourceName={createConfirmConfig.resourceName}
+						namespace={createConfirmConfig.namespace}
+						domain={createConfirmConfig.domain}
+						requestBody={createConfirmConfig.requestBody}
+						onConfirm={createConfirmConfig.onConfirm}
+						onCancel={createConfirmConfig.onCancel}
+						onExit={(result) => {
+							setMode("repl");
+							setCreateConfirmConfig(null);
+							if (result) {
+								if (result.output.length > 0) {
+									addOutput(result.output.join("\n"));
+								}
+							}
+						}}
 					/>
 				) : (
 					<>
