@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "22"
+  NODE_VERSION: "24"
   PYTHON_VERSION: "3.13"
 
 jobs:
@@ -245,7 +245,7 @@ jobs:
 
           # For TypeScript version, we just get the version number
           echo "version=$version" >> $env:GITHUB_OUTPUT
-          echo "node_version=22" >> $env:GITHUB_OUTPUT
+          echo "node_version=24" >> $env:GITHUB_OUTPUT
 
           Write-Host "Installation output captured:"
           Get-Content install-output.txt
@@ -394,7 +394,7 @@ jobs:
           VERSION=$(echo "$VERSION_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "")
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "node_version=22" >> $GITHUB_OUTPUT
+          echo "node_version=24" >> $GITHUB_OUTPUT
 
           echo "Parsed - Version: $VERSION"
 
@@ -439,7 +439,7 @@ jobs:
             NODE_VERSION="${{ steps.xcsh-version.outputs.node_version }}"
           elif [ "${{ steps.release-info.outputs.has_release }}" == "true" ]; then
             VERSION="${{ steps.release-info.outputs.version }}"
-            NODE_VERSION="22"
+            NODE_VERSION="24"
           else
             VERSION=""
             NODE_VERSION=""
