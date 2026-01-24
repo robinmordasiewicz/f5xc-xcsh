@@ -382,7 +382,7 @@ describe("virtual domain output formatting", () => {
 			expect(result.error).toBeUndefined();
 		});
 
-		it("handles missing resource (404)", async () => {
+		it("handles missing resource (404) with idempotent success", async () => {
 			mockAPIErrorResponse(404, "Resource 'http-lb-missing' not found");
 			const session = createMockSession(
 				"table",
@@ -394,7 +394,10 @@ describe("virtual domain output formatting", () => {
 
 			const result = await executeCommand("http-lb-missing", session);
 
-			expect(result.error).toBeDefined();
+			// Delete is idempotent - missing resources succeed without error
+			expect(result.error).toBeUndefined();
+			// But should show informational message about resource not existing
+			expect(result.output.join("\n")).toContain("does not exist");
 		});
 
 		it("requires name parameter", async () => {
