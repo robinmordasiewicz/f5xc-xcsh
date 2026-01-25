@@ -107,8 +107,10 @@ program
 
 			// Handle root-level spec (xcsh --spec with no domain)
 			// Outputs full CLI specification for documentation generation
+			// NOTE: Must use console.log (stdout) not console.warn (stderr)
+			// because documentation generators capture stdout for JSON parsing
 			if (options.spec && commandArgs.length === 0) {
-				console.warn(formatFullCLISpec());
+				console.log(formatFullCLISpec());
 				process.exit(0);
 			}
 
