@@ -757,51 +757,50 @@ jobs:
             --version-output "$(cat version-output.txt)" \
             --output docs/install/source.md
 
-      - name: Generate command documentation
-        id: generate-command-docs
+      - name: Build xcsh from source for documentation
+        id: build-for-docs
         run: |
-          # Debug: Show available xcsh binaries
-          echo "=== Debug: Available xcsh binaries ==="
-          echo "Script install location ($HOME/.local/bin/xcsh):"
-          ls -la "$HOME/.local/bin/xcsh" 2>/dev/null || echo "  Not found"
-          echo "Homebrew bin locations:"
-          ls -la /opt/homebrew/bin/xcsh /usr/local/bin/xcsh 2>/dev/null || echo "  Not found"
-          echo "========================================"
+          # Build xcsh from source to get the latest code (including --spec stdout fix)
+          # This ensures documentation generation always uses code from main branch
+          echo "Building xcsh from source for documentation generation..."
+          npm ci
+          npm run build
 
-          # Find xcsh binary - prioritize script-installed version (guaranteed latest from release)
-          XCSH_PATH=""
-
-          # 1. Try script install location FIRST (guaranteed latest from release)
-          if [ -x "$HOME/.local/bin/xcsh" ]; then
-            XCSH_PATH="$HOME/.local/bin/xcsh"
-          fi
-
-          # 2. Try Homebrew Caskroom (ARM Mac)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            XCSH_PATH=$(find /opt/homebrew/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
-          fi
-
-          # 3. Try Homebrew Caskroom (Intel Mac)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            XCSH_PATH=$(find /usr/local/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
-          fi
-
-          # 4. Try Homebrew bin symlinks (last resort)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            for path in /opt/homebrew/bin/xcsh /usr/local/bin/xcsh; do
-              if [ -x "$path" ]; then
-                XCSH_PATH="$path"
-                break
-              fi
-            done
-          fi
-
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            echo "::error::xcsh binary not found - cannot generate command documentation"
+          # Verify the build
+          if [ ! -f dist/index.js ]; then
+            echo "::error::Build failed - dist/index.js not found"
             exit 1
           fi
 
-          echo "Using xcsh at: $XCSH_PATH"
+          # Create a wrapper script that generate-docs.py can use as a binary
+          # (subprocess.run expects a single file path, not "node path/to/script")
+          cat > xcsh-wrapper.sh << 'WRAPPER_EOF'
+          #!/bin/bash
+          exec node "$GITHUB_WORKSPACE/dist/index.js" "$@"
+          WRAPPER_EOF
+          chmod +x xcsh-wrapper.sh
+
+          # Test --spec output goes to stdout
+          echo "Testing --spec output..."
+          ./xcsh-wrapper.sh --spec > /tmp/spec-test.json 2>/dev/null
+          if [ ! -s /tmp/spec-test.json ]; then
+            echo "::error::--spec produced empty stdout"
+            exit 1
+          fi
+          if ! python -c "import json; json.load(open('/tmp/spec-test.json'))"; then
+            echo "::error::--spec output is not valid JSON"
+            exit 1
+          fi
+          echo "✅ Source build successful and --spec output validated"
+
+      - name: Generate command documentation
+        id: generate-command-docs
+        run: |
+          # Use source-built xcsh via wrapper script
+          XCSH_PATH="$GITHUB_WORKSPACE/xcsh-wrapper.sh"
+
+          echo "Using source-built xcsh: $XCSH_PATH"
+          echo "Version: $($XCSH_PATH --version)"
 
           # Generate command documentation
           python scripts/generate-docs.py \
@@ -819,51 +818,16 @@ jobs:
       - name: Generate subscription documentation
         id: generate-subscription-docs
         run: |
-          # Debug: Show available xcsh binaries (same as command docs step)
-          echo "=== Debug: Available xcsh binaries ==="
-          echo "Script install location ($HOME/.local/bin/xcsh):"
-          ls -la "$HOME/.local/bin/xcsh" 2>/dev/null || echo "  Not found"
-          echo "========================================"
+          # Use source-built xcsh via wrapper script (created in build-for-docs step)
+          XCSH_PATH="$GITHUB_WORKSPACE/xcsh-wrapper.sh"
 
-          # Find xcsh binary - prioritize script-installed version (guaranteed latest from release)
-          XCSH_PATH=""
-
-          # 1. Try script install location FIRST (guaranteed latest from release)
-          if [ -x "$HOME/.local/bin/xcsh" ]; then
-            XCSH_PATH="$HOME/.local/bin/xcsh"
-          fi
-
-          # 2. Try Homebrew Caskroom (ARM Mac)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            XCSH_PATH=$(find /opt/homebrew/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
-          fi
-
-          # 3. Try Homebrew Caskroom (Intel Mac)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            XCSH_PATH=$(find /usr/local/Caskroom/xcsh -name xcsh -type f 2>/dev/null | head -1 || true)
-          fi
-
-          # 4. Try Homebrew bin symlinks (last resort)
-          if [ -z "$XCSH_PATH" ] || [ ! -x "$XCSH_PATH" ]; then
-            for path in /opt/homebrew/bin/xcsh /usr/local/bin/xcsh; do
-              if [ -x "$path" ]; then
-                XCSH_PATH="$path"
-                break
-              fi
-            done
-          fi
-
-          if [ -n "$XCSH_PATH" ] && [ -x "$XCSH_PATH" ]; then
-            echo "Generating subscription documentation with: $XCSH_PATH"
-            python scripts/generate-subscription-docs.py \
-              --cli-binary "$XCSH_PATH" \
-              --output docs/commands/subscription \
-              --clean \
-              --update-nav
-            echo "✅ Subscription documentation generated successfully"
-          else
-            echo "::warning::xcsh binary not found - skipping subscription documentation"
-          fi
+          echo "Generating subscription documentation with: $XCSH_PATH"
+          python scripts/generate-subscription-docs.py \
+            --cli-binary "$XCSH_PATH" \
+            --output docs/commands/subscription \
+            --clean \
+            --update-nav
+          echo "✅ Subscription documentation generated successfully"
 
       - name: Validate required documentation files
         id: validate-docs
