@@ -12,6 +12,15 @@ on:
       - "scripts/templates/**"
       - ".github/workflows/docs.yml"
 
+  # Trigger after Release workflow completes to regenerate command docs
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+    branches: [main]
+
+  # Allow manual trigger
+  workflow_dispatch:
+
 permissions:
   contents: write
 
