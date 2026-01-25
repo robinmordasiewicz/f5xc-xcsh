@@ -574,8 +574,9 @@ jobs:
             rm -rf $HOME/.local/bin/xcsh 2>/dev/null || true
             rm -f install-output.txt 2>/dev/null || true
 
-            # Run the install script and capture output (defaults to ~/.local/bin without sudo)
-            GITHUB_TOKEN=${{ github.token }} sh /tmp/install.sh > install-output.txt 2>&1
+            # Run the install script and capture output
+            # Force install to ~/.local/bin to avoid conflict with Homebrew version at /usr/local/bin
+            GITHUB_TOKEN=${{ github.token }} F5XC_INSTALL_DIR=$HOME/.local/bin sh /tmp/install.sh > install-output.txt 2>&1
             INSTALL_EXIT_CODE=$?
 
             echo "Install output:"
@@ -759,6 +760,14 @@ jobs:
       - name: Generate command documentation
         id: generate-command-docs
         run: |
+          # Debug: Show available xcsh binaries
+          echo "=== Debug: Available xcsh binaries ==="
+          echo "Script install location ($HOME/.local/bin/xcsh):"
+          ls -la "$HOME/.local/bin/xcsh" 2>/dev/null || echo "  Not found"
+          echo "Homebrew bin locations:"
+          ls -la /opt/homebrew/bin/xcsh /usr/local/bin/xcsh 2>/dev/null || echo "  Not found"
+          echo "========================================"
+
           # Find xcsh binary - prioritize script-installed version (guaranteed latest from release)
           XCSH_PATH=""
 
@@ -810,6 +819,12 @@ jobs:
       - name: Generate subscription documentation
         id: generate-subscription-docs
         run: |
+          # Debug: Show available xcsh binaries (same as command docs step)
+          echo "=== Debug: Available xcsh binaries ==="
+          echo "Script install location ($HOME/.local/bin/xcsh):"
+          ls -la "$HOME/.local/bin/xcsh" 2>/dev/null || echo "  Not found"
+          echo "========================================"
+
           # Find xcsh binary - prioritize script-installed version (guaranteed latest from release)
           XCSH_PATH=""
 
