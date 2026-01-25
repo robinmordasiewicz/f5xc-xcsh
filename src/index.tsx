@@ -410,10 +410,11 @@ async function executeNonInteractive(args: string[]): Promise<void> {
 
 	// Exit with appropriate code
 	if (result.error) {
-		process.exit(1);
+		// Use explicit exit code if provided, otherwise default to 1
+		process.exit(result.exitCode ?? 1);
 	}
 
-	process.exit(0);
+	process.exit(result.exitCode ?? 0);
 }
 
 // Parse command line arguments

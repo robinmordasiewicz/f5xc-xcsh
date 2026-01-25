@@ -32,6 +32,12 @@ import {
 	detectDependencies,
 	formatDependencyError,
 } from "../dependencies/index.js";
+import {
+	performPreDeleteCheck,
+	formatPreDeleteResult,
+	type DeleteFlags,
+} from "../preflight/index.js";
+import { ExitCode } from "../errors/codes.js";
 import { CLI_NAME, CLI_VERSION } from "../branding/index.js";
 import {
 	formatRootHelp,
@@ -95,6 +101,8 @@ export interface ExecutionResult {
 	contextChanged: boolean;
 	/** Error message if command failed */
 	error?: string;
+	/** Exit code for headless/one-shot mode (defaults to 1 if error is set, 0 otherwise) */
+	exitCode?: number;
 	/**
 	 * Raw stdout content to write directly (bypassing Ink).
 	 * When set, App.tsx will hide status bar first, write this content,
@@ -1082,6 +1090,9 @@ export interface ParsedArgs {
 	outputFormat: OutputFormat | undefined;
 	spec: boolean;
 	noColor: boolean;
+	/** Delete flags for pre-flight checks */
+	dryRun: boolean;
+	checkDeps: boolean;
 }
 
 /**
@@ -1099,6 +1110,8 @@ export function parseCommandArgs(
 	let outputFormat: OutputFormat | undefined;
 	let spec = false;
 	let noColor = false;
+	let dryRun = false;
+	let checkDeps = false;
 	let positionalIndex = 0;
 
 	// Track indices consumed as flag values to properly handle trailing positional args
@@ -1135,6 +1148,12 @@ export function parseCommandArgs(
 					break;
 				case "no-color":
 					noColor = true;
+					break;
+				case "dry-run":
+					dryRun = true;
+					break;
+				case "check-deps":
+					checkDeps = true;
 					break;
 				case "yes":
 				case "y":
@@ -1230,6 +1249,8 @@ export function parseCommandArgs(
 		outputFormat,
 		spec,
 		noColor,
+		dryRun,
+		checkDeps,
 	};
 }
 
@@ -1339,6 +1360,8 @@ async function executeAPICommand(
 		outputFormat,
 		spec,
 		noColor,
+		dryRun,
+		checkDeps,
 	} = parseCommandArgs(args, domainResourceTypes);
 	const effectiveNamespace = namespace ?? session.getNamespace();
 
@@ -1573,11 +1596,76 @@ async function executeAPICommand(
 						error: "Usage: delete <name>",
 					};
 				}
-				// Only append name if we didn't use operation path (which includes {name})
+
+				// Build the full API path for the resource
+				let deleteApiPath = apiPath;
 				if (!usedOperationPath) {
-					apiPath += `/${name}`;
+					deleteApiPath += `/${name}`;
 				}
-				await client.delete(apiPath);
+
+				// Perform pre-flight existence check
+				const deleteFlags: DeleteFlags = {
+					dryRun,
+					checkDeps,
+				};
+
+				const preDeleteResult = await performPreDeleteCheck(
+					client,
+					deleteApiPath,
+					name,
+					effectiveResourceType || canonicalDomain,
+					effectiveNamespace,
+					deleteFlags,
+				);
+
+				// Handle dry-run: show what would be deleted without executing
+				if (dryRun) {
+					const dryRunOutput = formatPreDeleteResult(preDeleteResult);
+					if (preDeleteResult.exists) {
+						// Show dependency info if requested
+						if (checkDeps && preDeleteResult.dependencies) {
+							dryRunOutput.push(
+								"Dependencies that would be affected:",
+							);
+							for (const dep of preDeleteResult.dependencies) {
+								dryRunOutput.push(`  - ${dep}`);
+							}
+						}
+						return {
+							output: dryRunOutput,
+							shouldExit: false,
+							shouldClear: false,
+							contextChanged: false,
+						};
+					}
+					// Resource doesn't exist in dry-run mode - return error
+					return {
+						output: dryRunOutput,
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						error: `Resource '${name}' not found`,
+						exitCode: ExitCode.NotFoundError,
+					};
+				}
+
+				// Handle resource not found - idempotent delete succeeds with informational message
+				if (!preDeleteResult.exists) {
+					const resourceTypeName =
+						effectiveResourceType || canonicalDomain;
+					return {
+						output: [
+							`Resource ${resourceTypeName} '${name}' does not exist in namespace ${effectiveNamespace}`,
+						],
+						shouldExit: false,
+						shouldClear: false,
+						contextChanged: false,
+						// No error field = exit code 0 (idempotent success)
+					};
+				}
+
+				// Pre-flight passed, execute the delete
+				await client.delete(deleteApiPath);
 				result = { message: `Deleted ${canonicalDomain} '${name}'` };
 				break;
 			}
