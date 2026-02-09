@@ -1,0 +1,68 @@
+---
+title: Commands
+description: CLI command reference for xcsh
+---
+
+Complete CLI command reference for xcsh.
+
+## Overview
+
+xcsh provides commands organized by F5 Distributed Cloud API domains. Each domain contains operations for managing specific resource types.
+
+## Command Syntax
+
+```bash
+xcsh <domain> <operation> <resource-type> [name] [flags]
+```
+
+## Common Operations
+
+| Operation | Description |
+|-----------|-------------|
+| `list` | List all resources of a type |
+| `get` | Get details for a specific resource |
+| `create` | Create a new resource from file |
+| `replace` | Replace/update an existing resource |
+| `delete` | Delete a resource |
+| `status` | Get resource status |
+| `patch` | Partially update a resource |
+| `add-labels` | Add labels to a resource |
+| `remove-labels` | Remove labels from a resource |
+
+## Global Flags
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--namespace` | `-ns` | Target namespace |
+| `--output` | `-o` | Output format (json, yaml, table, text, tsv) |
+| `--file` | `-f` | Input file path (YAML/JSON) |
+| `--help` | `-h` | Show help for a command |
+
+## Domains
+
+xcsh supports 38+ API domains including:
+
+- `virtual` — HTTP/TCP load balancers, origin pools, routes
+- `dns` — DNS zones and records
+- `waf` — Web Application Firewall policies
+- `cloud_infrastructure` — AWS/Azure/GCP cloud sites
+- `sites` — Site management and status
+- `tenant_and_identity` — Namespaces, users, roles
+- `ai_services` — AI assistant queries and chat
+- And many more
+
+## Examples
+
+```bash
+# List HTTP load balancers
+xcsh virtual list http_loadbalancer -ns default
+
+# Get resource details as YAML
+xcsh virtual get http_loadbalancer my-lb -ns default -o yaml
+
+# Create from file
+xcsh virtual create http_loadbalancer -ns default -f lb.yaml
+
+# Delete a resource
+xcsh virtual delete http_loadbalancer my-lb -ns default
+```

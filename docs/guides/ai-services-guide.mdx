@@ -1,4 +1,7 @@
-# F5 XC AI Assistant User Guide
+---
+title: F5 XC AI Assistant User Guide
+description: Intelligent chat-based interface for F5 Distributed Cloud
+---
 
 The AI Assistant is an intelligent chat-based interface that helps you interact with F5 Distributed Cloud. Ask questions about your configurations, security events, troubleshooting, and platform operations using natural language.
 
@@ -149,7 +152,6 @@ Type /help for commands, /exit to quit.
 ai> What's the status of my load balancers?
 
 Load Balancer Status Summary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Active: 5
 Degraded: 1
 Inactive: 2
@@ -239,8 +241,6 @@ xcsh ai feedback -p --query-id "qid-abc123"
 
 Test AI queries under different access permissions for RBAC validation.
 
-**Subcommands:**
-
 #### eval query
 
 ```bash
@@ -300,7 +300,6 @@ xcsh ai query "Why was request xyz blocked?"
 
 ```text
 Security Event Analysis
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Summary: WAF blocked request due to SQL injection attempt
 
 Request Details:
@@ -350,7 +349,6 @@ xcsh ai query "Analyze site-1 health"
 
 ```text
 Site Analysis: site-1
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Health Status: DEGRADED
 
 Metrics:
@@ -393,7 +391,6 @@ xcsh ai query "Show traffic summary by load balancer"
 
 ```text
 Traffic Summary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   LOAD BALANCER     REQUESTS    AVAILABILITY
   lb-prod           1.2M        99.9%
   lb-staging        45K         98.5%
@@ -604,17 +601,17 @@ xcsh ai query "What namespace am I in?" -o json
 ```
 
 ```json
-{
+\{
   "query_id": "qid-abc123",
   "current_query": "What namespace am I in?",
-  "generic_response": {
+  "generic_response": \{
     "text": "You are currently in the 'default' namespace."
-  },
+  \},
   "follow_up_queries": [
     "List all namespaces",
     "Switch to a different namespace"
   ]
-}
+\}
 ```
 
 ### YAML Output
@@ -662,7 +659,7 @@ lb-staging staging ACTIVE
 
 ## See Also
 
-- [AI Services Command Reference](../commands/ai_services/index.md)
-- [Query Command Details](../commands/ai_services/query/index.md)
-- [Chat Command Details](../commands/ai_services/chat/index.md)
-- [Feedback Command Details](../commands/ai_services/feedback/index.md)
+- [AI Services Command Reference](/commands/ai_services/)
+- [Query Command Details](/commands/ai_services/query/)
+- [Chat Command Details](/commands/ai_services/chat/)
+- [Feedback Command Details](/commands/ai_services/feedback/)

@@ -52,7 +52,7 @@ sea-prep.blob
 # Generated documentation (regenerated in CI)
 docs/commands/*
 !docs/commands/.gitkeep
-!docs/commands/_nav.yml
+!docs/commands/index.mdx
 
 # Generated guides (regenerated in CI)
 docs/guides/generated/
@@ -69,8 +69,9 @@ docs/description-gaps.md
 docs/smart-completion-guide.md
 docs/user_guide.md
 
-# MkDocs build output
+# Build output (MkDocs / Astro)
 site/
+dist/docs/
 
 # Python virtual environment
 .venv/

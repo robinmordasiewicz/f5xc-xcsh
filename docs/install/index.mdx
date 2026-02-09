@@ -1,0 +1,66 @@
+---
+title: Installing xcsh
+description: Get up and running with the F5 Distributed Cloud CLI in minutes.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+Get up and running with the F5 Distributed Cloud CLI in minutes.
+
+## Choose Your Platform
+
+<CardGrid>
+  <Card title="Homebrew" icon="apple">
+    Recommended for macOS. Simple installation and updates with brew.
+  </Card>
+  <Card title="Install Script" icon="terminal">
+    Universal installer for Linux and macOS. Works with or without sudo.
+  </Card>
+  <Card title="Windows" icon="laptop">
+    Manual download for Windows. PowerShell completions included.
+  </Card>
+  <Card title="Build from Source" icon="setting">
+    For development or latest unreleased features. Requires Node.js 20+.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+The fastest way to get started on macOS:
+
+```bash
+brew tap robinmordasiewicz/tap
+brew install --cask xcsh
+```
+
+Or use the universal install script on any platform:
+
+```bash
+curl -fsSL https://robinmordasiewicz.github.io/f5xc-xcsh/install.sh | sh
+```
+
+## Post-Installation Setup
+
+<CardGrid>
+  <Card title="Authentication" icon="key">
+    Configure API tokens or certificate-based authentication to connect to F5 XC.
+  </Card>
+  <Card title="Shell Completions" icon="terminal">
+    Enable tab completion for bash, zsh, fish, or PowerShell.
+  </Card>
+  <Card title="Environment Variables" icon="setting">
+    Configure xcsh behavior through environment variables.
+  </Card>
+</CardGrid>
+
+## Verify Installation
+
+After installing, verify that xcsh is working:
+
+```bash
+xcsh version
+```
+
+## Next Steps
+
+Once installed and authenticated, explore the [Commands](/commands/) documentation or follow the [Guides](/guides/) to deploy your first load balancer.
