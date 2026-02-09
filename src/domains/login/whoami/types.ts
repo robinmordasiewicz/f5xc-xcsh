@@ -7,25 +7,25 @@
  * Connection and identity information
  */
 export interface WhoamiInfo {
-	// Always available
-	serverUrl: string;
-	namespace: string;
-	isAuthenticated: boolean;
+  // Always available
+  serverUrl: string;
+  namespace: string;
+  isAuthenticated: boolean;
 
-	// Token validation status
-	isValidated?: boolean;
-	validationError?: string;
+  // Token validation status
+  isValidated?: boolean;
+  validationError?: string;
 
-	// Fetched (undefined if fetch fails - omit from display)
-	tenant?: string;
-	username?: string;
-	email?: string;
+  // Fetched (undefined if fetch fails - omit from display)
+  tenant?: string;
+  username?: string;
+  email?: string;
 }
 
 /**
  * Options for whoami display
  */
 export interface WhoamiOptions {
-	verbose?: boolean;
-	json?: boolean;
+  verbose?: boolean;
+  json?: boolean;
 }

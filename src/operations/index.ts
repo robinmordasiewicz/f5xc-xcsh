@@ -4,9 +4,9 @@
  */
 
 export {
-	getOperationDefinition,
-	substitutePathParams,
-	inferMethodFromAction,
-	hasUnsubstitutedParams,
-	getPathPlaceholders,
+  getOperationDefinition,
+  substitutePathParams,
+  inferMethodFromAction,
+  hasUnsubstitutedParams,
+  getPathPlaceholders,
 } from "./resolver.js";

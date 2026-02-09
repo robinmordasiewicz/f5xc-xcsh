@@ -8,17 +8,17 @@ import type { FoundReference, SearchOptions } from "./types.js";
  * Common field names that typically contain resource references
  */
 const REFERENCE_FIELD_NAMES = [
-	"name",
-	"pool_name",
-	"origin_pool",
-	"healthcheck",
-	"health_check",
-	"certificate",
-	"ref",
-	"reference",
-	"tenant",
-	"namespace",
-	"kind",
+  "name",
+  "pool_name",
+  "origin_pool",
+  "healthcheck",
+  "health_check",
+  "certificate",
+  "ref",
+  "reference",
+  "tenant",
+  "namespace",
+  "kind",
 ];
 
 /**
@@ -32,82 +32,65 @@ const REFERENCE_FIELD_NAMES = [
  * @returns Array of found references
  */
 export function searchForReferences(
-	obj: unknown,
-	options: SearchOptions,
-	currentPath = "",
-	depth = 0,
-	results: FoundReference[] = [],
+  obj: unknown,
+  options: SearchOptions,
+  currentPath = "",
+  depth = 0,
+  results: FoundReference[] = [],
 ): FoundReference[] {
-	const maxDepth = options.maxDepth ?? 10;
+  const maxDepth = options.maxDepth ?? 10;
 
-	// Stop if we've gone too deep
-	if (depth > maxDepth) {
-		return results;
-	}
+  // Stop if we've gone too deep
+  if (depth > maxDepth) {
+    return results;
+  }
 
-	// Handle null/undefined
-	if (obj === null || obj === undefined) {
-		return results;
-	}
+  // Handle null/undefined
+  if (obj === null || obj === undefined) {
+    return results;
+  }
 
-	// Check if current value is a direct string match
-	if (typeof obj === "string" && obj === options.targetName) {
-		results.push({ path: currentPath || "(root)", value: obj });
-		return results;
-	}
+  // Check if current value is a direct string match
+  if (typeof obj === "string" && obj === options.targetName) {
+    results.push({ path: currentPath || "(root)", value: obj });
+    return results;
+  }
 
-	// Handle objects and arrays
-	if (typeof obj === "object") {
-		// Handle arrays
-		if (Array.isArray(obj)) {
-			obj.forEach((item, idx) => {
-				const itemPath = currentPath
-					? `${currentPath}[${idx}]`
-					: `[${idx}]`;
-				searchForReferences(
-					item,
-					options,
-					itemPath,
-					depth + 1,
-					results,
-				);
-			});
-		}
-		// Handle objects
-		else {
-			const record = obj as Record<string, unknown>;
+  // Handle objects and arrays
+  if (typeof obj === "object") {
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      obj.forEach((item, idx) => {
+        const itemPath = currentPath ? `${currentPath}[${idx}]` : `[${idx}]`;
+        searchForReferences(item, options, itemPath, depth + 1, results);
+      });
+    }
+    // Handle objects
+    else {
+      const record = obj as Record<string, unknown>;
 
-			// First check common reference fields
-			for (const fieldName of REFERENCE_FIELD_NAMES) {
-				if (
-					fieldName in record &&
-					record[fieldName] === options.targetName
-				) {
-					const fieldPath = currentPath
-						? `${currentPath}.${fieldName}`
-						: fieldName;
-					results.push({
-						path: fieldPath,
-						value: options.targetName,
-					});
-				}
-			}
+      // First check common reference fields
+      for (const fieldName of REFERENCE_FIELD_NAMES) {
+        if (fieldName in record && record[fieldName] === options.targetName) {
+          const fieldPath = currentPath
+            ? `${currentPath}.${fieldName}`
+            : fieldName;
+          results.push({
+            path: fieldPath,
+            value: options.targetName,
+          });
+        }
+      }
 
-			// Then recurse into all fields
-			for (const [key, value] of Object.entries(record)) {
-				const fieldPath = currentPath ? `${currentPath}.${key}` : key;
-				searchForReferences(
-					value,
-					options,
-					fieldPath,
-					depth + 1,
-					results,
-				);
-			}
-		}
-	}
+      // Then recurse into all fields
+      for (const [key, value] of Object.entries(record)) {
+        const fieldPath = currentPath ? `${currentPath}.${key}` : key;
+        searchForReferences(value, options, fieldPath, depth + 1, results);
+      }
+    }
+  }
 
-	return results;
+  return results;
 }
 
 /**
@@ -120,41 +103,41 @@ export function searchForReferences(
  * @returns Array of found references with resource names and paths
  */
 export function searchResourceList(
-	resources: Array<Record<string, unknown>>,
-	targetName: string,
-	targetType: string,
-	_domainName: string,
+  resources: Array<Record<string, unknown>>,
+  targetName: string,
+  targetType: string,
+  _domainName: string,
 ): Array<{ resourceName: string; fieldPath: string; fieldValue: string }> {
-	const matches: Array<{
-		resourceName: string;
-		fieldPath: string;
-		fieldValue: string;
-	}> = [];
+  const matches: Array<{
+    resourceName: string;
+    fieldPath: string;
+    fieldValue: string;
+  }> = [];
 
-	for (const resource of resources) {
-		const resourceName =
-			(resource.metadata as Record<string, unknown>)?.name ??
-			(resource.name as string) ??
-			"(unknown)";
+  for (const resource of resources) {
+    const resourceName =
+      (resource.metadata as Record<string, unknown>)?.name ??
+      (resource.name as string) ??
+      "(unknown)";
 
-		const options: SearchOptions = {
-			targetName,
-			targetType,
-			maxDepth: 10,
-		};
+    const options: SearchOptions = {
+      targetName,
+      targetType,
+      maxDepth: 10,
+    };
 
-		const references = searchForReferences(resource, options);
+    const references = searchForReferences(resource, options);
 
-		for (const ref of references) {
-			matches.push({
-				resourceName: String(resourceName),
-				fieldPath: ref.path,
-				fieldValue: String(ref.value),
-			});
-		}
-	}
+    for (const ref of references) {
+      matches.push({
+        resourceName: String(resourceName),
+        fieldPath: ref.path,
+        fieldValue: String(ref.value),
+      });
+    }
+  }
 
-	return matches;
+  return matches;
 }
 
 /**
@@ -164,6 +147,6 @@ export function searchResourceList(
  * @returns Simplified path for display
  */
 export function simplifyPath(path: string): string {
-	// Convert spec.pools[0].origin_pool to spec.pools[].origin_pool for readability
-	return path.replace(/\[\d+\]/g, "[]");
+  // Convert spec.pools[0].origin_pool to spec.pools[].origin_pool for readability
+  return path.replace(/\[\d+\]/g, "[]");
 }

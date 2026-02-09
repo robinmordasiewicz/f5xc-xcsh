@@ -6,75 +6,73 @@ import type { CommandDefinition } from "../../registry.js";
 import { successResult, errorResult } from "../../registry.js";
 import { getProfileManager } from "../../../profile/index.js";
 import {
-	formatConnectionTable,
-	buildConnectionInfo,
+  formatConnectionTable,
+  buildConnectionInfo,
 } from "./connection-table.js";
 
 export const useCommand: CommandDefinition = {
-	name: "use",
-	description:
-		"Switch the active connection to a different saved profile. Updates the session context to use the new profile's tenant URL, credentials, and default namespace for all subsequent operations.",
-	descriptionShort: "Switch to a different profile",
-	descriptionMedium:
-		"Activate a profile and update session context with its tenant and namespace settings.",
-	usage: "<name>",
-	aliases: ["switch", "activate"],
+  name: "use",
+  description:
+    "Switch the active connection to a different saved profile. Updates the session context to use the new profile's tenant URL, credentials, and default namespace for all subsequent operations.",
+  descriptionShort: "Switch to a different profile",
+  descriptionMedium:
+    "Activate a profile and update session context with its tenant and namespace settings.",
+  usage: "<name>",
+  aliases: ["switch", "activate"],
 
-	async execute(args, session) {
-		const name = args[0];
+  async execute(args, session) {
+    const name = args[0];
 
-		if (!name) {
-			return errorResult("Usage: login use profile <name>"); // FIXED: Correct registry path
-		}
+    if (!name) {
+      return errorResult("Usage: login use profile <name>"); // FIXED: Correct registry path
+    }
 
-		try {
-			// Use session.switchProfile() which properly updates the API client
-			const success = await session.switchProfile(name);
+    try {
+      // Use session.switchProfile() which properly updates the API client
+      const success = await session.switchProfile(name);
 
-			if (!success) {
-				return errorResult(`Profile '${name}' not found.`);
-			}
+      if (!success) {
+        return errorResult(`Profile '${name}' not found.`);
+      }
 
-			// Get the profile for display
-			const profile = session.getActiveProfile();
+      // Get the profile for display
+      const profile = session.getActiveProfile();
 
-			// Build connection info for display
-			const connectionInfo = buildConnectionInfo(
-				name,
-				profile?.apiUrl || "",
-				!!profile?.apiToken,
-				profile?.defaultNamespace || session.getNamespace(),
-				session.isAuthenticated(),
-				session.isTokenValidated(),
-				session.getValidationError() ?? undefined,
-				session.getAuthSource(),
-				session.getEnvVarsPresent(),
-			);
+      // Build connection info for display
+      const connectionInfo = buildConnectionInfo(
+        name,
+        profile?.apiUrl || "",
+        !!profile?.apiToken,
+        profile?.defaultNamespace || session.getNamespace(),
+        session.isAuthenticated(),
+        session.isTokenValidated(),
+        session.getValidationError() ?? undefined,
+        session.getAuthSource(),
+        session.getEnvVarsPresent(),
+      );
 
-			// Format connection table
-			const tableLines = formatConnectionTable(connectionInfo);
+      // Format connection table
+      const tableLines = formatConnectionTable(connectionInfo);
 
-			return successResult(
-				[`Switched to profile '${name}'.`, ``, ...tableLines],
-				{
-					contextChanged: true, // prompt should update
-					refreshHealth: true, // refresh health indicator
-				},
-			);
-		} catch (error) {
-			return errorResult(
-				`Failed to switch profile: ${error instanceof Error ? error.message : "Unknown error"}`,
-			);
-		}
-	},
+      return successResult(
+        [`Switched to profile '${name}'.`, ``, ...tableLines],
+        {
+          contextChanged: true, // prompt should update
+          refreshHealth: true, // refresh health indicator
+        },
+      );
+    } catch (error) {
+      return errorResult(
+        `Failed to switch profile: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  },
 
-	async completion(partial, _args, _session) {
-		const manager = getProfileManager();
-		const profiles = await manager.list();
-		return profiles
-			.map((p) => p.name)
-			.filter((name) =>
-				name.toLowerCase().startsWith(partial.toLowerCase()),
-			);
-	},
+  async completion(partial, _args, _session) {
+    const manager = getProfileManager();
+    const profiles = await manager.list();
+    return profiles
+      .map((p) => p.name)
+      .filter((name) => name.toLowerCase().startsWith(partial.toLowerCase()));
+  },
 };

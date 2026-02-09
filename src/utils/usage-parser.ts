@@ -13,23 +13,23 @@
 import { filterUsedFlagsFromStrings } from "../repl/completion/flag-utils.js";
 
 export interface PositionalArgument {
-	name: string;
-	required: boolean;
-	description?: string;
+  name: string;
+  required: boolean;
+  description?: string;
 }
 
 export interface FlagArgument {
-	name: string;
-	required: boolean;
-	valueType?: string;
-	valueName?: string;
-	description?: string;
+  name: string;
+  required: boolean;
+  valueType?: string;
+  valueName?: string;
+  description?: string;
 }
 
 export interface UsageRequirements {
-	positional: PositionalArgument[];
-	flags: FlagArgument[];
-	raw: string;
+  positional: PositionalArgument[];
+  flags: FlagArgument[];
+  raw: string;
 }
 
 /**
@@ -52,76 +52,76 @@ export interface UsageRequirements {
  * // }
  */
 export function parseUsage(usageString: string | undefined): UsageRequirements {
-	if (!usageString) {
-		return { positional: [], flags: [], raw: "" };
-	}
+  if (!usageString) {
+    return { positional: [], flags: [], raw: "" };
+  }
 
-	const positional: PositionalArgument[] = [];
-	const flags: FlagArgument[] = [];
+  const positional: PositionalArgument[] = [];
+  const flags: FlagArgument[] = [];
 
-	// Tokenize the usage string
-	const tokens = tokenizeUsage(usageString);
+  // Tokenize the usage string
+  const tokens = tokenizeUsage(usageString);
 
-	for (let i = 0; i < tokens.length; i++) {
-		const token = tokens[i];
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
 
-		// Type guard to ensure token is defined
-		if (!token) continue;
+    // Type guard to ensure token is defined
+    if (!token) continue;
 
-		if (token.startsWith("--")) {
-			// This is a flag
-			const flagName = token;
-			const nextToken = tokens[i + 1];
+    if (token.startsWith("--")) {
+      // This is a flag
+      const flagName = token;
+      const nextToken = tokens[i + 1];
 
-			// Check if next token is a value placeholder
-			let valueType: string | undefined;
-			let valueName: string | undefined;
-			let required = true;
+      // Check if next token is a value placeholder
+      let valueType: string | undefined;
+      let valueName: string | undefined;
+      let required = true;
 
-			if (nextToken && isValuePlaceholder(nextToken)) {
-				// Flag has a value: --url <api-url>
-				valueName = stripBrackets(nextToken);
-				valueType = "string"; // Default to string
-				i++; // Skip the value token
+      if (nextToken && isValuePlaceholder(nextToken)) {
+        // Flag has a value: --url <api-url>
+        valueName = stripBrackets(nextToken);
+        valueType = "string"; // Default to string
+        i++; // Skip the value token
 
-				// Check if this flag-value pair is wrapped in brackets
-				// This is detected by checking if the flag itself was in brackets
-				required = !token.match(/^\[--/) && !nextToken.match(/^\[/);
-			} else {
-				// Flag without value: --verbose or [--verbose]
-				required = !token.match(/^\[--/);
-			}
+        // Check if this flag-value pair is wrapped in brackets
+        // This is detected by checking if the flag itself was in brackets
+        required = !token.match(/^\[--/) && !nextToken.match(/^\[/);
+      } else {
+        // Flag without value: --verbose or [--verbose]
+        required = !token.match(/^\[--/);
+      }
 
-			// Only add flag if we have necessary data
-			const cleanName = flagName.replace(/[[\]]/g, "");
-			if (cleanName) {
-				const flag: FlagArgument = {
-					name: cleanName,
-					required,
-					...(valueType && { valueType }),
-					...(valueName && { valueName }),
-				};
-				flags.push(flag);
-			}
-		} else if (isValuePlaceholder(token)) {
-			// This is a positional argument
-			const name = stripBrackets(token);
-			const required = isRequired(token);
+      // Only add flag if we have necessary data
+      const cleanName = flagName.replace(/[[\]]/g, "");
+      if (cleanName) {
+        const flag: FlagArgument = {
+          name: cleanName,
+          required,
+          ...(valueType && { valueType }),
+          ...(valueName && { valueName }),
+        };
+        flags.push(flag);
+      }
+    } else if (isValuePlaceholder(token)) {
+      // This is a positional argument
+      const name = stripBrackets(token);
+      const required = isRequired(token);
 
-			if (name) {
-				positional.push({
-					name,
-					required,
-				});
-			}
-		}
-	}
+      if (name) {
+        positional.push({
+          name,
+          required,
+        });
+      }
+    }
+  }
 
-	return {
-		positional,
-		flags,
-		raw: usageString,
-	};
+  return {
+    positional,
+    flags,
+    raw: usageString,
+  };
 }
 
 /**
@@ -129,73 +129,73 @@ export function parseUsage(usageString: string | undefined): UsageRequirements {
  * Handles bracketed groups like [--flag <value>]
  */
 function tokenizeUsage(usageString: string): string[] {
-	const tokens: string[] = [];
-	let current = "";
-	let bracketDepth = 0;
+  const tokens: string[] = [];
+  let current = "";
+  let bracketDepth = 0;
 
-	for (let i = 0; i < usageString.length; i++) {
-		const char = usageString[i];
+  for (let i = 0; i < usageString.length; i++) {
+    const char = usageString[i];
 
-		if (char === "[") {
-			bracketDepth++;
-			current += char;
-		} else if (char === "]") {
-			bracketDepth--;
-			current += char;
-			if (bracketDepth === 0 && current.trim()) {
-				tokens.push(current.trim());
-				current = "";
-			}
-		} else if (char === " " && bracketDepth === 0) {
-			if (current.trim()) {
-				tokens.push(current.trim());
-				current = "";
-			}
-		} else if (char === "<") {
-			// Start of value placeholder
-			if (current.trim() && !current.includes("<")) {
-				tokens.push(current.trim());
-				current = "";
-			}
-			current += char;
-		} else if (char === ">") {
-			// End of value placeholder
-			current += char;
-			if (bracketDepth === 0) {
-				tokens.push(current.trim());
-				current = "";
-			}
-		} else {
-			current += char;
-		}
-	}
+    if (char === "[") {
+      bracketDepth++;
+      current += char;
+    } else if (char === "]") {
+      bracketDepth--;
+      current += char;
+      if (bracketDepth === 0 && current.trim()) {
+        tokens.push(current.trim());
+        current = "";
+      }
+    } else if (char === " " && bracketDepth === 0) {
+      if (current.trim()) {
+        tokens.push(current.trim());
+        current = "";
+      }
+    } else if (char === "<") {
+      // Start of value placeholder
+      if (current.trim() && !current.includes("<")) {
+        tokens.push(current.trim());
+        current = "";
+      }
+      current += char;
+    } else if (char === ">") {
+      // End of value placeholder
+      current += char;
+      if (bracketDepth === 0) {
+        tokens.push(current.trim());
+        current = "";
+      }
+    } else {
+      current += char;
+    }
+  }
 
-	if (current.trim()) {
-		tokens.push(current.trim());
-	}
+  if (current.trim()) {
+    tokens.push(current.trim());
+  }
 
-	return tokens;
+  return tokens;
 }
 
 /**
  * Check if a token is a value placeholder like <name> or [name]
  */
 function isValuePlaceholder(token: string): boolean {
-	return /^[<[][\w-]+[\]>]$/.test(token) || /^<[\w-]+>$/.test(token);
+  return /^[<[][\w-]+[\]>]$/.test(token) || /^<[\w-]+>$/.test(token);
 }
 
 /**
  * Check if a token represents a required argument (not wrapped in [])
  */
 function isRequired(token: string): boolean {
-	return token.startsWith("<") && token.endsWith(">");
+  return token.startsWith("<") && token.endsWith(">");
 }
 
 /**
  * Remove brackets from a token
  */
 function stripBrackets(token: string): string {
-	return token.replace(/^[<[]/, "").replace(/[>\]]$/, "");
+  return token.replace(/^[<[]/, "").replace(/[>\]]$/, "");
 }
 
 /**
@@ -206,90 +206,87 @@ function stripBrackets(token: string): string {
  * @returns Validation result with any inconsistencies found
  */
 export interface ValidationResult {
-	consistent: boolean;
-	issues: string[];
-	warnings: string[];
+  consistent: boolean;
+  issues: string[];
+  warnings: string[];
 }
 
 export function validateCompletionMatchesUsage(
-	usage: UsageRequirements,
-	completionSuggestions: string[],
+  usage: UsageRequirements,
+  completionSuggestions: string[],
 ): ValidationResult {
-	const issues: string[] = [];
-	const warnings: string[] = [];
+  const issues: string[] = [];
+  const warnings: string[] = [];
 
-	// If command has required positional arguments and completion returns empty array,
-	// this is likely a positional-argument-aware completion handler that will suggest
-	// flags only after positional args are provided. This is correct behavior.
-	const hasRequiredPositional = usage.positional.some((p) => p.required);
-	if (hasRequiredPositional && completionSuggestions.length === 0) {
-		// This is acceptable - completion is waiting for positional arg
-		// Don't check for flags in this case
-		return {
-			consistent: true,
-			issues: [],
-			warnings: [],
-		};
-	}
+  // If command has required positional arguments and completion returns empty array,
+  // this is likely a positional-argument-aware completion handler that will suggest
+  // flags only after positional args are provided. This is correct behavior.
+  const hasRequiredPositional = usage.positional.some((p) => p.required);
+  if (hasRequiredPositional && completionSuggestions.length === 0) {
+    // This is acceptable - completion is waiting for positional arg
+    // Don't check for flags in this case
+    return {
+      consistent: true,
+      issues: [],
+      warnings: [],
+    };
+  }
 
-	// Check if required flags are suggested
-	const requiredFlags = usage.flags.filter((f) => f.required);
-	for (const flag of requiredFlags) {
-		if (!completionSuggestions.includes(flag.name)) {
-			issues.push(
-				`Required flag '${flag.name}' from usage not found in completion suggestions`,
-			);
-		}
-	}
+  // Check if required flags are suggested
+  const requiredFlags = usage.flags.filter((f) => f.required);
+  for (const flag of requiredFlags) {
+    if (!completionSuggestions.includes(flag.name)) {
+      issues.push(
+        `Required flag '${flag.name}' from usage not found in completion suggestions`,
+      );
+    }
+  }
 
-	// Check if completion suggests flags not in usage
-	const allUsageFlags = usage.flags.map((f) => f.name);
-	for (const suggestion of completionSuggestions) {
-		if (
-			suggestion.startsWith("--") &&
-			!allUsageFlags.includes(suggestion)
-		) {
-			warnings.push(
-				`Completion suggests flag '${suggestion}' not found in usage specification`,
-			);
-		}
-	}
+  // Check if completion suggests flags not in usage
+  const allUsageFlags = usage.flags.map((f) => f.name);
+  for (const suggestion of completionSuggestions) {
+    if (suggestion.startsWith("--") && !allUsageFlags.includes(suggestion)) {
+      warnings.push(
+        `Completion suggests flag '${suggestion}' not found in usage specification`,
+      );
+    }
+  }
 
-	// Note: Positional arguments are harder to validate automatically
-	// since completion might not suggest them (user-provided values)
-	// This is handled by the test suite with contextual checks
+  // Note: Positional arguments are harder to validate automatically
+  // since completion might not suggest them (user-provided values)
+  // This is handled by the test suite with contextual checks
 
-	return {
-		consistent: issues.length === 0,
-		issues,
-		warnings,
-	};
+  return {
+    consistent: issues.length === 0,
+    issues,
+    warnings,
+  };
 }
 
 /**
  * Format usage requirements as human-readable text
  */
 export function formatUsageRequirements(usage: UsageRequirements): string {
-	let output = `Usage Requirements:\n`;
+  let output = `Usage Requirements:\n`;
 
-	if (usage.positional.length > 0) {
-		output += `\nPositional Arguments:\n`;
-		for (const arg of usage.positional) {
-			const req = arg.required ? "required" : "optional";
-			output += `  - ${arg.name} (${req})\n`;
-		}
-	}
+  if (usage.positional.length > 0) {
+    output += `\nPositional Arguments:\n`;
+    for (const arg of usage.positional) {
+      const req = arg.required ? "required" : "optional";
+      output += `  - ${arg.name} (${req})\n`;
+    }
+  }
 
-	if (usage.flags.length > 0) {
-		output += `\nFlags:\n`;
-		for (const flag of usage.flags) {
-			const req = flag.required ? "required" : "optional";
-			const value = flag.valueName ? ` <${flag.valueName}>` : "";
-			output += `  - ${flag.name}${value} (${req})\n`;
-		}
-	}
+  if (usage.flags.length > 0) {
+    output += `\nFlags:\n`;
+    for (const flag of usage.flags) {
+      const req = flag.required ? "required" : "optional";
+      const value = flag.valueName ? ` <${flag.valueName}>` : "";
+      output += `  - ${flag.name}${value} (${req})\n`;
+    }
+  }
 
-	return output;
+  return output;
 }
 
 /**
@@ -318,41 +315,39 @@ export function formatUsageRequirements(usage: UsageRequirements): string {
  * // Returns: ["--token"] (--url is filtered out because it was already used)
  */
 export function generateSmartCompletions(
-	usage: string | undefined,
-	args: string[],
-	flags: string[],
+  usage: string | undefined,
+  args: string[],
+  flags: string[],
 ): string[] {
-	// Filter out already-used flags from the suggestions
-	const availableFlags = filterUsedFlagsFromStrings(flags, args);
+  // Filter out already-used flags from the suggestions
+  const availableFlags = filterUsedFlagsFromStrings(flags, args);
 
-	if (!usage) {
-		return availableFlags;
-	}
+  if (!usage) {
+    return availableFlags;
+  }
 
-	const requirements = parseUsage(usage);
+  const requirements = parseUsage(usage);
 
-	// Count how many positional arguments have been provided
-	// (filter out flags that start with -- or -)
-	const positionalArgsProvided = args.filter(
-		(arg) => !arg.startsWith("-"),
-	).length;
+  // Count how many positional arguments have been provided
+  // (filter out flags that start with -- or -)
+  const positionalArgsProvided = args.filter(
+    (arg) => !arg.startsWith("-"),
+  ).length;
 
-	// Get required positional arguments
-	const requiredPositional = requirements.positional.filter(
-		(p) => p.required,
-	);
+  // Get required positional arguments
+  const requiredPositional = requirements.positional.filter((p) => p.required);
 
-	// If we haven't satisfied all required positional args, include placeholders
-	if (positionalArgsProvided < requiredPositional.length) {
-		const placeholders = requiredPositional
-			.slice(positionalArgsProvided)
-			.map((p) => `<${p.name}>`);
+  // If we haven't satisfied all required positional args, include placeholders
+  if (positionalArgsProvided < requiredPositional.length) {
+    const placeholders = requiredPositional
+      .slice(positionalArgsProvided)
+      .map((p) => `<${p.name}>`);
 
-		// Return placeholders first, then available flags
-		// This shows the user: "You need to provide X, and here are the flags available"
-		return [...placeholders, ...availableFlags];
-	}
+    // Return placeholders first, then available flags
+    // This shows the user: "You need to provide X, and here are the flags available"
+    return [...placeholders, ...availableFlags];
+  }
 
-	// All required positional args satisfied, return only available flags
-	return availableFlags;
+  // All required positional args satisfied, return only available flags
+  return availableFlags;
 }

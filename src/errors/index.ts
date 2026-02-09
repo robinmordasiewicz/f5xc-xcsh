@@ -6,15 +6,15 @@
  */
 
 export {
-	ExitCode,
-	ErrorCode,
-	httpStatusToExitCode,
-	httpStatusToErrorCode,
-	exitCodeDescription,
-	exitCodeHint,
-	createStructuredError,
-	formatError,
-	type ExitCodeValue,
-	type ErrorCodeValue,
-	type StructuredError,
+  ExitCode,
+  ErrorCode,
+  httpStatusToExitCode,
+  httpStatusToErrorCode,
+  exitCodeDescription,
+  exitCodeHint,
+  createStructuredError,
+  formatError,
+  type ExitCodeValue,
+  type ErrorCodeValue,
+  type StructuredError,
 } from "./codes.js";

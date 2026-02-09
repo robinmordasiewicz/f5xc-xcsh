@@ -35,37 +35,37 @@ import { parseUsage } from "../utils/usage-parser.js";
  * )
  */
 export function generateUsageError(
-	commandPath: string,
-	usageField: string,
-	additionalHelp?: {
-		options?: Array<{ flag: string; description: string }>;
-		examples?: string[];
-	},
+  commandPath: string,
+  usageField: string,
+  additionalHelp?: {
+    options?: Array<{ flag: string; description: string }>;
+    examples?: string[];
+  },
 ): string {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	// Usage line - directly from usage field (SINGLE SOURCE OF TRUTH)
-	lines.push(`Usage: ${commandPath} ${usageField}`);
-	lines.push("");
+  // Usage line - directly from usage field (SINGLE SOURCE OF TRUTH)
+  lines.push(`Usage: ${commandPath} ${usageField}`);
+  lines.push("");
 
-	// Options section (if provided)
-	if (additionalHelp?.options && additionalHelp.options.length > 0) {
-		lines.push("Options:");
-		for (const opt of additionalHelp.options) {
-			lines.push(`  ${opt.flag.padEnd(12)} ${opt.description}`);
-		}
-		lines.push("");
-	}
+  // Options section (if provided)
+  if (additionalHelp?.options && additionalHelp.options.length > 0) {
+    lines.push("Options:");
+    for (const opt of additionalHelp.options) {
+      lines.push(`  ${opt.flag.padEnd(12)} ${opt.description}`);
+    }
+    lines.push("");
+  }
 
-	// Examples section (if provided)
-	if (additionalHelp?.examples && additionalHelp.examples.length > 0) {
-		lines.push("Example:");
-		for (const example of additionalHelp.examples) {
-			lines.push(`  ${example}`);
-		}
-	}
+  // Examples section (if provided)
+  if (additionalHelp?.examples && additionalHelp.examples.length > 0) {
+    lines.push("Example:");
+    for (const example of additionalHelp.examples) {
+      lines.push(`  ${example}`);
+    }
+  }
 
-	return lines.join("\n");
+  return lines.join("\n");
 }
 
 /**
@@ -89,24 +89,24 @@ export function generateUsageError(
  * // Returns: ["Flag --namespace in options but missing from usage"]
  */
 export function validateUsageMatchesOptions(
-	usageField: string,
-	options: Array<{ flag: string; required: boolean }>,
+  usageField: string,
+  options: Array<{ flag: string; required: boolean }>,
 ): string[] {
-	const usage = parseUsage(usageField);
-	const issues: string[] = [];
+  const usage = parseUsage(usageField);
+  const issues: string[] = [];
 
-	for (const opt of options) {
-		const flagInUsage = usage.flags.find((f) => f.name === opt.flag);
-		if (!flagInUsage) {
-			issues.push(`Flag ${opt.flag} in options but missing from usage`);
-		} else if (flagInUsage.required !== opt.required) {
-			issues.push(
-				`Flag ${opt.flag} required mismatch: usage=${flagInUsage.required}, options=${opt.required}`,
-			);
-		}
-	}
+  for (const opt of options) {
+    const flagInUsage = usage.flags.find((f) => f.name === opt.flag);
+    if (!flagInUsage) {
+      issues.push(`Flag ${opt.flag} in options but missing from usage`);
+    } else if (flagInUsage.required !== opt.required) {
+      issues.push(
+        `Flag ${opt.flag} required mismatch: usage=${flagInUsage.required}, options=${opt.required}`,
+      );
+    }
+  }
 
-	return issues;
+  return issues;
 }
 
 /**
@@ -124,8 +124,8 @@ export function validateUsageMatchesOptions(
  * // Returns: "Usage: login show profile <profile-name>"
  */
 export function generateSimpleUsageError(
-	commandPath: string,
-	usageField: string,
+  commandPath: string,
+  usageField: string,
 ): string {
-	return `Usage: ${commandPath} ${usageField}`;
+  return `Usage: ${commandPath} ${usageField}`;
 }

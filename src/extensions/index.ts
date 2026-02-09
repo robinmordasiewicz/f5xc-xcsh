@@ -22,9 +22,9 @@
 // Export types
 export type { DomainExtension, MergedDomain } from "./types.js";
 export {
-	RESERVED_API_ACTIONS,
-	isReservedAction,
-	validateExtension,
+  RESERVED_API_ACTIONS,
+  isReservedAction,
+  validateExtension,
 } from "./types.js";
 
 // Export registry
@@ -39,10 +39,10 @@ export { ExtensionRegistry, extensionRegistry } from "./registry.js";
  * Called automatically on module load
  */
 function initializeExtensions(): void {
-	// No extensions currently registered
-	// Extensions can be added here when needed:
-	// extensionRegistry.register(sitesExtension);
-	// extensionRegistry.register(virtualExtension);
+  // No extensions currently registered
+  // Extensions can be added here when needed:
+  // extensionRegistry.register(sitesExtension);
+  // extensionRegistry.register(virtualExtension);
 }
 
 // Initialize on module load
@@ -53,6 +53,6 @@ initializeExtensions();
  * Useful for testing or dynamic reloading
  */
 export function reinitializeExtensions(): void {
-	// extensionRegistry.clearCache();
-	initializeExtensions();
+  // extensionRegistry.clearCache();
+  initializeExtensions();
 }

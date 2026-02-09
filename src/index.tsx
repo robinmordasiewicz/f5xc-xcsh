@@ -37,19 +37,19 @@ profiler.checkpoint("import:session");
 import { formatRootHelp } from "./repl/help.js";
 profiler.checkpoint("import:help");
 import {
-	isValidLogoMode,
-	type LogoDisplayMode,
-	LOGO_MODE_HELP,
-	isValidCompletionMode,
-	COMPLETION_MODE_HELP,
+  isValidLogoMode,
+  type LogoDisplayMode,
+  LOGO_MODE_HELP,
+  isValidCompletionMode,
+  COMPLETION_MODE_HELP,
 } from "./config/index.js";
 profiler.checkpoint("import:config");
 import { OUTPUT_FORMAT_HELP } from "./output/types.js";
 profiler.checkpoint("import:output-types");
 import { renderBanner } from "./domains/login/banner/display.js";
 import {
-	formatConnectionTable,
-	buildConnectionInfo,
+  formatConnectionTable,
+  buildConnectionInfo,
 } from "./domains/login/profile/connection-table.js";
 profiler.checkpoint("import:banner");
 import { debugProtocol, emitSessionState } from "./debug/protocol.js";
@@ -67,356 +67,342 @@ profiler.checkpoint("commander:created");
 
 // Custom help: override default help to show comprehensive root help
 program.configureHelp({
-	formatHelp: () => formatRootHelp().join("\n"),
+  formatHelp: () => formatRootHelp().join("\n"),
 });
 
 program
-	.name(CLI_NAME)
-	.description("F5 Distributed Cloud Shell - Interactive CLI for F5 XC")
-	.version(CLI_VERSION, "-v, --version", "Show version number")
-	.option("--no-color", "Disable color output")
-	.option("--logo <mode>", `Logo display mode: ${LOGO_MODE_HELP}`)
-	.option(
-		"--completion-mode <mode>",
-		`Completion resource display: ${COMPLETION_MODE_HELP}`,
-	)
-	.option("-o, --output <format>", `Output format (${OUTPUT_FORMAT_HELP})`)
-	.option("--spec", "Output command specification as JSON (for AI)")
-	.option("--headless", "Run in headless JSON protocol mode (for AI agents)")
-	.option("-h, --help", "Show help") // Manual help option to prevent auto-exit
-	.argument("[command...]", "Command to execute non-interactively")
-	.allowUnknownOption(true) // Pass through unknown options to commands
-	.helpOption(false) // Disable auto-help so domain --help works
-	.action(
-		async (
-			commandArgs: string[],
-			options: {
-				help?: boolean;
-				logo?: string;
-				completionMode?: string;
-				output?: string;
-				spec?: boolean;
-				headless?: boolean;
-			},
-		) => {
-			// Handle root-level help (xcsh --help or xcsh -h with no domain)
-			if (options.help && commandArgs.length === 0) {
-				formatRootHelp().forEach((line) => console.warn(line));
-				process.exit(0);
-			}
+  .name(CLI_NAME)
+  .description("F5 Distributed Cloud Shell - Interactive CLI for F5 XC")
+  .version(CLI_VERSION, "-v, --version", "Show version number")
+  .option("--no-color", "Disable color output")
+  .option("--logo <mode>", `Logo display mode: ${LOGO_MODE_HELP}`)
+  .option(
+    "--completion-mode <mode>",
+    `Completion resource display: ${COMPLETION_MODE_HELP}`,
+  )
+  .option("-o, --output <format>", `Output format (${OUTPUT_FORMAT_HELP})`)
+  .option("--spec", "Output command specification as JSON (for AI)")
+  .option("--headless", "Run in headless JSON protocol mode (for AI agents)")
+  .option("-h, --help", "Show help") // Manual help option to prevent auto-exit
+  .argument("[command...]", "Command to execute non-interactively")
+  .allowUnknownOption(true) // Pass through unknown options to commands
+  .helpOption(false) // Disable auto-help so domain --help works
+  .action(
+    async (
+      commandArgs: string[],
+      options: {
+        help?: boolean;
+        logo?: string;
+        completionMode?: string;
+        output?: string;
+        spec?: boolean;
+        headless?: boolean;
+      },
+    ) => {
+      // Handle root-level help (xcsh --help or xcsh -h with no domain)
+      if (options.help && commandArgs.length === 0) {
+        formatRootHelp().forEach((line) => console.warn(line));
+        process.exit(0);
+      }
 
-			// Handle root-level spec (xcsh --spec with no domain)
-			// Outputs full CLI specification for documentation generation
-			// NOTE: Must use console.log (stdout) not console.warn (stderr)
-			// because documentation generators capture stdout for JSON parsing
-			if (options.spec && commandArgs.length === 0) {
-				console.log(formatFullCLISpec());
-				process.exit(0);
-			}
+      // Handle root-level spec (xcsh --spec with no domain)
+      // Outputs full CLI specification for documentation generation
+      // NOTE: Must use console.log (stdout) not console.warn (stderr)
+      // because documentation generators capture stdout for JSON parsing
+      if (options.spec && commandArgs.length === 0) {
+        console.log(formatFullCLISpec());
+        process.exit(0);
+      }
 
-			// If --help with a domain, re-inject --help into args for domain help
-			// Commander consumes --help as an option, so we add it back
-			if (options.help && commandArgs.length > 0) {
-				commandArgs.push("--help");
-			}
+      // If --help with a domain, re-inject --help into args for domain help
+      // Commander consumes --help as an option, so we add it back
+      if (options.help && commandArgs.length > 0) {
+        commandArgs.push("--help");
+      }
 
-			// If --logo with a command, re-inject --logo into args for command handling
-			// Commander consumes --logo as an option, so we add it back for non-interactive mode
-			if (options.logo && commandArgs.length > 0) {
-				commandArgs.push("--logo", options.logo);
-			}
+      // If --logo with a command, re-inject --logo into args for command handling
+      // Commander consumes --logo as an option, so we add it back for non-interactive mode
+      if (options.logo && commandArgs.length > 0) {
+        commandArgs.push("--logo", options.logo);
+      }
 
-			// If --output with a command, re-inject --output into args for command handling
-			// Commander consumes --output as an option, so we add it back for non-interactive mode
-			if (options.output && commandArgs.length > 0) {
-				commandArgs.push("--output", options.output);
-			}
+      // If --output with a command, re-inject --output into args for command handling
+      // Commander consumes --output as an option, so we add it back for non-interactive mode
+      if (options.output && commandArgs.length > 0) {
+        commandArgs.push("--output", options.output);
+      }
 
-			// If --spec with a command, re-inject --spec into args for command handling
-			// Commander consumes --spec as an option, so we add it back for non-interactive mode
-			if (options.spec && commandArgs.length > 0) {
-				commandArgs.push("--spec");
-			}
+      // If --spec with a command, re-inject --spec into args for command handling
+      // Commander consumes --spec as an option, so we add it back for non-interactive mode
+      if (options.spec && commandArgs.length > 0) {
+        commandArgs.push("--spec");
+      }
 
-			// Handle headless mode (for AI agents)
-			// Headless mode uses JSON protocol on stdin/stdout
-			if (options.headless) {
-				const controller = new HeadlessController();
-				await controller.run();
-				return;
-			}
+      // Handle headless mode (for AI agents)
+      // Headless mode uses JSON protocol on stdin/stdout
+      if (options.headless) {
+        const controller = new HeadlessController();
+        await controller.run();
+        return;
+      }
 
-			// If no command args, enter REPL mode
-			if (commandArgs.length === 0) {
-				// Check if stdin is a TTY (interactive terminal)
-				if (!process.stdin.isTTY) {
-					console.error(
-						"Error: Interactive mode requires a terminal (TTY).",
-					);
-					console.error(
-						"Use: xcsh <command> for non-interactive execution.",
-					);
-					console.error(
-						"Or use: xcsh --headless for AI agent JSON protocol mode.",
-					);
-					process.exit(1);
-				}
+      // If no command args, enter REPL mode
+      if (commandArgs.length === 0) {
+        // Check if stdin is a TTY (interactive terminal)
+        if (!process.stdin.isTTY) {
+          console.error("Error: Interactive mode requires a terminal (TTY).");
+          console.error("Use: xcsh <command> for non-interactive execution.");
+          console.error(
+            "Or use: xcsh --headless for AI agent JSON protocol mode.",
+          );
+          process.exit(1);
+        }
 
-				// Parse logo mode from CLI option
-				const cliLogoMode =
-					options.logo && isValidLogoMode(options.logo)
-						? (options.logo as LogoDisplayMode)
-						: undefined;
+        // Parse logo mode from CLI option
+        const cliLogoMode =
+          options.logo && isValidLogoMode(options.logo)
+            ? (options.logo as LogoDisplayMode)
+            : undefined;
 
-				// Parse completion mode from CLI option and set environment variable for Completer
-				if (
-					options.completionMode &&
-					isValidCompletionMode(options.completionMode)
-				) {
-					// Set environment variable so Completer can access the override
-					process.env.XCSH_COMPLETION_MODE = options.completionMode;
-				}
+        // Parse completion mode from CLI option and set environment variable for Completer
+        if (
+          options.completionMode &&
+          isValidCompletionMode(options.completionMode)
+        ) {
+          // Set environment variable so Completer can access the override
+          process.env.XCSH_COMPLETION_MODE = options.completionMode;
+        }
 
-				// Show initialization message first
-				process.stdout.write("Initializing...");
+        // Show initialization message first
+        process.stdout.write("Initializing...");
 
-				// Initialize session BEFORE Ink takes over
-				const sessionInitSpan = profiler.startSpan(
-					"session_init",
-					"Session Initialization",
-				);
-				const session = new REPLSession();
-				await session.initialize();
-				profiler.endSpan(sessionInitSpan);
+        // Initialize session BEFORE Ink takes over
+        const sessionInitSpan = profiler.startSpan(
+          "session_init",
+          "Session Initialization",
+        );
+        const session = new REPLSession();
+        await session.initialize();
+        profiler.endSpan(sessionInitSpan);
 
-				// Emit debug event for session state (helps AI/PTY debugging)
-				debugProtocol.session("init", { mode: "repl" });
-				emitSessionState(session);
+        // Emit debug event for session state (helps AI/PTY debugging)
+        debugProtocol.session("init", { mode: "repl" });
+        emitSessionState(session);
 
-				// Clear the "Initializing..." message
-				process.stdout.write("\r\x1b[K");
+        // Clear the "Initializing..." message
+        process.stdout.write("\r\x1b[K");
 
-				// Print profile report (before banner, to stderr)
-				profiler.memorySnapshot("pre_banner");
-				printProfileReport();
+        // Print profile report (before banner, to stderr)
+        profiler.memorySnapshot("pre_banner");
+        printProfileReport();
 
-				// Print banner to scrollback BEFORE Ink takes over
-				// Use "startup" context for direct stdout with image support
-				renderBanner(cliLogoMode, "startup");
+        // Print banner to scrollback BEFORE Ink takes over
+        // Use "startup" context for direct stdout with image support
+        renderBanner(cliLogoMode, "startup");
 
-				// Get profile and authentication state for startup display
-				const activeProfile = session.getActiveProfile();
-				const envConfigured =
-					process.env[`${ENV_PREFIX}_API_URL`] &&
-					process.env[`${ENV_PREFIX}_API_TOKEN`];
+        // Get profile and authentication state for startup display
+        const activeProfile = session.getActiveProfile();
+        const envConfigured =
+          process.env[`${ENV_PREFIX}_API_URL`] &&
+          process.env[`${ENV_PREFIX}_API_TOKEN`];
 
-				// FLOW 1: Active profile exists - show connection summary table
-				if (activeProfile) {
-					console.warn(""); // blank line after banner
+        // FLOW 1: Active profile exists - show connection summary table
+        if (activeProfile) {
+          console.warn(""); // blank line after banner
 
-					const connectionInfo = buildConnectionInfo(
-						session.getActiveProfileName() ||
-							activeProfile.name ||
-							"default",
-						activeProfile.apiUrl || session.getServerUrl() || "",
-						!!activeProfile.apiToken || session.isAuthenticated(),
-						activeProfile.defaultNamespace ||
-							session.getNamespace(),
-						session.isAuthenticated() && !session.isOfflineMode(),
-						session.isTokenValidated(),
-						session.getValidationError() ?? undefined,
-						session.getAuthSource(),
-						session.getEnvVarsPresent(),
-					);
+          const connectionInfo = buildConnectionInfo(
+            session.getActiveProfileName() || activeProfile.name || "default",
+            activeProfile.apiUrl || session.getServerUrl() || "",
+            !!activeProfile.apiToken || session.isAuthenticated(),
+            activeProfile.defaultNamespace || session.getNamespace(),
+            session.isAuthenticated() && !session.isOfflineMode(),
+            session.isTokenValidated(),
+            session.getValidationError() ?? undefined,
+            session.getAuthSource(),
+            session.getEnvVarsPresent(),
+          );
 
-					const tableLines = formatConnectionTable(connectionInfo);
-					tableLines.forEach((line) => console.warn(line));
+          const tableLines = formatConnectionTable(connectionInfo);
+          tableLines.forEach((line) => console.warn(line));
 
-					// Show offline warning if applicable
-					if (session.isOfflineMode()) {
-						console.warn("");
-						console.warn(
-							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
-						);
-						console.warn(
-							`${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
-						);
-					}
+          // Show offline warning if applicable
+          if (session.isOfflineMode()) {
+            console.warn("");
+            console.warn(
+              `${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+            );
+            console.warn(
+              `${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
+            );
+          }
 
-					// Show profile fallback info if applicable
-					if (session.getAuthSource() === "profile-fallback") {
-						console.warn("");
-						console.warn(
-							`${colors.blue}Info: Using credentials from profile '${session.getActiveProfileName()}' (environment variables were invalid)${colors.reset}`,
-						);
-					}
-				}
-				// FLOW 2: No profiles, but env vars configured - show connection info
-				else if (envConfigured) {
-					console.warn(""); // blank line after banner
+          // Show profile fallback info if applicable
+          if (session.getAuthSource() === "profile-fallback") {
+            console.warn("");
+            console.warn(
+              `${colors.blue}Info: Using credentials from profile '${session.getActiveProfileName()}' (environment variables were invalid)${colors.reset}`,
+            );
+          }
+        }
+        // FLOW 2: No profiles, but env vars configured - show connection info
+        else if (envConfigured) {
+          console.warn(""); // blank line after banner
 
-					const connectionInfo = buildConnectionInfo(
-						"(environment)",
-						process.env[`${ENV_PREFIX}_API_URL`] || "",
-						!!process.env[`${ENV_PREFIX}_API_TOKEN`],
-						session.getNamespace(),
-						session.isAuthenticated() && !session.isOfflineMode(),
-						session.isTokenValidated(),
-						session.getValidationError() ?? undefined,
-						"env", // authSource - using environment variables
-						true, // envVarsPresent - by definition, this flow means env vars exist
-					);
+          const connectionInfo = buildConnectionInfo(
+            "(environment)",
+            process.env[`${ENV_PREFIX}_API_URL`] || "",
+            !!process.env[`${ENV_PREFIX}_API_TOKEN`],
+            session.getNamespace(),
+            session.isAuthenticated() && !session.isOfflineMode(),
+            session.isTokenValidated(),
+            session.getValidationError() ?? undefined,
+            "env", // authSource - using environment variables
+            true, // envVarsPresent - by definition, this flow means env vars exist
+          );
 
-					const tableLines = formatConnectionTable(connectionInfo);
-					tableLines.forEach((line) => console.warn(line));
+          const tableLines = formatConnectionTable(connectionInfo);
+          tableLines.forEach((line) => console.warn(line));
 
-					// Show warnings if applicable
-					if (session.isOfflineMode()) {
-						console.warn("");
-						console.warn(
-							`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
-						);
-					}
+          // Show warnings if applicable
+          if (session.isOfflineMode()) {
+            console.warn("");
+            console.warn(
+              `${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+            );
+          }
 
-					if (
-						!session.isTokenValidated() &&
-						session.getValidationError()
-					) {
-						console.warn("");
-						console.warn(
-							`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
-						);
-					}
-				}
-				// FLOW 3: No profiles and no env vars - show login wizard guidance
-				else {
-					console.warn("");
-					console.warn(
-						`${colors.yellow}No connection profiles found.${colors.reset}`,
-					);
-					console.warn("");
-					console.warn(
-						"Create a profile to connect to F5 Distributed Cloud:",
-					);
-					console.warn("");
-					console.warn(
-						`  ${colors.blue}login profile create${colors.reset} <name> --url <api-url> --token <api-token>`,
-					);
-					console.warn("");
-					console.warn("Or set environment variables:");
-					console.warn("");
-					console.warn(
-						`  ${colors.blue}export ${ENV_PREFIX}_API_URL${colors.reset}=https://tenant.console.ves.volterra.io`,
-					);
-					console.warn(
-						`  ${colors.blue}export ${ENV_PREFIX}_API_TOKEN${colors.reset}=<your-api-token>`,
-					);
-					console.warn("");
-				}
+          if (!session.isTokenValidated() && session.getValidationError()) {
+            console.warn("");
+            console.warn(
+              `${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
+            );
+          }
+        }
+        // FLOW 3: No profiles and no env vars - show login wizard guidance
+        else {
+          console.warn("");
+          console.warn(
+            `${colors.yellow}No connection profiles found.${colors.reset}`,
+          );
+          console.warn("");
+          console.warn("Create a profile to connect to F5 Distributed Cloud:");
+          console.warn("");
+          console.warn(
+            `  ${colors.blue}login profile create${colors.reset} <name> --url <api-url> --token <api-token>`,
+          );
+          console.warn("");
+          console.warn("Or set environment variables:");
+          console.warn("");
+          console.warn(
+            `  ${colors.blue}export ${ENV_PREFIX}_API_URL${colors.reset}=https://tenant.console.ves.volterra.io`,
+          );
+          console.warn(
+            `  ${colors.blue}export ${ENV_PREFIX}_API_TOKEN${colors.reset}=<your-api-token>`,
+          );
+          console.warn("");
+        }
 
-				// Enter interactive REPL mode with pre-initialized session
-				// WORKAROUND: Bun doesn't call process.stdin.resume() automatically,
-				// which breaks Ink's useInput hook. This is a known Bun bug:
-				// https://github.com/oven-sh/bun/issues/6862
-				process.stdin.resume();
-				const appProps: AppProps = { initialSession: session };
-				render(<App {...appProps} />, { exitOnCtrlC: false });
-				return;
-			}
+        // Enter interactive REPL mode with pre-initialized session
+        // WORKAROUND: Bun doesn't call process.stdin.resume() automatically,
+        // which breaks Ink's useInput hook. This is a known Bun bug:
+        // https://github.com/oven-sh/bun/issues/6862
+        process.stdin.resume();
+        const appProps: AppProps = { initialSession: session };
+        render(<App {...appProps} />, { exitOnCtrlC: false });
+        return;
+      }
 
-			// Non-interactive mode: execute command and exit
-			await executeNonInteractive(commandArgs);
-		},
-	);
+      // Non-interactive mode: execute command and exit
+      await executeNonInteractive(commandArgs);
+    },
+  );
 
 /**
  * Execute a command non-interactively
  */
 async function executeNonInteractive(args: string[]): Promise<void> {
-	const sessionInitSpan = profiler.startSpan(
-		"session_init",
-		"Session Initialization",
-	);
-	const session = new REPLSession();
-	await session.initialize();
-	profiler.endSpan(sessionInitSpan);
+  const sessionInitSpan = profiler.startSpan(
+    "session_init",
+    "Session Initialization",
+  );
+  const session = new REPLSession();
+  await session.initialize();
+  profiler.endSpan(sessionInitSpan);
 
-	// Print profile report for non-interactive mode
-	printProfileReport();
+  // Print profile report for non-interactive mode
+  printProfileReport();
 
-	// Emit debug event for session state (helps AI/PTY debugging)
-	debugProtocol.session("init", {
-		mode: "non-interactive",
-		command: args.join(" "),
-	});
-	emitSessionState(session);
+  // Emit debug event for session state (helps AI/PTY debugging)
+  debugProtocol.session("init", {
+    mode: "non-interactive",
+    command: args.join(" "),
+  });
+  emitSessionState(session);
 
-	// Show offline mode warning if API is unreachable
-	if (session.isOfflineMode()) {
-		console.error(
-			`${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
-		);
-		console.error(
-			`${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
-		);
-	}
+  // Show offline mode warning if API is unreachable
+  if (session.isOfflineMode()) {
+    console.error(
+      `${colors.yellow}⚠️  Offline Mode: API endpoint unreachable${colors.reset}`,
+    );
+    console.error(
+      `${colors.dim}  Commands requiring API access will fail.${colors.reset}`,
+    );
+  }
 
-	// Show info when profile fallback succeeded
-	if (session.getAuthSource() === "profile-fallback") {
-		const profileName = session.getActiveProfileName();
-		console.error(
-			`${colors.blue}Info: Using credentials from profile '${profileName}' (environment variables were invalid)${colors.reset}`,
-		);
-	}
+  // Show info when profile fallback succeeded
+  if (session.getAuthSource() === "profile-fallback") {
+    const profileName = session.getActiveProfileName();
+    console.error(
+      `${colors.blue}Info: Using credentials from profile '${profileName}' (environment variables were invalid)${colors.reset}`,
+    );
+  }
 
-	// Show warning if token validation failed
-	if (
-		session.isAuthenticated() &&
-		!session.isTokenValidated() &&
-		session.getValidationError()
-	) {
-		const authSource = session.getAuthSource();
-		const fallbackReason = session.getFallbackReason();
+  // Show warning if token validation failed
+  if (
+    session.isAuthenticated() &&
+    !session.isTokenValidated() &&
+    session.getValidationError()
+  ) {
+    const authSource = session.getAuthSource();
+    const fallbackReason = session.getFallbackReason();
 
-		if (authSource === "env" || authSource === "mixed") {
-			// Environment variable credentials failed
-			console.error(
-				`${colors.yellow}Warning: Environment variable credentials are invalid or expired${colors.reset}`,
-			);
-			if (fallbackReason) {
-				console.error(
-					`${colors.dim}  ${fallbackReason}${colors.reset}`,
-				);
-			}
-			console.error(
-				`${colors.dim}  Run 'login' to authenticate or update your F5XC_API_TOKEN environment variable${colors.reset}`,
-			);
-		} else {
-			// Profile credentials failed
-			console.error(
-				`${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
-			);
-		}
-	}
+    if (authSource === "env" || authSource === "mixed") {
+      // Environment variable credentials failed
+      console.error(
+        `${colors.yellow}Warning: Environment variable credentials are invalid or expired${colors.reset}`,
+      );
+      if (fallbackReason) {
+        console.error(`${colors.dim}  ${fallbackReason}${colors.reset}`);
+      }
+      console.error(
+        `${colors.dim}  Run 'login' to authenticate or update your F5XC_API_TOKEN environment variable${colors.reset}`,
+      );
+    } else {
+      // Profile credentials failed
+      console.error(
+        `${colors.yellow}Warning: ${session.getValidationError()}${colors.reset}`,
+      );
+    }
+  }
 
-	// Join args into a command string
-	const command = args.join(" ");
+  // Join args into a command string
+  const command = args.join(" ");
 
-	// Execute the command
-	const result = await executeCommand(command, session);
+  // Execute the command
+  const result = await executeCommand(command, session);
 
-	// Output results
-	result.output.forEach((line) => {
-		console.warn(line);
-	});
+  // Output results
+  result.output.forEach((line) => {
+    console.warn(line);
+  });
 
-	// Exit with appropriate code
-	if (result.error) {
-		// Use explicit exit code if provided, otherwise default to 1
-		process.exit(result.exitCode ?? 1);
-	}
+  // Exit with appropriate code
+  if (result.error) {
+    // Use explicit exit code if provided, otherwise default to 1
+    process.exit(result.exitCode ?? 1);
+  }
 
-	process.exit(result.exitCode ?? 0);
+  process.exit(result.exitCode ?? 0);
 }
 
 // Parse command line arguments

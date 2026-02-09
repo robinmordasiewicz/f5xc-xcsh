@@ -20,46 +20,49 @@ const projectRoot = join(__dirname, "..");
 // Import generators - these will be available after the TypeScript is compiled
 // For script execution, we dynamically import from the source
 async function main() {
-	console.log("🔧 Generating shell completions...");
+  console.log("🔧 Generating shell completions...");
 
-	// Ensure completions directory exists
-	const completionsDir = join(projectRoot, "completions");
-	if (!existsSync(completionsDir)) {
-		mkdirSync(completionsDir, { recursive: true });
-	}
+  // Ensure completions directory exists
+  const completionsDir = join(projectRoot, "completions");
+  if (!existsSync(completionsDir)) {
+    mkdirSync(completionsDir, { recursive: true });
+  }
 
-	try {
-		// Import domains module first to register custom domains (login, completion, etc.)
-		// This populates the customDomains registry before generators access it
-		await import("../src/domains/index.js");
+  try {
+    // Import domains module first to register custom domains (login, completion, etc.)
+    // This populates the customDomains registry before generators access it
+    await import("../src/domains/index.js");
 
-		// Dynamic import to load the generators
-		const { generateBashCompletion, generateZshCompletion, generateFishCompletion } =
-			await import("../src/domains/completion/generators.js");
+    // Dynamic import to load the generators
+    const {
+      generateBashCompletion,
+      generateZshCompletion,
+      generateFishCompletion,
+    } = await import("../src/domains/completion/generators.js");
 
-		// Generate bash completion
-		const bashScript = generateBashCompletion();
-		const bashPath = join(completionsDir, "xcsh.bash");
-		writeFileSync(bashPath, bashScript, "utf-8");
-		console.log(`✓ Generated: ${bashPath}`);
+    // Generate bash completion
+    const bashScript = generateBashCompletion();
+    const bashPath = join(completionsDir, "xcsh.bash");
+    writeFileSync(bashPath, bashScript, "utf-8");
+    console.log(`✓ Generated: ${bashPath}`);
 
-		// Generate zsh completion
-		const zshScript = generateZshCompletion();
-		const zshPath = join(completionsDir, "_xcsh");
-		writeFileSync(zshPath, zshScript, "utf-8");
-		console.log(`✓ Generated: ${zshPath}`);
+    // Generate zsh completion
+    const zshScript = generateZshCompletion();
+    const zshPath = join(completionsDir, "_xcsh");
+    writeFileSync(zshPath, zshScript, "utf-8");
+    console.log(`✓ Generated: ${zshPath}`);
 
-		// Generate fish completion
-		const fishScript = generateFishCompletion();
-		const fishPath = join(completionsDir, "xcsh.fish");
-		writeFileSync(fishPath, fishScript, "utf-8");
-		console.log(`✓ Generated: ${fishPath}`);
+    // Generate fish completion
+    const fishScript = generateFishCompletion();
+    const fishPath = join(completionsDir, "xcsh.fish");
+    writeFileSync(fishPath, fishScript, "utf-8");
+    console.log(`✓ Generated: ${fishPath}`);
 
-		console.log("✅ Shell completions generated successfully!");
-	} catch (error) {
-		console.error("❌ Failed to generate completions:", error);
-		process.exit(1);
-	}
+    console.log("✅ Shell completions generated successfully!");
+  } catch (error) {
+    console.error("❌ Failed to generate completions:", error);
+    process.exit(1);
+  }
 }
 
 main();

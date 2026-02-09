@@ -12,24 +12,24 @@
 
 // Re-export types and classes
 export {
-	Profiler,
-	getProfiler,
-	initProfiler,
-	type ProfileSpan,
-	type NetworkSpan,
-	type MemorySnapshot,
-	type Bottleneck,
-	type ProfileReport,
-	type ProfileLevel,
-	type ProfilerConfig,
+  Profiler,
+  getProfiler,
+  initProfiler,
+  type ProfileSpan,
+  type NetworkSpan,
+  type MemorySnapshot,
+  type Bottleneck,
+  type ProfileReport,
+  type ProfileLevel,
+  type ProfilerConfig,
 } from "./profiler.js";
 
 export {
-	formatReport,
-	formatReportJson,
-	formatReportText,
-	formatReportSummary,
-	type ReportFormat,
+  formatReport,
+  formatReportJson,
+  formatReportText,
+  formatReportSummary,
+  type ReportFormat,
 } from "./reporter.js";
 
 export { renderWaterfall, renderCompactWaterfall } from "./waterfall.js";
@@ -44,51 +44,51 @@ import { renderWaterfall, renderCompactWaterfall } from "./waterfall.js";
  * Call this at the end of startup to output the profiling results.
  */
 export function printProfileReport(): void {
-	const profiler = getProfiler();
-	if (!profiler.isEnabled()) return;
+  const profiler = getProfiler();
+  if (!profiler.isEnabled()) return;
 
-	const report = profiler.generateReport();
-	const level = profiler.getLevel();
+  const report = profiler.generateReport();
+  const level = profiler.getLevel();
 
-	let output: string;
-	switch (level) {
-		case "full":
-			output = renderWaterfall(report);
-			break;
-		case "detailed":
-			output = formatReportText(report);
-			break;
-		case "basic":
-			output = renderCompactWaterfall(report);
-			break;
-		default:
-			return;
-	}
+  let output: string;
+  switch (level) {
+    case "full":
+      output = renderWaterfall(report);
+      break;
+    case "detailed":
+      output = formatReportText(report);
+      break;
+    case "basic":
+      output = renderCompactWaterfall(report);
+      break;
+    default:
+      return;
+  }
 
-	console.error("\n" + output);
+  console.error("\n" + output);
 }
 
 /**
  * Get profile report as JSON string (for external tools)
  */
 export function getProfileReportJson(): string | null {
-	const profiler = getProfiler();
-	if (!profiler.isEnabled()) return null;
+  const profiler = getProfiler();
+  if (!profiler.isEnabled()) return null;
 
-	const report = profiler.generateReport();
-	return formatReport(report, "json");
+  const report = profiler.generateReport();
+  return formatReport(report, "json");
 }
 
 /**
  * Check if profiling is enabled
  */
 export function isProfilingEnabled(): boolean {
-	return getProfiler().isEnabled();
+  return getProfiler().isEnabled();
 }
 
 /**
  * Get current profiling level
  */
 export function getProfilingLevel(): ProfileLevel {
-	return getProfiler().getLevel();
+  return getProfiler().getLevel();
 }

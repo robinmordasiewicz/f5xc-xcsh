@@ -10,49 +10,49 @@
  * Works for domains, subcommands, actions, and flags
  */
 export interface CompletionNode {
-	/** Node name (domain, command, or action) */
-	name: string;
+  /** Node name (domain, command, or action) */
+  name: string;
 
-	/** Short description for completion display (~60 chars) */
-	description: string;
+  /** Short description for completion display (~60 chars) */
+  description: string;
 
-	/** Alternative names that resolve to this node */
-	aliases?: string[];
+  /** Alternative names that resolve to this node */
+  aliases?: string[];
 
-	/** Child nodes (subcommands, actions, nested commands) */
-	children?: Map<string, CompletionNode>;
+  /** Child nodes (subcommands, actions, nested commands) */
+  children?: Map<string, CompletionNode>;
 
-	/** Available flags at this level */
-	flags?: CompletionFlag[];
+  /** Available flags at this level */
+  flags?: CompletionFlag[];
 
-	/** Hide from completion suggestions */
-	hidden?: boolean;
+  /** Hide from completion suggestions */
+  hidden?: boolean;
 
-	/** Source type for debugging/prioritization */
-	source?: "custom" | "api" | "extension";
+  /** Source type for debugging/prioritization */
+  source?: "custom" | "api" | "extension";
 }
 
 /**
  * Flag definition for completion
  */
 export interface CompletionFlag {
-	/** Flag name (e.g., "--namespace", "-ns") */
-	name: string;
+  /** Flag name (e.g., "--namespace", "-ns") */
+  name: string;
 
-	/** Short description for completion display */
-	description: string;
+  /** Short description for completion display */
+  description: string;
 
-	/** Short alias (e.g., "-n" for "--namespace") */
-	shortName?: string;
+  /** Short alias (e.g., "-n" for "--namespace") */
+  shortName?: string;
 
-	/** Flag expects a value argument */
-	hasValue?: boolean;
+  /** Flag expects a value argument */
+  hasValue?: boolean;
 
-	/** Predefined value completions */
-	valueCompletions?: string[];
+  /** Predefined value completions */
+  valueCompletions?: string[];
 
-	/** Flag is required */
-	required?: boolean;
+  /** Flag is required */
+  required?: boolean;
 }
 
 /**
@@ -74,12 +74,12 @@ export type ShellType = "bash" | "zsh" | "fish";
  * Completion suggestion for REPL display
  */
 export interface CompletionSuggestion {
-	/** Text to insert */
-	text: string;
+  /** Text to insert */
+  text: string;
 
-	/** Description to display */
-	description: string;
+  /** Description to display */
+  description: string;
 
-	/** Category for grouping */
-	category: "domain" | "command" | "subcommand" | "action" | "flag" | "value";
+  /** Category for grouping */
+  category: "domain" | "command" | "subcommand" | "action" | "flag" | "value";
 }

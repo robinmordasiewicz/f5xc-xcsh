@@ -10,46 +10,46 @@
  * Each group contains all equivalent forms of a flag
  */
 export const FLAG_ALIAS_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
-	// Common flags
-	["--namespace"],
-	["--output"],
-	["--name"],
-	["--url"],
-	["--limit"],
-	["--label"],
-	["--show-labels"],
-	["--force"],
-	["--cascade"],
-	// Creation flags for healthcheck
-	["--type"],
-	["--interval"],
-	["--timeout"],
-	["--healthy-threshold"],
-	["--unhealthy-threshold"],
-	["--path"],
-	["--expected-status"],
-	["--host-header"],
-	["--use-origin-server-name"],
-	["--use-http2"],
-	// Creation flags for origin_pool
-	["--port"],
-	["--automatic-port"],
-	["--lb-port"],
-	["--public-ip"],
-	["--public-name"],
-	["--private-ip"],
-	["--private-name"],
-	["--k8s-service"],
-	["--consul-service"],
-	["--custom-endpoint"],
-	["--vn-private-ip"],
-	["--vn-private-name"],
-	["--cbip-service"],
-	["--algorithm"],
-	["--health-check"],
-	["--no-tls"],
-	["--use-tls"],
-	["--site"],
+  // Common flags
+  ["--namespace"],
+  ["--output"],
+  ["--name"],
+  ["--url"],
+  ["--limit"],
+  ["--label"],
+  ["--show-labels"],
+  ["--force"],
+  ["--cascade"],
+  // Creation flags for healthcheck
+  ["--type"],
+  ["--interval"],
+  ["--timeout"],
+  ["--healthy-threshold"],
+  ["--unhealthy-threshold"],
+  ["--path"],
+  ["--expected-status"],
+  ["--host-header"],
+  ["--use-origin-server-name"],
+  ["--use-http2"],
+  // Creation flags for origin_pool
+  ["--port"],
+  ["--automatic-port"],
+  ["--lb-port"],
+  ["--public-ip"],
+  ["--public-name"],
+  ["--private-ip"],
+  ["--private-name"],
+  ["--k8s-service"],
+  ["--consul-service"],
+  ["--custom-endpoint"],
+  ["--vn-private-ip"],
+  ["--vn-private-name"],
+  ["--cbip-service"],
+  ["--algorithm"],
+  ["--health-check"],
+  ["--no-tls"],
+  ["--use-tls"],
+  ["--site"],
 ];
 
 /**
@@ -57,14 +57,14 @@ export const FLAG_ALIAS_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
  * This allows quick lookup of all aliases for any flag
  */
 export function buildFlagAliasLookup(): Map<string, Set<string>> {
-	const lookup = new Map<string, Set<string>>();
-	for (const group of FLAG_ALIAS_GROUPS) {
-		const allForms = new Set(group);
-		for (const flag of group) {
-			lookup.set(flag, allForms);
-		}
-	}
-	return lookup;
+  const lookup = new Map<string, Set<string>>();
+  for (const group of FLAG_ALIAS_GROUPS) {
+    const allForms = new Set(group);
+    for (const flag of group) {
+      lookup.set(flag, allForms);
+    }
+  }
+  return lookup;
 }
 
 /**

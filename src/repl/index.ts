@@ -8,10 +8,10 @@ export { ContextPath, ContextValidator } from "./context.js";
 export { HistoryManager, getHistoryFilePath } from "./history.js";
 export { REPLSession, createSession, type SessionConfig } from "./session.js";
 export {
-	buildPlainPrompt,
-	buildColoredPrompt,
-	getPromptParts,
-	type PromptParts,
+  buildPlainPrompt,
+  buildColoredPrompt,
+  getPromptParts,
+  type PromptParts,
 } from "./prompt.js";
 
 // Main application
@@ -28,13 +28,13 @@ export * from "./completion/index.js";
 
 // Help system
 export {
-	formatRootHelp,
-	formatDomainHelp,
-	formatActionHelp,
-	formatTopicHelp,
-	formatGlobalFlags,
-	formatEnvironmentVariables,
-	formatDomainsHelp,
-	formatActionsHelp,
-	formatNavigationHelp,
+  formatRootHelp,
+  formatDomainHelp,
+  formatActionHelp,
+  formatTopicHelp,
+  formatGlobalFlags,
+  formatEnvironmentVariables,
+  formatDomainsHelp,
+  formatActionsHelp,
+  formatNavigationHelp,
 } from "./help.js";

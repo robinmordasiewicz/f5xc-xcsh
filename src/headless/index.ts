@@ -6,21 +6,21 @@
 
 export { HeadlessController } from "./controller.js";
 export {
-	// Types
-	type HeadlessInput,
-	type HeadlessInputType,
-	type HeadlessOutput,
-	type HeadlessOutputType,
-	type HeadlessOutputFormat,
-	type HeadlessSessionState,
-	type CompletionSuggestion,
-	// Functions
-	parseInput,
-	formatOutput,
-	createOutputMessage,
-	createPromptMessage,
-	createCompletionResponse,
-	createErrorMessage,
-	createEventMessage,
-	createExitMessage,
+  // Types
+  type HeadlessInput,
+  type HeadlessInputType,
+  type HeadlessOutput,
+  type HeadlessOutputType,
+  type HeadlessOutputFormat,
+  type HeadlessSessionState,
+  type CompletionSuggestion,
+  // Functions
+  parseInput,
+  formatOutput,
+  createOutputMessage,
+  createPromptMessage,
+  createCompletionResponse,
+  createErrorMessage,
+  createEventMessage,
+  createExitMessage,
 } from "./protocol.js";

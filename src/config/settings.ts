@@ -15,10 +15,10 @@ import { paths } from "./paths.js";
  * Used for both validation and help text generation.
  */
 export interface LogoModeDefinition {
-	/** Mode identifier */
-	mode: string;
-	/** Human-readable description */
-	description: string;
+  /** Mode identifier */
+  mode: string;
+  /** Human-readable description */
+  description: string;
 }
 
 /**
@@ -26,12 +26,12 @@ export interface LogoModeDefinition {
  * This is the canonical definition - used for validation and help generation.
  */
 export const LOGO_MODES: readonly LogoModeDefinition[] = [
-	{
-		mode: "image",
-		description: "Image if terminal supports, else ASCII (default)",
-	},
-	{ mode: "ascii", description: "ASCII art only" },
-	{ mode: "none", description: "No logo" },
+  {
+    mode: "image",
+    description: "Image if terminal supports, else ASCII (default)",
+  },
+  { mode: "ascii", description: "ASCII art only" },
+  { mode: "none", description: "No logo" },
 ] as const;
 
 /**
@@ -50,10 +50,10 @@ export const LOGO_MODE_HELP = LOGO_MODES.map((m) => m.mode).join(", ");
  * Single source of truth for completion resource display modes.
  */
 export interface CompletionModeDefinition {
-	/** Mode identifier */
-	mode: string;
-	/** Human-readable description */
-	description: string;
+  /** Mode identifier */
+  mode: string;
+  /** Human-readable description */
+  description: string;
 }
 
 /**
@@ -61,19 +61,19 @@ export interface CompletionModeDefinition {
  * This is the canonical definition - used for validation and help generation.
  */
 export const COMPLETION_MODES: readonly CompletionModeDefinition[] = [
-	{
-		mode: "standard",
-		description:
-			"Show primary and CRUD resources with valid descriptions (default)",
-	},
-	{
-		mode: "all",
-		description: "Show all discovered resources",
-	},
-	{
-		mode: "primary",
-		description: "Show only primary resources",
-	},
+  {
+    mode: "standard",
+    description:
+      "Show primary and CRUD resources with valid descriptions (default)",
+  },
+  {
+    mode: "all",
+    description: "Show all discovered resources",
+  },
+  {
+    mode: "primary",
+    description: "Show only primary resources",
+  },
 ] as const;
 
 /**
@@ -86,7 +86,7 @@ export type CompletionMode = (typeof COMPLETION_MODES)[number]["mode"];
  * Automatically derived from COMPLETION_MODES constant
  */
 export const COMPLETION_MODE_HELP = COMPLETION_MODES.map((m) => m.mode).join(
-	", ",
+  ", ",
 );
 
 /**
@@ -94,10 +94,10 @@ export const COMPLETION_MODE_HELP = COMPLETION_MODES.map((m) => m.mode).join(
  * Single source of truth for safety warning display modes.
  */
 export interface SafetyWarningModeDefinition {
-	/** Mode identifier */
-	mode: string;
-	/** Human-readable description */
-	description: string;
+  /** Mode identifier */
+  mode: string;
+  /** Human-readable description */
+  description: string;
 }
 
 /**
@@ -105,18 +105,18 @@ export interface SafetyWarningModeDefinition {
  * This is the canonical definition - used for validation and help generation.
  */
 export const SAFETY_WARNING_MODES: readonly SafetyWarningModeDefinition[] = [
-	{
-		mode: "enabled",
-		description: "Show all warnings (default)",
-	},
-	{
-		mode: "high-only",
-		description: "Show only HIGH DANGER warnings",
-	},
-	{
-		mode: "disabled",
-		description: "Show no warnings",
-	},
+  {
+    mode: "enabled",
+    description: "Show all warnings (default)",
+  },
+  {
+    mode: "high-only",
+    description: "Show only HIGH DANGER warnings",
+  },
+  {
+    mode: "disabled",
+    description: "Show no warnings",
+  },
 ] as const;
 
 /**
@@ -129,28 +129,28 @@ export type SafetyWarningMode = (typeof SAFETY_WARNING_MODES)[number]["mode"];
  * Automatically derived from SAFETY_WARNING_MODES constant
  */
 export const SAFETY_WARNING_MODE_HELP = SAFETY_WARNING_MODES.map(
-	(m) => m.mode,
+  (m) => m.mode,
 ).join(", ");
 
 /**
  * Application settings from .xcshconfig file.
  */
 export interface AppSettings {
-	/** Logo display mode */
-	logo: LogoDisplayMode;
-	/** Completion resource display mode */
-	completionMode: CompletionMode;
-	/** Safety warning display mode */
-	safetyWarnings: SafetyWarningMode;
+  /** Logo display mode */
+  logo: LogoDisplayMode;
+  /** Completion resource display mode */
+  completionMode: CompletionMode;
+  /** Safety warning display mode */
+  safetyWarnings: SafetyWarningMode;
 }
 
 /**
  * Default settings used when config file doesn't exist or values are missing.
  */
 export const DEFAULT_SETTINGS: AppSettings = {
-	logo: "image",
-	completionMode: "standard",
-	safetyWarnings: "enabled",
+  logo: "image",
+  completionMode: "standard",
+  safetyWarnings: "enabled",
 };
 
 /**
@@ -158,14 +158,14 @@ export const DEFAULT_SETTINGS: AppSettings = {
  * Uses LOGO_MODES as single source of truth.
  */
 export function isValidLogoMode(mode: string): mode is LogoDisplayMode {
-	return LOGO_MODES.some((m) => m.mode === mode);
+  return LOGO_MODES.some((m) => m.mode === mode);
 }
 
 /**
  * Get logo mode description for help text.
  */
 export function getLogoModeDescription(mode: string): string | undefined {
-	return LOGO_MODES.find((m) => m.mode === mode)?.description;
+  return LOGO_MODES.find((m) => m.mode === mode)?.description;
 }
 
 /**
@@ -173,14 +173,14 @@ export function getLogoModeDescription(mode: string): string | undefined {
  * Uses COMPLETION_MODES as single source of truth.
  */
 export function isValidCompletionMode(mode: string): mode is CompletionMode {
-	return COMPLETION_MODES.some((m) => m.mode === mode);
+  return COMPLETION_MODES.some((m) => m.mode === mode);
 }
 
 /**
  * Get completion mode description for help text.
  */
 export function getCompletionModeDescription(mode: string): string | undefined {
-	return COMPLETION_MODES.find((m) => m.mode === mode)?.description;
+  return COMPLETION_MODES.find((m) => m.mode === mode)?.description;
 }
 
 /**
@@ -188,18 +188,18 @@ export function getCompletionModeDescription(mode: string): string | undefined {
  * Uses SAFETY_WARNING_MODES as single source of truth.
  */
 export function isValidSafetyWarningMode(
-	mode: string,
+  mode: string,
 ): mode is SafetyWarningMode {
-	return SAFETY_WARNING_MODES.some((m) => m.mode === mode);
+  return SAFETY_WARNING_MODES.some((m) => m.mode === mode);
 }
 
 /**
  * Get safety warning mode description for help text.
  */
 export function getSafetyWarningModeDescription(
-	mode: string,
+  mode: string,
 ): string | undefined {
-	return SAFETY_WARNING_MODES.find((m) => m.mode === mode)?.description;
+  return SAFETY_WARNING_MODES.find((m) => m.mode === mode)?.description;
 }
 
 /**
@@ -207,29 +207,29 @@ export function getSafetyWarningModeDescription(
  * Invalid values are ignored and defaults are used.
  */
 function validateSettings(
-	settings: Partial<AppSettings>,
+  settings: Partial<AppSettings>,
 ): Partial<AppSettings> {
-	const validated: Partial<AppSettings> = {};
+  const validated: Partial<AppSettings> = {};
 
-	if (settings.logo && isValidLogoMode(settings.logo)) {
-		validated.logo = settings.logo;
-	}
+  if (settings.logo && isValidLogoMode(settings.logo)) {
+    validated.logo = settings.logo;
+  }
 
-	if (
-		settings.completionMode &&
-		isValidCompletionMode(settings.completionMode)
-	) {
-		validated.completionMode = settings.completionMode;
-	}
+  if (
+    settings.completionMode &&
+    isValidCompletionMode(settings.completionMode)
+  ) {
+    validated.completionMode = settings.completionMode;
+  }
 
-	if (
-		settings.safetyWarnings &&
-		isValidSafetyWarningMode(settings.safetyWarnings)
-	) {
-		validated.safetyWarnings = settings.safetyWarnings;
-	}
+  if (
+    settings.safetyWarnings &&
+    isValidSafetyWarningMode(settings.safetyWarnings)
+  ) {
+    validated.safetyWarnings = settings.safetyWarnings;
+  }
 
-	return validated;
+  return validated;
 }
 
 /**
@@ -247,20 +247,20 @@ function validateSettings(
  * @returns Merged settings with defaults for missing values
  */
 export async function loadSettings(): Promise<AppSettings> {
-	const configPath = paths.settings;
+  const configPath = paths.settings;
 
-	try {
-		const content = await fs.readFile(configPath, "utf-8");
-		const parsed = YAML.parse(content) as Partial<AppSettings>;
+  try {
+    const content = await fs.readFile(configPath, "utf-8");
+    const parsed = YAML.parse(content) as Partial<AppSettings>;
 
-		return {
-			...DEFAULT_SETTINGS,
-			...validateSettings(parsed),
-		};
-	} catch {
-		// File doesn't exist or is invalid - use defaults
-		return DEFAULT_SETTINGS;
-	}
+    return {
+      ...DEFAULT_SETTINGS,
+      ...validateSettings(parsed),
+    };
+  } catch {
+    // File doesn't exist or is invalid - use defaults
+    return DEFAULT_SETTINGS;
+  }
 }
 
 /**
@@ -268,28 +268,25 @@ export async function loadSettings(): Promise<AppSettings> {
  * Uses defaults if file doesn't exist or can't be read.
  */
 export function loadSettingsSync(): AppSettings {
-	const configPath = paths.settings;
+  const configPath = paths.settings;
 
-	try {
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
-		const content = require("fs").readFileSync(
-			configPath,
-			"utf-8",
-		) as string;
-		const parsed = YAML.parse(content) as Partial<AppSettings>;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const content = require("fs").readFileSync(configPath, "utf-8") as string;
+    const parsed = YAML.parse(content) as Partial<AppSettings>;
 
-		return {
-			...DEFAULT_SETTINGS,
-			...validateSettings(parsed),
-		};
-	} catch {
-		return DEFAULT_SETTINGS;
-	}
+    return {
+      ...DEFAULT_SETTINGS,
+      ...validateSettings(parsed),
+    };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
 }
 
 /**
  * Get the path to the config file.
  */
 export function getConfigPath(): string {
-	return paths.settings;
+  return paths.settings;
 }

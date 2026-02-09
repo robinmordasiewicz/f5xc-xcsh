@@ -7,35 +7,35 @@
 
 import { ParsedCreationFlags } from "../flag-parser.js";
 import {
-	buildHealthcheckRequest,
-	validateHealthcheckFlags,
-	HealthcheckRequestBody,
+  buildHealthcheckRequest,
+  validateHealthcheckFlags,
+  HealthcheckRequestBody,
 } from "./healthcheck-builder.js";
 import {
-	buildOriginPoolRequest,
-	validateOriginPoolFlags,
-	OriginPoolRequestBody,
+  buildOriginPoolRequest,
+  validateOriginPoolFlags,
+  OriginPoolRequestBody,
 } from "./origin-pool-builder.js";
 import {
-	buildAppFirewallRequest,
-	validateAppFirewallFlags,
-	AppFirewallRequestBody,
+  buildAppFirewallRequest,
+  validateAppFirewallFlags,
+  AppFirewallRequestBody,
 } from "./app-firewall-builder.js";
 
 /**
  * Generic validation result
  */
 export interface ValidationResult {
-	valid: boolean;
-	errors: string[];
+  valid: boolean;
+  errors: string[];
 }
 
 /**
  * Resource builder interface
  */
 export interface ResourceBuilder<T = Record<string, unknown>> {
-	build: (flags: ParsedCreationFlags, namespace: string) => T;
-	validate: (flags: ParsedCreationFlags) => ValidationResult;
+  build: (flags: ParsedCreationFlags, namespace: string) => T;
+  validate: (flags: ParsedCreationFlags) => ValidationResult;
 }
 
 /**
@@ -43,30 +43,30 @@ export interface ResourceBuilder<T = Record<string, unknown>> {
  * Using explicit type casting to allow specific return types to satisfy the generic interface
  */
 const BUILDERS_REGISTRY: Record<string, ResourceBuilder> = {
-	healthcheck: {
-		build: (flags, namespace) =>
-			buildHealthcheckRequest(flags, namespace) as unknown as Record<
-				string,
-				unknown
-			>,
-		validate: validateHealthcheckFlags,
-	},
-	origin_pool: {
-		build: (flags, namespace) =>
-			buildOriginPoolRequest(flags, namespace) as unknown as Record<
-				string,
-				unknown
-			>,
-		validate: validateOriginPoolFlags,
-	},
-	app_firewall: {
-		build: (flags, namespace) =>
-			buildAppFirewallRequest(flags, namespace) as unknown as Record<
-				string,
-				unknown
-			>,
-		validate: validateAppFirewallFlags,
-	},
+  healthcheck: {
+    build: (flags, namespace) =>
+      buildHealthcheckRequest(flags, namespace) as unknown as Record<
+        string,
+        unknown
+      >,
+    validate: validateHealthcheckFlags,
+  },
+  origin_pool: {
+    build: (flags, namespace) =>
+      buildOriginPoolRequest(flags, namespace) as unknown as Record<
+        string,
+        unknown
+      >,
+    validate: validateOriginPoolFlags,
+  },
+  app_firewall: {
+    build: (flags, namespace) =>
+      buildAppFirewallRequest(flags, namespace) as unknown as Record<
+        string,
+        unknown
+      >,
+    validate: validateAppFirewallFlags,
+  },
 };
 
 /**
@@ -76,9 +76,9 @@ const BUILDERS_REGISTRY: Record<string, ResourceBuilder> = {
  * @returns Resource builder or undefined if not found
  */
 export function getResourceBuilder(
-	resourceType: string,
+  resourceType: string,
 ): ResourceBuilder | undefined {
-	return BUILDERS_REGISTRY[resourceType];
+  return BUILDERS_REGISTRY[resourceType];
 }
 
 /**
@@ -88,14 +88,14 @@ export function getResourceBuilder(
  * @returns true if a builder exists for this resource type
  */
 export function hasResourceBuilder(resourceType: string): boolean {
-	return resourceType in BUILDERS_REGISTRY;
+  return resourceType in BUILDERS_REGISTRY;
 }
 
 /**
  * Get list of resource types with builders
  */
 export function getBuilderResourceTypes(): string[] {
-	return Object.keys(BUILDERS_REGISTRY);
+  return Object.keys(BUILDERS_REGISTRY);
 }
 
 /**
@@ -107,15 +107,15 @@ export function getBuilderResourceTypes(): string[] {
  * @returns Built resource body or null if no builder found
  */
 export function buildResource(
-	resourceType: string,
-	flags: ParsedCreationFlags,
-	namespace: string,
+  resourceType: string,
+  flags: ParsedCreationFlags,
+  namespace: string,
 ): Record<string, unknown> | null {
-	const builder = getResourceBuilder(resourceType);
-	if (!builder) {
-		return null;
-	}
-	return builder.build(flags, namespace) as Record<string, unknown>;
+  const builder = getResourceBuilder(resourceType);
+  if (!builder) {
+    return null;
+  }
+  return builder.build(flags, namespace) as Record<string, unknown>;
 }
 
 /**
@@ -126,22 +126,22 @@ export function buildResource(
  * @returns Validation result
  */
 export function validateResourceFlags(
-	resourceType: string,
-	flags: ParsedCreationFlags,
+  resourceType: string,
+  flags: ParsedCreationFlags,
 ): ValidationResult {
-	const builder = getResourceBuilder(resourceType);
-	if (!builder) {
-		return {
-			valid: false,
-			errors: [`No builder found for resource type: ${resourceType}`],
-		};
-	}
-	return builder.validate(flags);
+  const builder = getResourceBuilder(resourceType);
+  if (!builder) {
+    return {
+      valid: false,
+      errors: [`No builder found for resource type: ${resourceType}`],
+    };
+  }
+  return builder.validate(flags);
 }
 
 // Re-export types for convenience
 export type {
-	HealthcheckRequestBody,
-	OriginPoolRequestBody,
-	AppFirewallRequestBody,
+  HealthcheckRequestBody,
+  OriginPoolRequestBody,
+  AppFirewallRequestBody,
 };

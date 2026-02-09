@@ -8,14 +8,14 @@ import { cloudstatusDomain, cloudstatusAliases } from "./cloudstatus/index.js";
 import { completionDomain } from "./completion/index.js";
 import { aiServicesDomain, aiServicesAliases } from "./ai_services/index.js";
 import {
-	subscriptionDomain,
-	subscriptionAliases,
+  subscriptionDomain,
+  subscriptionAliases,
 } from "./subscription/index.js";
 import { domainRegistry } from "../types/domains.js";
 import {
-	completionRegistry,
-	fromCustomDomain,
-	fromApiDomain,
+  completionRegistry,
+  fromCustomDomain,
+  fromApiDomain,
 } from "../completion/index.js";
 
 // Register custom domains
@@ -29,7 +29,7 @@ customDomains.register(subscriptionDomain);
 // Populate unified completion registry
 // Custom domains first (higher priority)
 for (const domain of customDomains.all()) {
-	completionRegistry.registerDomain(fromCustomDomain(domain));
+  completionRegistry.registerDomain(fromCustomDomain(domain));
 }
 
 // API-generated domains
@@ -37,14 +37,14 @@ for (const domain of customDomains.all()) {
 const excludedApiDomains = new Set(["ai_services"]);
 
 for (const [, info] of domainRegistry) {
-	// Skip if already registered by custom domain (custom takes precedence)
-	// Skip if explicitly excluded (replaced by custom domain with different name)
-	if (
-		!completionRegistry.has(info.name) &&
-		!excludedApiDomains.has(info.name)
-	) {
-		completionRegistry.registerDomain(fromApiDomain(info));
-	}
+  // Skip if already registered by custom domain (custom takes precedence)
+  // Skip if explicitly excluded (replaced by custom domain with different name)
+  if (
+    !completionRegistry.has(info.name) &&
+    !excludedApiDomains.has(info.name)
+  ) {
+    completionRegistry.registerDomain(fromApiDomain(info));
+  }
 }
 
 // Domain alias mapping (alias -> canonical name)
@@ -52,31 +52,31 @@ const domainAliases = new Map<string, string>();
 
 // Register cloudstatus aliases
 for (const alias of cloudstatusAliases) {
-	domainAliases.set(alias, "cloudstatus");
-	completionRegistry.registerAlias(alias, "cloudstatus");
+  domainAliases.set(alias, "cloudstatus");
+  completionRegistry.registerAlias(alias, "cloudstatus");
 }
 
 // Register ai_services aliases
 for (const alias of aiServicesAliases) {
-	domainAliases.set(alias, "ai_services");
-	completionRegistry.registerAlias(alias, "ai_services");
+  domainAliases.set(alias, "ai_services");
+  completionRegistry.registerAlias(alias, "ai_services");
 }
 
 // Register subscription aliases
 for (const alias of subscriptionAliases) {
-	domainAliases.set(alias, "subscription");
-	completionRegistry.registerAlias(alias, "subscription");
+  domainAliases.set(alias, "subscription");
+  completionRegistry.registerAlias(alias, "subscription");
 }
 
 // Export registry and types
 export { customDomains } from "./registry.js";
 export type {
-	DomainDefinition,
-	SubcommandGroup,
-	CommandDefinition,
-	CommandHandler,
-	CompletionHandler,
-	DomainCommandResult,
+  DomainDefinition,
+  SubcommandGroup,
+  CommandDefinition,
+  CommandHandler,
+  CompletionHandler,
+  DomainCommandResult,
 } from "./registry.js";
 export { successResult, errorResult } from "./registry.js";
 
@@ -94,27 +94,27 @@ export { subscriptionDomain } from "./subscription/index.js";
  * Resolve domain alias to canonical name
  */
 export function resolveDomainAlias(name: string): string {
-	return domainAliases.get(name) ?? name;
+  return domainAliases.get(name) ?? name;
 }
 
 /**
  * Check if a domain name is a custom domain (including aliases)
  */
 export function isCustomDomain(name: string): boolean {
-	const canonical = resolveDomainAlias(name);
-	return customDomains.has(canonical);
+  const canonical = resolveDomainAlias(name);
+  return customDomains.has(canonical);
 }
 
 /**
  * Get list of all custom domain names
  */
 export function getCustomDomainNames(): string[] {
-	return customDomains.list();
+  return customDomains.list();
 }
 
 /**
  * Get list of all domain aliases
  */
 export function getDomainAliases(): Map<string, string> {
-	return new Map(domainAliases);
+  return new Map(domainAliases);
 }

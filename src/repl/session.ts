@@ -7,9 +7,9 @@ import { ContextPath, ContextValidator } from "./context.js";
 import { HistoryManager, getHistoryFilePath } from "./history.js";
 import { ENV_PREFIX } from "../branding/index.js";
 import {
-	getProfileManager,
-	type Profile,
-	type ProfileManager,
+  getProfileManager,
+  type Profile,
+  type ProfileManager,
 } from "../profile/index.js";
 import { APIClient } from "../api/index.js";
 import type { OutputFormat } from "../output/index.js";
@@ -26,11 +26,11 @@ import { getProfiler } from "../profiling/index.js";
  * - 'none': No authentication configured
  */
 export type AuthSource =
-	| "env"
-	| "profile"
-	| "mixed"
-	| "profile-fallback"
-	| "none";
+  | "env"
+  | "profile"
+  | "mixed"
+  | "profile-fallback"
+  | "none";
 
 /**
  * Connection status tracking for graceful offline handling
@@ -45,11 +45,11 @@ export type ConnectionStatus = "connected" | "offline" | "error" | "unknown";
  * Configuration for creating a REPL session
  */
 export interface SessionConfig {
-	namespace?: string;
-	serverUrl?: string;
-	apiToken?: string;
-	outputFormat?: OutputFormat;
-	debug?: boolean;
+  namespace?: string;
+  serverUrl?: string;
+  apiToken?: string;
+  outputFormat?: OutputFormat;
+  debug?: boolean;
 }
 
 /**
@@ -61,761 +61,742 @@ const NAMESPACE_CACHE_TTL = 5 * 60 * 1000;
  * REPLSession holds state across the REPL lifetime
  */
 export class REPLSession {
-	private _history: HistoryManager | null = null;
-	private _namespace: string;
-	private _lastExitCode: number = 0;
-	private _contextPath: ContextPath;
-	private _tenant: string = "";
-	private _username: string = "";
-	private _validator: ContextValidator;
-	private _serverUrl: string = "";
-	private _apiToken: string = "";
-	private _apiClient: APIClient | null = null;
-	private _outputFormat: OutputFormat = "table";
-	private _debug: boolean = false;
-	private _profileManager: ProfileManager;
-	private _activeProfile: Profile | null = null;
-	private _activeProfileName: string | null = null;
-	private _namespaceCache: string[] = [];
-	private _namespaceCacheTime: number = 0;
-
-	// Token validation state
-	private _tokenValidated: boolean = false;
-	private _validationError: string | null = null;
-
-	// Authentication source tracking
-	private _authSource: AuthSource = "none";
-
-	// Fallback tracking for improved error messages
-	private _fallbackAttempted: boolean = false;
-	private _fallbackReason: string | null = null;
-
-	// Connection status for graceful offline handling
-	private _connectionStatus: ConnectionStatus = "unknown";
-
-	// Track if environment variables are present (for display purposes)
-	private _envVarsPresent: boolean = false;
-
-	constructor(config: SessionConfig = {}) {
-		this._namespace = config.namespace ?? this.getDefaultNamespace();
-		this._contextPath = new ContextPath();
-		this._validator = new ContextValidator();
-		this._profileManager = getProfileManager();
-
-		// Check for environment variables
-		const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
-		const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
-
-		// Track if env vars are present (for display purposes)
-		this._envVarsPresent = !!(envUrl || envToken);
-
-		// Set initial values from env vars (may be overridden by profile in loadActiveProfile)
-		this._serverUrl = config.serverUrl ?? envUrl ?? "";
-		this._apiToken = config.apiToken ?? envToken ?? "";
-
-		// Track auth source based on environment variables
-		// (will be updated in loadActiveProfile if profile is used)
-		if (envUrl && envToken) {
-			this._authSource = "env";
-		} else if (envUrl || envToken) {
-			this._authSource = "mixed"; // Partial env, will merge with profile
-		}
-		// else remains "none", will be set to "profile" in loadActiveProfile if applicable
-
-		// Output format priority: config > env var > default (table)
-		this._outputFormat =
-			config.outputFormat ?? getOutputFormatFromEnv() ?? "table";
-		this._debug =
-			config.debug ?? process.env[`${ENV_PREFIX}_DEBUG`] === "true";
-
-		// Extract tenant from server URL if available
-		if (this._serverUrl) {
-			this._tenant = this.extractTenant(this._serverUrl);
-		}
-
-		// Create API client if we have server URL
-		if (this._serverUrl) {
-			this._apiClient = new APIClient({
-				serverUrl: this._serverUrl,
-				apiToken: this._apiToken,
-				debug: this._debug,
-			});
-		}
-	}
-
-	/**
-	 * Initialize the session (async operations)
-	 * Uses fast-fail connectivity check to avoid long waits when API is unreachable.
-	 */
-	async initialize(): Promise<void> {
-		const profiler = getProfiler();
-
-		// Initialize history manager
-		const historySpan = profiler.startSpan(
-			"history_load",
-			"History Loading",
-		);
-		try {
-			this._history = await HistoryManager.create(
-				getHistoryFilePath(),
-				1000,
-			);
-			profiler.endSpan(historySpan, { status: "loaded" });
-		} catch (error) {
-			console.error("Warning: could not initialize history:", error);
-			this._history = new HistoryManager(getHistoryFilePath(), 1000);
-			profiler.endSpan(historySpan, {
-				status: "fallback",
-				error: String(error),
-			});
-		}
-
-		// Load active profile if one is set
-		const profileSpan = profiler.startSpan(
-			"profile_load",
-			"Profile Loading",
-		);
-		await this.loadActiveProfile();
-		profiler.endSpan(profileSpan, { profileName: this._activeProfileName });
-
-		// Validate token and fetch user info if connected and authenticated
-		if (this._apiClient?.isAuthenticated()) {
-			// Fast connectivity check to detect offline mode early
-			const connectivitySpan = profiler.startSpan(
-				"connectivity_check",
-				"Connectivity Check",
-			);
-			const connectivity = await this._apiClient.checkConnectivity();
-			profiler.endSpan(connectivitySpan, {
-				reachable: connectivity.reachable,
-				latencyMs: connectivity.latencyMs,
-			});
-
-			if (!connectivity.reachable) {
-				// API is unreachable - enter offline mode immediately
-				this._connectionStatus = "offline";
-				this._validationError =
-					"API endpoint unreachable - running in offline mode";
-				debugProtocol.auth("connectivity_failed", {
-					serverUrl: this._serverUrl,
-					status: "offline",
-				});
-				return; // Fast exit - don't block startup
-			}
-
-			// API is reachable - validate token with startup mode (fast timeout, no retries)
-			const tokenSpan = profiler.startSpan(
-				"token_validation",
-				"Token Validation",
-			);
-			debugProtocol.auth("token_validation_start", {
-				serverUrl: this._serverUrl,
-				hasApiClient: true,
-				authSource: this._authSource,
-				startupMode: true,
-			});
-
-			const result = await this._apiClient.validateToken({
-				startupMode: true,
-			});
-			this._tokenValidated = result.valid;
-			this._validationError = result.error ?? null;
-
-			// Update connection status based on validation result
-			if (result.valid) {
-				this._connectionStatus = "connected";
-			} else if (
-				result.error?.includes("unreachable") ||
-				result.error?.includes("timed out")
-			) {
-				this._connectionStatus = "offline";
-			} else {
-				this._connectionStatus = "error";
-			}
-
-			profiler.endSpan(tokenSpan, {
-				valid: result.valid,
-				error: result.error,
-				connectionStatus: this._connectionStatus,
-			});
-
-			debugProtocol.auth("token_validation_complete", {
-				valid: result.valid,
-				error: result.error,
-				tokenValidated: this._tokenValidated,
-				validationError: this._validationError,
-				authSource: this._authSource,
-				connectionStatus: this._connectionStatus,
-			});
-
-			// Skip fallback if in offline mode - no point trying other credentials
-			if (this._connectionStatus === "offline") {
-				return;
-			}
-
-			// Fallback logic: If env var token is invalid, try profile token
-			if (
-				!result.valid &&
-				(this._authSource === "env" || this._authSource === "mixed")
-			) {
-				// Check why fallback can or cannot happen
-				if (
-					this._activeProfile?.apiToken &&
-					this._activeProfile.apiToken !== this._apiToken
-				) {
-					// Fallback is possible - profile has different credentials
-					this._fallbackAttempted = true;
-
-					debugProtocol.auth("token_fallback_attempt", {
-						fromSource: this._authSource,
-						hasProfileToken: true,
-						profileName: this._activeProfileName,
-					});
-
-					// Try the profile token instead
-					this._apiToken = this._activeProfile.apiToken;
-
-					// Also use profile URL if we only had partial env vars (mixed mode)
-					if (
-						this._authSource === "mixed" &&
-						!process.env[`${ENV_PREFIX}_API_URL`] &&
-						this._activeProfile.apiUrl
-					) {
-						this._serverUrl = this._activeProfile.apiUrl;
-						this._tenant = this.extractTenant(
-							this._activeProfile.apiUrl,
-						);
-					}
-
-					// Recreate API client with profile credentials
-					this._apiClient = new APIClient({
-						serverUrl: this._serverUrl,
-						apiToken: this._apiToken,
-						debug: this._debug,
-					});
-
-					// Re-validate with profile token (also use startup mode)
-					const fallbackSpan = profiler.startSpan(
-						"fallback_validation",
-						"Fallback Token Validation",
-					);
-					const fallbackResult = await this._apiClient.validateToken({
-						startupMode: true,
-					});
-					profiler.endSpan(fallbackSpan, {
-						valid: fallbackResult.valid,
-					});
-					if (fallbackResult.valid) {
-						this._tokenValidated = true;
-						this._validationError = null;
-						this._authSource = "profile-fallback";
-						this._fallbackReason = null; // Fallback succeeded
-						this._connectionStatus = "connected";
-
-						debugProtocol.auth("token_fallback_success", {
-							authSource: this._authSource,
-							profileName: this._activeProfileName,
-						});
-					} else {
-						// Profile credentials also failed
-						this._fallbackReason = `Profile '${this._activeProfileName}' credentials are also invalid`;
-						this._connectionStatus = "error";
-
-						debugProtocol.auth("token_fallback_failed", {
-							error: fallbackResult.error,
-							profileName: this._activeProfileName,
-						});
-					}
-				} else if (
-					this._activeProfile?.apiToken &&
-					this._activeProfile.apiToken === this._apiToken
-				) {
-					// Profile has same token as env var - can't fallback
-					this._fallbackReason = `Profile '${this._activeProfileName}' has the same credentials - please update`;
-
-					debugProtocol.auth("token_fallback_skipped", {
-						reason: "same_token",
-						profileName: this._activeProfileName,
-					});
-				} else if (!this._activeProfile?.apiToken) {
-					// No profile token available for fallback
-					if (this._activeProfileName) {
-						this._fallbackReason = `Profile '${this._activeProfileName}' has no saved credentials`;
-					} else {
-						this._fallbackReason =
-							"No saved profiles available for fallback";
-					}
-
-					debugProtocol.auth("token_fallback_skipped", {
-						reason: "no_profile_token",
-						profileName: this._activeProfileName,
-					});
-				}
-			}
-
-			// Only fetch user info if connected and token is valid
-			if (
-				this._tokenValidated &&
-				this._connectionStatus === "connected"
-			) {
-				const userInfoSpan = profiler.startSpan(
-					"user_info",
-					"User Info Fetch",
-				);
-				await this.fetchUserInfo();
-				profiler.endSpan(userInfoSpan, { username: this._username });
-			}
-		}
-	}
-
-	/**
-	 * Fetch user info from the API
-	 */
-	private async fetchUserInfo(): Promise<void> {
-		if (!this._apiClient) return;
-
-		try {
-			const response = await this._apiClient.get<{
-				email?: string;
-				name?: string;
-				username?: string;
-			}>("/api/web/custom/user/info");
-
-			if (response.ok && response.data) {
-				this._username =
-					response.data.email ||
-					response.data.name ||
-					response.data.username ||
-					"";
-			}
-		} catch {
-			// Ignore user info fetch errors - not critical for session
-		}
-	}
-
-	/**
-	 * Load the active profile from profile manager
-	 * Profile credentials ALWAYS take priority when a profile is active.
-	 * Environment variables are only used when NO profile is active (fallback for scripts/CI).
-	 * If no active profile is set but exactly one profile exists, auto-activate it.
-	 */
-	async loadActiveProfile(): Promise<void> {
-		try {
-			let activeName = await this._profileManager.getActive();
-
-			// Auto-select single profile if no active profile is set
-			if (!activeName) {
-				const profiles = await this._profileManager.list();
-				if (profiles.length === 1 && profiles[0]) {
-					const singleProfile = profiles[0];
-					await this._profileManager.setActive(singleProfile.name);
-					activeName = singleProfile.name;
-				}
-			}
-
-			if (activeName) {
-				const profile = await this._profileManager.get(activeName);
-				if (profile) {
-					this._activeProfileName = activeName;
-					this._activeProfile = profile;
-
-					// Profile credentials ALWAYS take priority when profile is active
-					// Environment variables are only used as fallback for scripts/CI when no profile is active
-					if (profile.apiUrl) {
-						this._serverUrl = profile.apiUrl;
-						this._tenant = this.extractTenant(profile.apiUrl);
-					}
-					if (profile.apiToken) {
-						this._apiToken = profile.apiToken;
-					}
-
-					// Use profile namespace (env var can still override if set)
-					const envNamespace = process.env[`${ENV_PREFIX}_NAMESPACE`];
-					if (!envNamespace && profile.defaultNamespace) {
-						this._namespace = profile.defaultNamespace;
-					}
-
-					// Set auth source to profile since profile is active
-					this._authSource = "profile";
-
-					// Recreate API client with profile settings
-					if (this._serverUrl) {
-						this._apiClient = new APIClient({
-							serverUrl: this._serverUrl,
-							apiToken: this._apiToken,
-							debug: this._debug,
-						});
-					}
-				}
-			}
-			// If no profile is active, the constructor already set up env vars
-			// and _authSource will remain "env", "mixed", or "none"
-		} catch (error) {
-			// Log profile loading errors in debug mode, but don't fail
-			debugProtocol.error("profile_load_failed", error, {
-				activeProfile: this._activeProfileName,
-			});
-		}
-	}
-
-	/**
-	 * Get the default namespace from environment or config
-	 */
-	private getDefaultNamespace(): string {
-		return process.env[`${ENV_PREFIX}_NAMESPACE`] ?? "default";
-	}
-
-	/**
-	 * Extract tenant name from server URL
-	 */
-	private extractTenant(url: string): string {
-		try {
-			const parsed = new URL(url);
-			const hostname = parsed.hostname;
-
-			// Extract subdomain as tenant (e.g., "mycompany" from "mycompany.console.ves.volterra.io")
-			const parts = hostname.split(".");
-			if (parts.length > 0 && parts[0]) {
-				return parts[0];
-			}
-			return hostname;
-		} catch {
-			return "";
-		}
-	}
-
-	/**
-	 * Set the default namespace for the session
-	 */
-	setNamespace(ns: string): void {
-		this._namespace = ns;
-	}
-
-	/**
-	 * Get the current default namespace
-	 */
-	getNamespace(): string {
-		return this._namespace;
-	}
-
-	/**
-	 * Get the exit code of the last command
-	 */
-	getLastExitCode(): number {
-		return this._lastExitCode;
-	}
-
-	/**
-	 * Set the exit code of the last command
-	 */
-	setLastExitCode(code: number): void {
-		this._lastExitCode = code;
-	}
-
-	/**
-	 * Get the current navigation context
-	 */
-	getContextPath(): ContextPath {
-		return this._contextPath;
-	}
-
-	/**
-	 * Get the current tenant name
-	 */
-	getTenant(): string {
-		return this._tenant;
-	}
-
-	/**
-	 * Get the logged-in user's name/email
-	 */
-	getUsername(): string {
-		return this._username;
-	}
-
-	/**
-	 * Set the username (used when fetched from API)
-	 */
-	setUsername(username: string): void {
-		this._username = username;
-	}
-
-	/**
-	 * Get the context validator
-	 */
-	getValidator(): ContextValidator {
-		return this._validator;
-	}
-
-	/**
-	 * Get the history manager
-	 */
-	getHistory(): HistoryManager | null {
-		return this._history;
-	}
-
-	/**
-	 * Get the server URL
-	 */
-	getServerUrl(): string {
-		return this._serverUrl;
-	}
-
-	/**
-	 * Check if connected to an API server
-	 */
-	isConnected(): boolean {
-		return this._serverUrl !== "" && this._apiClient !== null;
-	}
-
-	/**
-	 * Check if authenticated with API
-	 */
-	isAuthenticated(): boolean {
-		return this._apiClient?.isAuthenticated() ?? false;
-	}
-
-	/**
-	 * Check if the token has been validated (verified working)
-	 */
-	isTokenValidated(): boolean {
-		return this._tokenValidated;
-	}
-
-	/**
-	 * Get the token validation error, if any
-	 */
-	getValidationError(): string | null {
-		return this._validationError;
-	}
-
-	/**
-	 * Get the authentication source
-	 * Indicates where credentials were obtained from
-	 */
-	getAuthSource(): AuthSource {
-		return this._authSource;
-	}
-
-	/**
-	 * Check if environment variables are present
-	 * Used for display purposes to show when env vars are being ignored
-	 */
-	getEnvVarsPresent(): boolean {
-		return this._envVarsPresent;
-	}
-
-	/**
-	 * Check if a credential fallback was attempted
-	 */
-	getFallbackAttempted(): boolean {
-		return this._fallbackAttempted;
-	}
-
-	/**
-	 * Get the reason why fallback failed or was skipped (for user messaging)
-	 */
-	getFallbackReason(): string | null {
-		return this._fallbackReason;
-	}
-
-	/**
-	 * Get the current connection status
-	 */
-	getConnectionStatus(): ConnectionStatus {
-		return this._connectionStatus;
-	}
-
-	/**
-	 * Check if running in offline mode (API unreachable)
-	 */
-	isOfflineMode(): boolean {
-		return this._connectionStatus === "offline";
-	}
-
-	/**
-	 * Get the API client
-	 */
-	getAPIClient(): APIClient | null {
-		return this._apiClient;
-	}
-
-	/**
-	 * Get the current output format
-	 */
-	getOutputFormat(): OutputFormat {
-		return this._outputFormat;
-	}
-
-	/**
-	 * Set the output format
-	 */
-	setOutputFormat(format: OutputFormat): void {
-		this._outputFormat = format;
-	}
-
-	/**
-	 * Get debug mode status
-	 */
-	isDebug(): boolean {
-		return this._debug;
-	}
-
-	/**
-	 * Get the profile manager
-	 */
-	getProfileManager(): ProfileManager {
-		return this._profileManager;
-	}
-
-	/**
-	 * Get the active profile
-	 */
-	getActiveProfile(): Profile | null {
-		return this._activeProfile;
-	}
-
-	/**
-	 * Get the active profile name
-	 */
-	getActiveProfileName(): string | null {
-		return this._activeProfileName;
-	}
-
-	/**
-	 * Switch to a different profile
-	 * Profile credentials always take priority over environment variables.
-	 */
-	async switchProfile(profileName: string): Promise<boolean> {
-		const profile = await this._profileManager.get(profileName);
-		if (!profile) {
-			return false;
-		}
-
-		const result = await this._profileManager.setActive(profileName);
-		if (!result.success) {
-			return false;
-		}
-
-		// Clear namespace cache when switching profiles
-		this.clearNamespaceCache();
-
-		// Clear validation state before switch
-		this._tokenValidated = false;
-		this._validationError = null;
-		this._fallbackAttempted = false;
-		this._fallbackReason = null;
-
-		// Update session with new profile settings
-		this._activeProfileName = profileName;
-		this._activeProfile = profile;
-
-		// Profile credentials ALWAYS take priority when profile is active
-		if (profile.apiUrl) {
-			this._serverUrl = profile.apiUrl;
-			this._tenant = this.extractTenant(profile.apiUrl);
-		}
-		if (profile.apiToken) {
-			this._apiToken = profile.apiToken;
-		}
-		if (profile.defaultNamespace) {
-			this._namespace = profile.defaultNamespace;
-		}
-
-		// Set auth source to profile and track env vars presence
-		this._authSource = "profile";
-		const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
-		const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
-		this._envVarsPresent = !!(envUrl || envToken);
-
-		// Recreate API client with new profile settings
-		if (this._serverUrl) {
-			this._apiClient = new APIClient({
-				serverUrl: this._serverUrl,
-				apiToken: this._apiToken,
-				debug: this._debug,
-			});
-
-			// Validate the new profile's token
-			if (this._apiClient.isAuthenticated()) {
-				const validationResult = await this._apiClient.validateToken();
-				this._tokenValidated = validationResult.valid;
-				this._validationError = validationResult.error ?? null;
-			}
-		} else {
-			this._apiClient = null;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Clear the active profile
-	 */
-	clearActiveProfile(): void {
-		this._activeProfileName = null;
-		this._activeProfile = null;
-	}
-
-	/**
-	 * Get cached namespaces (returns empty array if cache is stale/empty)
-	 */
-	getNamespaceCache(): string[] {
-		const now = Date.now();
-		if (
-			this._namespaceCache.length > 0 &&
-			now - this._namespaceCacheTime < NAMESPACE_CACHE_TTL
-		) {
-			return this._namespaceCache;
-		}
-		return [];
-	}
-
-	/**
-	 * Set namespace cache
-	 */
-	setNamespaceCache(namespaces: string[]): void {
-		this._namespaceCache = namespaces;
-		this._namespaceCacheTime = Date.now();
-	}
-
-	/**
-	 * Clear namespace cache (called when switching profiles)
-	 */
-	clearNamespaceCache(): void {
-		this._namespaceCache = [];
-		this._namespaceCacheTime = 0;
-	}
-
-	/**
-	 * Add a command to history
-	 */
-	addToHistory(cmd: string): void {
-		this._history?.add(cmd);
-	}
-
-	/**
-	 * Save history to disk
-	 */
-	async saveHistory(): Promise<void> {
-		await this._history?.save();
-	}
-
-	/**
-	 * Clean up session resources
-	 */
-	async cleanup(): Promise<void> {
-		await this.saveHistory();
-	}
+  private _history: HistoryManager | null = null;
+  private _namespace: string;
+  private _lastExitCode: number = 0;
+  private _contextPath: ContextPath;
+  private _tenant: string = "";
+  private _username: string = "";
+  private _validator: ContextValidator;
+  private _serverUrl: string = "";
+  private _apiToken: string = "";
+  private _apiClient: APIClient | null = null;
+  private _outputFormat: OutputFormat = "table";
+  private _debug: boolean = false;
+  private _profileManager: ProfileManager;
+  private _activeProfile: Profile | null = null;
+  private _activeProfileName: string | null = null;
+  private _namespaceCache: string[] = [];
+  private _namespaceCacheTime: number = 0;
+
+  // Token validation state
+  private _tokenValidated: boolean = false;
+  private _validationError: string | null = null;
+
+  // Authentication source tracking
+  private _authSource: AuthSource = "none";
+
+  // Fallback tracking for improved error messages
+  private _fallbackAttempted: boolean = false;
+  private _fallbackReason: string | null = null;
+
+  // Connection status for graceful offline handling
+  private _connectionStatus: ConnectionStatus = "unknown";
+
+  // Track if environment variables are present (for display purposes)
+  private _envVarsPresent: boolean = false;
+
+  constructor(config: SessionConfig = {}) {
+    this._namespace = config.namespace ?? this.getDefaultNamespace();
+    this._contextPath = new ContextPath();
+    this._validator = new ContextValidator();
+    this._profileManager = getProfileManager();
+
+    // Check for environment variables
+    const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
+    const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
+
+    // Track if env vars are present (for display purposes)
+    this._envVarsPresent = !!(envUrl || envToken);
+
+    // Set initial values from env vars (may be overridden by profile in loadActiveProfile)
+    this._serverUrl = config.serverUrl ?? envUrl ?? "";
+    this._apiToken = config.apiToken ?? envToken ?? "";
+
+    // Track auth source based on environment variables
+    // (will be updated in loadActiveProfile if profile is used)
+    if (envUrl && envToken) {
+      this._authSource = "env";
+    } else if (envUrl || envToken) {
+      this._authSource = "mixed"; // Partial env, will merge with profile
+    }
+    // else remains "none", will be set to "profile" in loadActiveProfile if applicable
+
+    // Output format priority: config > env var > default (table)
+    this._outputFormat =
+      config.outputFormat ?? getOutputFormatFromEnv() ?? "table";
+    this._debug = config.debug ?? process.env[`${ENV_PREFIX}_DEBUG`] === "true";
+
+    // Extract tenant from server URL if available
+    if (this._serverUrl) {
+      this._tenant = this.extractTenant(this._serverUrl);
+    }
+
+    // Create API client if we have server URL
+    if (this._serverUrl) {
+      this._apiClient = new APIClient({
+        serverUrl: this._serverUrl,
+        apiToken: this._apiToken,
+        debug: this._debug,
+      });
+    }
+  }
+
+  /**
+   * Initialize the session (async operations)
+   * Uses fast-fail connectivity check to avoid long waits when API is unreachable.
+   */
+  async initialize(): Promise<void> {
+    const profiler = getProfiler();
+
+    // Initialize history manager
+    const historySpan = profiler.startSpan("history_load", "History Loading");
+    try {
+      this._history = await HistoryManager.create(getHistoryFilePath(), 1000);
+      profiler.endSpan(historySpan, { status: "loaded" });
+    } catch (error) {
+      console.error("Warning: could not initialize history:", error);
+      this._history = new HistoryManager(getHistoryFilePath(), 1000);
+      profiler.endSpan(historySpan, {
+        status: "fallback",
+        error: String(error),
+      });
+    }
+
+    // Load active profile if one is set
+    const profileSpan = profiler.startSpan("profile_load", "Profile Loading");
+    await this.loadActiveProfile();
+    profiler.endSpan(profileSpan, { profileName: this._activeProfileName });
+
+    // Validate token and fetch user info if connected and authenticated
+    if (this._apiClient?.isAuthenticated()) {
+      // Fast connectivity check to detect offline mode early
+      const connectivitySpan = profiler.startSpan(
+        "connectivity_check",
+        "Connectivity Check",
+      );
+      const connectivity = await this._apiClient.checkConnectivity();
+      profiler.endSpan(connectivitySpan, {
+        reachable: connectivity.reachable,
+        latencyMs: connectivity.latencyMs,
+      });
+
+      if (!connectivity.reachable) {
+        // API is unreachable - enter offline mode immediately
+        this._connectionStatus = "offline";
+        this._validationError =
+          "API endpoint unreachable - running in offline mode";
+        debugProtocol.auth("connectivity_failed", {
+          serverUrl: this._serverUrl,
+          status: "offline",
+        });
+        return; // Fast exit - don't block startup
+      }
+
+      // API is reachable - validate token with startup mode (fast timeout, no retries)
+      const tokenSpan = profiler.startSpan(
+        "token_validation",
+        "Token Validation",
+      );
+      debugProtocol.auth("token_validation_start", {
+        serverUrl: this._serverUrl,
+        hasApiClient: true,
+        authSource: this._authSource,
+        startupMode: true,
+      });
+
+      const result = await this._apiClient.validateToken({
+        startupMode: true,
+      });
+      this._tokenValidated = result.valid;
+      this._validationError = result.error ?? null;
+
+      // Update connection status based on validation result
+      if (result.valid) {
+        this._connectionStatus = "connected";
+      } else if (
+        result.error?.includes("unreachable") ||
+        result.error?.includes("timed out")
+      ) {
+        this._connectionStatus = "offline";
+      } else {
+        this._connectionStatus = "error";
+      }
+
+      profiler.endSpan(tokenSpan, {
+        valid: result.valid,
+        error: result.error,
+        connectionStatus: this._connectionStatus,
+      });
+
+      debugProtocol.auth("token_validation_complete", {
+        valid: result.valid,
+        error: result.error,
+        tokenValidated: this._tokenValidated,
+        validationError: this._validationError,
+        authSource: this._authSource,
+        connectionStatus: this._connectionStatus,
+      });
+
+      // Skip fallback if in offline mode - no point trying other credentials
+      if (this._connectionStatus === "offline") {
+        return;
+      }
+
+      // Fallback logic: If env var token is invalid, try profile token
+      if (
+        !result.valid &&
+        (this._authSource === "env" || this._authSource === "mixed")
+      ) {
+        // Check why fallback can or cannot happen
+        if (
+          this._activeProfile?.apiToken &&
+          this._activeProfile.apiToken !== this._apiToken
+        ) {
+          // Fallback is possible - profile has different credentials
+          this._fallbackAttempted = true;
+
+          debugProtocol.auth("token_fallback_attempt", {
+            fromSource: this._authSource,
+            hasProfileToken: true,
+            profileName: this._activeProfileName,
+          });
+
+          // Try the profile token instead
+          this._apiToken = this._activeProfile.apiToken;
+
+          // Also use profile URL if we only had partial env vars (mixed mode)
+          if (
+            this._authSource === "mixed" &&
+            !process.env[`${ENV_PREFIX}_API_URL`] &&
+            this._activeProfile.apiUrl
+          ) {
+            this._serverUrl = this._activeProfile.apiUrl;
+            this._tenant = this.extractTenant(this._activeProfile.apiUrl);
+          }
+
+          // Recreate API client with profile credentials
+          this._apiClient = new APIClient({
+            serverUrl: this._serverUrl,
+            apiToken: this._apiToken,
+            debug: this._debug,
+          });
+
+          // Re-validate with profile token (also use startup mode)
+          const fallbackSpan = profiler.startSpan(
+            "fallback_validation",
+            "Fallback Token Validation",
+          );
+          const fallbackResult = await this._apiClient.validateToken({
+            startupMode: true,
+          });
+          profiler.endSpan(fallbackSpan, {
+            valid: fallbackResult.valid,
+          });
+          if (fallbackResult.valid) {
+            this._tokenValidated = true;
+            this._validationError = null;
+            this._authSource = "profile-fallback";
+            this._fallbackReason = null; // Fallback succeeded
+            this._connectionStatus = "connected";
+
+            debugProtocol.auth("token_fallback_success", {
+              authSource: this._authSource,
+              profileName: this._activeProfileName,
+            });
+          } else {
+            // Profile credentials also failed
+            this._fallbackReason = `Profile '${this._activeProfileName}' credentials are also invalid`;
+            this._connectionStatus = "error";
+
+            debugProtocol.auth("token_fallback_failed", {
+              error: fallbackResult.error,
+              profileName: this._activeProfileName,
+            });
+          }
+        } else if (
+          this._activeProfile?.apiToken &&
+          this._activeProfile.apiToken === this._apiToken
+        ) {
+          // Profile has same token as env var - can't fallback
+          this._fallbackReason = `Profile '${this._activeProfileName}' has the same credentials - please update`;
+
+          debugProtocol.auth("token_fallback_skipped", {
+            reason: "same_token",
+            profileName: this._activeProfileName,
+          });
+        } else if (!this._activeProfile?.apiToken) {
+          // No profile token available for fallback
+          if (this._activeProfileName) {
+            this._fallbackReason = `Profile '${this._activeProfileName}' has no saved credentials`;
+          } else {
+            this._fallbackReason = "No saved profiles available for fallback";
+          }
+
+          debugProtocol.auth("token_fallback_skipped", {
+            reason: "no_profile_token",
+            profileName: this._activeProfileName,
+          });
+        }
+      }
+
+      // Only fetch user info if connected and token is valid
+      if (this._tokenValidated && this._connectionStatus === "connected") {
+        const userInfoSpan = profiler.startSpan("user_info", "User Info Fetch");
+        await this.fetchUserInfo();
+        profiler.endSpan(userInfoSpan, { username: this._username });
+      }
+    }
+  }
+
+  /**
+   * Fetch user info from the API
+   */
+  private async fetchUserInfo(): Promise<void> {
+    if (!this._apiClient) return;
+
+    try {
+      const response = await this._apiClient.get<{
+        email?: string;
+        name?: string;
+        username?: string;
+      }>("/api/web/custom/user/info");
+
+      if (response.ok && response.data) {
+        this._username =
+          response.data.email ||
+          response.data.name ||
+          response.data.username ||
+          "";
+      }
+    } catch {
+      // Ignore user info fetch errors - not critical for session
+    }
+  }
+
+  /**
+   * Load the active profile from profile manager
+   * Profile credentials ALWAYS take priority when a profile is active.
+   * Environment variables are only used when NO profile is active (fallback for scripts/CI).
+   * If no active profile is set but exactly one profile exists, auto-activate it.
+   */
+  async loadActiveProfile(): Promise<void> {
+    try {
+      let activeName = await this._profileManager.getActive();
+
+      // Auto-select single profile if no active profile is set
+      if (!activeName) {
+        const profiles = await this._profileManager.list();
+        if (profiles.length === 1 && profiles[0]) {
+          const singleProfile = profiles[0];
+          await this._profileManager.setActive(singleProfile.name);
+          activeName = singleProfile.name;
+        }
+      }
+
+      if (activeName) {
+        const profile = await this._profileManager.get(activeName);
+        if (profile) {
+          this._activeProfileName = activeName;
+          this._activeProfile = profile;
+
+          // Profile credentials ALWAYS take priority when profile is active
+          // Environment variables are only used as fallback for scripts/CI when no profile is active
+          if (profile.apiUrl) {
+            this._serverUrl = profile.apiUrl;
+            this._tenant = this.extractTenant(profile.apiUrl);
+          }
+          if (profile.apiToken) {
+            this._apiToken = profile.apiToken;
+          }
+
+          // Use profile namespace (env var can still override if set)
+          const envNamespace = process.env[`${ENV_PREFIX}_NAMESPACE`];
+          if (!envNamespace && profile.defaultNamespace) {
+            this._namespace = profile.defaultNamespace;
+          }
+
+          // Set auth source to profile since profile is active
+          this._authSource = "profile";
+
+          // Recreate API client with profile settings
+          if (this._serverUrl) {
+            this._apiClient = new APIClient({
+              serverUrl: this._serverUrl,
+              apiToken: this._apiToken,
+              debug: this._debug,
+            });
+          }
+        }
+      }
+      // If no profile is active, the constructor already set up env vars
+      // and _authSource will remain "env", "mixed", or "none"
+    } catch (error) {
+      // Log profile loading errors in debug mode, but don't fail
+      debugProtocol.error("profile_load_failed", error, {
+        activeProfile: this._activeProfileName,
+      });
+    }
+  }
+
+  /**
+   * Get the default namespace from environment or config
+   */
+  private getDefaultNamespace(): string {
+    return process.env[`${ENV_PREFIX}_NAMESPACE`] ?? "default";
+  }
+
+  /**
+   * Extract tenant name from server URL
+   */
+  private extractTenant(url: string): string {
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname;
+
+      // Extract subdomain as tenant (e.g., "mycompany" from "mycompany.console.ves.volterra.io")
+      const parts = hostname.split(".");
+      if (parts.length > 0 && parts[0]) {
+        return parts[0];
+      }
+      return hostname;
+    } catch {
+      return "";
+    }
+  }
+
+  /**
+   * Set the default namespace for the session
+   */
+  setNamespace(ns: string): void {
+    this._namespace = ns;
+  }
+
+  /**
+   * Get the current default namespace
+   */
+  getNamespace(): string {
+    return this._namespace;
+  }
+
+  /**
+   * Get the exit code of the last command
+   */
+  getLastExitCode(): number {
+    return this._lastExitCode;
+  }
+
+  /**
+   * Set the exit code of the last command
+   */
+  setLastExitCode(code: number): void {
+    this._lastExitCode = code;
+  }
+
+  /**
+   * Get the current navigation context
+   */
+  getContextPath(): ContextPath {
+    return this._contextPath;
+  }
+
+  /**
+   * Get the current tenant name
+   */
+  getTenant(): string {
+    return this._tenant;
+  }
+
+  /**
+   * Get the logged-in user's name/email
+   */
+  getUsername(): string {
+    return this._username;
+  }
+
+  /**
+   * Set the username (used when fetched from API)
+   */
+  setUsername(username: string): void {
+    this._username = username;
+  }
+
+  /**
+   * Get the context validator
+   */
+  getValidator(): ContextValidator {
+    return this._validator;
+  }
+
+  /**
+   * Get the history manager
+   */
+  getHistory(): HistoryManager | null {
+    return this._history;
+  }
+
+  /**
+   * Get the server URL
+   */
+  getServerUrl(): string {
+    return this._serverUrl;
+  }
+
+  /**
+   * Check if connected to an API server
+   */
+  isConnected(): boolean {
+    return this._serverUrl !== "" && this._apiClient !== null;
+  }
+
+  /**
+   * Check if authenticated with API
+   */
+  isAuthenticated(): boolean {
+    return this._apiClient?.isAuthenticated() ?? false;
+  }
+
+  /**
+   * Check if the token has been validated (verified working)
+   */
+  isTokenValidated(): boolean {
+    return this._tokenValidated;
+  }
+
+  /**
+   * Get the token validation error, if any
+   */
+  getValidationError(): string | null {
+    return this._validationError;
+  }
+
+  /**
+   * Get the authentication source
+   * Indicates where credentials were obtained from
+   */
+  getAuthSource(): AuthSource {
+    return this._authSource;
+  }
+
+  /**
+   * Check if environment variables are present
+   * Used for display purposes to show when env vars are being ignored
+   */
+  getEnvVarsPresent(): boolean {
+    return this._envVarsPresent;
+  }
+
+  /**
+   * Check if a credential fallback was attempted
+   */
+  getFallbackAttempted(): boolean {
+    return this._fallbackAttempted;
+  }
+
+  /**
+   * Get the reason why fallback failed or was skipped (for user messaging)
+   */
+  getFallbackReason(): string | null {
+    return this._fallbackReason;
+  }
+
+  /**
+   * Get the current connection status
+   */
+  getConnectionStatus(): ConnectionStatus {
+    return this._connectionStatus;
+  }
+
+  /**
+   * Check if running in offline mode (API unreachable)
+   */
+  isOfflineMode(): boolean {
+    return this._connectionStatus === "offline";
+  }
+
+  /**
+   * Get the API client
+   */
+  getAPIClient(): APIClient | null {
+    return this._apiClient;
+  }
+
+  /**
+   * Get the current output format
+   */
+  getOutputFormat(): OutputFormat {
+    return this._outputFormat;
+  }
+
+  /**
+   * Set the output format
+   */
+  setOutputFormat(format: OutputFormat): void {
+    this._outputFormat = format;
+  }
+
+  /**
+   * Get debug mode status
+   */
+  isDebug(): boolean {
+    return this._debug;
+  }
+
+  /**
+   * Get the profile manager
+   */
+  getProfileManager(): ProfileManager {
+    return this._profileManager;
+  }
+
+  /**
+   * Get the active profile
+   */
+  getActiveProfile(): Profile | null {
+    return this._activeProfile;
+  }
+
+  /**
+   * Get the active profile name
+   */
+  getActiveProfileName(): string | null {
+    return this._activeProfileName;
+  }
+
+  /**
+   * Switch to a different profile
+   * Profile credentials always take priority over environment variables.
+   */
+  async switchProfile(profileName: string): Promise<boolean> {
+    const profile = await this._profileManager.get(profileName);
+    if (!profile) {
+      return false;
+    }
+
+    const result = await this._profileManager.setActive(profileName);
+    if (!result.success) {
+      return false;
+    }
+
+    // Clear namespace cache when switching profiles
+    this.clearNamespaceCache();
+
+    // Clear validation state before switch
+    this._tokenValidated = false;
+    this._validationError = null;
+    this._fallbackAttempted = false;
+    this._fallbackReason = null;
+
+    // Update session with new profile settings
+    this._activeProfileName = profileName;
+    this._activeProfile = profile;
+
+    // Profile credentials ALWAYS take priority when profile is active
+    if (profile.apiUrl) {
+      this._serverUrl = profile.apiUrl;
+      this._tenant = this.extractTenant(profile.apiUrl);
+    }
+    if (profile.apiToken) {
+      this._apiToken = profile.apiToken;
+    }
+    if (profile.defaultNamespace) {
+      this._namespace = profile.defaultNamespace;
+    }
+
+    // Set auth source to profile and track env vars presence
+    this._authSource = "profile";
+    const envUrl = process.env[`${ENV_PREFIX}_API_URL`];
+    const envToken = process.env[`${ENV_PREFIX}_API_TOKEN`];
+    this._envVarsPresent = !!(envUrl || envToken);
+
+    // Recreate API client with new profile settings
+    if (this._serverUrl) {
+      this._apiClient = new APIClient({
+        serverUrl: this._serverUrl,
+        apiToken: this._apiToken,
+        debug: this._debug,
+      });
+
+      // Validate the new profile's token
+      if (this._apiClient.isAuthenticated()) {
+        const validationResult = await this._apiClient.validateToken();
+        this._tokenValidated = validationResult.valid;
+        this._validationError = validationResult.error ?? null;
+      }
+    } else {
+      this._apiClient = null;
+    }
+
+    return true;
+  }
+
+  /**
+   * Clear the active profile
+   */
+  clearActiveProfile(): void {
+    this._activeProfileName = null;
+    this._activeProfile = null;
+  }
+
+  /**
+   * Get cached namespaces (returns empty array if cache is stale/empty)
+   */
+  getNamespaceCache(): string[] {
+    const now = Date.now();
+    if (
+      this._namespaceCache.length > 0 &&
+      now - this._namespaceCacheTime < NAMESPACE_CACHE_TTL
+    ) {
+      return this._namespaceCache;
+    }
+    return [];
+  }
+
+  /**
+   * Set namespace cache
+   */
+  setNamespaceCache(namespaces: string[]): void {
+    this._namespaceCache = namespaces;
+    this._namespaceCacheTime = Date.now();
+  }
+
+  /**
+   * Clear namespace cache (called when switching profiles)
+   */
+  clearNamespaceCache(): void {
+    this._namespaceCache = [];
+    this._namespaceCacheTime = 0;
+  }
+
+  /**
+   * Add a command to history
+   */
+  addToHistory(cmd: string): void {
+    this._history?.add(cmd);
+  }
+
+  /**
+   * Save history to disk
+   */
+  async saveHistory(): Promise<void> {
+    await this._history?.save();
+  }
+
+  /**
+   * Clean up session resources
+   */
+  async cleanup(): Promise<void> {
+    await this.saveHistory();
+  }
 }
 
 /**
  * Create and initialize a new REPL session
  */
 export async function createSession(
-	config: SessionConfig = {},
+  config: SessionConfig = {},
 ): Promise<REPLSession> {
-	const session = new REPLSession(config);
-	await session.initialize();
-	return session;
+  const session = new REPLSession(config);
+  await session.initialize();
+  return session;
 }

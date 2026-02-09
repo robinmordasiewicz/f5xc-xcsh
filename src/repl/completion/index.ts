@@ -3,14 +3,14 @@
  */
 
 export type {
-	CompletionSuggestion,
-	CompletionContext,
-	ParsedInput,
+  CompletionSuggestion,
+  CompletionContext,
+  ParsedInput,
 } from "./types.js";
 export {
-	Completer,
-	createCompleter,
-	parseInput,
-	parseInputArgs,
+  Completer,
+  createCompleter,
+  parseInput,
+  parseInputArgs,
 } from "./completer.js";
 export { CompletionCache, getCompletionCache } from "./cache.js";
