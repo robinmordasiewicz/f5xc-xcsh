@@ -26,7 +26,7 @@ repos:
       - id: check-added-large-files
         name: Check for large files
         args: ["--maxkb=500"]
-        exclude: '.*_generated\.ts$'
+        exclude: '(.*_generated\.ts$|^\.specs/domains/)'
       - id: check-merge-conflict
         name: Check for merge conflict markers
       - id: check-case-conflict
@@ -78,7 +78,7 @@ repos:
       - id: markdownlint
         name: Lint Markdown files
         args: ["--fix"]
-        exclude: "^docs/commands/"  # Exclude auto-generated docs
+        exclude: '^(docs/commands/|\.specs/)'  # Exclude auto-generated docs
 
   # Markdown link validation
   - repo: https://github.com/tcort/markdown-link-check
