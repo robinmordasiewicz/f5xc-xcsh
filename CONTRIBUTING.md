@@ -1,13 +1,12 @@
 # Contributing
 
-Thank you for your interest in contributing. This document describes the
-workflow and rules that all contributors — human and AI — must follow.
+Thank you for your interest in contributing. This document describes the workflow and rules that all contributors — human and AI — must follow.
 
 ## Workflow Overview
 
 Every change follows this path:
 
-```text
+```
 Issue → Branch → PR (linked to issue) → CI passes → Merge → Branch auto-deleted
 ```
 
@@ -28,7 +27,7 @@ Blank issues are disabled. Pick the template that best fits your change.
 Branch from `main` using one of these naming conventions:
 
 | Prefix | Use for | Example |
-| --- | --- | --- |
+|--------|---------|---------|
 | `feature/` | New features | `feature/42-add-rate-limiting` |
 | `fix/` | Bug fixes | `fix/17-correct-threshold-calc` |
 | `docs/` | Documentation | `docs/8-update-setup-guide` |
