@@ -14,13 +14,13 @@ import { CLI_NAME } from "../branding/index.js";
  * Note: Actions don't create sub-contexts - they execute immediately
  */
 export function buildPlainPrompt(session: REPLSession): string {
-	const ctx = session.getContextPath();
+  const ctx = session.getContextPath();
 
-	if (ctx.isDomain()) {
-		return `${CLI_NAME}:${ctx.domain}> `;
-	}
+  if (ctx.isDomain()) {
+    return `${CLI_NAME}:${ctx.domain}> `;
+  }
 
-	return `${CLI_NAME}> `;
+  return `${CLI_NAME}> `;
 }
 
 /**
@@ -28,8 +28,8 @@ export function buildPlainPrompt(session: REPLSession): string {
  * Uses F5 brand colors for visual enhancement.
  */
 export function buildColoredPrompt(session: REPLSession): string {
-	// For now, return plain prompt - we'll add colors when we integrate with Ink
-	return buildPlainPrompt(session);
+  // For now, return plain prompt - we'll add colors when we integrate with Ink
+  return buildPlainPrompt(session);
 }
 
 /**
@@ -37,22 +37,22 @@ export function buildColoredPrompt(session: REPLSession): string {
  * Returns structured data for flexible rendering.
  */
 export interface PromptParts {
-	profile: string | null; // Active profile name
-	prefix: string; // "xc"
-	domain: string | null; // e.g., "http_loadbalancer"
-	separator: string; // ":"
-	wrapper: { open: string; close: string }; // "<" and ">"
+  profile: string | null; // Active profile name
+  prefix: string; // "xc"
+  domain: string | null; // e.g., "http_loadbalancer"
+  separator: string; // ":"
+  wrapper: { open: string; close: string }; // "<" and ">"
 }
 
 export function getPromptParts(session: REPLSession): PromptParts {
-	const ctx = session.getContextPath();
-	const profile = session.getActiveProfileName();
+  const ctx = session.getContextPath();
+  const profile = session.getActiveProfileName();
 
-	return {
-		profile: profile,
-		prefix: CLI_NAME,
-		domain: ctx.domain || null,
-		separator: ctx.isDomain() ? ":" : "",
-		wrapper: { open: "", close: ">" },
-	};
+  return {
+    profile: profile,
+    prefix: CLI_NAME,
+    domain: ctx.domain || null,
+    separator: ctx.isDomain() ? ":" : "",
+    wrapper: { open: "", close: ">" },
+  };
 }

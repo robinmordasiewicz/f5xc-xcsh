@@ -4,12 +4,12 @@
  */
 
 import type {
-	APIClientConfig,
-	APIRequestOptions,
-	APIResponse,
-	APIErrorResponse,
-	HTTPMethod,
-	RetryConfig,
+  APIClientConfig,
+  APIRequestOptions,
+  APIResponse,
+  APIErrorResponse,
+  HTTPMethod,
+  RetryConfig,
 } from "./types.js";
 import { APIError } from "./types.js";
 import { getProfiler } from "../profiling/index.js";
@@ -18,11 +18,11 @@ import { getProfiler } from "../profiling/index.js";
  * Default retry configuration
  */
 const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
-	maxRetries: 2,
-	initialDelayMs: 500,
-	maxDelayMs: 5000,
-	backoffMultiplier: 2,
-	jitter: true,
+  maxRetries: 2,
+  initialDelayMs: 500,
+  maxDelayMs: 5000,
+  backoffMultiplier: 2,
+  jitter: true,
 };
 
 /**
@@ -46,743 +46,732 @@ export type HealthStatus = "connected" | "warning" | "offline" | "auth_error";
  * Health check result
  */
 export interface HealthCheckResult {
-	status: HealthStatus;
-	latencyMs?: number;
+  status: HealthStatus;
+  latencyMs?: number;
 }
 
 /**
  * Status codes that should trigger a retry
  */
 const RETRYABLE_STATUS_CODES = new Set([
-	408, // Request Timeout
-	429, // Too Many Requests
-	500, // Internal Server Error
-	502, // Bad Gateway
-	503, // Service Unavailable
-	504, // Gateway Timeout
+  408, // Request Timeout
+  429, // Too Many Requests
+  500, // Internal Server Error
+  502, // Bad Gateway
+  503, // Service Unavailable
+  504, // Gateway Timeout
 ]);
 
 /**
  * Calculate delay with exponential backoff and optional jitter
  */
 function calculateBackoffDelay(
-	attempt: number,
-	config: Required<RetryConfig>,
+  attempt: number,
+  config: Required<RetryConfig>,
 ): number {
-	const exponentialDelay =
-		config.initialDelayMs * Math.pow(config.backoffMultiplier, attempt);
-	const cappedDelay = Math.min(exponentialDelay, config.maxDelayMs);
+  const exponentialDelay =
+    config.initialDelayMs * Math.pow(config.backoffMultiplier, attempt);
+  const cappedDelay = Math.min(exponentialDelay, config.maxDelayMs);
 
-	if (config.jitter) {
-		// Add random jitter between 0-25% of the delay
-		const jitterFactor = 1 + Math.random() * 0.25;
-		return Math.floor(cappedDelay * jitterFactor);
-	}
+  if (config.jitter) {
+    // Add random jitter between 0-25% of the delay
+    const jitterFactor = 1 + Math.random() * 0.25;
+    return Math.floor(cappedDelay * jitterFactor);
+  }
 
-	return cappedDelay;
+  return cappedDelay;
 }
 
 /**
  * Sleep for specified milliseconds
  */
 function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
  * API Client for F5 Distributed Cloud
  */
 export class APIClient {
-	private readonly serverUrl: string;
-	private readonly apiToken: string;
-	private readonly timeout: number;
-	private readonly debug: boolean;
-	private readonly retryConfig: Required<RetryConfig>;
-
-	// Token validation state
-	private _isValidated: boolean = false;
-	private _validationError: string | null = null;
-
-	constructor(config: APIClientConfig) {
-		// Normalize server URL (remove trailing slash)
-		this.serverUrl = config.serverUrl.replace(/\/+$/, "");
-		this.apiToken = config.apiToken ?? "";
-		this.timeout = config.timeout ?? 15000; // 15 second default timeout
-		this.debug = config.debug ?? false;
-		this.retryConfig = {
-			...DEFAULT_RETRY_CONFIG,
-			...config.retry,
-		};
-	}
-
-	/**
-	 * Check if client has authentication configured (token exists).
-	 * Note: This does NOT verify the token is valid. Use isValidated() for that.
-	 */
-	isAuthenticated(): boolean {
-		return this.apiToken !== "";
-	}
-
-	/**
-	 * Validate the API token by making a lightweight API call.
-	 * Returns true if token is valid, false otherwise.
-	 *
-	 * @param options.startupMode - Use aggressive timeouts for fast-fail during startup
-	 */
-	async validateToken(options?: {
-		startupMode?: boolean;
-	}): Promise<{ valid: boolean; error?: string }> {
-		const startupMode = options?.startupMode ?? false;
-
-		// Skip if no token configured
-		if (!this.apiToken) {
-			this._isValidated = false;
-			this._validationError = "No API token configured";
-			return { valid: false, error: this._validationError };
-		}
-
-		if (this.debug) {
-			console.error(
-				`DEBUG: Validating token against ${this.serverUrl}${startupMode ? " (startup mode)" : ""}`,
-			);
-		}
-
-		try {
-			// Use namespaces endpoint for token validation (lightweight, universal)
-			// In startup mode, use aggressive timeout and no retries
-			const requestOptions: APIRequestOptions = {
-				method: "GET",
-				path: "/api/web/namespaces",
-			};
-			if (startupMode) {
-				requestOptions.timeout = STARTUP_TIMEOUT;
-			}
-
-			await this.requestWithOptions<{ items?: unknown[] }>(
-				requestOptions,
-				startupMode ? { maxRetries: STARTUP_MAX_RETRIES } : undefined,
-			);
-			this._isValidated = true;
-			this._validationError = null;
-			return { valid: true };
-		} catch (error) {
-			if (error instanceof APIError) {
-				if (error.statusCode === 401) {
-					// Definitive: token is invalid or expired
-					this._isValidated = false;
-					this._validationError = "Invalid or expired API token";
-					return { valid: false, error: this._validationError };
-				} else if (error.statusCode === 403) {
-					// Definitive: token lacks permissions
-					this._isValidated = false;
-					this._validationError = "Token lacks required permissions";
-					return { valid: false, error: this._validationError };
-				} else if (error.statusCode === 408 || error.statusCode === 0) {
-					// Timeout or network error - in startup mode, report as connectivity issue
-					if (startupMode) {
-						this._isValidated = false;
-						this._validationError =
-							"API endpoint unreachable - request timed out";
-						return { valid: false, error: this._validationError };
-					}
-					// In normal mode, assume token is OK (don't block user)
-					if (this.debug) {
-						console.error(
-							`DEBUG: Validation timed out, assuming token is valid`,
-						);
-					}
-					this._isValidated = true;
-					this._validationError = null;
-					return { valid: true };
-				} else {
-					// Non-auth error (404, 500, etc) - assume token is OK
-					if (this.debug) {
-						console.error(
-							`DEBUG: Validation endpoint returned ${error.statusCode}, assuming token is valid`,
-						);
-					}
-					this._isValidated = true;
-					this._validationError = null;
-					return { valid: true };
-				}
-			} else {
-				// Unknown error - in startup mode, report as connectivity issue
-				if (startupMode) {
-					this._isValidated = false;
-					this._validationError = `API endpoint unreachable - ${error instanceof Error ? error.message : "Unknown error"}`;
-					return { valid: false, error: this._validationError };
-				}
-				// In normal mode, assume token is OK, don't block user
-				if (this.debug) {
-					console.error(
-						`DEBUG: Validation error: ${error instanceof Error ? error.message : "Unknown"}, assuming token is valid`,
-					);
-				}
-				this._isValidated = true;
-				this._validationError = null;
-				return { valid: true };
-			}
-		}
-	}
-
-	/**
-	 * Check if client has a validated (verified working) token
-	 */
-	isValidated(): boolean {
-		return this._isValidated;
-	}
-
-	/**
-	 * Get the validation error message, if any
-	 */
-	getValidationError(): string | null {
-		return this._validationError;
-	}
-
-	/**
-	 * Clear validation state (called on profile switch)
-	 */
-	clearValidationCache(): void {
-		this._isValidated = false;
-		this._validationError = null;
-	}
-
-	/**
-	 * Get the server URL
-	 */
-	getServerUrl(): string {
-		return this.serverUrl;
-	}
-
-	/**
-	 * Check connectivity to the API server.
-	 * Uses a lightweight HEAD request with aggressive timeout for fast-fail.
-	 * This is used during startup to quickly detect if API is unreachable.
-	 */
-	async checkConnectivity(): Promise<{
-		reachable: boolean;
-		latencyMs?: number;
-	}> {
-		const start = Date.now();
-		const controller = new AbortController();
-		const timeoutId = setTimeout(
-			() => controller.abort(),
-			CONNECTIVITY_TIMEOUT,
-		);
-
-		try {
-			await fetch(this.serverUrl, {
-				method: "HEAD",
-				signal: controller.signal,
-			});
-			clearTimeout(timeoutId);
-			return { reachable: true, latencyMs: Date.now() - start };
-		} catch {
-			clearTimeout(timeoutId);
-			return { reachable: false };
-		}
-	}
-
-	/**
-	 * Lightweight health check for background polling.
-	 * Two-phase check:
-	 * 1. Connectivity check with HEAD request (fast-fail)
-	 * 2. Auth validation with HEAD to /api/web/namespaces
-	 *
-	 * Returns status:
-	 * - 'connected': API reachable and authenticated
-	 * - 'offline': API unreachable (network/timeout)
-	 * - 'auth_error': API reachable but authentication failed (401/403)
-	 */
-	async healthCheck(): Promise<HealthCheckResult> {
-		const start = Date.now();
-
-		// Phase 1: Quick connectivity check
-		const connectivity = await this.checkConnectivity();
-		if (!connectivity.reachable) {
-			return { status: "offline" };
-		}
-
-		// Phase 2: Auth validation with HEAD request to namespaces endpoint
-		if (!this.apiToken) {
-			// No token configured - report as auth error
-			return { status: "auth_error", latencyMs: Date.now() - start };
-		}
-
-		const controller = new AbortController();
-		const timeoutId = setTimeout(
-			() => controller.abort(),
-			HEALTH_CHECK_TIMEOUT,
-		);
-
-		try {
-			const response = await fetch(
-				`${this.serverUrl}/api/web/namespaces`,
-				{
-					method: "HEAD",
-					headers: {
-						Authorization: `APIToken ${this.apiToken}`,
-						Accept: "application/json",
-					},
-					signal: controller.signal,
-				},
-			);
-			clearTimeout(timeoutId);
-
-			const latencyMs = Date.now() - start;
-
-			// Check status code
-			if (response.ok || response.status === 200) {
-				return { status: "connected", latencyMs };
-			}
-
-			// Auth errors
-			if (response.status === 401 || response.status === 403) {
-				return { status: "auth_error", latencyMs };
-			}
-
-			// Other errors - assume connected but with issues
-			// Don't treat 404, 500, etc. as offline
-			return { status: "connected", latencyMs };
-		} catch (error) {
-			clearTimeout(timeoutId);
-
-			// Timeout or network error
-			if (error instanceof Error && error.name === "AbortError") {
-				return { status: "offline" };
-			}
-
-			// Network errors
-			return { status: "offline" };
-		}
-	}
-
-	/**
-	 * Build full URL from path and query parameters
-	 */
-	private buildUrl(path: string, query?: Record<string, string>): string {
-		let baseUrl = this.serverUrl;
-
-		// Handle case where base URL ends with /api and path starts with /api
-		if (baseUrl.endsWith("/api") && path.startsWith("/api")) {
-			baseUrl = baseUrl.slice(0, -4);
-		}
-
-		// Ensure path starts with /
-		const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-		let url = `${baseUrl}${normalizedPath}`;
-
-		// Add query parameters
-		if (query && Object.keys(query).length > 0) {
-			const params = new URLSearchParams(query);
-			url = `${url}?${params.toString()}`;
-		}
-
-		return url;
-	}
-
-	/**
-	 * Check if an error is retryable
-	 *
-	 * Permanent network errors (connection refused, DNS not found) are NOT retried
-	 * since retrying won't help if the server is unreachable.
-	 */
-	private isRetryableError(error: unknown): boolean {
-		if (error instanceof APIError) {
-			return RETRYABLE_STATUS_CODES.has(error.statusCode);
-		}
-		// Only retry transient network errors, not permanent ones
-		if (error instanceof Error) {
-			const message = error.message.toLowerCase();
-
-			// Permanent errors - do NOT retry (server unreachable)
-			if (
-				message.includes("econnrefused") ||
-				message.includes("enotfound") ||
-				message.includes("ehostunreach") ||
-				message.includes("enetunreach")
-			) {
-				return false;
-			}
-
-			// Transient errors - retry these
-			return (
-				error.name === "AbortError" ||
-				message.includes("etimedout") ||
-				message.includes("econnreset") ||
-				message.includes("socket hang up")
-			);
-		}
-		return false;
-	}
-
-	/**
-	 * Execute a single HTTP request attempt
-	 */
-	private async executeRequest<T = unknown>(
-		options: APIRequestOptions,
-		url: string,
-		headers: Record<string, string>,
-		body: string | null,
-	): Promise<APIResponse<T>> {
-		const controller = new AbortController();
-		const requestTimeout = options.timeout ?? this.timeout;
-		const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
-
-		try {
-			const response = await fetch(url, {
-				method: options.method,
-				headers,
-				body,
-				signal: controller.signal,
-			});
-
-			clearTimeout(timeoutId);
-
-			// Read response body
-			const responseText = await response.text();
-			let data: T;
-
-			try {
-				data = responseText ? JSON.parse(responseText) : ({} as T);
-			} catch {
-				// If not valid JSON, wrap as string
-				data = responseText as unknown as T;
-			}
-
-			// Debug response
-			if (this.debug) {
-				console.error(`DEBUG: Response status: ${response.status}`);
-			}
-
-			// Convert headers to record
-			const responseHeaders: Record<string, string> = {};
-			response.headers.forEach((value, key) => {
-				responseHeaders[key] = value;
-			});
-
-			const result: APIResponse<T> = {
-				statusCode: response.status,
-				data,
-				headers: responseHeaders,
-				ok: response.ok,
-			};
-
-			// Throw error for non-2xx responses
-			if (!response.ok) {
-				const errorResponse = data as unknown as APIErrorResponse;
-				throw new APIError(
-					errorResponse.message ?? `HTTP ${response.status}`,
-					response.status,
-					errorResponse,
-					`${options.method} ${options.path}`,
-				);
-			}
-
-			return result;
-		} catch (error) {
-			clearTimeout(timeoutId);
-
-			// Re-throw APIError as-is
-			if (error instanceof APIError) {
-				throw error;
-			}
-
-			// Handle abort/timeout
-			if (error instanceof Error && error.name === "AbortError") {
-				throw new APIError(
-					`Request timed out after ${requestTimeout}ms`,
-					408,
-					undefined,
-					`${options.method} ${options.path}`,
-				);
-			}
-
-			// Handle network errors
-			if (error instanceof Error) {
-				throw new APIError(
-					`Network error: ${error.message}`,
-					0,
-					undefined,
-					`${options.method} ${options.path}`,
-				);
-			}
-
-			throw error;
-		}
-	}
-
-	/**
-	 * Execute an HTTP request with retry logic and optional retry override
-	 */
-	private async requestWithOptions<T = unknown>(
-		options: APIRequestOptions,
-		retryOverride?: { maxRetries: number },
-	): Promise<APIResponse<T>> {
-		return this.requestInternal<T>(options, retryOverride);
-	}
-
-	/**
-	 * Execute an HTTP request with retry logic
-	 */
-	async request<T = unknown>(
-		options: APIRequestOptions,
-	): Promise<APIResponse<T>> {
-		return this.requestInternal<T>(options);
-	}
-
-	/**
-	 * Internal request implementation with optional retry override
-	 */
-	private async requestInternal<T = unknown>(
-		options: APIRequestOptions,
-		retryOverride?: { maxRetries: number },
-	): Promise<APIResponse<T>> {
-		const url = this.buildUrl(options.path, options.query);
-		const profiler = getProfiler();
-
-		// Start network profiling span
-		const networkSpan = profiler.startNetworkSpan(url, options.method);
-
-		// Prepare headers
-		const headers: Record<string, string> = {
-			"Content-Type": "application/json",
-			Accept: "application/json",
-			...options.headers,
-		};
-
-		// Add API token authorization
-		if (this.apiToken) {
-			headers["Authorization"] = `APIToken ${this.apiToken}`;
-		}
-
-		// Prepare body
-		const body: string | null = options.body
-			? JSON.stringify(options.body)
-			: null;
-
-		// Debug logging
-		if (this.debug) {
-			console.error(`DEBUG: ${options.method} ${url}`);
-			if (body) {
-				console.error(`DEBUG: Request body: ${body}`);
-			}
-		}
-
-		let lastError: Error | undefined;
-		let retryCount = 0;
-
-		// Use override if provided, otherwise use default config
-		const maxRetries =
-			retryOverride?.maxRetries ?? this.retryConfig.maxRetries;
-
-		// Retry loop
-		for (let attempt = 0; attempt <= maxRetries; attempt++) {
-			try {
-				const result = await this.executeRequest<T>(
-					options,
-					url,
-					headers,
-					body,
-				);
-
-				// End network span on success
-				profiler.endNetworkSpan(networkSpan, {
-					statusCode: result.statusCode,
-					responseSize: JSON.stringify(result.data).length,
-					retryCount,
-				});
-
-				return result;
-			} catch (error) {
-				lastError =
-					error instanceof Error ? error : new Error(String(error));
-
-				// Check if we should retry
-				const isRetryable = this.isRetryableError(error);
-				const hasRetriesLeft = attempt < maxRetries;
-
-				if (isRetryable && hasRetriesLeft) {
-					retryCount++;
-					const delay = calculateBackoffDelay(
-						attempt,
-						this.retryConfig,
-					);
-
-					if (this.debug) {
-						const statusInfo =
-							error instanceof APIError
-								? ` (${error.statusCode})`
-								: "";
-						console.error(
-							`DEBUG: Request failed${statusInfo}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`,
-						);
-					}
-
-					await sleep(delay);
-					continue;
-				}
-
-				// End network span on final failure
-				profiler.endNetworkSpan(networkSpan, {
-					statusCode:
-						error instanceof APIError ? error.statusCode : 0,
-					retryCount,
-					error: lastError.message,
-				});
-
-				// Not retryable or no retries left - throw the error
-				throw error;
-			}
-		}
-
-		// Should not reach here, but just in case
-		throw lastError ?? new Error("Request failed after all retries");
-	}
-
-	/**
-	 * GET request
-	 */
-	async get<T = unknown>(
-		path: string,
-		query?: Record<string, string>,
-	): Promise<APIResponse<T>> {
-		const options: APIRequestOptions = {
-			method: "GET",
-			path,
-		};
-		if (query) {
-			options.query = query;
-		}
-		return this.request<T>(options);
-	}
-
-	/**
-	 * POST request
-	 */
-	async post<T = unknown>(
-		path: string,
-		body?: Record<string, unknown>,
-		timeout?: number,
-	): Promise<APIResponse<T>> {
-		const options: APIRequestOptions = {
-			method: "POST",
-			path,
-		};
-		if (body) {
-			options.body = body;
-		}
-		if (timeout !== undefined) {
-			options.timeout = timeout;
-		}
-		return this.request<T>(options);
-	}
-
-	/**
-	 * PUT request
-	 */
-	async put<T = unknown>(
-		path: string,
-		body?: Record<string, unknown>,
-	): Promise<APIResponse<T>> {
-		const options: APIRequestOptions = {
-			method: "PUT",
-			path,
-		};
-		if (body) {
-			options.body = body;
-		}
-		return this.request<T>(options);
-	}
-
-	/**
-	 * DELETE request
-	 */
-	async delete<T = unknown>(path: string): Promise<APIResponse<T>> {
-		return this.request<T>({
-			method: "DELETE",
-			path,
-		});
-	}
-
-	/**
-	 * PATCH request
-	 */
-	async patch<T = unknown>(
-		path: string,
-		body?: Record<string, unknown>,
-	): Promise<APIResponse<T>> {
-		const options: APIRequestOptions = {
-			method: "PATCH",
-			path,
-		};
-		if (body) {
-			options.body = body;
-		}
-		return this.request<T>(options);
-	}
+  private readonly serverUrl: string;
+  private readonly apiToken: string;
+  private readonly timeout: number;
+  private readonly debug: boolean;
+  private readonly retryConfig: Required<RetryConfig>;
+
+  // Token validation state
+  private _isValidated: boolean = false;
+  private _validationError: string | null = null;
+
+  constructor(config: APIClientConfig) {
+    // Normalize server URL (remove trailing slash)
+    this.serverUrl = config.serverUrl.replace(/\/+$/, "");
+    this.apiToken = config.apiToken ?? "";
+    this.timeout = config.timeout ?? 15000; // 15 second default timeout
+    this.debug = config.debug ?? false;
+    this.retryConfig = {
+      ...DEFAULT_RETRY_CONFIG,
+      ...config.retry,
+    };
+  }
+
+  /**
+   * Check if client has authentication configured (token exists).
+   * Note: This does NOT verify the token is valid. Use isValidated() for that.
+   */
+  isAuthenticated(): boolean {
+    return this.apiToken !== "";
+  }
+
+  /**
+   * Validate the API token by making a lightweight API call.
+   * Returns true if token is valid, false otherwise.
+   *
+   * @param options.startupMode - Use aggressive timeouts for fast-fail during startup
+   */
+  async validateToken(options?: {
+    startupMode?: boolean;
+  }): Promise<{ valid: boolean; error?: string }> {
+    const startupMode = options?.startupMode ?? false;
+
+    // Skip if no token configured
+    if (!this.apiToken) {
+      this._isValidated = false;
+      this._validationError = "No API token configured";
+      return { valid: false, error: this._validationError };
+    }
+
+    if (this.debug) {
+      console.error(
+        `DEBUG: Validating token against ${this.serverUrl}${startupMode ? " (startup mode)" : ""}`,
+      );
+    }
+
+    try {
+      // Use namespaces endpoint for token validation (lightweight, universal)
+      // In startup mode, use aggressive timeout and no retries
+      const requestOptions: APIRequestOptions = {
+        method: "GET",
+        path: "/api/web/namespaces",
+      };
+      if (startupMode) {
+        requestOptions.timeout = STARTUP_TIMEOUT;
+      }
+
+      await this.requestWithOptions<{ items?: unknown[] }>(
+        requestOptions,
+        startupMode ? { maxRetries: STARTUP_MAX_RETRIES } : undefined,
+      );
+      this._isValidated = true;
+      this._validationError = null;
+      return { valid: true };
+    } catch (error) {
+      if (error instanceof APIError) {
+        if (error.statusCode === 401) {
+          // Definitive: token is invalid or expired
+          this._isValidated = false;
+          this._validationError = "Invalid or expired API token";
+          return { valid: false, error: this._validationError };
+        } else if (error.statusCode === 403) {
+          // Definitive: token lacks permissions
+          this._isValidated = false;
+          this._validationError = "Token lacks required permissions";
+          return { valid: false, error: this._validationError };
+        } else if (error.statusCode === 408 || error.statusCode === 0) {
+          // Timeout or network error - in startup mode, report as connectivity issue
+          if (startupMode) {
+            this._isValidated = false;
+            this._validationError =
+              "API endpoint unreachable - request timed out";
+            return { valid: false, error: this._validationError };
+          }
+          // In normal mode, assume token is OK (don't block user)
+          if (this.debug) {
+            console.error(
+              `DEBUG: Validation timed out, assuming token is valid`,
+            );
+          }
+          this._isValidated = true;
+          this._validationError = null;
+          return { valid: true };
+        } else {
+          // Non-auth error (404, 500, etc) - assume token is OK
+          if (this.debug) {
+            console.error(
+              `DEBUG: Validation endpoint returned ${error.statusCode}, assuming token is valid`,
+            );
+          }
+          this._isValidated = true;
+          this._validationError = null;
+          return { valid: true };
+        }
+      } else {
+        // Unknown error - in startup mode, report as connectivity issue
+        if (startupMode) {
+          this._isValidated = false;
+          this._validationError = `API endpoint unreachable - ${error instanceof Error ? error.message : "Unknown error"}`;
+          return { valid: false, error: this._validationError };
+        }
+        // In normal mode, assume token is OK, don't block user
+        if (this.debug) {
+          console.error(
+            `DEBUG: Validation error: ${error instanceof Error ? error.message : "Unknown"}, assuming token is valid`,
+          );
+        }
+        this._isValidated = true;
+        this._validationError = null;
+        return { valid: true };
+      }
+    }
+  }
+
+  /**
+   * Check if client has a validated (verified working) token
+   */
+  isValidated(): boolean {
+    return this._isValidated;
+  }
+
+  /**
+   * Get the validation error message, if any
+   */
+  getValidationError(): string | null {
+    return this._validationError;
+  }
+
+  /**
+   * Clear validation state (called on profile switch)
+   */
+  clearValidationCache(): void {
+    this._isValidated = false;
+    this._validationError = null;
+  }
+
+  /**
+   * Get the server URL
+   */
+  getServerUrl(): string {
+    return this.serverUrl;
+  }
+
+  /**
+   * Check connectivity to the API server.
+   * Uses a lightweight HEAD request with aggressive timeout for fast-fail.
+   * This is used during startup to quickly detect if API is unreachable.
+   */
+  async checkConnectivity(): Promise<{
+    reachable: boolean;
+    latencyMs?: number;
+  }> {
+    const start = Date.now();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      CONNECTIVITY_TIMEOUT,
+    );
+
+    try {
+      await fetch(this.serverUrl, {
+        method: "HEAD",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return { reachable: true, latencyMs: Date.now() - start };
+    } catch {
+      clearTimeout(timeoutId);
+      return { reachable: false };
+    }
+  }
+
+  /**
+   * Lightweight health check for background polling.
+   * Two-phase check:
+   * 1. Connectivity check with HEAD request (fast-fail)
+   * 2. Auth validation with HEAD to /api/web/namespaces
+   *
+   * Returns status:
+   * - 'connected': API reachable and authenticated
+   * - 'offline': API unreachable (network/timeout)
+   * - 'auth_error': API reachable but authentication failed (401/403)
+   */
+  async healthCheck(): Promise<HealthCheckResult> {
+    const start = Date.now();
+
+    // Phase 1: Quick connectivity check
+    const connectivity = await this.checkConnectivity();
+    if (!connectivity.reachable) {
+      return { status: "offline" };
+    }
+
+    // Phase 2: Auth validation with HEAD request to namespaces endpoint
+    if (!this.apiToken) {
+      // No token configured - report as auth error
+      return { status: "auth_error", latencyMs: Date.now() - start };
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      HEALTH_CHECK_TIMEOUT,
+    );
+
+    try {
+      const response = await fetch(`${this.serverUrl}/api/web/namespaces`, {
+        method: "HEAD",
+        headers: {
+          Authorization: `APIToken ${this.apiToken}`,
+          Accept: "application/json",
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const latencyMs = Date.now() - start;
+
+      // Check status code
+      if (response.ok || response.status === 200) {
+        return { status: "connected", latencyMs };
+      }
+
+      // Auth errors
+      if (response.status === 401 || response.status === 403) {
+        return { status: "auth_error", latencyMs };
+      }
+
+      // Other errors - assume connected but with issues
+      // Don't treat 404, 500, etc. as offline
+      return { status: "connected", latencyMs };
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      // Timeout or network error
+      if (error instanceof Error && error.name === "AbortError") {
+        return { status: "offline" };
+      }
+
+      // Network errors
+      return { status: "offline" };
+    }
+  }
+
+  /**
+   * Build full URL from path and query parameters
+   */
+  private buildUrl(path: string, query?: Record<string, string>): string {
+    let baseUrl = this.serverUrl;
+
+    // Handle case where base URL ends with /api and path starts with /api
+    if (baseUrl.endsWith("/api") && path.startsWith("/api")) {
+      baseUrl = baseUrl.slice(0, -4);
+    }
+
+    // Ensure path starts with /
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    let url = `${baseUrl}${normalizedPath}`;
+
+    // Add query parameters
+    if (query && Object.keys(query).length > 0) {
+      const params = new URLSearchParams(query);
+      url = `${url}?${params.toString()}`;
+    }
+
+    return url;
+  }
+
+  /**
+   * Check if an error is retryable
+   *
+   * Permanent network errors (connection refused, DNS not found) are NOT retried
+   * since retrying won't help if the server is unreachable.
+   */
+  private isRetryableError(error: unknown): boolean {
+    if (error instanceof APIError) {
+      return RETRYABLE_STATUS_CODES.has(error.statusCode);
+    }
+    // Only retry transient network errors, not permanent ones
+    if (error instanceof Error) {
+      const message = error.message.toLowerCase();
+
+      // Permanent errors - do NOT retry (server unreachable)
+      if (
+        message.includes("econnrefused") ||
+        message.includes("enotfound") ||
+        message.includes("ehostunreach") ||
+        message.includes("enetunreach")
+      ) {
+        return false;
+      }
+
+      // Transient errors - retry these
+      return (
+        error.name === "AbortError" ||
+        message.includes("etimedout") ||
+        message.includes("econnreset") ||
+        message.includes("socket hang up")
+      );
+    }
+    return false;
+  }
+
+  /**
+   * Execute a single HTTP request attempt
+   */
+  private async executeRequest<T = unknown>(
+    options: APIRequestOptions,
+    url: string,
+    headers: Record<string, string>,
+    body: string | null,
+  ): Promise<APIResponse<T>> {
+    const controller = new AbortController();
+    const requestTimeout = options.timeout ?? this.timeout;
+    const timeoutId = setTimeout(() => controller.abort(), requestTimeout);
+
+    try {
+      const response = await fetch(url, {
+        method: options.method,
+        headers,
+        body,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      // Read response body
+      const responseText = await response.text();
+      let data: T;
+
+      try {
+        data = responseText ? JSON.parse(responseText) : ({} as T);
+      } catch {
+        // If not valid JSON, wrap as string
+        data = responseText as unknown as T;
+      }
+
+      // Debug response
+      if (this.debug) {
+        console.error(`DEBUG: Response status: ${response.status}`);
+      }
+
+      // Convert headers to record
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
+
+      const result: APIResponse<T> = {
+        statusCode: response.status,
+        data,
+        headers: responseHeaders,
+        ok: response.ok,
+      };
+
+      // Throw error for non-2xx responses
+      if (!response.ok) {
+        const errorResponse = data as unknown as APIErrorResponse;
+        throw new APIError(
+          errorResponse.message ?? `HTTP ${response.status}`,
+          response.status,
+          errorResponse,
+          `${options.method} ${options.path}`,
+        );
+      }
+
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      // Re-throw APIError as-is
+      if (error instanceof APIError) {
+        throw error;
+      }
+
+      // Handle abort/timeout
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new APIError(
+          `Request timed out after ${requestTimeout}ms`,
+          408,
+          undefined,
+          `${options.method} ${options.path}`,
+        );
+      }
+
+      // Handle network errors
+      if (error instanceof Error) {
+        throw new APIError(
+          `Network error: ${error.message}`,
+          0,
+          undefined,
+          `${options.method} ${options.path}`,
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Execute an HTTP request with retry logic and optional retry override
+   */
+  private async requestWithOptions<T = unknown>(
+    options: APIRequestOptions,
+    retryOverride?: { maxRetries: number },
+  ): Promise<APIResponse<T>> {
+    return this.requestInternal<T>(options, retryOverride);
+  }
+
+  /**
+   * Execute an HTTP request with retry logic
+   */
+  async request<T = unknown>(
+    options: APIRequestOptions,
+  ): Promise<APIResponse<T>> {
+    return this.requestInternal<T>(options);
+  }
+
+  /**
+   * Internal request implementation with optional retry override
+   */
+  private async requestInternal<T = unknown>(
+    options: APIRequestOptions,
+    retryOverride?: { maxRetries: number },
+  ): Promise<APIResponse<T>> {
+    const url = this.buildUrl(options.path, options.query);
+    const profiler = getProfiler();
+
+    // Start network profiling span
+    const networkSpan = profiler.startNetworkSpan(url, options.method);
+
+    // Prepare headers
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...options.headers,
+    };
+
+    // Add API token authorization
+    if (this.apiToken) {
+      headers["Authorization"] = `APIToken ${this.apiToken}`;
+    }
+
+    // Prepare body
+    const body: string | null = options.body
+      ? JSON.stringify(options.body)
+      : null;
+
+    // Debug logging
+    if (this.debug) {
+      console.error(`DEBUG: ${options.method} ${url}`);
+      if (body) {
+        console.error(`DEBUG: Request body: ${body}`);
+      }
+    }
+
+    let lastError: Error | undefined;
+    let retryCount = 0;
+
+    // Use override if provided, otherwise use default config
+    const maxRetries = retryOverride?.maxRetries ?? this.retryConfig.maxRetries;
+
+    // Retry loop
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await this.executeRequest<T>(
+          options,
+          url,
+          headers,
+          body,
+        );
+
+        // End network span on success
+        profiler.endNetworkSpan(networkSpan, {
+          statusCode: result.statusCode,
+          responseSize: JSON.stringify(result.data).length,
+          retryCount,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+
+        // Check if we should retry
+        const isRetryable = this.isRetryableError(error);
+        const hasRetriesLeft = attempt < maxRetries;
+
+        if (isRetryable && hasRetriesLeft) {
+          retryCount++;
+          const delay = calculateBackoffDelay(attempt, this.retryConfig);
+
+          if (this.debug) {
+            const statusInfo =
+              error instanceof APIError ? ` (${error.statusCode})` : "";
+            console.error(
+              `DEBUG: Request failed${statusInfo}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`,
+            );
+          }
+
+          await sleep(delay);
+          continue;
+        }
+
+        // End network span on final failure
+        profiler.endNetworkSpan(networkSpan, {
+          statusCode: error instanceof APIError ? error.statusCode : 0,
+          retryCount,
+          error: lastError.message,
+        });
+
+        // Not retryable or no retries left - throw the error
+        throw error;
+      }
+    }
+
+    // Should not reach here, but just in case
+    throw lastError ?? new Error("Request failed after all retries");
+  }
+
+  /**
+   * GET request
+   */
+  async get<T = unknown>(
+    path: string,
+    query?: Record<string, string>,
+  ): Promise<APIResponse<T>> {
+    const options: APIRequestOptions = {
+      method: "GET",
+      path,
+    };
+    if (query) {
+      options.query = query;
+    }
+    return this.request<T>(options);
+  }
+
+  /**
+   * POST request
+   */
+  async post<T = unknown>(
+    path: string,
+    body?: Record<string, unknown>,
+    timeout?: number,
+  ): Promise<APIResponse<T>> {
+    const options: APIRequestOptions = {
+      method: "POST",
+      path,
+    };
+    if (body) {
+      options.body = body;
+    }
+    if (timeout !== undefined) {
+      options.timeout = timeout;
+    }
+    return this.request<T>(options);
+  }
+
+  /**
+   * PUT request
+   */
+  async put<T = unknown>(
+    path: string,
+    body?: Record<string, unknown>,
+  ): Promise<APIResponse<T>> {
+    const options: APIRequestOptions = {
+      method: "PUT",
+      path,
+    };
+    if (body) {
+      options.body = body;
+    }
+    return this.request<T>(options);
+  }
+
+  /**
+   * DELETE request
+   */
+  async delete<T = unknown>(path: string): Promise<APIResponse<T>> {
+    return this.request<T>({
+      method: "DELETE",
+      path,
+    });
+  }
+
+  /**
+   * PATCH request
+   */
+  async patch<T = unknown>(
+    path: string,
+    body?: Record<string, unknown>,
+  ): Promise<APIResponse<T>> {
+    const options: APIRequestOptions = {
+      method: "PATCH",
+      path,
+    };
+    if (body) {
+      options.body = body;
+    }
+    return this.request<T>(options);
+  }
 }
 
 /**
  * Create an API client from environment variables
  */
 export function createClientFromEnv(
-	envPrefix: string = "F5XC",
+  envPrefix: string = "F5XC",
 ): APIClient | null {
-	const serverUrl = process.env[`${envPrefix}_API_URL`];
-	const apiToken = process.env[`${envPrefix}_API_TOKEN`] ?? "";
+  const serverUrl = process.env[`${envPrefix}_API_URL`];
+  const apiToken = process.env[`${envPrefix}_API_TOKEN`] ?? "";
 
-	if (!serverUrl) {
-		return null;
-	}
+  if (!serverUrl) {
+    return null;
+  }
 
-	const config: APIClientConfig = {
-		serverUrl,
-		debug: process.env[`${envPrefix}_DEBUG`] === "true",
-	};
+  const config: APIClientConfig = {
+    serverUrl,
+    debug: process.env[`${envPrefix}_DEBUG`] === "true",
+  };
 
-	if (apiToken) {
-		config.apiToken = apiToken;
-	}
+  if (apiToken) {
+    config.apiToken = apiToken;
+  }
 
-	return new APIClient(config);
+  return new APIClient(config);
 }
 
 /**
  * Build API path for a domain resource
  */
 export function buildResourcePath(
-	domain: string,
-	resource: string,
-	action: string,
-	namespace?: string,
-	name?: string,
+  domain: string,
+  resource: string,
+  action: string,
+  namespace?: string,
+  name?: string,
 ): string {
-	// Standard F5 XC API path pattern:
-	// /api/web/namespaces/{namespace}/{resource}
-	// /api/web/namespaces/{namespace}/{resource}/{name}
-	// /api/config/namespaces/{namespace}/{resource}
-	// etc.
+  // Standard F5 XC API path pattern:
+  // /api/web/namespaces/{namespace}/{resource}
+  // /api/web/namespaces/{namespace}/{resource}/{name}
+  // /api/config/namespaces/{namespace}/{resource}
+  // etc.
 
-	let path = `/api/${domain}`;
+  let path = `/api/${domain}`;
 
-	if (namespace) {
-		path += `/namespaces/${namespace}`;
-	}
+  if (namespace) {
+    path += `/namespaces/${namespace}`;
+  }
 
-	path += `/${resource}`;
+  path += `/${resource}`;
 
-	if (name) {
-		path += `/${name}`;
-	}
+  if (name) {
+    path += `/${name}`;
+  }
 
-	// Handle specific actions that modify the path
-	if (action && action !== "list" && action !== "get") {
-		// Some actions like "create" are POST to base path
-		// Others like "delete" or specific actions may need different handling
-	}
+  // Handle specific actions that modify the path
+  if (action && action !== "list" && action !== "get") {
+    // Some actions like "create" are POST to base path
+    // Others like "delete" or specific actions may need different handling
+  }
 
-	return path;
+  return path;
 }
 
 // Re-export types from types.js

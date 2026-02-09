@@ -5,13 +5,13 @@
  */
 
 import type {
-	GenAIQueryResponse,
-	GenericResponse,
-	ExplainLogRecordResponse,
-	GenDashboardFilterResponse,
-	ListResponse,
-	SiteAnalysisResponse,
-	WidgetResponse,
+  GenAIQueryResponse,
+  GenericResponse,
+  ExplainLogRecordResponse,
+  GenDashboardFilterResponse,
+  ListResponse,
+  SiteAnalysisResponse,
+  WidgetResponse,
 } from "./types.js";
 import { getResponseType } from "./types.js";
 
@@ -21,382 +21,373 @@ import { getResponseType } from "./types.js";
  * Routes to the appropriate renderer based on response type
  */
 export function renderResponse(response: GenAIQueryResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	const responseType = getResponseType(response);
+  const responseType = getResponseType(response);
 
-	switch (responseType) {
-		case "generic_response":
-			lines.push(
-				...renderGenericResponse(response.generic_response ?? {}),
-			);
-			break;
-		case "explain_log":
-			lines.push(...renderExplainLog(response.explain_log ?? {}));
-			break;
-		case "gen_dashboard_filter":
-			lines.push(
-				...renderDashboardFilter(response.gen_dashboard_filter ?? {}),
-			);
-			break;
-		case "list_response":
-			lines.push(...renderListResponse(response.list_response ?? {}));
-			break;
-		case "site_analysis_response":
-			lines.push(
-				...renderSiteAnalysis(response.site_analysis_response ?? {}),
-			);
-			break;
-		case "widget_response":
-			lines.push(...renderWidgetResponse(response.widget_response ?? {}));
-			break;
-		default:
-			lines.push("No response content.");
-	}
+  switch (responseType) {
+    case "generic_response":
+      lines.push(...renderGenericResponse(response.generic_response ?? {}));
+      break;
+    case "explain_log":
+      lines.push(...renderExplainLog(response.explain_log ?? {}));
+      break;
+    case "gen_dashboard_filter":
+      lines.push(...renderDashboardFilter(response.gen_dashboard_filter ?? {}));
+      break;
+    case "list_response":
+      lines.push(...renderListResponse(response.list_response ?? {}));
+      break;
+    case "site_analysis_response":
+      lines.push(...renderSiteAnalysis(response.site_analysis_response ?? {}));
+      break;
+    case "widget_response":
+      lines.push(...renderWidgetResponse(response.widget_response ?? {}));
+      break;
+    default:
+      lines.push("No response content.");
+  }
 
-	// Add follow-up suggestions if available
-	if (response.follow_up_queries && response.follow_up_queries.length > 0) {
-		lines.push("");
-		lines.push("Suggested follow-up questions:");
-		response.follow_up_queries.forEach((q, i) => {
-			lines.push(`  ${i + 1}. ${q}`);
-		});
-	}
+  // Add follow-up suggestions if available
+  if (response.follow_up_queries && response.follow_up_queries.length > 0) {
+    lines.push("");
+    lines.push("Suggested follow-up questions:");
+    response.follow_up_queries.forEach((q, i) => {
+      lines.push(`  ${i + 1}. ${q}`);
+    });
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Strip HTML tags and convert to plain text
  */
 function stripHtml(html: string): string {
-	return (
-		html
-			// Convert HTML entities
-			.replace(/&amp;/g, "&")
-			.replace(/&lt;/g, "<")
-			.replace(/&gt;/g, ">")
-			.replace(/&quot;/g, '"')
-			.replace(/&#39;/g, "'")
-			.replace(/&nbsp;/g, " ")
-			// Convert common HTML elements to text equivalents
-			.replace(/<br\s*\/?>/gi, "\n")
-			.replace(/<\/p>/gi, "\n\n")
-			.replace(/<\/li>/gi, "\n")
-			.replace(/<\/h[1-6]>/gi, "\n\n")
-			.replace(/<hr\s*\/?>/gi, "\n---\n")
-			// Handle links - extract text and URL
-			.replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, "$2 ($1)")
-			// Handle code blocks
-			.replace(/<code>([^<]*)<\/code>/gi, "`$1`")
-			// Handle list items with bullets
-			.replace(/<li[^>]*>/gi, "  • ")
-			// Handle headings
-			.replace(/<h3[^>]*>/gi, "\n### ")
-			.replace(/<h[1-6][^>]*>/gi, "\n")
-			// Handle ordered list items (numbered)
-			.replace(/<ol[^>]*>/gi, "")
-			.replace(/<\/ol>/gi, "")
-			.replace(/<ul[^>]*>/gi, "")
-			.replace(/<\/ul>/gi, "")
-			// Handle bold/strong
-			.replace(/<strong>([^<]*)<\/strong>/gi, "**$1**")
-			.replace(/<b>([^<]*)<\/b>/gi, "**$1**")
-			// Handle emphasis
-			.replace(/<em>([^<]*)<\/em>/gi, "*$1*")
-			.replace(/<i>([^<]*)<\/i>/gi, "*$1*")
-			// Remove remaining HTML tags
-			.replace(/<[^>]+>/g, "")
-			// Clean up excessive newlines
-			.replace(/\n{3,}/g, "\n\n")
-			.trim()
-	);
+  return (
+    html
+      // Convert HTML entities
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, " ")
+      // Convert common HTML elements to text equivalents
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/p>/gi, "\n\n")
+      .replace(/<\/li>/gi, "\n")
+      .replace(/<\/h[1-6]>/gi, "\n\n")
+      .replace(/<hr\s*\/?>/gi, "\n---\n")
+      // Handle links - extract text and URL
+      .replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, "$2 ($1)")
+      // Handle code blocks
+      .replace(/<code>([^<]*)<\/code>/gi, "`$1`")
+      // Handle list items with bullets
+      .replace(/<li[^>]*>/gi, "  • ")
+      // Handle headings
+      .replace(/<h3[^>]*>/gi, "\n### ")
+      .replace(/<h[1-6][^>]*>/gi, "\n")
+      // Handle ordered list items (numbered)
+      .replace(/<ol[^>]*>/gi, "")
+      .replace(/<\/ol>/gi, "")
+      .replace(/<ul[^>]*>/gi, "")
+      .replace(/<\/ul>/gi, "")
+      // Handle bold/strong
+      .replace(/<strong>([^<]*)<\/strong>/gi, "**$1**")
+      .replace(/<b>([^<]*)<\/b>/gi, "**$1**")
+      // Handle emphasis
+      .replace(/<em>([^<]*)<\/em>/gi, "*$1*")
+      .replace(/<i>([^<]*)<\/i>/gi, "*$1*")
+      // Remove remaining HTML tags
+      .replace(/<[^>]+>/g, "")
+      // Clean up excessive newlines
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
 }
 
 /**
  * Render a generic text response
  */
 function renderGenericResponse(response: GenericResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	// Check for error (handle both string and null)
-	if (response.is_error || (response.error && response.error !== null)) {
-		lines.push(`ERROR: ${response.error ?? "Unknown error"}`);
-		lines.push("Tip: Check your request and try again");
-		return lines;
-	}
+  // Check for error (handle both string and null)
+  if (response.is_error || (response.error && response.error !== null)) {
+    lines.push(`ERROR: ${response.error ?? "Unknown error"}`);
+    lines.push("Tip: Check your request and try again");
+    return lines;
+  }
 
-	// Use summary (from API) or text (legacy) field
-	const content = response.summary ?? response.text;
-	if (content) {
-		// Strip HTML and split by newlines for proper rendering
-		const plainText = stripHtml(content);
-		lines.push(...plainText.split("\n"));
-	}
+  // Use summary (from API) or text (legacy) field
+  const content = response.summary ?? response.text;
+  if (content) {
+    // Strip HTML and split by newlines for proper rendering
+    const plainText = stripHtml(content);
+    lines.push(...plainText.split("\n"));
+  }
 
-	if (response.links && response.links.length > 0) {
-		lines.push("");
-		lines.push("Related links:");
-		for (const link of response.links) {
-			lines.push(`  - ${link.title}: ${link.url}`);
-		}
-	}
+  if (response.links && response.links.length > 0) {
+    lines.push("");
+    lines.push("Related links:");
+    for (const link of response.links) {
+      lines.push(`  - ${link.title}: ${link.url}`);
+    }
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Render a security event explanation
  */
 function renderExplainLog(response: ExplainLogRecordResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	lines.push("=== Security Event Analysis ===");
-	lines.push("");
+  lines.push("=== Security Event Analysis ===");
+  lines.push("");
 
-	if (response.summary) {
-		lines.push("Summary:");
-		lines.push(`  ${response.summary}`);
-		lines.push("");
-	}
+  if (response.summary) {
+    lines.push("Summary:");
+    lines.push(`  ${response.summary}`);
+    lines.push("");
+  }
 
-	if (response.action) {
-		lines.push(`Action Taken: ${response.action}`);
-	}
+  if (response.action) {
+    lines.push(`Action Taken: ${response.action}`);
+  }
 
-	if (response.accuracy) {
-		lines.push(`Accuracy: ${response.accuracy}`);
-	}
+  if (response.accuracy) {
+    lines.push(`Accuracy: ${response.accuracy}`);
+  }
 
-	if (response.violations && response.violations.length > 0) {
-		lines.push("");
-		lines.push("Violations Detected:");
-		for (const v of response.violations) {
-			lines.push(`  - ${v.name}: ${v.description}`);
-		}
-	}
+  if (response.violations && response.violations.length > 0) {
+    lines.push("");
+    lines.push("Violations Detected:");
+    for (const v of response.violations) {
+      lines.push(`  - ${v.name}: ${v.description}`);
+    }
+  }
 
-	if (response.threat_campaigns && response.threat_campaigns.length > 0) {
-		lines.push("");
-		lines.push("Threat Campaigns:");
-		for (const campaign of response.threat_campaigns) {
-			lines.push(`  - ${campaign}`);
-		}
-	}
+  if (response.threat_campaigns && response.threat_campaigns.length > 0) {
+    lines.push("");
+    lines.push("Threat Campaigns:");
+    for (const campaign of response.threat_campaigns) {
+      lines.push(`  - ${campaign}`);
+    }
+  }
 
-	if (response.request_details) {
-		lines.push("");
-		lines.push("Request Details:");
-		lines.push(`  ${JSON.stringify(response.request_details, null, 2)}`);
-	}
+  if (response.request_details) {
+    lines.push("");
+    lines.push("Request Details:");
+    lines.push(`  ${JSON.stringify(response.request_details, null, 2)}`);
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Render a dashboard filter expression
  */
 function renderDashboardFilter(response: GenDashboardFilterResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	lines.push("=== Dashboard Filter ===");
-	lines.push("");
+  lines.push("=== Dashboard Filter ===");
+  lines.push("");
 
-	if (response.filter_expression) {
-		lines.push("Filter Expression:");
-		lines.push(`  ${response.filter_expression}`);
-	}
+  if (response.filter_expression) {
+    lines.push("Filter Expression:");
+    lines.push(`  ${response.filter_expression}`);
+  }
 
-	if (response.dashboard_context) {
-		lines.push("");
-		lines.push("Dashboard Context:");
-		lines.push(`  ${response.dashboard_context}`);
-	}
+  if (response.dashboard_context) {
+    lines.push("");
+    lines.push("Dashboard Context:");
+    lines.push(`  ${response.dashboard_context}`);
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Render a list response as a table
  */
 function renderListResponse(response: ListResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	if (response.formatted_list) {
-		lines.push(response.formatted_list);
-		return lines;
-	}
+  if (response.formatted_list) {
+    lines.push(response.formatted_list);
+    return lines;
+  }
 
-	if (response.items && response.items.length > 0) {
-		if (response.total_count !== undefined) {
-			lines.push(`Total: ${response.total_count} items`);
-			lines.push("");
-		}
+  if (response.items && response.items.length > 0) {
+    if (response.total_count !== undefined) {
+      lines.push(`Total: ${response.total_count} items`);
+      lines.push("");
+    }
 
-		for (const item of response.items) {
-			lines.push(JSON.stringify(item, null, 2));
-			lines.push("");
-		}
-	} else {
-		lines.push("No items found.");
-	}
+    for (const item of response.items) {
+      lines.push(JSON.stringify(item, null, 2));
+      lines.push("");
+    }
+  } else {
+    lines.push("No items found.");
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Render a site analysis response
  */
 function renderSiteAnalysis(response: SiteAnalysisResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	lines.push("=== Site Analysis ===");
-	lines.push("");
+  lines.push("=== Site Analysis ===");
+  lines.push("");
 
-	if (response.site_name) {
-		lines.push(`Site: ${response.site_name}`);
-	}
+  if (response.site_name) {
+    lines.push(`Site: ${response.site_name}`);
+  }
 
-	if (response.health_status) {
-		lines.push(`Health: ${response.health_status}`);
-	}
+  if (response.health_status) {
+    lines.push(`Health: ${response.health_status}`);
+  }
 
-	if (response.metrics) {
-		lines.push("");
-		lines.push("Metrics:");
-		for (const [key, value] of Object.entries(response.metrics)) {
-			lines.push(`  ${key}: ${JSON.stringify(value)}`);
-		}
-	}
+  if (response.metrics) {
+    lines.push("");
+    lines.push("Metrics:");
+    for (const [key, value] of Object.entries(response.metrics)) {
+      lines.push(`  ${key}: ${JSON.stringify(value)}`);
+    }
+  }
 
-	if (response.recommendations && response.recommendations.length > 0) {
-		lines.push("");
-		lines.push("Recommendations:");
-		for (const rec of response.recommendations) {
-			lines.push(`  - ${rec}`);
-		}
-	}
+  if (response.recommendations && response.recommendations.length > 0) {
+    lines.push("");
+    lines.push("Recommendations:");
+    for (const rec of response.recommendations) {
+      lines.push(`  - ${rec}`);
+    }
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Render a widget response
  */
 function renderWidgetResponse(response: WidgetResponse): string[] {
-	const lines: string[] = [];
+  const lines: string[] = [];
 
-	if (response.display_type) {
-		lines.push(`Widget Type: ${response.display_type}`);
-		lines.push("");
-	}
+  if (response.display_type) {
+    lines.push(`Widget Type: ${response.display_type}`);
+    lines.push("");
+  }
 
-	if (response.table) {
-		// Render table with rows and cells
-		for (const row of response.table.rows) {
-			const cells = row.cells.map((cell) => {
-				let value = cell.value;
-				if (cell.properties?.status_style) {
-					value = `[${cell.properties.status_style}] ${value}`;
-				}
-				return value;
-			});
-			lines.push(cells.join(" | "));
-		}
-	}
+  if (response.table) {
+    // Render table with rows and cells
+    for (const row of response.table.rows) {
+      const cells = row.cells.map((cell) => {
+        let value = cell.value;
+        if (cell.properties?.status_style) {
+          value = `[${cell.properties.status_style}] ${value}`;
+        }
+        return value;
+      });
+      lines.push(cells.join(" | "));
+    }
+  }
 
-	if (response.links && response.links.length > 0) {
-		lines.push("");
-		lines.push("Links:");
-		for (const link of response.links) {
-			lines.push(`  - ${link.title}: ${link.url}`);
-		}
-	}
+  if (response.links && response.links.length > 0) {
+    lines.push("");
+    lines.push("Links:");
+    for (const link of response.links) {
+      lines.push(`  - ${link.title}: ${link.url}`);
+    }
+  }
 
-	return lines;
+  return lines;
 }
 
 /**
  * Format response as compact single-line summary
  */
 export function renderResponseCompact(response: GenAIQueryResponse): string {
-	const responseType = getResponseType(response);
+  const responseType = getResponseType(response);
 
-	switch (responseType) {
-		case "generic_response": {
-			const content =
-				response.generic_response?.summary ??
-				response.generic_response?.text;
-			if (content) {
-				const plainText = stripHtml(content);
-				return plainText.length > 100
-					? plainText.slice(0, 100) + "..."
-					: plainText;
-			}
-			return response.generic_response?.error ?? "No content";
-		}
+  switch (responseType) {
+    case "generic_response": {
+      const content =
+        response.generic_response?.summary ?? response.generic_response?.text;
+      if (content) {
+        const plainText = stripHtml(content);
+        return plainText.length > 100
+          ? plainText.slice(0, 100) + "..."
+          : plainText;
+      }
+      return response.generic_response?.error ?? "No content";
+    }
 
-		case "explain_log":
-			return (
-				response.explain_log?.summary ??
-				`Action: ${response.explain_log?.action}`
-			);
+    case "explain_log":
+      return (
+        response.explain_log?.summary ??
+        `Action: ${response.explain_log?.action}`
+      );
 
-		case "gen_dashboard_filter":
-			return (
-				response.gen_dashboard_filter?.filter_expression ??
-				"Filter generated"
-			);
+    case "gen_dashboard_filter":
+      return (
+        response.gen_dashboard_filter?.filter_expression ?? "Filter generated"
+      );
 
-		case "list_response":
-			return `${response.list_response?.total_count ?? response.list_response?.items?.length ?? 0} items`;
+    case "list_response":
+      return `${response.list_response?.total_count ?? response.list_response?.items?.length ?? 0} items`;
 
-		case "site_analysis_response":
-			return `${response.site_analysis_response?.site_name}: ${response.site_analysis_response?.health_status}`;
+    case "site_analysis_response":
+      return `${response.site_analysis_response?.site_name}: ${response.site_analysis_response?.health_status}`;
 
-		case "widget_response":
-			return `Widget: ${response.widget_response?.display_type ?? "table"}`;
+    case "widget_response":
+      return `Widget: ${response.widget_response?.display_type ?? "table"}`;
 
-		default:
-			return "No response";
-	}
+    default:
+      return "No response";
+  }
 }
 
 /**
  * Extract plain text from response for chat history
  */
 export function extractResponseText(response: GenAIQueryResponse): string {
-	const responseType = getResponseType(response);
+  const responseType = getResponseType(response);
 
-	switch (responseType) {
-		case "generic_response": {
-			const content =
-				response.generic_response?.summary ??
-				response.generic_response?.text;
-			if (content) {
-				return stripHtml(content);
-			}
-			return response.generic_response?.error ?? "";
-		}
+  switch (responseType) {
+    case "generic_response": {
+      const content =
+        response.generic_response?.summary ?? response.generic_response?.text;
+      if (content) {
+        return stripHtml(content);
+      }
+      return response.generic_response?.error ?? "";
+    }
 
-		case "explain_log":
-			return response.explain_log?.summary ?? "";
+    case "explain_log":
+      return response.explain_log?.summary ?? "";
 
-		case "gen_dashboard_filter":
-			return response.gen_dashboard_filter?.filter_expression ?? "";
+    case "gen_dashboard_filter":
+      return response.gen_dashboard_filter?.filter_expression ?? "";
 
-		case "list_response":
-			return response.list_response?.formatted_list ?? "";
+    case "list_response":
+      return response.list_response?.formatted_list ?? "";
 
-		case "site_analysis_response": {
-			const site = response.site_analysis_response;
-			return site?.recommendations?.join("; ") ?? "";
-		}
+    case "site_analysis_response": {
+      const site = response.site_analysis_response;
+      return site?.recommendations?.join("; ") ?? "";
+    }
 
-		case "widget_response":
-			return "";
+    case "widget_response":
+      return "";
 
-		default:
-			return "";
-	}
+    default:
+      return "";
+  }
 }

@@ -24,33 +24,33 @@ import { FLAG_ALIAS_LOOKUP } from "./flag-aliases.js";
  * extractUsedFlags(["-ns", "default"]) // Returns Set {"--namespace", "-ns"}
  */
 export function extractUsedFlags(args: string[]): Set<string> {
-	const usedFlags = new Set<string>();
+  const usedFlags = new Set<string>();
 
-	for (const arg of args) {
-		// Handle --flag=value pattern - extract just the flag part
-		let flagPart = arg;
-		if (arg.includes("=")) {
-			flagPart = arg.split("=")[0] ?? arg;
-		}
+  for (const arg of args) {
+    // Handle --flag=value pattern - extract just the flag part
+    let flagPart = arg;
+    if (arg.includes("=")) {
+      flagPart = arg.split("=")[0] ?? arg;
+    }
 
-		// Only process arguments that start with "-"
-		if (!flagPart.startsWith("-")) {
-			continue;
-		}
+    // Only process arguments that start with "-"
+    if (!flagPart.startsWith("-")) {
+      continue;
+    }
 
-		// Add the flag itself
-		usedFlags.add(flagPart);
+    // Add the flag itself
+    usedFlags.add(flagPart);
 
-		// Add all aliases of this flag
-		const aliases = FLAG_ALIAS_LOOKUP.get(flagPart);
-		if (aliases) {
-			for (const alias of aliases) {
-				usedFlags.add(alias);
-			}
-		}
-	}
+    // Add all aliases of this flag
+    const aliases = FLAG_ALIAS_LOOKUP.get(flagPart);
+    if (aliases) {
+      for (const alias of aliases) {
+        usedFlags.add(alias);
+      }
+    }
+  }
 
-	return usedFlags;
+  return usedFlags;
 }
 
 /**
@@ -66,10 +66,10 @@ export function extractUsedFlags(args: string[]): Set<string> {
  * filterUsedFlags(suggestions, used); // Returns [{text: "--token"}]
  */
 export function filterUsedFlags<T extends { text: string }>(
-	suggestions: T[],
-	usedFlags: Set<string>,
+  suggestions: T[],
+  usedFlags: Set<string>,
 ): T[] {
-	return suggestions.filter((s) => !usedFlags.has(s.text));
+  return suggestions.filter((s) => !usedFlags.has(s.text));
 }
 
 /**
@@ -85,11 +85,11 @@ export function filterUsedFlags<T extends { text: string }>(
  * // Returns ["--token"]
  */
 export function filterUsedFlagsFromStrings(
-	flags: string[],
-	args: string[],
+  flags: string[],
+  args: string[],
 ): string[] {
-	const usedFlags = extractUsedFlags(args);
-	return flags.filter((flag) => !usedFlags.has(flag));
+  const usedFlags = extractUsedFlags(args);
+  return flags.filter((flag) => !usedFlags.has(flag));
 }
 
 /**
@@ -111,25 +111,25 @@ export function filterUsedFlagsFromStrings(
  * // Returns Map { "--name" => 1, "--port" => 1 }
  */
 export function countFlagUsage(args: string[]): Map<string, number> {
-	const counts = new Map<string, number>();
+  const counts = new Map<string, number>();
 
-	for (const arg of args) {
-		// Handle --flag=value pattern - extract just the flag part
-		let flagPart = arg;
-		if (arg.includes("=")) {
-			flagPart = arg.split("=")[0] ?? arg;
-		}
+  for (const arg of args) {
+    // Handle --flag=value pattern - extract just the flag part
+    let flagPart = arg;
+    if (arg.includes("=")) {
+      flagPart = arg.split("=")[0] ?? arg;
+    }
 
-		// Only process arguments that start with "-"
-		if (!flagPart.startsWith("-")) {
-			continue;
-		}
+    // Only process arguments that start with "-"
+    if (!flagPart.startsWith("-")) {
+      continue;
+    }
 
-		const current = counts.get(flagPart) || 0;
-		counts.set(flagPart, current + 1);
-	}
+    const current = counts.get(flagPart) || 0;
+    counts.set(flagPart, current + 1);
+  }
 
-	return counts;
+  return counts;
 }
 
 /**
@@ -154,37 +154,37 @@ export function countFlagUsage(args: string[]): Map<string, number> {
  * // Returns Map { "--use-http2" => "" }
  */
 export function parseCreationFlagValues(args: string[]): Map<string, string> {
-	const values = new Map<string, string>();
+  const values = new Map<string, string>();
 
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
 
-		// Skip non-flag arguments (domain, action, resource type)
-		if (!arg || !arg.startsWith("-")) {
-			continue;
-		}
+    // Skip non-flag arguments (domain, action, resource type)
+    if (!arg || !arg.startsWith("-")) {
+      continue;
+    }
 
-		// Handle --flag=value pattern
-		if (arg.includes("=")) {
-			const eqIndex = arg.indexOf("=");
-			const flagName = arg.slice(0, eqIndex);
-			const flagValue = arg.slice(eqIndex + 1);
-			values.set(flagName, flagValue);
-			continue;
-		}
+    // Handle --flag=value pattern
+    if (arg.includes("=")) {
+      const eqIndex = arg.indexOf("=");
+      const flagName = arg.slice(0, eqIndex);
+      const flagValue = arg.slice(eqIndex + 1);
+      values.set(flagName, flagValue);
+      continue;
+    }
 
-		// Handle --flag value pattern
-		const nextArg = args[i + 1];
-		if (nextArg && !nextArg.startsWith("-")) {
-			values.set(arg, nextArg);
-			i++; // Skip next arg since we consumed it as value
-		} else {
-			// Boolean flag without value
-			values.set(arg, "");
-		}
-	}
+    // Handle --flag value pattern
+    const nextArg = args[i + 1];
+    if (nextArg && !nextArg.startsWith("-")) {
+      values.set(arg, nextArg);
+      i++; // Skip next arg since we consumed it as value
+    } else {
+      // Boolean flag without value
+      values.set(arg, "");
+    }
+  }
 
-	return values;
+  return values;
 }
 
 /**
@@ -201,47 +201,47 @@ export function parseCreationFlagValues(args: string[]): Map<string, string> {
  * @returns Formatted string for display, or null to skip display
  */
 export function formatDefaultValue(value: unknown): string | null {
-	// Skip undefined - no default to display
-	if (value === undefined) {
-		return null;
-	}
+  // Skip undefined - no default to display
+  if (value === undefined) {
+    return null;
+  }
 
-	// Handle null explicitly
-	if (value === null) {
-		return "none";
-	}
+  // Handle null explicitly
+  if (value === null) {
+    return "none";
+  }
 
-	// Handle primitives (string, number, boolean)
-	if (
-		typeof value === "string" ||
-		typeof value === "number" ||
-		typeof value === "boolean"
-	) {
-		return String(value);
-	}
+  // Handle primitives (string, number, boolean)
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return String(value);
+  }
 
-	// Handle arrays
-	if (Array.isArray(value)) {
-		if (value.length === 0) {
-			return "none";
-		}
-		// For non-empty arrays, show formatted values (max 3 items)
-		if (value.length <= 3) {
-			return value.join(", ");
-		}
-		return `${value.slice(0, 3).join(", ")}, ... (${value.length} items)`;
-	}
+  // Handle arrays
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return "none";
+    }
+    // For non-empty arrays, show formatted values (max 3 items)
+    if (value.length <= 3) {
+      return value.join(", ");
+    }
+    return `${value.slice(0, 3).join(", ")}, ... (${value.length} items)`;
+  }
 
-	// Handle objects
-	if (typeof value === "object") {
-		const keys = Object.keys(value);
-		if (keys.length === 0) {
-			return "none";
-		}
-		// For non-empty objects, show key count
-		return `${keys.length} items`;
-	}
+  // Handle objects
+  if (typeof value === "object") {
+    const keys = Object.keys(value);
+    if (keys.length === 0) {
+      return "none";
+    }
+    // For non-empty objects, show key count
+    return `${keys.length} items`;
+  }
 
-	// Fallback for unknown types - don't display
-	return null;
+  // Fallback for unknown types - don't display
+  return null;
 }

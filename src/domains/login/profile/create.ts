@@ -7,163 +7,163 @@ import { successResult, errorResult } from "../../registry.js";
 import { getProfileManager } from "../../../profile/index.js";
 import type { Profile } from "../../../profile/index.js";
 import {
-	formatConnectionTable,
-	buildConnectionInfo,
+  formatConnectionTable,
+  buildConnectionInfo,
 } from "./connection-table.js";
 import { validateResourceName } from "../../../validation/index.js";
 import { generateUsageError } from "../../error-messages.js";
 import { generateSmartCompletions } from "../../../utils/usage-parser.js";
 
 export const createCommand: CommandDefinition = {
-	name: "create",
-	description:
-		"Create a new connection profile with tenant URL and authentication credentials. Profiles store all settings needed to connect to a tenant, including optional default namespace for scoped operations.",
-	descriptionShort: "Create a new connection profile",
-	descriptionMedium:
-		"Create a profile with tenant URL, authentication token, and optional default namespace.",
-	usage: "<name> --url <api-url> --token <api-token> [--namespace <ns>]",
-	aliases: ["add", "new"],
+  name: "create",
+  description:
+    "Create a new connection profile with tenant URL and authentication credentials. Profiles store all settings needed to connect to a tenant, including optional default namespace for scoped operations.",
+  descriptionShort: "Create a new connection profile",
+  descriptionMedium:
+    "Create a profile with tenant URL, authentication token, and optional default namespace.",
+  usage: "<name> --url <api-url> --token <api-token> [--namespace <ns>]",
+  aliases: ["add", "new"],
 
-	completion: async (_currentWord: string, args: string[]) => {
-		// Use smart completion to show positional argument placeholder
-		// when profile name hasn't been provided yet
-		return generateSmartCompletions(createCommand.usage, args, [
-			"--url",
-			"--token",
-			"--namespace",
-		]);
-	},
+  completion: async (_currentWord: string, args: string[]) => {
+    // Use smart completion to show positional argument placeholder
+    // when profile name hasn't been provided yet
+    return generateSmartCompletions(createCommand.usage, args, [
+      "--url",
+      "--token",
+      "--namespace",
+    ]);
+  },
 
-	async execute(args, session) {
-		const manager = getProfileManager();
+  async execute(args, session) {
+    const manager = getProfileManager();
 
-		// Parse arguments
-		const name = args[0];
-		if (!name || name.startsWith("-")) {
-			return errorResult(
-				generateUsageError(
-					"login create profile", // FIXED: Correct registry path (verb-first)
-					createCommand.usage ?? "",
-					{
-						options: [
-							{
-								flag: "--url",
-								description:
-									"F5 XC API URL (e.g., https://tenant.console.ves.volterra.io)",
-							},
-							{
-								flag: "--token",
-								description: "API token for authentication",
-							},
-							{
-								flag: "--namespace",
-								description: "Default namespace (optional)",
-							},
-						],
-						examples: [
-							"login create profile myprofile --url https://tenant.console.ves.volterra.io --token abc123",
-							"login create profile prod --url https://prod.console.ves.volterra.io --token xyz789 --namespace production",
-						],
-					},
-				),
-			);
-		}
+    // Parse arguments
+    const name = args[0];
+    if (!name || name.startsWith("-")) {
+      return errorResult(
+        generateUsageError(
+          "login create profile", // FIXED: Correct registry path (verb-first)
+          createCommand.usage ?? "",
+          {
+            options: [
+              {
+                flag: "--url",
+                description:
+                  "F5 XC API URL (e.g., https://tenant.console.ves.volterra.io)",
+              },
+              {
+                flag: "--token",
+                description: "API token for authentication",
+              },
+              {
+                flag: "--namespace",
+                description: "Default namespace (optional)",
+              },
+            ],
+            examples: [
+              "login create profile myprofile --url https://tenant.console.ves.volterra.io --token abc123",
+              "login create profile prod --url https://prod.console.ves.volterra.io --token xyz789 --namespace production",
+            ],
+          },
+        ),
+      );
+    }
 
-		// Validate profile name for CLI safety
-		const nameValidation = validateResourceName(name, {
-			maxLength: 128, // Profiles can have longer names than API resources
-			resourceType: "profile",
-		});
-		if (!nameValidation.valid) {
-			const lines = [`Invalid profile name: ${nameValidation.message}`];
-			if (nameValidation.suggestion) {
-				lines.push("", `Suggested: ${nameValidation.suggestion}`);
-			}
-			return errorResult(lines.join("\n"));
-		}
+    // Validate profile name for CLI safety
+    const nameValidation = validateResourceName(name, {
+      maxLength: 128, // Profiles can have longer names than API resources
+      resourceType: "profile",
+    });
+    if (!nameValidation.valid) {
+      const lines = [`Invalid profile name: ${nameValidation.message}`];
+      if (nameValidation.suggestion) {
+        lines.push("", `Suggested: ${nameValidation.suggestion}`);
+      }
+      return errorResult(lines.join("\n"));
+    }
 
-		// Check if profile already exists
-		const existing = await manager.get(name);
-		if (existing) {
-			return errorResult(
-				`Profile '${name}' already exists. Use 'login profile delete ${name}' first, or choose a different name.`,
-			);
-		}
+    // Check if profile already exists
+    const existing = await manager.get(name);
+    if (existing) {
+      return errorResult(
+        `Profile '${name}' already exists. Use 'login profile delete ${name}' first, or choose a different name.`,
+      );
+    }
 
-		// Parse flags
-		let apiUrl = "";
-		let apiToken = "";
-		let defaultNamespace = "";
+    // Parse flags
+    let apiUrl = "";
+    let apiToken = "";
+    let defaultNamespace = "";
 
-		for (let i = 1; i < args.length; i++) {
-			const arg = args[i];
-			const next = args[i + 1];
+    for (let i = 1; i < args.length; i++) {
+      const arg = args[i];
+      const next = args[i + 1];
 
-			if ((arg === "--url" || arg === "-u") && next) {
-				apiUrl = next;
-				i++;
-			} else if ((arg === "--token" || arg === "-t") && next) {
-				apiToken = next;
-				i++;
-			} else if ((arg === "--namespace" || arg === "-n") && next) {
-				defaultNamespace = next;
-				i++;
-			}
-		}
+      if ((arg === "--url" || arg === "-u") && next) {
+        apiUrl = next;
+        i++;
+      } else if ((arg === "--token" || arg === "-t") && next) {
+        apiToken = next;
+        i++;
+      } else if ((arg === "--namespace" || arg === "-n") && next) {
+        defaultNamespace = next;
+        i++;
+      }
+    }
 
-		// Validate required fields
-		if (!apiUrl) {
-			return errorResult("Missing required --url option");
-		}
+    // Validate required fields
+    if (!apiUrl) {
+      return errorResult("Missing required --url option");
+    }
 
-		if (!apiToken) {
-			return errorResult("Missing required --token option");
-		}
+    if (!apiToken) {
+      return errorResult("Missing required --token option");
+    }
 
-		// Sanitize token: strip surrounding quotes if present
-		// Users may accidentally include quotes when copying tokens
-		const sanitizedToken = apiToken.replace(/^["']|["']$/g, "");
+    // Sanitize token: strip surrounding quotes if present
+    // Users may accidentally include quotes when copying tokens
+    const sanitizedToken = apiToken.replace(/^["']|["']$/g, "");
 
-		// Create profile
-		const profile: Profile = {
-			name,
-			apiUrl,
-			apiToken: sanitizedToken,
-		};
+    // Create profile
+    const profile: Profile = {
+      name,
+      apiUrl,
+      apiToken: sanitizedToken,
+    };
 
-		if (defaultNamespace) {
-			profile.defaultNamespace = defaultNamespace;
-		}
+    if (defaultNamespace) {
+      profile.defaultNamespace = defaultNamespace;
+    }
 
-		// Save profile
-		const result = await manager.save(profile);
+    // Save profile
+    const result = await manager.save(profile);
 
-		if (!result.success) {
-			return errorResult(result.message);
-		}
+    if (!result.success) {
+      return errorResult(result.message);
+    }
 
-		// Auto-activate the new profile
-		await session.switchProfile(name);
+    // Auto-activate the new profile
+    await session.switchProfile(name);
 
-		// Build connection info for display (now reflecting activated state)
-		const connectionInfo = buildConnectionInfo(
-			name,
-			apiUrl,
-			true, // hasToken - we just saved it
-			defaultNamespace || session.getNamespace(),
-			session.isAuthenticated(),
-			session.isTokenValidated(),
-			session.getValidationError() ?? undefined,
-			session.getAuthSource(),
-			session.getEnvVarsPresent(),
-		);
+    // Build connection info for display (now reflecting activated state)
+    const connectionInfo = buildConnectionInfo(
+      name,
+      apiUrl,
+      true, // hasToken - we just saved it
+      defaultNamespace || session.getNamespace(),
+      session.isAuthenticated(),
+      session.isTokenValidated(),
+      session.getValidationError() ?? undefined,
+      session.getAuthSource(),
+      session.getEnvVarsPresent(),
+    );
 
-		// Format connection table
-		const tableLines = formatConnectionTable(connectionInfo);
+    // Format connection table
+    const tableLines = formatConnectionTable(connectionInfo);
 
-		return successResult(
-			[`Profile '${name}' created and activated.`, ``, ...tableLines],
-			true, // contextChanged - REPL prompt should update
-		);
-	},
+    return successResult(
+      [`Profile '${name}' created and activated.`, ``, ...tableLines],
+      true, // contextChanged - REPL prompt should update
+    );
+  },
 };

@@ -21,21 +21,21 @@ const __dirname = dirname(__filename);
  * Format file with Prettier for consistent output
  */
 function formatWithPrettier(filePath: string): void {
-	try {
-		execSync(`npx prettier --write "${filePath}"`, {
-			stdio: "pipe",
-			encoding: "utf-8",
-		});
-		console.log(`  Formatted: ${filePath}`);
-	} catch {
-		console.warn(`  ⚠️  Prettier formatting skipped (not available)`);
-	}
+  try {
+    execSync(`npx prettier --write "${filePath}"`, {
+      stdio: "pipe",
+      encoding: "utf-8",
+    });
+    console.log(`  Formatted: ${filePath}`);
+  } catch {
+    console.warn(`  ⚠️  Prettier formatting skipped (not available)`);
+  }
 }
 
 interface SpecInfo {
-	title: string | null;
-	summary: string | null;
-	description: string | null;
+  title: string | null;
+  summary: string | null;
+  description: string | null;
 }
 
 /**
@@ -44,76 +44,77 @@ interface SpecInfo {
  * Returns title (short), summary (medium), and description (long) from spec
  */
 function extractSpecInfo(): SpecInfo {
-	const specPath = join(__dirname, "..", ".specs", "openapi.json");
-	if (!existsSync(specPath)) {
-		console.warn("  Warning: API spec not found, CLI info will use fallback");
-		return { title: null, summary: null, description: null };
-	}
-	try {
-		const content = readFileSync(specPath, "utf-8");
-		const spec = JSON.parse(content);
-		const title = spec.info?.title || null;
-		const summary = spec.info?.summary || null;
-		const description = spec.info?.description || null;
-		if (title || summary || description) {
-			console.log("  Extracted CLI info from .specs/openapi.json");
-			if (title) console.log(`    title: "${title}"`);
-			if (summary) console.log(`    summary: ${summary.length} chars`);
-			if (description) console.log(`    description: ${description.length} chars`);
-		}
-		return { title, summary, description };
-	} catch (error) {
-		console.warn(`  Warning: Failed to parse API spec: ${error}`);
-		return { title: null, summary: null, description: null };
-	}
+  const specPath = join(__dirname, "..", ".specs", "openapi.json");
+  if (!existsSync(specPath)) {
+    console.warn("  Warning: API spec not found, CLI info will use fallback");
+    return { title: null, summary: null, description: null };
+  }
+  try {
+    const content = readFileSync(specPath, "utf-8");
+    const spec = JSON.parse(content);
+    const title = spec.info?.title || null;
+    const summary = spec.info?.summary || null;
+    const description = spec.info?.description || null;
+    if (title || summary || description) {
+      console.log("  Extracted CLI info from .specs/openapi.json");
+      if (title) console.log(`    title: "${title}"`);
+      if (summary) console.log(`    summary: ${summary.length} chars`);
+      if (description)
+        console.log(`    description: ${description.length} chars`);
+    }
+    return { title, summary, description };
+  } catch (error) {
+    console.warn(`  Warning: Failed to parse API spec: ${error}`);
+    return { title: null, summary: null, description: null };
+  }
 }
 
 interface DescriptionTiers {
-	short: string;
-	medium: string;
-	long: string;
+  short: string;
+  medium: string;
+  long: string;
 }
 
 interface CommandDescription extends DescriptionTiers {}
 
 interface SubcommandDescription extends DescriptionTiers {
-	commands?: Record<string, CommandDescription>;
+  commands?: Record<string, CommandDescription>;
 }
 
 interface DomainDescription extends DescriptionTiers {
-	source_patterns_hash: string;
-	subcommands?: Record<string, SubcommandDescription>;
-	commands?: Record<string, CommandDescription>;
+  source_patterns_hash: string;
+  subcommands?: Record<string, SubcommandDescription>;
+  commands?: Record<string, CommandDescription>;
 }
 
 interface CliDescription extends DescriptionTiers {
-	source_patterns_hash: string;
+  source_patterns_hash: string;
 }
 
 interface GeneratedDescriptions {
-	version: string;
-	generated_at: string;
-	cli?: Record<string, CliDescription>;
-	domains: Record<string, DomainDescription>;
+  version: string;
+  generated_at: string;
+  cli?: Record<string, CliDescription>;
+  domains: Record<string, DomainDescription>;
 }
 
 /**
  * Escape string for TypeScript
  */
 function escapeTs(str: string): string {
-	return str
-		.replace(/\\/g, "\\\\")
-		.replace(/"/g, '\\"')
-		.replace(/\n/g, "\\n")
-		.replace(/\r/g, "\\r")
-		.replace(/\t/g, "\\t");
+  return str
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t");
 }
 
 /**
  * Generate TypeScript interface definitions
  */
 function generateInterfaces(): string {
-	return `/**
+  return `/**
  * Generated Description Types
  * Auto-generated from config/custom-domain-descriptions.yaml
  */
@@ -150,7 +151,7 @@ export interface GeneratedDescriptionsData {
  * Generate description object for a tier
  */
 function generateTierObject(desc: DescriptionTiers, indent: string): string {
-	return `{
+  return `{
 ${indent}	short: "${escapeTs(desc.short)}",
 ${indent}	medium: "${escapeTs(desc.medium)}",
 ${indent}	long: "${escapeTs(desc.long)}",
@@ -161,13 +162,13 @@ ${indent}}`;
  * Generate commands object
  */
 function generateCommandsObject(
-	commands: Record<string, CommandDescription>,
-	indent: string,
+  commands: Record<string, CommandDescription>,
+  indent: string,
 ): string {
-	const entries = Object.entries(commands).map(([name, cmd]) => {
-		return `${indent}	"${name}": ${generateTierObject(cmd, indent + "\t")},`;
-	});
-	return `{
+  const entries = Object.entries(commands).map(([name, cmd]) => {
+    return `${indent}	"${name}": ${generateTierObject(cmd, indent + "\t")},`;
+  });
+  return `{
 ${entries.join("\n")}
 ${indent}}`;
 }
@@ -176,25 +177,25 @@ ${indent}}`;
  * Generate subcommands object
  */
 function generateSubcommandsObject(
-	subcommands: Record<string, SubcommandDescription>,
-	indent: string,
+  subcommands: Record<string, SubcommandDescription>,
+  indent: string,
 ): string {
-	const entries = Object.entries(subcommands).map(([name, sub]) => {
-		let obj = `${indent}	"${name}": {
+  const entries = Object.entries(subcommands).map(([name, sub]) => {
+    let obj = `${indent}	"${name}": {
 ${indent}		short: "${escapeTs(sub.short)}",
 ${indent}		medium: "${escapeTs(sub.medium)}",
 ${indent}		long: "${escapeTs(sub.long)}",`;
 
-		if (sub.commands && Object.keys(sub.commands).length > 0) {
-			obj += `
+    if (sub.commands && Object.keys(sub.commands).length > 0) {
+      obj += `
 ${indent}		commands: ${generateCommandsObject(sub.commands, indent + "\t\t")},`;
-		}
+    }
 
-		obj += `
+    obj += `
 ${indent}	},`;
-		return obj;
-	});
-	return `{
+    return obj;
+  });
+  return `{
 ${entries.join("\n")}
 ${indent}}`;
 }
@@ -203,34 +204,34 @@ ${indent}}`;
  * Generate domain object
  */
 function generateDomainObject(
-	domain: DomainDescription,
-	indent: string,
+  domain: DomainDescription,
+  indent: string,
 ): string {
-	let obj = `{
+  let obj = `{
 ${indent}	short: "${escapeTs(domain.short)}",
 ${indent}	medium: "${escapeTs(domain.medium)}",
 ${indent}	long: "${escapeTs(domain.long)}",`;
 
-	if (domain.subcommands && Object.keys(domain.subcommands).length > 0) {
-		obj += `
+  if (domain.subcommands && Object.keys(domain.subcommands).length > 0) {
+    obj += `
 ${indent}	subcommands: ${generateSubcommandsObject(domain.subcommands, indent + "\t")},`;
-	}
+  }
 
-	if (domain.commands && Object.keys(domain.commands).length > 0) {
-		obj += `
+  if (domain.commands && Object.keys(domain.commands).length > 0) {
+    obj += `
 ${indent}	commands: ${generateCommandsObject(domain.commands, indent + "\t")},`;
-	}
+  }
 
-	obj += `
+  obj += `
 ${indent}}`;
-	return obj;
+  return obj;
 }
 
 /**
  * Generate CLI object
  */
 function generateCliObject(cli: CliDescription, indent: string): string {
-	return `{
+  return `{
 ${indent}	short: "${escapeTs(cli.short)}",
 ${indent}	medium: "${escapeTs(cli.medium)}",
 ${indent}	long: "${escapeTs(cli.long)}",
@@ -241,13 +242,13 @@ ${indent}}`;
  * Generate the full TypeScript module
  */
 function generateModule(data: GeneratedDescriptions): string {
-	const interfaces = generateInterfaces();
+  const interfaces = generateInterfaces();
 
-	// Extract CLI info from upstream spec (single source of truth)
-	const specInfo = extractSpecInfo();
+  // Extract CLI info from upstream spec (single source of truth)
+  const specInfo = extractSpecInfo();
 
-	// Generate exports for title (short), summary (medium), and description (long)
-	const specInfoExport = `
+  // Generate exports for title (short), summary (medium), and description (long)
+  const specInfoExport = `
 /**
  * CLI Title from upstream OpenAPI spec (short description)
  * Extracted at build time from .specs/openapi.json info.title
@@ -270,22 +271,22 @@ export const CLI_SUMMARY_FROM_SPEC: string | null = ${JSON.stringify(specInfo.su
 export const CLI_DESCRIPTION_FROM_SPEC: string | null = ${JSON.stringify(specInfo.description)};
 `;
 
-	// Generate CLI entries if present (for backwards compatibility)
-	let cliSection = "";
-	if (data.cli && Object.keys(data.cli).length > 0) {
-		const cliEntries = Object.entries(data.cli).map(([name, cli]) => {
-			return `		"${name}": ${generateCliObject(cli, "\t\t")},`;
-		});
-		cliSection = `	cli: {
+  // Generate CLI entries if present (for backwards compatibility)
+  let cliSection = "";
+  if (data.cli && Object.keys(data.cli).length > 0) {
+    const cliEntries = Object.entries(data.cli).map(([name, cli]) => {
+      return `		"${name}": ${generateCliObject(cli, "\t\t")},`;
+    });
+    cliSection = `	cli: {
 ${cliEntries.join("\n")}
 	},`;
-	}
+  }
 
-	const domainEntries = Object.entries(data.domains).map(([name, domain]) => {
-		return `		"${name}": ${generateDomainObject(domain, "\t\t")},`;
-	});
+  const domainEntries = Object.entries(data.domains).map(([name, domain]) => {
+    return `		"${name}": ${generateDomainObject(domain, "\t\t")},`;
+  });
 
-	return `${interfaces}
+  return `${interfaces}
 ${specInfoExport}
 
 /**
@@ -354,16 +355,25 @@ export function getCommandDescriptions(
  * Main function
  */
 async function main(): Promise<void> {
-	console.log("=== Description Loader Generator ===\n");
+  console.log("=== Description Loader Generator ===\n");
 
-	const projectRoot = join(__dirname, "..");
-	const yamlPath = join(projectRoot, "config", "custom-domain-descriptions.yaml");
-	const outputPath = join(projectRoot, "src", "domains", "descriptions.generated.ts");
+  const projectRoot = join(__dirname, "..");
+  const yamlPath = join(
+    projectRoot,
+    "config",
+    "custom-domain-descriptions.yaml",
+  );
+  const outputPath = join(
+    projectRoot,
+    "src",
+    "domains",
+    "descriptions.generated.ts",
+  );
 
-	// Check if YAML exists
-	if (!existsSync(yamlPath)) {
-		console.log("No descriptions YAML found. Creating empty module.");
-		const emptyModule = `${generateInterfaces()}
+  // Check if YAML exists
+  if (!existsSync(yamlPath)) {
+    console.log("No descriptions YAML found. Creating empty module.");
+    const emptyModule = `${generateInterfaces()}
 
 /**
  * Empty descriptions - run 'npm run generate:descriptions' to populate
@@ -398,52 +408,52 @@ export function getCommandDescriptions(
 	return undefined;
 }
 `;
-		writeFileSync(outputPath, emptyModule, "utf-8");
-		formatWithPrettier(outputPath);
-		console.log(`  Generated empty module: ${outputPath}`);
-		return;
-	}
+    writeFileSync(outputPath, emptyModule, "utf-8");
+    formatWithPrettier(outputPath);
+    console.log(`  Generated empty module: ${outputPath}`);
+    return;
+  }
 
-	// Read and parse YAML
-	console.log(`Reading: ${yamlPath}`);
-	const yamlContent = readFileSync(yamlPath, "utf-8");
-	const data = parseYaml(yamlContent) as GeneratedDescriptions;
+  // Read and parse YAML
+  console.log(`Reading: ${yamlPath}`);
+  const yamlContent = readFileSync(yamlPath, "utf-8");
+  const data = parseYaml(yamlContent) as GeneratedDescriptions;
 
-	if (!data || !data.domains) {
-		console.error("Invalid YAML structure");
-		process.exit(1);
-	}
+  if (!data || !data.domains) {
+    console.error("Invalid YAML structure");
+    process.exit(1);
+  }
 
-	// Generate TypeScript module
-	console.log("Generating TypeScript module...");
-	const tsModule = generateModule(data);
+  // Generate TypeScript module
+  console.log("Generating TypeScript module...");
+  const tsModule = generateModule(data);
 
-	// Write output
-	console.log(`Writing: ${outputPath}`);
-	writeFileSync(outputPath, tsModule, "utf-8");
-	formatWithPrettier(outputPath);
+  // Write output
+  console.log(`Writing: ${outputPath}`);
+  writeFileSync(outputPath, tsModule, "utf-8");
+  formatWithPrettier(outputPath);
 
-	// Count what was generated
-	const cliCount = data.cli ? Object.keys(data.cli).length : 0;
-	const domainCount = Object.keys(data.domains).length;
-	let subcommandCount = 0;
-	for (const domain of Object.values(data.domains)) {
-		if (domain.subcommands) {
-			subcommandCount += Object.keys(domain.subcommands).length;
-		}
-	}
+  // Count what was generated
+  const cliCount = data.cli ? Object.keys(data.cli).length : 0;
+  const domainCount = Object.keys(data.domains).length;
+  let subcommandCount = 0;
+  for (const domain of Object.values(data.domains)) {
+    if (domain.subcommands) {
+      subcommandCount += Object.keys(domain.subcommands).length;
+    }
+  }
 
-	console.log(`\n=== Complete ===`);
-	if (cliCount > 0) {
-		console.log(`  CLI: ${cliCount}`);
-	}
-	console.log(`  Domains: ${domainCount}`);
-	console.log(`  Subcommands: ${subcommandCount}`);
-	console.log(`  Output: ${outputPath}`);
+  console.log(`\n=== Complete ===`);
+  if (cliCount > 0) {
+    console.log(`  CLI: ${cliCount}`);
+  }
+  console.log(`  Domains: ${domainCount}`);
+  console.log(`  Subcommands: ${subcommandCount}`);
+  console.log(`  Output: ${outputPath}`);
 }
 
 // Run main
 main().catch((err) => {
-	console.error("Fatal error:", err);
-	process.exit(1);
+  console.error("Fatal error:", err);
+  process.exit(1);
 });

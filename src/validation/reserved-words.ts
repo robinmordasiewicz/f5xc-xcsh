@@ -21,67 +21,67 @@
  * These words are reserved across all major cloud CLI tools.
  */
 export const RESERVED_ACTIONS = new Set([
-	// CRUD operations
-	"create",
-	"delete",
-	"list",
-	"get",
-	"update",
-	"apply",
-	"patch",
-	// Info operations
-	"describe",
-	"show",
-	"status",
-	"logs",
-	"events",
-	// Modification
-	"edit",
-	"replace",
-	"set",
-	"unset",
-	// Lifecycle
-	"start",
-	"stop",
-	"restart",
-	"rollout",
-	"scale",
-	// Connection
-	"attach",
-	"detach",
-	"connect",
-	"disconnect",
-	// Registration
-	"register",
-	"deregister",
-	"associate",
-	"disassociate",
-	// AWS-specific
-	"put",
-	"modify",
-	// Built-in xcsh commands
-	"help",
-	"quit",
-	"exit",
-	"clear",
-	"history",
-	"refresh",
-	"context",
-	"banner",
-	"profile",
-	"completion",
-	// Common CLI patterns
-	"run",
-	"exec",
-	"wait",
-	"open",
-	"close",
-	"inspect",
-	"validate",
-	"diff",
-	"plan",
-	"import",
-	"export",
+  // CRUD operations
+  "create",
+  "delete",
+  "list",
+  "get",
+  "update",
+  "apply",
+  "patch",
+  // Info operations
+  "describe",
+  "show",
+  "status",
+  "logs",
+  "events",
+  // Modification
+  "edit",
+  "replace",
+  "set",
+  "unset",
+  // Lifecycle
+  "start",
+  "stop",
+  "restart",
+  "rollout",
+  "scale",
+  // Connection
+  "attach",
+  "detach",
+  "connect",
+  "disconnect",
+  // Registration
+  "register",
+  "deregister",
+  "associate",
+  "disassociate",
+  // AWS-specific
+  "put",
+  "modify",
+  // Built-in xcsh commands
+  "help",
+  "quit",
+  "exit",
+  "clear",
+  "history",
+  "refresh",
+  "context",
+  "banner",
+  "profile",
+  "completion",
+  // Common CLI patterns
+  "run",
+  "exec",
+  "wait",
+  "open",
+  "close",
+  "inspect",
+  "validate",
+  "diff",
+  "plan",
+  "import",
+  "export",
 ]);
 
 /**
@@ -103,44 +103,42 @@ export const SHELL_METACHARACTERS = /[;&|`$()<>\\#!{}[\]*?~\n\r]/;
  * Dangerous patterns that indicate potential security issues or CLI conflicts.
  */
 export const DANGEROUS_PATTERNS: Array<{
-	pattern: RegExp;
-	message: string;
+  pattern: RegExp;
+  message: string;
 }> = [
-	{
-		pattern: /^-/,
-		message:
-			"Name cannot start with a hyphen (would be interpreted as a flag)",
-	},
-	{
-		pattern: /^--/,
-		message:
-			"Name cannot start with double-hyphen (would be interpreted as a long flag)",
-	},
-	{
-		pattern: /\.\./,
-		message: "Name cannot contain '..' (path traversal risk)",
-	},
-	{
-		pattern: /^\./,
-		message: "Name cannot start with '.' (hidden file pattern)",
-	},
-	{
-		pattern: /\//,
-		message: "Name cannot contain '/' (path separator)",
-	},
-	{
-		pattern: /\\$/,
-		message: "Name cannot end with backslash (escape sequence risk)",
-	},
-	{
-		pattern: /\s/,
-		message: "Name cannot contain whitespace",
-	},
-	{
-		pattern: /^_/,
-		message:
-			"Name cannot start with underscore (reserved for internal use)",
-	},
+  {
+    pattern: /^-/,
+    message: "Name cannot start with a hyphen (would be interpreted as a flag)",
+  },
+  {
+    pattern: /^--/,
+    message:
+      "Name cannot start with double-hyphen (would be interpreted as a long flag)",
+  },
+  {
+    pattern: /\.\./,
+    message: "Name cannot contain '..' (path traversal risk)",
+  },
+  {
+    pattern: /^\./,
+    message: "Name cannot start with '.' (hidden file pattern)",
+  },
+  {
+    pattern: /\//,
+    message: "Name cannot contain '/' (path separator)",
+  },
+  {
+    pattern: /\\$/,
+    message: "Name cannot end with backslash (escape sequence risk)",
+  },
+  {
+    pattern: /\s/,
+    message: "Name cannot contain whitespace",
+  },
+  {
+    pattern: /^_/,
+    message: "Name cannot start with underscore (reserved for internal use)",
+  },
 ];
 
 /**
@@ -148,68 +146,68 @@ export const DANGEROUS_PATTERNS: Array<{
  * Attackers may try to name resources after destructive commands.
  */
 export const DANGEROUS_COMMANDS = new Set([
-	// File destruction
-	"rm",
-	"rm-rf",
-	"rmdir",
-	"del",
-	"unlink",
-	"shred",
-	// Privilege escalation
-	"sudo",
-	"su",
-	"chmod",
-	"chown",
-	"chattr",
-	"setfacl",
-	// Network tools (payload download)
-	"wget",
-	"curl",
-	"nc",
-	"netcat",
-	"socat",
-	"telnet",
-	"ssh",
-	"scp",
-	"rsync",
-	// Shell execution
-	"bash",
-	"sh",
-	"zsh",
-	"csh",
-	"ksh",
-	"fish",
-	"pwsh",
-	"powershell",
-	// Process execution
-	"exec",
-	"eval",
-	"source",
-	"nohup",
-	"xargs",
-	// Process termination
-	"kill",
-	"pkill",
-	"killall",
-	"killall5",
-	// Disk operations
-	"dd",
-	"mkfs",
-	"fdisk",
-	"parted",
-	"format",
-	// System control
-	"reboot",
-	"shutdown",
-	"halt",
-	"poweroff",
-	"init",
-	"systemctl",
-	// Container escape
-	"docker",
-	"kubectl",
-	"nsenter",
-	"chroot",
+  // File destruction
+  "rm",
+  "rm-rf",
+  "rmdir",
+  "del",
+  "unlink",
+  "shred",
+  // Privilege escalation
+  "sudo",
+  "su",
+  "chmod",
+  "chown",
+  "chattr",
+  "setfacl",
+  // Network tools (payload download)
+  "wget",
+  "curl",
+  "nc",
+  "netcat",
+  "socat",
+  "telnet",
+  "ssh",
+  "scp",
+  "rsync",
+  // Shell execution
+  "bash",
+  "sh",
+  "zsh",
+  "csh",
+  "ksh",
+  "fish",
+  "pwsh",
+  "powershell",
+  // Process execution
+  "exec",
+  "eval",
+  "source",
+  "nohup",
+  "xargs",
+  // Process termination
+  "kill",
+  "pkill",
+  "killall",
+  "killall5",
+  // Disk operations
+  "dd",
+  "mkfs",
+  "fdisk",
+  "parted",
+  "format",
+  // System control
+  "reboot",
+  "shutdown",
+  "halt",
+  "poweroff",
+  "init",
+  "systemctl",
+  // Container escape
+  "docker",
+  "kubectl",
+  "nsenter",
+  "chroot",
 ]);
 
 /**

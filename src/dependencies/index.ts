@@ -31,25 +31,25 @@ export { formatDependencyError } from "./formatter.js";
 
 // Types
 export type {
-	DependencyReference,
-	DependencyResult,
-	RelationshipPattern,
-	SearchOptions,
-	FoundReference,
+  DependencyReference,
+  DependencyResult,
+  RelationshipPattern,
+  SearchOptions,
+  FoundReference,
 } from "./types.js";
 
 // Relationship registry utilities
 export {
-	RELATIONSHIP_REGISTRY,
-	getRelatedDomains,
-	getSearchFields,
-	hasKnownRelationships,
-	getAllPatternsByPriority,
+  RELATIONSHIP_REGISTRY,
+  getRelatedDomains,
+  getSearchFields,
+  hasKnownRelationships,
+  getAllPatternsByPriority,
 } from "./relationships.js";
 
 // Search utilities
 export {
-	searchForReferences,
-	searchResourceList,
-	simplifyPath,
+  searchForReferences,
+  searchResourceList,
+  simplifyPath,
 } from "./search.js";

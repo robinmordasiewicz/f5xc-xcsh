@@ -25,26 +25,26 @@
 
 // Types
 export type {
-	QuotaMapping,
-	QuotaCheckResult,
-	QuotaCheckOptions,
-	CachedQuotaData,
-	QuotaUsageItem,
+  QuotaMapping,
+  QuotaCheckResult,
+  QuotaCheckOptions,
+  CachedQuotaData,
+  QuotaUsageItem,
 } from "./types.js";
 
 // Pre-check service (main API)
 export {
-	checkQuotaBeforeCreate,
-	formatQuotaWarning,
-	formatQuotaStatusLine,
+  checkQuotaBeforeCreate,
+  formatQuotaWarning,
+  formatQuotaStatusLine,
 } from "./pre-check.js";
 
 // Mapping utilities
 export {
-	getQuotaMapping,
-	getQuotaMappingByName,
-	getAllQuotaMappings,
-	hasQuotaMapping,
+  getQuotaMapping,
+  getQuotaMappingByName,
+  getAllQuotaMappings,
+  hasQuotaMapping,
 } from "./mapping.js";
 
 // Cache utilities

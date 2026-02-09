@@ -15,10 +15,10 @@
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
-	createTestSession,
-	createTestCompleter,
-	setupTestEnvironment,
-	cleanupTestEnvironment,
+  createTestSession,
+  createTestCompleter,
+  setupTestEnvironment,
+  cleanupTestEnvironment,
 } from "../utils/test-helpers.js";
 import type { REPLSession } from "../../src/repl/session.js";
 import type { Completer } from "../../src/repl/completion/completer.js";
@@ -27,162 +27,150 @@ import type { Completer } from "../../src/repl/completion/completer.js";
 setupTestEnvironment();
 
 describe("Default Value Display", () => {
-	let session: REPLSession;
-	let completer: Completer;
+  let session: REPLSession;
+  let completer: Completer;
 
-	beforeEach(() => {
-		session = createTestSession({ authenticated: true });
-		completer = createTestCompleter(session);
-	});
+  beforeEach(() => {
+    session = createTestSession({ authenticated: true });
+    completer = createTestCompleter(session);
+  });
 
-	afterEach(() => {
-		cleanupTestEnvironment();
-	});
+  afterEach(() => {
+    cleanupTestEnvironment();
+  });
 
-	describe("Healthcheck Defaults", () => {
-		it("shows default for jitter-percent flag", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+  describe("Healthcheck Defaults", () => {
+    it("shows default for jitter-percent flag", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			const jitterFlag = suggestions.find(
-				(s) => s.text === "--jitter-percent",
-			);
-			expect(jitterFlag).toBeDefined();
-			expect(jitterFlag?.description).toContain("default: 30");
-		});
+      const jitterFlag = suggestions.find((s) => s.text === "--jitter-percent");
+      expect(jitterFlag).toBeDefined();
+      expect(jitterFlag?.description).toContain("default: 30");
+    });
 
-		it("jitter-percent flag is optional, not required", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+    it("jitter-percent flag is optional, not required", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			const jitterFlag = suggestions.find(
-				(s) => s.text === "--jitter-percent",
-			);
-			expect(jitterFlag).toBeDefined();
-			// Should NOT contain "required" since it has a default
-			expect(jitterFlag?.description).not.toContain("required");
-		});
+      const jitterFlag = suggestions.find((s) => s.text === "--jitter-percent");
+      expect(jitterFlag).toBeDefined();
+      // Should NOT contain "required" since it has a default
+      expect(jitterFlag?.description).not.toContain("required");
+    });
 
-		it("required flags do not show defaults", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+    it("required flags do not show defaults", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			// --name is required per spec (x-f5xc-required-for.create: true)
-			const requiredFlags = ["--name"];
+      // --name is required per spec (x-f5xc-required-for.create: true)
+      const requiredFlags = ["--name"];
 
-			for (const flagName of requiredFlags) {
-				const flag = suggestions.find((s) => s.text === flagName);
-				expect(flag).toBeDefined();
-				expect(flag?.description).toContain("required");
-				// Required flags should NOT show defaults since users must provide them
-				expect(flag?.description).not.toContain("default:");
-			}
+      for (const flagName of requiredFlags) {
+        const flag = suggestions.find((s) => s.text === flagName);
+        expect(flag).toBeDefined();
+        expect(flag?.description).toContain("required");
+        // Required flags should NOT show defaults since users must provide them
+        expect(flag?.description).not.toContain("default:");
+      }
 
-			// --type is now optional with default "http"
-			const typeFlag = suggestions.find((s) => s.text === "--type");
-			expect(typeFlag).toBeDefined();
-			expect(typeFlag?.description).toContain("default: http");
+      // --type is now optional with default "http"
+      const typeFlag = suggestions.find((s) => s.text === "--type");
+      expect(typeFlag).toBeDefined();
+      expect(typeFlag?.description).toContain("default: http");
 
-			// These flags now have client-side defaults
-			const defaultFlags = {
-				"--interval": "default: 15",
-				"--timeout": "default: 3",
-				"--jitter-percent": "default: 30",
-			};
+      // These flags now have client-side defaults
+      const defaultFlags = {
+        "--interval": "default: 15",
+        "--timeout": "default: 3",
+        "--jitter-percent": "default: 30",
+      };
 
-			for (const [flagName, expectedDefault] of Object.entries(defaultFlags)) {
-				const flag = suggestions.find((s) => s.text === flagName);
-				expect(flag).toBeDefined();
-				expect(flag?.description).toContain(expectedDefault);
-				expect(flag?.description).not.toContain("required");
-			}
-		});
+      for (const [flagName, expectedDefault] of Object.entries(defaultFlags)) {
+        const flag = suggestions.find((s) => s.text === flagName);
+        expect(flag).toBeDefined();
+        expect(flag?.description).toContain(expectedDefault);
+        expect(flag?.description).not.toContain("required");
+      }
+    });
 
-		it("jitter-percent appears in alphabetical order with other optional flags", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+    it("jitter-percent appears in alphabetical order with other optional flags", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			const result = suggestions.map((s) => s.text);
-			const jitterIndex = result.indexOf("--jitter-percent");
+      const result = suggestions.map((s) => s.text);
+      const jitterIndex = result.indexOf("--jitter-percent");
 
-			// Should be present
-			expect(jitterIndex).toBeGreaterThan(-1);
+      // Should be present
+      expect(jitterIndex).toBeGreaterThan(-1);
 
-			// Should appear after required flags (which are sorted first)
-			const nameIndex = result.indexOf("--name");
-			expect(jitterIndex).toBeGreaterThan(nameIndex);
-		});
-	});
+      // Should appear after required flags (which are sorted first)
+      const nameIndex = result.indexOf("--name");
+      expect(jitterIndex).toBeGreaterThan(nameIndex);
+    });
+  });
 
-	describe("Flag Description Format", () => {
-		it("formats default values correctly in descriptions", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+  describe("Flag Description Format", () => {
+    it("formats default values correctly in descriptions", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			const jitterFlag = suggestions.find(
-				(s) => s.text === "--jitter-percent",
-			);
-			expect(jitterFlag).toBeDefined();
+      const jitterFlag = suggestions.find((s) => s.text === "--jitter-percent");
+      expect(jitterFlag).toBeDefined();
 
-			// Should include the flag's description and the default value
-			expect(jitterFlag?.description).toMatch(
-				/.*\(default: 30\)$/,
-			);
-		});
+      // Should include the flag's description and the default value
+      expect(jitterFlag?.description).toMatch(/.*\(default: 30\)$/);
+    });
 
-		it("preserves original description when showing defaults", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck ",
-			);
+    it("preserves original description when showing defaults", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck ",
+      );
 
-			const jitterFlag = suggestions.find(
-				(s) => s.text === "--jitter-percent",
-			);
-			expect(jitterFlag).toBeDefined();
+      const jitterFlag = suggestions.find((s) => s.text === "--jitter-percent");
+      expect(jitterFlag).toBeDefined();
 
-			// Should still contain the original description text
-			expect(jitterFlag?.description).toContain("jitter");
-			// And the default value
-			expect(jitterFlag?.description).toContain("default: 30");
-		});
-	});
+      // Should still contain the original description text
+      expect(jitterFlag?.description).toContain("jitter");
+      // And the default value
+      expect(jitterFlag?.description).toContain("default: 30");
+    });
+  });
 
-	describe("Flags Without Defaults", () => {
-		it("optional flags without defaults don't show default hint", async () => {
-			const suggestions = await completer.complete(
-				"/virtual create healthcheck --type http ",
-			);
+  describe("Flags Without Defaults", () => {
+    it("optional flags without defaults don't show default hint", async () => {
+      const suggestions = await completer.complete(
+        "/virtual create healthcheck --type http ",
+      );
 
-			// HTTP-specific optional flags that don't have defaults
-			const optionalFlags = ["--path", "--host-header"];
+      // HTTP-specific optional flags that don't have defaults
+      const optionalFlags = ["--path", "--host-header"];
 
-			for (const flagName of optionalFlags) {
-				const flag = suggestions.find((s) => s.text === flagName);
-				expect(flag).toBeDefined();
-				// Should NOT be marked as required
-				expect(flag?.description).not.toContain("required");
-				// Should NOT show default values
-				expect(flag?.description).not.toContain("default:");
-			}
-		});
-	});
+      for (const flagName of optionalFlags) {
+        const flag = suggestions.find((s) => s.text === flagName);
+        expect(flag).toBeDefined();
+        // Should NOT be marked as required
+        expect(flag?.description).not.toContain("required");
+        // Should NOT show default values
+        expect(flag?.description).not.toContain("default:");
+      }
+    });
+  });
 
-	describe("Apply Action Defaults", () => {
-		it("shows defaults for apply action as well", async () => {
-			const suggestions = await completer.complete(
-				"/virtual apply healthcheck ",
-			);
+  describe("Apply Action Defaults", () => {
+    it("shows defaults for apply action as well", async () => {
+      const suggestions = await completer.complete(
+        "/virtual apply healthcheck ",
+      );
 
-			const jitterFlag = suggestions.find(
-				(s) => s.text === "--jitter-percent",
-			);
-			expect(jitterFlag).toBeDefined();
-			expect(jitterFlag?.description).toContain("default: 30");
-		});
-	});
+      const jitterFlag = suggestions.find((s) => s.text === "--jitter-percent");
+      expect(jitterFlag).toBeDefined();
+      expect(jitterFlag?.description).toContain("default: 30");
+    });
+  });
 });

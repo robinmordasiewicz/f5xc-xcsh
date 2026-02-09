@@ -6,28 +6,28 @@
 
 // Types
 export type {
-	ResourceExistenceMetadata,
-	ExistenceCheckResult,
-	ExistenceCheckOptions,
-	SimilarResource,
-	SimilarResourcesResult,
-	SimilarResourcesOptions,
-	PreDeleteResult,
-	DeleteFlags,
+  ResourceExistenceMetadata,
+  ExistenceCheckResult,
+  ExistenceCheckOptions,
+  SimilarResource,
+  SimilarResourcesResult,
+  SimilarResourcesOptions,
+  PreDeleteResult,
+  DeleteFlags,
 } from "./types.js";
 
 // Existence checking
 export {
-	checkResourceExists,
-	performPreDeleteCheck,
-	formatPreDeleteResult,
+  checkResourceExists,
+  performPreDeleteCheck,
+  formatPreDeleteResult,
 } from "./existence.js";
 
 // Similar resource suggestions
 export {
-	levenshteinDistance,
-	calculateSimilarity,
-	findSimilarFromList,
-	findSimilarResources,
-	formatSuggestions,
+  levenshteinDistance,
+  calculateSimilarity,
+  findSimilarFromList,
+  findSimilarResources,
+  formatSuggestions,
 } from "./similar.js";

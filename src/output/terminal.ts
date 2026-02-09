@@ -17,7 +17,7 @@ let terminalWidth = process.stdout.columns ?? DEFAULT_WIDTH;
  * Returns the cached terminal width, falling back to default if unavailable
  */
 export function getTerminalWidth(): number {
-	return Math.max(terminalWidth, MIN_WIDTH);
+  return Math.max(terminalWidth, MIN_WIDTH);
 }
 
 /**
@@ -25,7 +25,7 @@ export function getTerminalWidth(): number {
  * Used by REPL to sync Ink's width state with this context
  */
 export function setTerminalWidth(width: number): void {
-	terminalWidth = Math.max(width, MIN_WIDTH);
+  terminalWidth = Math.max(width, MIN_WIDTH);
 }
 
 /**
@@ -33,11 +33,11 @@ export function setTerminalWidth(width: number): void {
  * Call once at startup for non-REPL mode (REPL uses setTerminalWidth)
  */
 export function initTerminalResize(): void {
-	if (process.stdout.isTTY) {
-		process.stdout.on("resize", () => {
-			terminalWidth = process.stdout.columns ?? DEFAULT_WIDTH;
-		});
-	}
+  if (process.stdout.isTTY) {
+    process.stdout.on("resize", () => {
+      terminalWidth = process.stdout.columns ?? DEFAULT_WIDTH;
+    });
+  }
 }
 
 /**
@@ -45,5 +45,5 @@ export function initTerminalResize(): void {
  * Useful for checking actual terminal size
  */
 export function getRawTerminalWidth(): number {
-	return process.stdout.columns ?? DEFAULT_WIDTH;
+  return process.stdout.columns ?? DEFAULT_WIDTH;
 }

@@ -10,6 +10,6 @@ export { ProfileDeleteWizard } from "./ProfileDeleteWizard.js";
 export { ProfileSwitcher } from "./ProfileSwitcher.js";
 export { ConfirmationDialog } from "./ConfirmationDialog.js";
 export {
-	ResourceCreateConfirmation,
-	type ResourceCreateConfirmationProps,
+  ResourceCreateConfirmation,
+  type ResourceCreateConfirmationProps,
 } from "./ResourceCreateConfirmation.js";

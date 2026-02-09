@@ -17,11 +17,11 @@ const APP_NAME = "f5xc";
  * Default: ~/.config/f5xc
  */
 export function getConfigDir(): string {
-	const xdgConfig = process.env.XDG_CONFIG_HOME;
-	if (xdgConfig) {
-		return join(xdgConfig, APP_NAME);
-	}
-	return join(homedir(), ".config", APP_NAME);
+  const xdgConfig = process.env.XDG_CONFIG_HOME;
+  if (xdgConfig) {
+    return join(xdgConfig, APP_NAME);
+  }
+  return join(homedir(), ".config", APP_NAME);
 }
 
 /**
@@ -30,11 +30,11 @@ export function getConfigDir(): string {
  * Default: ~/.local/state/f5xc
  */
 export function getStateDir(): string {
-	const xdgState = process.env.XDG_STATE_HOME;
-	if (xdgState) {
-		return join(xdgState, APP_NAME);
-	}
-	return join(homedir(), ".local", "state", APP_NAME);
+  const xdgState = process.env.XDG_STATE_HOME;
+  if (xdgState) {
+    return join(xdgState, APP_NAME);
+  }
+  return join(homedir(), ".local", "state", APP_NAME);
 }
 
 /**
@@ -42,25 +42,25 @@ export function getStateDir(): string {
  * Use these getters for all file path access throughout the application
  */
 export const paths = {
-	// Config files (XDG_CONFIG_HOME)
-	get configDir() {
-		return getConfigDir();
-	},
-	get profilesDir() {
-		return join(getConfigDir(), "profiles");
-	},
-	get activeProfile() {
-		return join(getConfigDir(), "active_profile");
-	},
-	get settings() {
-		return join(getConfigDir(), "config.yaml");
-	},
+  // Config files (XDG_CONFIG_HOME)
+  get configDir() {
+    return getConfigDir();
+  },
+  get profilesDir() {
+    return join(getConfigDir(), "profiles");
+  },
+  get activeProfile() {
+    return join(getConfigDir(), "active_profile");
+  },
+  get settings() {
+    return join(getConfigDir(), "config.yaml");
+  },
 
-	// State files (XDG_STATE_HOME)
-	get stateDir() {
-		return getStateDir();
-	},
-	get history() {
-		return join(getStateDir(), "history");
-	},
+  // State files (XDG_STATE_HOME)
+  get stateDir() {
+    return getStateDir();
+  },
+  get history() {
+    return join(getStateDir(), "history");
+  },
 };

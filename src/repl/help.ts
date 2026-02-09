@@ -8,30 +8,30 @@
  */
 
 import {
-	CLI_NAME,
-	CLI_VERSION,
-	CLI_FULL_NAME,
-	CLI_DESCRIPTION_LONG,
-	colorBoldWhite,
-	colorDim,
-	colorYellow,
-	colorRed,
+  CLI_NAME,
+  CLI_VERSION,
+  CLI_FULL_NAME,
+  CLI_DESCRIPTION_LONG,
+  colorBoldWhite,
+  colorDim,
+  colorYellow,
+  colorRed,
 } from "../branding/index.js";
 import {
-	formatEnvVarsSection,
-	formatConfigSection,
+  formatEnvVarsSection,
+  formatConfigSection,
 } from "../config/envvars.js";
 import { OUTPUT_FORMAT_HELP } from "../output/types.js";
 import {
-	type DomainInfo,
-	domainRegistry,
-	validActions,
-	getDomainInfo,
+  type DomainInfo,
+  domainRegistry,
+  validActions,
+  getDomainInfo,
 } from "../types/domains.js";
 import type { DomainDefinition, SubcommandGroup } from "../domains/registry.js";
 import {
-	descriptionResolver,
-	getOperationDescription,
+  descriptionResolver,
+  getOperationDescription,
 } from "../descriptions/index.js";
 
 /**
@@ -39,26 +39,26 @@ import {
  * Preserves words and wraps at word boundaries.
  */
 function wrapText(text: string, width: number, indent: number): string[] {
-	const prefix = " ".repeat(indent);
-	const words = text.split(/\s+/);
-	const lines: string[] = [];
-	let currentLine = prefix;
+  const prefix = " ".repeat(indent);
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let currentLine = prefix;
 
-	for (const word of words) {
-		if (
-			currentLine.length + word.length + 1 > width &&
-			currentLine !== prefix
-		) {
-			lines.push(currentLine);
-			currentLine = prefix + word;
-		} else {
-			currentLine += (currentLine === prefix ? "" : " ") + word;
-		}
-	}
-	if (currentLine.trim()) {
-		lines.push(currentLine);
-	}
-	return lines;
+  for (const word of words) {
+    if (
+      currentLine.length + word.length + 1 > width &&
+      currentLine !== prefix
+    ) {
+      lines.push(currentLine);
+      currentLine = prefix + word;
+    } else {
+      currentLine += (currentLine === prefix ? "" : " ") + word;
+    }
+  }
+  if (currentLine.trim()) {
+    lines.push(currentLine);
+  }
+  return lines;
 }
 
 /**
@@ -67,71 +67,71 @@ function wrapText(text: string, width: number, indent: number): string[] {
  * Matches the Go version's professional structure.
  */
 export function formatRootHelp(): string[] {
-	return [
-		"",
-		colorBoldWhite(`${CLI_NAME} - ${CLI_FULL_NAME} ${CLI_VERSION}`),
-		"",
-		"DESCRIPTION",
-		...wrapText(CLI_DESCRIPTION_LONG, 80, 2),
-		"",
-		"USAGE",
-		`  ${CLI_NAME}                              Enter interactive REPL mode`,
-		`  ${CLI_NAME} <domain> <action>            Execute command non-interactively`,
-		`  ${CLI_NAME} help [topic]                 Show help for a topic`,
-		"",
-		"EXAMPLES",
-		`  ${CLI_NAME} tenant_and_identity list namespace   List all namespaces`,
-		`  ${CLI_NAME} virtual get http_loadbalancer        Get a specific load balancer`,
-		`  ${CLI_NAME} dns list                             List DNS zones`,
-		`  ${CLI_NAME} virtual list app_firewall --namespace prod   List app firewalls in prod`,
-		"",
-		...formatDomainsSection(),
-		"",
-		...formatGlobalFlags(),
-		"",
-		...formatEnvVarsSection(),
-		"",
-		...formatConfigSection(),
-		"",
-		"NAVIGATION (Interactive Mode)",
-		"  <domain>              Navigate into a domain (e.g., 'dns', 'lb')",
-		"  /domain               Navigate directly to domain from anywhere",
-		"  ..                    Go up one level",
-		"  /                     Return to root",
-		"  context               Show current navigation context",
-		"",
-		"BUILTINS",
-		"  help                  Show this help",
-		"  domains               List all available domains",
-		"  clear                 Clear the screen",
-		"  history               Show command history",
-		"  refresh               Refresh git status in statusline",
-		"  quit, exit            Exit the shell",
-		"",
-		"KEYBOARD SHORTCUTS",
-		"  Ctrl+C (x2)           Exit the shell",
-		"  Ctrl+D                Exit immediately",
-		"  Ctrl+G                Refresh git status",
-		"  Tab                   Trigger completion",
-		"  Up/Down               Navigate history or suggestions",
-		"  Escape                Cancel suggestions",
-		"",
-	];
+  return [
+    "",
+    colorBoldWhite(`${CLI_NAME} - ${CLI_FULL_NAME} ${CLI_VERSION}`),
+    "",
+    "DESCRIPTION",
+    ...wrapText(CLI_DESCRIPTION_LONG, 80, 2),
+    "",
+    "USAGE",
+    `  ${CLI_NAME}                              Enter interactive REPL mode`,
+    `  ${CLI_NAME} <domain> <action>            Execute command non-interactively`,
+    `  ${CLI_NAME} help [topic]                 Show help for a topic`,
+    "",
+    "EXAMPLES",
+    `  ${CLI_NAME} tenant_and_identity list namespace   List all namespaces`,
+    `  ${CLI_NAME} virtual get http_loadbalancer        Get a specific load balancer`,
+    `  ${CLI_NAME} dns list                             List DNS zones`,
+    `  ${CLI_NAME} virtual list app_firewall --namespace prod   List app firewalls in prod`,
+    "",
+    ...formatDomainsSection(),
+    "",
+    ...formatGlobalFlags(),
+    "",
+    ...formatEnvVarsSection(),
+    "",
+    ...formatConfigSection(),
+    "",
+    "NAVIGATION (Interactive Mode)",
+    "  <domain>              Navigate into a domain (e.g., 'dns', 'lb')",
+    "  /domain               Navigate directly to domain from anywhere",
+    "  ..                    Go up one level",
+    "  /                     Return to root",
+    "  context               Show current navigation context",
+    "",
+    "BUILTINS",
+    "  help                  Show this help",
+    "  domains               List all available domains",
+    "  clear                 Clear the screen",
+    "  history               Show command history",
+    "  refresh               Refresh git status in statusline",
+    "  quit, exit            Exit the shell",
+    "",
+    "KEYBOARD SHORTCUTS",
+    "  Ctrl+C (x2)           Exit the shell",
+    "  Ctrl+D                Exit immediately",
+    "  Ctrl+G                Refresh git status",
+    "  Tab                   Trigger completion",
+    "  Up/Down               Navigate history or suggestions",
+    "  Escape                Cancel suggestions",
+    "",
+  ];
 }
 
 /**
  * Format global flags section.
  */
 export function formatGlobalFlags(): string[] {
-	return [
-		"GLOBAL FLAGS",
-		"  --version             Show version number",
-		"  --help                Show this help",
-		"  --no-color            Disable color output",
-		`  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`,
-		"  --namespace <ns>      Target namespace",
-		"  --spec                Output command specification as JSON (for AI)",
-	];
+  return [
+    "GLOBAL FLAGS",
+    "  --version             Show version number",
+    "  --help                Show this help",
+    "  --no-color            Disable color output",
+    `  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`,
+    "  --namespace <ns>      Target namespace",
+    "  --spec                Output command specification as JSON (for AI)",
+  ];
 }
 
 /**
@@ -139,7 +139,7 @@ export function formatGlobalFlags(): string[] {
  * Re-exports the centralized function from config/envvars for backwards compatibility.
  */
 export function formatEnvironmentVariables(): string[] {
-	return formatEnvVarsSection();
+  return formatEnvVarsSection();
 }
 
 /**
@@ -148,215 +148,215 @@ export function formatEnvironmentVariables(): string[] {
  * Uses the description resolver to source descriptions from upstream API specs.
  */
 export function formatDomainHelp(domain: DomainInfo): string[] {
-	// Build header with optional icon
-	const icon = domain.icon ? `${domain.icon} ` : "";
-	const output: string[] = [
-		"",
-		colorBoldWhite(`${icon}${domain.displayName}`),
-		"",
-	];
+  // Build header with optional icon
+  const icon = domain.icon ? `${domain.icon} ` : "";
+  const output: string[] = [
+    "",
+    colorBoldWhite(`${icon}${domain.displayName}`),
+    "",
+  ];
 
-	// Get description from resolver (uses upstream specs for API domains)
-	const descriptions = descriptionResolver.getDomainDescription(domain.name);
-	output.push(`  ${descriptions.long}`);
-	output.push("");
+  // Get description from resolver (uses upstream specs for API domains)
+  const descriptions = descriptionResolver.getDomainDescription(domain.name);
+  output.push(`  ${descriptions.long}`);
+  output.push("");
 
-	// Category, UI category, and complexity if available
-	const meta: string[] = [];
-	if (domain.uiCategory) meta.push(`Category: ${domain.uiCategory}`);
-	else if (domain.category) meta.push(`Category: ${domain.category}`);
-	if (domain.complexity) meta.push(`Complexity: ${domain.complexity}`);
-	if (domain.requiresTier && domain.requiresTier !== "Standard") {
-		meta.push(`Tier: ${domain.requiresTier}`);
-	}
-	if (meta.length > 0) {
-		output.push(colorDim(`  ${meta.join("  |  ")}`));
-		output.push("");
-	}
+  // Category, UI category, and complexity if available
+  const meta: string[] = [];
+  if (domain.uiCategory) meta.push(`Category: ${domain.uiCategory}`);
+  else if (domain.category) meta.push(`Category: ${domain.category}`);
+  if (domain.complexity) meta.push(`Complexity: ${domain.complexity}`);
+  if (domain.requiresTier && domain.requiresTier !== "Standard") {
+    meta.push(`Tier: ${domain.requiresTier}`);
+  }
+  if (meta.length > 0) {
+    output.push(colorDim(`  ${meta.join("  |  ")}`));
+    output.push("");
+  }
 
-	// Usage
-	output.push("USAGE");
-	output.push(`  ${CLI_NAME} ${domain.name} <action> [options]`);
-	output.push("");
+  // Usage
+  output.push("USAGE");
+  output.push(`  ${CLI_NAME} ${domain.name} <action> [options]`);
+  output.push("");
 
-	// Actions - use operation descriptions from OpenAPI when available
-	output.push("ACTIONS");
+  // Actions - use operation descriptions from OpenAPI when available
+  output.push("ACTIONS");
 
-	for (const action of validActions) {
-		// Try to get description from upstream OpenAPI spec first
-		const opInfo = getOperationDescription(domain.name, action);
-		let desc: string;
+  for (const action of validActions) {
+    // Try to get description from upstream OpenAPI spec first
+    const opInfo = getOperationDescription(domain.name, action);
+    let desc: string;
 
-		if (opInfo) {
-			// Use upstream operation summary/description
-			desc = opInfo.summary || opInfo.description || action;
-		} else {
-			// Fallback to generic action description
-			const actionDesc = descriptionResolver.getActionDescription(action);
-			desc = actionDesc.short;
-		}
+    if (opInfo) {
+      // Use upstream operation summary/description
+      desc = opInfo.summary || opInfo.description || action;
+    } else {
+      // Fallback to generic action description
+      const actionDesc = descriptionResolver.getActionDescription(action);
+      desc = actionDesc.short;
+    }
 
-		output.push(`  ${action.padEnd(16)} ${desc}`);
-	}
-	output.push("");
+    output.push(`  ${action.padEnd(16)} ${desc}`);
+  }
+  output.push("");
 
-	// Resources - Phase 1 Enhancement: Show allResources with categories
-	const resources = domain.allResources || domain.primaryResources;
-	if (resources && resources.length > 0) {
-		const primaryCount = domain.primaryResources?.length || 0;
-		const totalCount = resources.length;
-		const discoveredCount = totalCount - primaryCount;
+  // Resources - Phase 1 Enhancement: Show allResources with categories
+  const resources = domain.allResources || domain.primaryResources;
+  if (resources && resources.length > 0) {
+    const primaryCount = domain.primaryResources?.length || 0;
+    const totalCount = resources.length;
+    const discoveredCount = totalCount - primaryCount;
 
-		// Header with counts
-		output.push("RESOURCES");
-		if (discoveredCount > 0) {
-			output.push(
-				colorDim(
-					`  Total: ${totalCount} (${primaryCount} primary + ${discoveredCount} discovered)`,
-				),
-			);
-		} else {
-			output.push(colorDim(`  Total: ${totalCount}`));
-		}
-		output.push("");
+    // Header with counts
+    output.push("RESOURCES");
+    if (discoveredCount > 0) {
+      output.push(
+        colorDim(
+          `  Total: ${totalCount} (${primaryCount} primary + ${discoveredCount} discovered)`,
+        ),
+      );
+    } else {
+      output.push(colorDim(`  Total: ${totalCount}`));
+    }
+    output.push("");
 
-		// Group resources by category if available
-		const byCategory = new Map<string, typeof resources>();
-		if (domain.resourceCategories) {
-			byCategory.set(
-				"crud",
-				resources.filter((r) => r.resourceCategory === "crud"),
-			);
-			byCategory.set(
-				"analytics",
-				resources.filter((r) => r.resourceCategory === "analytics"),
-			);
-			byCategory.set(
-				"utility",
-				resources.filter((r) => r.resourceCategory === "utility"),
-			);
-			byCategory.set(
-				"management",
-				resources.filter((r) => r.resourceCategory === "management"),
-			);
-		} else {
-			// If no categories, show all as one group
-			byCategory.set("all", resources);
-		}
+    // Group resources by category if available
+    const byCategory = new Map<string, typeof resources>();
+    if (domain.resourceCategories) {
+      byCategory.set(
+        "crud",
+        resources.filter((r) => r.resourceCategory === "crud"),
+      );
+      byCategory.set(
+        "analytics",
+        resources.filter((r) => r.resourceCategory === "analytics"),
+      );
+      byCategory.set(
+        "utility",
+        resources.filter((r) => r.resourceCategory === "utility"),
+      );
+      byCategory.set(
+        "management",
+        resources.filter((r) => r.resourceCategory === "management"),
+      );
+    } else {
+      // If no categories, show all as one group
+      byCategory.set("all", resources);
+    }
 
-		// Display each category
-		const categoryLabels: Record<string, string> = {
-			crud: "Core Resources",
-			analytics: "Analytics & Reporting",
-			utility: "Utilities",
-			management: "Management Operations",
-			all: "",
-		};
+    // Display each category
+    const categoryLabels: Record<string, string> = {
+      crud: "Core Resources",
+      analytics: "Analytics & Reporting",
+      utility: "Utilities",
+      management: "Management Operations",
+      all: "",
+    };
 
-		for (const [category, categoryResources] of byCategory) {
-			if (categoryResources.length === 0) continue;
+    for (const [category, categoryResources] of byCategory) {
+      if (categoryResources.length === 0) continue;
 
-			// Category header
-			const label = categoryLabels[category] || category;
-			if (label) {
-				output.push(colorBoldWhite(`  ${label}`));
-			}
+      // Category header
+      const label = categoryLabels[category] || category;
+      if (label) {
+        output.push(colorBoldWhite(`  ${label}`));
+      }
 
-			// Show up to 10 resources per category, primary first
-			const sorted = categoryResources.sort((a, b) => {
-				if (a.isPrimary && !b.isPrimary) return -1;
-				if (!a.isPrimary && b.isPrimary) return 1;
-				return a.name.localeCompare(b.name);
-			});
+      // Show up to 10 resources per category, primary first
+      const sorted = categoryResources.sort((a, b) => {
+        if (a.isPrimary && !b.isPrimary) return -1;
+        if (!a.isPrimary && b.isPrimary) return 1;
+        return a.name.localeCompare(b.name);
+      });
 
-			for (const resource of sorted.slice(0, 10)) {
-				const primaryBadge = resource.isPrimary ? " ⭐" : "";
-				const tierBadge =
-					resource.tier && resource.tier !== "Standard"
-						? ` [${resource.tier}]`
-						: "";
-				const icon = resource.icon ? `${resource.icon} ` : "";
-				output.push(
-					`    ${icon}${resource.name}${colorDim(tierBadge)}${primaryBadge}`,
-				);
-				if (resource.descriptionShort) {
-					output.push(
-						`        ${colorDim(resource.descriptionShort.slice(0, 60))}`,
-					);
-				}
+      for (const resource of sorted.slice(0, 10)) {
+        const primaryBadge = resource.isPrimary ? " ⭐" : "";
+        const tierBadge =
+          resource.tier && resource.tier !== "Standard"
+            ? ` [${resource.tier}]`
+            : "";
+        const icon = resource.icon ? `${resource.icon} ` : "";
+        output.push(
+          `    ${icon}${resource.name}${colorDim(tierBadge)}${primaryBadge}`,
+        );
+        if (resource.descriptionShort) {
+          output.push(
+            `        ${colorDim(resource.descriptionShort.slice(0, 60))}`,
+          );
+        }
 
-				// Show dependencies for primary resources
-				if (resource.isPrimary) {
-					if (resource.dependencies?.required?.length) {
-						output.push(
-							colorDim(
-								`        Requires: ${resource.dependencies.required.join(", ")}`,
-							),
-						);
-					}
-				}
-			}
+        // Show dependencies for primary resources
+        if (resource.isPrimary) {
+          if (resource.dependencies?.required?.length) {
+            output.push(
+              colorDim(
+                `        Requires: ${resource.dependencies.required.join(", ")}`,
+              ),
+            );
+          }
+        }
+      }
 
-			// Show "and N more" if there are more resources
-			if (sorted.length > 10) {
-				output.push(colorDim(`    ... and ${sorted.length - 10} more`));
-			}
-			output.push("");
-		}
-	}
+      // Show "and N more" if there are more resources
+      if (sorted.length > 10) {
+        output.push(colorDim(`    ... and ${sorted.length - 10} more`));
+      }
+      output.push("");
+    }
+  }
 
-	// Examples
-	output.push("EXAMPLES");
-	output.push(`  ${CLI_NAME} ${domain.name} list`);
-	output.push(`  ${CLI_NAME} ${domain.name} get my-resource`);
-	output.push(
-		`  ${CLI_NAME} ${domain.name} create --name my-resource --type http`,
-	);
-	output.push(`  ${CLI_NAME} ${domain.name} delete my-resource`);
-	output.push("");
+  // Examples
+  output.push("EXAMPLES");
+  output.push(`  ${CLI_NAME} ${domain.name} list`);
+  output.push(`  ${CLI_NAME} ${domain.name} get my-resource`);
+  output.push(
+    `  ${CLI_NAME} ${domain.name} create --name my-resource --type http`,
+  );
+  output.push(`  ${CLI_NAME} ${domain.name} delete my-resource`);
+  output.push("");
 
-	// Use cases if available
-	if (domain.useCases && domain.useCases.length > 0) {
-		output.push("USE CASES");
-		for (const useCase of domain.useCases.slice(0, 5)) {
-			output.push(`  - ${useCase}`);
-		}
-		output.push("");
-	}
+  // Use cases if available
+  if (domain.useCases && domain.useCases.length > 0) {
+    output.push("USE CASES");
+    for (const useCase of domain.useCases.slice(0, 5)) {
+      output.push(`  - ${useCase}`);
+    }
+    output.push("");
+  }
 
-	// Related domains if available
-	if (domain.relatedDomains && domain.relatedDomains.length > 0) {
-		output.push("RELATED DOMAINS");
-		output.push(`  ${domain.relatedDomains.join(", ")}`);
-		output.push("");
-	}
+  // Related domains if available
+  if (domain.relatedDomains && domain.relatedDomains.length > 0) {
+    output.push("RELATED DOMAINS");
+    output.push(`  ${domain.relatedDomains.join(", ")}`);
+    output.push("");
+  }
 
-	// Aliases if available
-	if (domain.aliases && domain.aliases.length > 0) {
-		output.push("ALIASES");
-		output.push(`  ${domain.aliases.join(", ")}`);
-		output.push("");
-	}
+  // Aliases if available
+  if (domain.aliases && domain.aliases.length > 0) {
+    output.push("ALIASES");
+    output.push(`  ${domain.aliases.join(", ")}`);
+    output.push("");
+  }
 
-	// Footer with reference to global help
-	output.push(colorDim(`For global options, run: ${CLI_NAME} --help`));
-	output.push("");
+  // Footer with reference to global help
+  output.push(colorDim(`For global options, run: ${CLI_NAME} --help`));
+  output.push("");
 
-	return output;
+  return output;
 }
 
 /**
  * Format danger level indicator with appropriate coloring.
  */
 function formatDangerLevel(level: string): string {
-	switch (level.toLowerCase()) {
-		case "high":
-			return colorRed(`[DANGER: ${level.toUpperCase()}]`);
-		case "medium":
-			return colorYellow(`[CAUTION: ${level.toUpperCase()}]`);
-		default:
-			return colorDim(`[Risk: ${level}]`);
-	}
+  switch (level.toLowerCase()) {
+    case "high":
+      return colorRed(`[DANGER: ${level.toUpperCase()}]`);
+    case "medium":
+      return colorYellow(`[CAUTION: ${level.toUpperCase()}]`);
+    default:
+      return colorDim(`[Risk: ${level}]`);
+  }
 }
 
 /**
@@ -365,285 +365,278 @@ function formatDangerLevel(level: string): string {
  * Uses the description resolver to source descriptions from upstream OpenAPI specs.
  */
 export function formatActionHelp(domainName: string, action: string): string[] {
-	const domain = getDomainInfo(domainName);
-	const displayDomain = domain?.displayName ?? domainName;
+  const domain = getDomainInfo(domainName);
+  const displayDomain = domain?.displayName ?? domainName;
 
-	// Try to get operation description from upstream OpenAPI specs
-	const opInfo = getOperationDescription(domainName, action);
+  // Try to get operation description from upstream OpenAPI specs
+  const opInfo = getOperationDescription(domainName, action);
 
-	// Get action description from resolver (fallback)
-	const actionDesc = descriptionResolver.getActionDescription(action);
+  // Get action description from resolver (fallback)
+  const actionDesc = descriptionResolver.getActionDescription(action);
 
-	// Determine description - prefer upstream OpenAPI if available
-	const desc = opInfo
-		? opInfo.description || opInfo.summary || actionDesc.medium
-		: actionDesc.medium;
+  // Determine description - prefer upstream OpenAPI if available
+  const desc = opInfo
+    ? opInfo.description || opInfo.summary || actionDesc.medium
+    : actionDesc.medium;
 
-	// Default usage patterns
-	const usagePatterns: Record<string, string> = {
-		list: `${CLI_NAME} ${domainName} list [--limit N] [--label key=value]`,
-		get: `${CLI_NAME} ${domainName} get <name> [--output json|yaml|table]`,
-		create: `${CLI_NAME} ${domainName} create <resource-type> --name <name> [options]`,
-		delete: `${CLI_NAME} ${domainName} delete <name>`,
-		replace: `${CLI_NAME} ${domainName} replace <resource-type> --name <name> [options]`,
-		apply: `${CLI_NAME} ${domainName} apply <resource-type> --name <name> [options]`,
-		status: `${CLI_NAME} ${domainName} status <name>`,
-		patch: `${CLI_NAME} ${domainName} patch <resource-type> --name <name> [options]`,
-		"add-labels": `${CLI_NAME} ${domainName} add-labels <name> key=value`,
-		"remove-labels": `${CLI_NAME} ${domainName} remove-labels <name> key`,
-	};
+  // Default usage patterns
+  const usagePatterns: Record<string, string> = {
+    list: `${CLI_NAME} ${domainName} list [--limit N] [--label key=value]`,
+    get: `${CLI_NAME} ${domainName} get <name> [--output json|yaml|table]`,
+    create: `${CLI_NAME} ${domainName} create <resource-type> --name <name> [options]`,
+    delete: `${CLI_NAME} ${domainName} delete <name>`,
+    replace: `${CLI_NAME} ${domainName} replace <resource-type> --name <name> [options]`,
+    apply: `${CLI_NAME} ${domainName} apply <resource-type> --name <name> [options]`,
+    status: `${CLI_NAME} ${domainName} status <name>`,
+    patch: `${CLI_NAME} ${domainName} patch <resource-type> --name <name> [options]`,
+    "add-labels": `${CLI_NAME} ${domainName} add-labels <name> key=value`,
+    "remove-labels": `${CLI_NAME} ${domainName} remove-labels <name> key`,
+  };
 
-	const usage =
-		usagePatterns[action] ??
-		`${CLI_NAME} ${domainName} ${action} [options]`;
+  const usage =
+    usagePatterns[action] ?? `${CLI_NAME} ${domainName} ${action} [options]`;
 
-	// Build header with danger level warning if applicable
-	const output = ["", colorBoldWhite(`${displayDomain} - ${action}`)];
+  // Build header with danger level warning if applicable
+  const output = ["", colorBoldWhite(`${displayDomain} - ${action}`)];
 
-	// Show danger level warning prominently in header
-	if (opInfo?.dangerLevel && opInfo.dangerLevel !== "low") {
-		output.push(`  ${formatDangerLevel(opInfo.dangerLevel)}`);
-	}
+  // Show danger level warning prominently in header
+  if (opInfo?.dangerLevel && opInfo.dangerLevel !== "low") {
+    output.push(`  ${formatDangerLevel(opInfo.dangerLevel)}`);
+  }
 
-	output.push("");
-	output.push(`  ${desc}`);
-	output.push("");
+  output.push("");
+  output.push(`  ${desc}`);
+  output.push("");
 
-	// Add purpose from x-f5xc-operation-metadata if available
-	if (opInfo?.purpose) {
-		output.push("PURPOSE");
-		output.push(`  ${opInfo.purpose}`);
-		output.push("");
-	}
+  // Add purpose from x-f5xc-operation-metadata if available
+  if (opInfo?.purpose) {
+    output.push("PURPOSE");
+    output.push(`  ${opInfo.purpose}`);
+    output.push("");
+  }
 
-	output.push("USAGE");
-	output.push(`  ${usage}`);
-	output.push("");
+  output.push("USAGE");
+  output.push(`  ${usage}`);
+  output.push("");
 
-	// Add resource type information if from upstream
-	if (opInfo?.resourceType) {
-		output.push("RESOURCE TYPE");
-		output.push(`  ${opInfo.resourceType}`);
-		output.push("");
-	}
+  // Add resource type information if from upstream
+  if (opInfo?.resourceType) {
+    output.push("RESOURCE TYPE");
+    output.push(`  ${opInfo.resourceType}`);
+    output.push("");
+  }
 
-	// Namespace scope information (from upstream enrichment)
-	if (opInfo?.namespaceScope) {
-		output.push("NAMESPACE SCOPE");
-		const scopeDesc: Record<string, string> = {
-			system: "This operation is only available in the 'system' namespace",
-			shared: "This operation is available in 'shared' namespace",
-			any: "This operation works in any namespace",
-		};
-		output.push(
-			`  ${scopeDesc[opInfo.namespaceScope] ?? opInfo.namespaceScope}`,
-		);
-		output.push("");
-	}
+  // Namespace scope information (from upstream enrichment)
+  if (opInfo?.namespaceScope) {
+    output.push("NAMESPACE SCOPE");
+    const scopeDesc: Record<string, string> = {
+      system: "This operation is only available in the 'system' namespace",
+      shared: "This operation is available in 'shared' namespace",
+      any: "This operation works in any namespace",
+    };
+    output.push(
+      `  ${scopeDesc[opInfo.namespaceScope] ?? opInfo.namespaceScope}`,
+    );
+    output.push("");
+  }
 
-	// Required and optional fields (from upstream enrichment)
-	if (opInfo?.requiredFields && opInfo.requiredFields.length > 0) {
-		output.push("REQUIRED FIELDS");
-		for (const field of opInfo.requiredFields) {
-			output.push(`  - ${field}`);
-		}
-		output.push("");
-	}
+  // Required and optional fields (from upstream enrichment)
+  if (opInfo?.requiredFields && opInfo.requiredFields.length > 0) {
+    output.push("REQUIRED FIELDS");
+    for (const field of opInfo.requiredFields) {
+      output.push(`  - ${field}`);
+    }
+    output.push("");
+  }
 
-	if (opInfo?.optionalFields && opInfo.optionalFields.length > 0) {
-		output.push("OPTIONAL FIELDS");
-		for (const field of opInfo.optionalFields.slice(0, 10)) {
-			output.push(colorDim(`  - ${field}`));
-		}
-		if (opInfo.optionalFields.length > 10) {
-			output.push(
-				colorDim(`  ... and ${opInfo.optionalFields.length - 10} more`),
-			);
-		}
-		output.push("");
-	}
+  if (opInfo?.optionalFields && opInfo.optionalFields.length > 0) {
+    output.push("OPTIONAL FIELDS");
+    for (const field of opInfo.optionalFields.slice(0, 10)) {
+      output.push(colorDim(`  - ${field}`));
+    }
+    if (opInfo.optionalFields.length > 10) {
+      output.push(
+        colorDim(`  ... and ${opInfo.optionalFields.length - 10} more`),
+      );
+    }
+    output.push("");
+  }
 
-	// Common errors with solutions (from upstream enrichment)
-	if (opInfo?.commonErrors && opInfo.commonErrors.length > 0) {
-		output.push("COMMON ERRORS");
-		for (const err of opInfo.commonErrors.slice(0, 3)) {
-			output.push(`  ${err.code}: ${err.message}`);
-			if (err.solution) {
-				output.push(colorDim(`    Solution: ${err.solution}`));
-			}
-		}
-		output.push("");
-	}
+  // Common errors with solutions (from upstream enrichment)
+  if (opInfo?.commonErrors && opInfo.commonErrors.length > 0) {
+    output.push("COMMON ERRORS");
+    for (const err of opInfo.commonErrors.slice(0, 3)) {
+      output.push(`  ${err.code}: ${err.message}`);
+      if (err.solution) {
+        output.push(colorDim(`    Solution: ${err.solution}`));
+      }
+    }
+    output.push("");
+  }
 
-	output.push("OPTIONS");
-	output.push("  --name <name>         Resource name");
-	output.push("  --namespace <ns>      Target namespace");
-	output.push(
-		`  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`,
-	);
-	output.push("");
+  output.push("OPTIONS");
+  output.push("  --name <name>         Resource name");
+  output.push("  --namespace <ns>      Target namespace");
+  output.push(`  --output <fmt>        Output format (${OUTPUT_FORMAT_HELP})`);
+  output.push("");
 
-	// External documentation link (from upstream enrichment)
-	if (opInfo?.externalDocs) {
-		output.push("DOCUMENTATION");
-		const docDesc = opInfo.externalDocs.description || "See documentation";
-		output.push(`  ${docDesc}:`);
-		output.push(colorDim(`  ${opInfo.externalDocs.url}`));
-		output.push("");
-	}
+  // External documentation link (from upstream enrichment)
+  if (opInfo?.externalDocs) {
+    output.push("DOCUMENTATION");
+    const docDesc = opInfo.externalDocs.description || "See documentation";
+    output.push(`  ${docDesc}:`);
+    output.push(colorDim(`  ${opInfo.externalDocs.url}`));
+    output.push("");
+  }
 
-	output.push(
-		colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
-	);
-	output.push("");
+  output.push(
+    colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
+  );
+  output.push("");
 
-	return output;
+  return output;
 }
 
 /**
  * Format help for a specific topic.
  */
 export function formatTopicHelp(topic: string): string[] {
-	const lowerTopic = topic.toLowerCase();
+  const lowerTopic = topic.toLowerCase();
 
-	// Check if it's a domain
-	const domainInfo = getDomainInfo(lowerTopic);
-	if (domainInfo) {
-		return formatDomainHelp(domainInfo);
-	}
+  // Check if it's a domain
+  const domainInfo = getDomainInfo(lowerTopic);
+  if (domainInfo) {
+    return formatDomainHelp(domainInfo);
+  }
 
-	// Check for special topics
-	switch (lowerTopic) {
-		case "domains":
-			return formatDomainsHelp();
-		case "actions":
-			return formatActionsHelp();
-		case "navigation":
-		case "nav":
-			return formatNavigationHelp();
-		case "env":
-		case "environment":
-			return ["", ...formatEnvironmentVariables(), ""];
-		case "flags":
-			return ["", ...formatGlobalFlags(), ""];
-		default:
-			return [
-				"",
-				`Unknown help topic: ${topic}`,
-				"",
-				"Available topics:",
-				"  domains      List all available domains",
-				"  actions      List available actions",
-				"  navigation   Navigation commands",
-				"  env          Environment variables",
-				"  flags        Global flags",
-				"  <domain>     Help for a specific domain (e.g., 'help dns')",
-				"",
-			];
-	}
+  // Check for special topics
+  switch (lowerTopic) {
+    case "domains":
+      return formatDomainsHelp();
+    case "actions":
+      return formatActionsHelp();
+    case "navigation":
+    case "nav":
+      return formatNavigationHelp();
+    case "env":
+    case "environment":
+      return ["", ...formatEnvironmentVariables(), ""];
+    case "flags":
+      return ["", ...formatGlobalFlags(), ""];
+    default:
+      return [
+        "",
+        `Unknown help topic: ${topic}`,
+        "",
+        "Available topics:",
+        "  domains      List all available domains",
+        "  actions      List available actions",
+        "  navigation   Navigation commands",
+        "  env          Environment variables",
+        "  flags        Global flags",
+        "  <domain>     Help for a specific domain (e.g., 'help dns')",
+        "",
+      ];
+  }
 }
 
 /**
  * Format domains list help.
  */
 export function formatDomainsHelp(): string[] {
-	const output: string[] = ["", colorBoldWhite("Available Domains"), ""];
+  const output: string[] = ["", colorBoldWhite("Available Domains"), ""];
 
-	// Group domains by category
-	const categories = new Map<string, DomainInfo[]>();
+  // Group domains by category
+  const categories = new Map<string, DomainInfo[]>();
 
-	for (const domain of domainRegistry.values()) {
-		const category = domain.category ?? "Other";
-		if (!categories.has(category)) {
-			categories.set(category, []);
-		}
-		categories.get(category)?.push(domain);
-	}
+  for (const domain of domainRegistry.values()) {
+    const category = domain.category ?? "Other";
+    if (!categories.has(category)) {
+      categories.set(category, []);
+    }
+    categories.get(category)?.push(domain);
+  }
 
-	// Sort categories and display
-	const sortedCategories = Array.from(categories.keys()).sort();
+  // Sort categories and display
+  const sortedCategories = Array.from(categories.keys()).sort();
 
-	for (const category of sortedCategories) {
-		const domains = categories.get(category) ?? [];
-		output.push(colorBoldWhite(`  ${category}`));
+  for (const category of sortedCategories) {
+    const domains = categories.get(category) ?? [];
+    output.push(colorBoldWhite(`  ${category}`));
 
-		for (const domain of domains.sort((a, b) =>
-			a.name.localeCompare(b.name),
-		)) {
-			const aliases =
-				domain.aliases.length > 0
-					? colorDim(` (${domain.aliases.join(", ")})`)
-					: "";
-			output.push(
-				`    ${domain.name.padEnd(24)} ${domain.descriptionShort}`,
-			);
-			if (aliases) {
-				output.push(`    ${"".padEnd(24)} Aliases:${aliases}`);
-			}
-		}
-		output.push("");
-	}
+    for (const domain of domains.sort((a, b) => a.name.localeCompare(b.name))) {
+      const aliases =
+        domain.aliases.length > 0
+          ? colorDim(` (${domain.aliases.join(", ")})`)
+          : "";
+      output.push(`    ${domain.name.padEnd(24)} ${domain.descriptionShort}`);
+      if (aliases) {
+        output.push(`    ${"".padEnd(24)} Aliases:${aliases}`);
+      }
+    }
+    output.push("");
+  }
 
-	return output;
+  return output;
 }
 
 /**
  * Format actions help.
  */
 export function formatActionsHelp(): string[] {
-	return [
-		"",
-		colorBoldWhite("Available Actions"),
-		"",
-		"  list              List all resources in the namespace",
-		"  get               Get a specific resource by name",
-		"  create            Create a new resource with flags",
-		"  delete            Delete a resource by name",
-		"  replace           Replace a resource configuration",
-		"  apply             Apply configuration (create or update)",
-		"  status            Get resource status",
-		"  patch             Patch specific fields of a resource",
-		"  add-labels        Add labels to a resource",
-		"  remove-labels     Remove labels from a resource",
-		"",
-		"USAGE",
-		`  ${CLI_NAME} <domain> <action> [options]`,
-		"",
-		"EXAMPLES",
-		`  ${CLI_NAME} dns list`,
-		`  ${CLI_NAME} lb get my-loadbalancer`,
-		`  ${CLI_NAME} virtual create healthcheck --name my-hc --type http`,
-		"",
-	];
+  return [
+    "",
+    colorBoldWhite("Available Actions"),
+    "",
+    "  list              List all resources in the namespace",
+    "  get               Get a specific resource by name",
+    "  create            Create a new resource with flags",
+    "  delete            Delete a resource by name",
+    "  replace           Replace a resource configuration",
+    "  apply             Apply configuration (create or update)",
+    "  status            Get resource status",
+    "  patch             Patch specific fields of a resource",
+    "  add-labels        Add labels to a resource",
+    "  remove-labels     Remove labels from a resource",
+    "",
+    "USAGE",
+    `  ${CLI_NAME} <domain> <action> [options]`,
+    "",
+    "EXAMPLES",
+    `  ${CLI_NAME} dns list`,
+    `  ${CLI_NAME} lb get my-loadbalancer`,
+    `  ${CLI_NAME} virtual create healthcheck --name my-hc --type http`,
+    "",
+  ];
 }
 
 /**
  * Format navigation help.
  */
 export function formatNavigationHelp(): string[] {
-	return [
-		"",
-		colorBoldWhite("Navigation Commands"),
-		"",
-		"  <domain>          Navigate into a domain context",
-		"  /<domain>         Navigate directly to domain from anywhere",
-		"  ..                Go up one level in context",
-		"  /                 Return to root context",
-		"  back              Go up one level (same as ..)",
-		"  root              Return to root (same as /)",
-		"",
-		"CONTEXT DISPLAY",
-		"  context           Show current navigation context",
-		"  ctx               Alias for context",
-		"",
-		"EXAMPLES",
-		"  xcsh> dns                    # Enter dns domain",
-		"  dns> list                    # Execute list in dns context",
-		"  dns> ..                      # Return to root",
-		"  xcsh> /waf                   # Jump directly to waf",
-		"  waf> /dns                    # Jump from waf to dns",
-		"",
-	];
+  return [
+    "",
+    colorBoldWhite("Navigation Commands"),
+    "",
+    "  <domain>          Navigate into a domain context",
+    "  /<domain>         Navigate directly to domain from anywhere",
+    "  ..                Go up one level in context",
+    "  /                 Return to root context",
+    "  back              Go up one level (same as ..)",
+    "  root              Return to root (same as /)",
+    "",
+    "CONTEXT DISPLAY",
+    "  context           Show current navigation context",
+    "  ctx               Alias for context",
+    "",
+    "EXAMPLES",
+    "  xcsh> dns                    # Enter dns domain",
+    "  dns> list                    # Execute list in dns context",
+    "  dns> ..                      # Return to root",
+    "  xcsh> /waf                   # Jump directly to waf",
+    "  waf> /dns                    # Jump from waf to dns",
+    "",
+  ];
 }
 
 /**
@@ -652,22 +645,22 @@ export function formatNavigationHelp(): string[] {
  * dynamically generated from the domain registry (no hardcoding).
  */
 export function formatDomainsSection(): string[] {
-	const output: string[] = ["DOMAINS"];
+  const output: string[] = ["DOMAINS"];
 
-	// Get all domains sorted alphabetically
-	const domains = Array.from(domainRegistry.values()).sort((a, b) =>
-		a.name.localeCompare(b.name),
-	);
+  // Get all domains sorted alphabetically
+  const domains = Array.from(domainRegistry.values()).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
 
-	// Calculate max name length for column alignment
-	const maxNameLen = Math.max(...domains.map((d) => d.name.length));
+  // Calculate max name length for column alignment
+  const maxNameLen = Math.max(...domains.map((d) => d.name.length));
 
-	for (const domain of domains) {
-		const padding = " ".repeat(maxNameLen - domain.name.length + 2);
-		output.push(`  ${domain.name}${padding}${domain.descriptionShort}`);
-	}
+  for (const domain of domains) {
+    const padding = " ".repeat(maxNameLen - domain.name.length + 2);
+    output.push(`  ${domain.name}${padding}${domain.descriptionShort}`);
+  }
 
-	return output;
+  return output;
 }
 
 /**
@@ -675,41 +668,41 @@ export function formatDomainsSection(): string[] {
  * Mirrors formatDomainHelp() structure for consistency across all domains.
  */
 export function formatCustomDomainHelp(domain: DomainDefinition): string[] {
-	const output: string[] = ["", colorBoldWhite(domain.name), ""];
+  const output: string[] = ["", colorBoldWhite(domain.name), ""];
 
-	// Description
-	output.push("DESCRIPTION");
-	output.push(...wrapText(domain.description, 80, 2));
-	output.push("");
+  // Description
+  output.push("DESCRIPTION");
+  output.push(...wrapText(domain.description, 80, 2));
+  output.push("");
 
-	// Usage
-	output.push("USAGE");
-	output.push(`  ${CLI_NAME} ${domain.name} <command> [options]`);
-	output.push("");
+  // Usage
+  output.push("USAGE");
+  output.push(`  ${CLI_NAME} ${domain.name} <command> [options]`);
+  output.push("");
 
-	// Subcommands (if any)
-	if (domain.subcommands.size > 0) {
-		output.push("SUBCOMMANDS");
-		for (const [name, group] of domain.subcommands) {
-			output.push(`  ${name.padEnd(16)} ${group.descriptionShort}`);
-		}
-		output.push("");
-	}
+  // Subcommands (if any)
+  if (domain.subcommands.size > 0) {
+    output.push("SUBCOMMANDS");
+    for (const [name, group] of domain.subcommands) {
+      output.push(`  ${name.padEnd(16)} ${group.descriptionShort}`);
+    }
+    output.push("");
+  }
 
-	// Commands (if any)
-	if (domain.commands.size > 0) {
-		output.push("COMMANDS");
-		for (const [name, cmd] of domain.commands) {
-			output.push(`  ${name.padEnd(16)} ${cmd.descriptionShort}`);
-		}
-		output.push("");
-	}
+  // Commands (if any)
+  if (domain.commands.size > 0) {
+    output.push("COMMANDS");
+    for (const [name, cmd] of domain.commands) {
+      output.push(`  ${name.padEnd(16)} ${cmd.descriptionShort}`);
+    }
+    output.push("");
+  }
 
-	// Footer
-	output.push(colorDim(`For global options, run: ${CLI_NAME} --help`));
-	output.push("");
+  // Footer
+  output.push(colorDim(`For global options, run: ${CLI_NAME} --help`));
+  output.push("");
 
-	return output;
+  return output;
 }
 
 /**
@@ -717,44 +710,44 @@ export function formatCustomDomainHelp(domain: DomainDefinition): string[] {
  * Mirrors formatDomainHelp() structure for consistency.
  */
 export function formatSubcommandHelp(
-	domainName: string,
-	subcommand: SubcommandGroup,
+  domainName: string,
+  subcommand: SubcommandGroup,
 ): string[] {
-	const output: string[] = [
-		"",
-		colorBoldWhite(`${domainName} ${subcommand.name}`),
-		"",
-	];
+  const output: string[] = [
+    "",
+    colorBoldWhite(`${domainName} ${subcommand.name}`),
+    "",
+  ];
 
-	// Description
-	output.push("DESCRIPTION");
-	output.push(...wrapText(subcommand.description, 80, 2));
-	output.push("");
+  // Description
+  output.push("DESCRIPTION");
+  output.push(...wrapText(subcommand.description, 80, 2));
+  output.push("");
 
-	// Usage
-	output.push("USAGE");
-	output.push(
-		`  ${CLI_NAME} ${domainName} ${subcommand.name} <command> [options]`,
-	);
-	output.push("");
+  // Usage
+  output.push("USAGE");
+  output.push(
+    `  ${CLI_NAME} ${domainName} ${subcommand.name} <command> [options]`,
+  );
+  output.push("");
 
-	// Commands
-	if (subcommand.commands.size > 0) {
-		output.push("COMMANDS");
-		for (const [name, cmd] of subcommand.commands) {
-			const usage = cmd.usage ? ` ${cmd.usage}` : "";
-			output.push(
-				`  ${name}${usage.padEnd(16 - name.length)} ${cmd.descriptionShort}`,
-			);
-		}
-		output.push("");
-	}
+  // Commands
+  if (subcommand.commands.size > 0) {
+    output.push("COMMANDS");
+    for (const [name, cmd] of subcommand.commands) {
+      const usage = cmd.usage ? ` ${cmd.usage}` : "";
+      output.push(
+        `  ${name}${usage.padEnd(16 - name.length)} ${cmd.descriptionShort}`,
+      );
+    }
+    output.push("");
+  }
 
-	// Footer
-	output.push(
-		colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
-	);
-	output.push("");
+  // Footer
+  output.push(
+    colorDim(`For domain help, run: ${CLI_NAME} ${domainName} --help`),
+  );
+  output.push("");
 
-	return output;
+  return output;
 }

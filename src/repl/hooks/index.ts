@@ -12,8 +12,8 @@ export { usePulseAnimation } from "./usePulseAnimation.js";
 export type { PulseConfig } from "./usePulseAnimation.js";
 export { useStatusTransition } from "./useStatusTransition.js";
 export type {
-	StatusTransitionConfig,
-	StatusTransitionResult,
+  StatusTransitionConfig,
+  StatusTransitionResult,
 } from "./useStatusTransition.js";
 export { useInactivityDetection } from "./useInactivityDetection.js";
 export type { UseInactivityDetectionResult } from "./useInactivityDetection.js";

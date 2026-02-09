@@ -9,22 +9,22 @@ import { useState, useCallback, useEffect, useRef } from "react";
  * Configuration options for the useInactivityDetection hook
  */
 interface UseInactivityDetectionOptions {
-	/** Inactivity timeout in milliseconds (0 to disable) */
-	timeoutMs?: number;
-	/** Whether the hook is active */
-	enabled?: boolean;
+  /** Inactivity timeout in milliseconds (0 to disable) */
+  timeoutMs?: number;
+  /** Whether the hook is active */
+  enabled?: boolean;
 }
 
 /**
  * Return value from the useInactivityDetection hook
  */
 export interface UseInactivityDetectionResult {
-	/** Whether the system is in sleep mode due to inactivity */
-	isSleeping: boolean;
-	/** Function to record user activity (resets inactivity timer) */
-	recordActivity: () => void;
-	/** Timestamp of last activity in milliseconds */
-	lastActivityMs: number;
+  /** Whether the system is in sleep mode due to inactivity */
+  isSleeping: boolean;
+  /** Function to record user activity (resets inactivity timer) */
+  recordActivity: () => void;
+  /** Timestamp of last activity in milliseconds */
+  lastActivityMs: number;
 }
 
 /** Default inactivity timeout: 5 minutes (300 seconds) */
@@ -41,14 +41,14 @@ const CHECK_INTERVAL_MS = 10000;
  * XCSH_INACTIVITY_TIMEOUT: timeout in seconds (0 to disable)
  */
 function getInactivityTimeout(): number {
-	const envValue = process.env.XCSH_INACTIVITY_TIMEOUT;
-	if (envValue === undefined) return DEFAULT_INACTIVITY_TIMEOUT_MS;
-	if (envValue === "0") return 0; // Disabled
+  const envValue = process.env.XCSH_INACTIVITY_TIMEOUT;
+  if (envValue === undefined) return DEFAULT_INACTIVITY_TIMEOUT_MS;
+  if (envValue === "0") return 0; // Disabled
 
-	const seconds = parseInt(envValue, 10);
-	if (isNaN(seconds) || seconds <= 0) return DEFAULT_INACTIVITY_TIMEOUT_MS;
+  const seconds = parseInt(envValue, 10);
+  if (isNaN(seconds) || seconds <= 0) return DEFAULT_INACTIVITY_TIMEOUT_MS;
 
-	return Math.max(seconds * 1000, MIN_INACTIVITY_TIMEOUT_MS);
+  return Math.max(seconds * 1000, MIN_INACTIVITY_TIMEOUT_MS);
 }
 
 /**
@@ -76,65 +76,65 @@ function getInactivityTimeout(): number {
  * ```
  */
 export function useInactivityDetection(
-	options: UseInactivityDetectionOptions = {},
+  options: UseInactivityDetectionOptions = {},
 ): UseInactivityDetectionResult {
-	const { enabled = true } = options;
-	const timeoutMs = options.timeoutMs ?? getInactivityTimeout();
+  const { enabled = true } = options;
+  const timeoutMs = options.timeoutMs ?? getInactivityTimeout();
 
-	// Use ref for last activity to avoid re-renders on every keystroke
-	const lastActivityRef = useRef<number>(Date.now());
-	const [isSleeping, setIsSleeping] = useState(false);
-	const [lastActivityMs, setLastActivityMs] = useState(Date.now());
-	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Use ref for last activity to avoid re-renders on every keystroke
+  const lastActivityRef = useRef<number>(Date.now());
+  const [isSleeping, setIsSleeping] = useState(false);
+  const [lastActivityMs, setLastActivityMs] = useState(Date.now());
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	/**
-	 * Record user activity - resets inactivity timer and wakes from sleep
-	 */
-	const recordActivity = useCallback(() => {
-		const now = Date.now();
-		lastActivityRef.current = now;
-		setLastActivityMs(now);
+  /**
+   * Record user activity - resets inactivity timer and wakes from sleep
+   */
+  const recordActivity = useCallback(() => {
+    const now = Date.now();
+    lastActivityRef.current = now;
+    setLastActivityMs(now);
 
-		// Wake from sleep immediately on activity
-		if (isSleeping) {
-			setIsSleeping(false);
-		}
-	}, [isSleeping]);
+    // Wake from sleep immediately on activity
+    if (isSleeping) {
+      setIsSleeping(false);
+    }
+  }, [isSleeping]);
 
-	// Inactivity check interval
-	useEffect(() => {
-		// Disabled if not enabled or timeout is 0
-		if (!enabled || timeoutMs === 0) {
-			// Ensure not sleeping when disabled
-			if (isSleeping) {
-				setIsSleeping(false);
-			}
-			return;
-		}
+  // Inactivity check interval
+  useEffect(() => {
+    // Disabled if not enabled or timeout is 0
+    if (!enabled || timeoutMs === 0) {
+      // Ensure not sleeping when disabled
+      if (isSleeping) {
+        setIsSleeping(false);
+      }
+      return;
+    }
 
-		// Initialize last activity on mount
-		lastActivityRef.current = Date.now();
-		setLastActivityMs(Date.now());
+    // Initialize last activity on mount
+    lastActivityRef.current = Date.now();
+    setLastActivityMs(Date.now());
 
-		// Check for inactivity periodically
-		intervalRef.current = setInterval(() => {
-			const now = Date.now();
-			const elapsed = now - lastActivityRef.current;
+    // Check for inactivity periodically
+    intervalRef.current = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - lastActivityRef.current;
 
-			if (elapsed >= timeoutMs && !isSleeping) {
-				setIsSleeping(true);
-			}
-		}, CHECK_INTERVAL_MS);
+      if (elapsed >= timeoutMs && !isSleeping) {
+        setIsSleeping(true);
+      }
+    }, CHECK_INTERVAL_MS);
 
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-				intervalRef.current = null;
-			}
-		};
-	}, [enabled, timeoutMs, isSleeping]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [enabled, timeoutMs, isSleeping]);
 
-	return { isSleeping, recordActivity, lastActivityMs };
+  return { isSleeping, recordActivity, lastActivityMs };
 }
 
 export default useInactivityDetection;

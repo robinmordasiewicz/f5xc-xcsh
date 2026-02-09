@@ -126,7 +126,9 @@ describe("hex encoding utilities", () => {
 
     it("throws on invalid hex", () => {
       expect(() => normalizeHex("GGGG")).toThrow(/Invalid hexadecimal string/);
-      expect(() => normalizeHex("50494E4")).toThrow(/Invalid hexadecimal string/); // Odd length
+      expect(() => normalizeHex("50494E4")).toThrow(
+        /Invalid hexadecimal string/,
+      ); // Odd length
       expect(() => normalizeHex("hello")).toThrow(/Invalid hexadecimal string/);
     });
   });

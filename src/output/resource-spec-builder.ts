@@ -5,9 +5,9 @@
 
 import type { ResourceSpec, FieldSpec, OneOfGroup } from "./types.js";
 import {
-	extractFieldSpecs,
-	extractOneOfGroups,
-	loadOpenApiSpec,
+  extractFieldSpecs,
+  extractOneOfGroups,
+  loadOpenApiSpec,
 } from "./schema-extractor.js";
 import { buildAIAssistantGuide } from "./ai-guide-builder.js";
 import type { OpenApiSpec } from "./schema-extractor.js";
@@ -30,25 +30,25 @@ const specCache = new Map<string, ResourceSpec>();
  * @returns ResourceSpec with fields, oneOf groups, and AI guide, or null if schema not found
  */
 export function buildResourceSpec(resourceType: string): ResourceSpec | null {
-	// Check cache first
-	if (specCache.has(resourceType)) {
-		return specCache.get(resourceType) ?? null;
-	}
+  // Check cache first
+  if (specCache.has(resourceType)) {
+    return specCache.get(resourceType) ?? null;
+  }
 
-	// Load OpenAPI spec once (singleton pattern)
-	if (!cachedOpenApiSpec) {
-		cachedOpenApiSpec = loadOpenApiSpec();
-	}
+  // Load OpenAPI spec once (singleton pattern)
+  if (!cachedOpenApiSpec) {
+    cachedOpenApiSpec = loadOpenApiSpec();
+  }
 
-	// Build uncached spec
-	const spec = buildResourceSpecUncached(resourceType, cachedOpenApiSpec);
+  // Build uncached spec
+  const spec = buildResourceSpecUncached(resourceType, cachedOpenApiSpec);
 
-	// Cache if successful
-	if (spec) {
-		specCache.set(resourceType, spec);
-	}
+  // Cache if successful
+  if (spec) {
+    specCache.set(resourceType, spec);
+  }
 
-	return spec;
+  return spec;
 }
 
 /**
@@ -60,104 +60,103 @@ export function buildResourceSpec(resourceType: string): ResourceSpec | null {
  * @returns ResourceSpec or null if schema not found
  */
 function buildResourceSpecUncached(
-	resourceType: string,
-	openApiSpec: OpenApiSpec,
+  resourceType: string,
+  openApiSpec: OpenApiSpec,
 ): ResourceSpec | null {
-	// Get schema name: resourceType + "CreateSpecType"
-	// e.g., "healthcheck" -> "healthcheckCreateSpecType"
-	// Try multiple schema name patterns
-	const schemaName = findCreateSchemaName(resourceType, openApiSpec);
+  // Get schema name: resourceType + "CreateSpecType"
+  // e.g., "healthcheck" -> "healthcheckCreateSpecType"
+  // Try multiple schema name patterns
+  const schemaName = findCreateSchemaName(resourceType, openApiSpec);
 
-	// Check if schema exists
-	if (!schemaName || !openApiSpec.components?.schemas?.[schemaName]) {
-		return null;
-	}
+  // Check if schema exists
+  if (!schemaName || !openApiSpec.components?.schemas?.[schemaName]) {
+    return null;
+  }
 
-	// Extract fields and oneOf groups from schema
-	const fields = extractFieldSpecs(schemaName, openApiSpec);
-	const oneOfGroups = extractOneOfGroups(schemaName, openApiSpec);
+  // Extract fields and oneOf groups from schema
+  const fields = extractFieldSpecs(schemaName, openApiSpec);
+  const oneOfGroups = extractOneOfGroups(schemaName, openApiSpec);
 
-	// Build AI assistant guide
-	const aiAssistantGuide = buildAIAssistantGuide(
-		resourceType,
-		fields,
-		oneOfGroups,
-	);
+  // Build AI assistant guide
+  const aiAssistantGuide = buildAIAssistantGuide(
+    resourceType,
+    fields,
+    oneOfGroups,
+  );
 
-	// Build minimum configuration
-	const minimumConfiguration = buildMinimumConfiguration(
-		resourceType,
-		fields,
-		oneOfGroups,
-	);
+  // Build minimum configuration
+  const minimumConfiguration = buildMinimumConfiguration(
+    resourceType,
+    fields,
+    oneOfGroups,
+  );
 
-	// Build complete resource spec
-	const resourceSpec = {
-		resourceType,
-		fields,
-		oneOfGroups,
-		...(minimumConfiguration !== undefined && { minimumConfiguration }),
-	} as ResourceSpec;
+  // Build complete resource spec
+  const resourceSpec = {
+    resourceType,
+    fields,
+    oneOfGroups,
+    ...(minimumConfiguration !== undefined && { minimumConfiguration }),
+  } as ResourceSpec;
 
-	// Attach AI guide to resource spec (for backward compatibility with existing code)
-	// The AI guide will also be attached to CommandSpec in spec.ts
-	resourceSpec.aiAssistantGuide = aiAssistantGuide;
+  // Attach AI guide to resource spec (for backward compatibility with existing code)
+  // The AI guide will also be attached to CommandSpec in spec.ts
+  resourceSpec.aiAssistantGuide = aiAssistantGuide;
 
-	return resourceSpec;
+  return resourceSpec;
 }
 
 /**
  * Build minimum configuration for a resource type
  */
 function buildMinimumConfiguration(
-	resourceType: string,
-	fields: FieldSpec[],
-	oneOfGroups: OneOfGroup[],
+  resourceType: string,
+  fields: FieldSpec[],
+  oneOfGroups: OneOfGroup[],
 ): ResourceSpec["minimumConfiguration"] {
-	// Collect required fields
-	const requiredFields = fields
-		.filter((f) => f.required || f.extensions.requiredFor?.create)
-		.map((f) => `spec.${f.name}`);
+  // Collect required fields
+  const requiredFields = fields
+    .filter((f) => f.required || f.extensions.requiredFor?.create)
+    .map((f) => `spec.${f.name}`);
 
-	// Always include metadata fields
-	requiredFields.unshift("metadata.name", "metadata.namespace");
+  // Always include metadata fields
+  requiredFields.unshift("metadata.name", "metadata.namespace");
 
-	// Build mutually exclusive groups from oneOf
-	const mutuallyExclusiveGroups = oneOfGroups.map((group) => ({
-		fields: group.variants.map((v) => `spec.${v}`),
-		reason: `Choose exactly one ${group.groupName} type`,
-	}));
+  // Build mutually exclusive groups from oneOf
+  const mutuallyExclusiveGroups = oneOfGroups.map((group) => ({
+    fields: group.variants.map((v) => `spec.${v}`),
+    reason: `Choose exactly one ${group.groupName} type`,
+  }));
 
-	// Build a simple example
-	const exampleObject: {
-		metadata: { name: string; namespace: string };
-		spec: Record<string, unknown>;
-	} = {
-		metadata: {
-			name: `example-${resourceType}`,
-			namespace: "default",
-		},
-		spec: {},
-	};
+  // Build a simple example
+  const exampleObject: {
+    metadata: { name: string; namespace: string };
+    spec: Record<string, unknown>;
+  } = {
+    metadata: {
+      name: `example-${resourceType}`,
+      namespace: "default",
+    },
+    spec: {},
+  };
 
-	// Add required fields to example
-	for (const field of fields) {
-		if (field.required || field.extensions.requiredFor?.create) {
-			if (field.extensions.recommendedValue !== undefined) {
-				exampleObject.spec[field.name] =
-					field.extensions.recommendedValue;
-			} else if (field.extensions.example !== undefined) {
-				exampleObject.spec[field.name] = field.extensions.example;
-			}
-		}
-	}
+  // Add required fields to example
+  for (const field of fields) {
+    if (field.required || field.extensions.requiredFor?.create) {
+      if (field.extensions.recommendedValue !== undefined) {
+        exampleObject.spec[field.name] = field.extensions.recommendedValue;
+      } else if (field.extensions.example !== undefined) {
+        exampleObject.spec[field.name] = field.extensions.example;
+      }
+    }
+  }
 
-	return {
-		description: `Minimum configuration required for ${resourceType} resource`,
-		requiredFields,
-		mutuallyExclusiveGroups,
-		exampleJson: JSON.stringify(exampleObject, null, 2),
-	};
+  return {
+    description: `Minimum configuration required for ${resourceType} resource`,
+    requiredFields,
+    mutuallyExclusiveGroups,
+    exampleJson: JSON.stringify(exampleObject, null, 2),
+  };
 }
 
 /**
@@ -167,27 +166,27 @@ function buildMinimumConfiguration(
  * @returns OpenAPI schema name if found, null otherwise
  */
 function findCreateSchemaName(
-	resourceType: string,
-	openApiSpec: OpenApiSpec,
+  resourceType: string,
+  openApiSpec: OpenApiSpec,
 ): string | null {
-	const normalized = normalizeResourceType(resourceType);
-	const schemas = openApiSpec.components?.schemas || {};
+  const normalized = normalizeResourceType(resourceType);
+  const schemas = openApiSpec.components?.schemas || {};
 
-	// Try multiple patterns in order of likelihood
-	const patterns = [
-		`${normalized}CreateSpecType`, // Standard pattern: healthcheckCreateSpecType
-		`views${normalized}CreateSpecType`, // Views prefix: viewsorigin_poolCreateSpecType
-		`${normalized}SpecType`, // Without Create: healthcheckSpecType
-		`views${normalized}SpecType`, // Views prefix without Create
-	];
+  // Try multiple patterns in order of likelihood
+  const patterns = [
+    `${normalized}CreateSpecType`, // Standard pattern: healthcheckCreateSpecType
+    `views${normalized}CreateSpecType`, // Views prefix: viewsorigin_poolCreateSpecType
+    `${normalized}SpecType`, // Without Create: healthcheckSpecType
+    `views${normalized}SpecType`, // Views prefix without Create
+  ];
 
-	for (const pattern of patterns) {
-		if (schemas[pattern]) {
-			return pattern;
-		}
-	}
+  for (const pattern of patterns) {
+    if (schemas[pattern]) {
+      return pattern;
+    }
+  }
 
-	return null;
+  return null;
 }
 
 /**
@@ -198,9 +197,9 @@ function findCreateSchemaName(
  * @returns OpenAPI schema name (e.g., "healthcheckCreateSpecType")
  */
 export function getCreateSchemaName(resourceType: string): string {
-	// Normalize resource type (replace hyphens with underscores)
-	const normalized = normalizeResourceType(resourceType);
-	return `${normalized}CreateSpecType`;
+  // Normalize resource type (replace hyphens with underscores)
+  const normalized = normalizeResourceType(resourceType);
+  return `${normalized}CreateSpecType`;
 }
 
 /**
@@ -211,34 +210,34 @@ export function getCreateSchemaName(resourceType: string): string {
  * @returns Normalized resource type (underscores only)
  */
 export function normalizeResourceType(resourceType: string): string {
-	return resourceType.replace(/-/g, "_");
+  return resourceType.replace(/-/g, "_");
 }
 
 /**
  * Clear spec cache (for testing)
  */
 export function clearSpecCache(): void {
-	specCache.clear();
+  specCache.clear();
 }
 
 /**
  * Clear OpenAPI cache (for testing)
  */
 export function clearOpenApiCache(): void {
-	cachedOpenApiSpec = null;
+  cachedOpenApiSpec = null;
 }
 
 /**
  * Get cache statistics (for monitoring)
  */
 export function getCacheStats(): {
-	openApiCached: boolean;
-	specsCached: number;
-	cachedTypes: string[];
+  openApiCached: boolean;
+  specsCached: number;
+  cachedTypes: string[];
 } {
-	return {
-		openApiCached: cachedOpenApiSpec !== null,
-		specsCached: specCache.size,
-		cachedTypes: Array.from(specCache.keys()),
-	};
+  return {
+    openApiCached: cachedOpenApiSpec !== null,
+    specsCached: specCache.size,
+    cachedTypes: Array.from(specCache.keys()),
+  };
 }
