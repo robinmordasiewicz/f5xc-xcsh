@@ -4,8 +4,6 @@ description: Report a bug or unexpected behavior
 labels: ["bug"]
 ---
 
-<!-- markdownlint-disable MD041 -->
-
 ## Describe the Bug
 
 A clear and concise description of what the bug is.
