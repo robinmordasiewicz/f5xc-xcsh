@@ -1,0 +1,5 @@
+{
+  "description": "F5 Distributed Cloud Shell - CLI for managing F5 XC resources",
+  "homepage": "https://robinmordasiewicz.github.io/f5xc-xcsh/",
+  "topics": ["f5xc", "cli", "shell"]
+}
