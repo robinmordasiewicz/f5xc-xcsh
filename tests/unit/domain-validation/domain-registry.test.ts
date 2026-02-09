@@ -25,8 +25,8 @@ describe('Domain Registry', () => {
 		});
 
 		it('should have current spec version', () => {
-			// Should be v2.0.45 or later
-			expect(SPEC_VERSION).toMatch(/v?2\.0\.(4[5-9]|[5-9]\d)/);
+			// Should be v2.0.45+ or v2.1.0+
+			expect(SPEC_VERSION).toMatch(/v?2\.(0\.(4[5-9]|[5-9]\d)|[1-9]\.\d+)/);
 		});
 	});
 
