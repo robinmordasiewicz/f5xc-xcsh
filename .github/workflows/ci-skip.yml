@@ -1,0 +1,37 @@
+name: CI Skip
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - "**.md"
+      - "**.mdx"
+      - "docs/**"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Lint skipped — docs-only change"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ["24"]
+    steps:
+      - run: echo "Test skipped — docs-only change"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Build skipped — docs-only change"
