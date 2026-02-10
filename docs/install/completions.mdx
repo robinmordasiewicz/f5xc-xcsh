@@ -91,7 +91,7 @@ xcsh dns get <TAB>
 ```bash
 # Complete namespaces (requires API access)
 xcsh virtual list http_loadbalancer -ns <TAB>
-# Suggests: default, production, staging, etc. (from your F5 XC tenant)
+# Suggests: default, production, staging, etc. (from your tenant)
 
 xcsh virtual get origin_pool example-pool -ns <TAB>
 # Dynamic namespace completion for your specific namespace
@@ -116,7 +116,7 @@ xcsh virtual add-labels http_loadbalancer example-lb --label-key <TAB>
 # Suggests: environment, application, owner, cost-center, tier, version
 
 xcsh virtual add-labels http_loadbalancer example-lb -ns production --label-key <TAB>
-# Common F5 XC label keys
+# Common label keys
 ```
 
 ## API Integration
@@ -207,5 +207,5 @@ Completions use caching with a 5-minute TTL to prevent performance issues:
 **If completions are slow:**
 
 1. Verify your API URL and token are correct
-2. Check your network connectivity to the F5 XC API
+2. Check your network connectivity to the API
 3. The 3-second timeout prevents blocking; if you see delays, it's usually the API responding slowly
