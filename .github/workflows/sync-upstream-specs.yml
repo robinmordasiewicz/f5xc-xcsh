@@ -84,7 +84,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_ADMIN_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -97,7 +97,7 @@ jobs:
 
       - name: Download latest specs
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
         run: ./scripts/download-specs.sh
 
       - name: Generate domains
@@ -119,7 +119,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_ADMIN_TOKEN }}
           commit-message: |
             chore: sync upstream specs ${{ needs.check-upstream.outputs.new_version }}
 
@@ -199,7 +199,7 @@ jobs:
             fi
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
 
   # Step 4: Report if no updates
   no-updates:
