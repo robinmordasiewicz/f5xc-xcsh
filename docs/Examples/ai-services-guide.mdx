@@ -1,9 +1,9 @@
 ---
-title: F5 XC AI Assistant User Guide
-description: Intelligent chat-based interface for F5 Distributed Cloud
+title: AI Assistant
+description: Intelligent chat-based interface for Cloud
 ---
 
-The AI Assistant is an intelligent chat-based interface that helps you interact with F5 Distributed Cloud. Ask questions about your configurations, security events, troubleshooting, and platform operations using natural language.
+The AI Assistant is an intelligent chat-based interface that helps you interact with the Cloud. Ask questions about your configurations, security events, troubleshooting, and platform operations using natural language.
 
 ## Quick Start
 
@@ -145,7 +145,7 @@ xcsh ai chat -ns production
 **Chat Session Example:**
 
 ```text
-=== F5 XC AI Assistant Chat ===
+=== AI Assistant Chat ===
 Namespace: production
 Type /help for commands, /exit to quit.
 
@@ -272,23 +272,6 @@ xcsh ai eval feedback --positive
 ## Response Types Explained
 
 The AI assistant returns different response types based on your question:
-
-### Generic Text Responses
-
-Most common response type with text explanations and optional links.
-
-```bash
-xcsh ai query "What is F5 Distributed Cloud?"
-```
-
-```text
-F5 Distributed Cloud (F5 XC) is a SaaS-based platform that provides
-application security, multi-cloud networking, and edge computing services.
-
-Links:
-  - F5 XC Documentation: https://docs.cloud.f5.com
-  - Getting Started: https://docs.cloud.f5.com/getting-started
-```
 
 ### Security Event Explanations
 
