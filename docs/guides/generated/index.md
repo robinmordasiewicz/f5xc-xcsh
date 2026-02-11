@@ -1,6 +1,6 @@
 # Domain Reference
 
-Generated from enriched API specifications v2.1.6.
+Generated from enriched API specifications v2.1.7.
 
 ## AI
 
