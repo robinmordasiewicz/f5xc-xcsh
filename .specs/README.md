@@ -6,8 +6,8 @@ Enriched OpenAPI 3.0.3 specifications for F5 Distributed Cloud (XC) platform.
 
 | Field | Value |
 |-------|-------|
-| **Version** | unknown-2.1.1 |
-| **Release Date** | 2026-01-27 |
+| **Version** | unknown-2.1.2 |
+| **Release Date** | 2026-02-11 |
 | **OpenAPI Version** | 3.0.3 |
 
 ## Package Contents
@@ -91,8 +91,7 @@ The `domains/` directory contains individual API specifications organized by fun
 
 ## Documentation
 
-- **Scalar UI**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/scalar/>
-- **Swagger UI**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/swagger-ui/>
+- **API Specs**: <https://robinmordasiewicz.github.io/f5xc-api-enriched/>
 
 ## Enrichment Features
 
