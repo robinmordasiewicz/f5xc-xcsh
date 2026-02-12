@@ -1,3 +1,7 @@
+---
+title: "Statistics"
+---
+
 # 📈 Statistics
 
 Alerting policies with receiver integrations. Log aggregation, topology views, and site health tracking.

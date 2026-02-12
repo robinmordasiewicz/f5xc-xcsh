@@ -1,3 +1,7 @@
+---
+title: "Managed Kubernetes"
+---
+
 # ⚙️ Managed Kubernetes
 
 Kubernetes role bindings and admission policies. Registry integration for EKS, AKS, and GKE workloads.

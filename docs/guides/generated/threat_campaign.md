@@ -1,3 +1,7 @@
+---
+title: "Threat Campaign"
+---
+
 # ⚠️ Threat Campaign
 
 Detection policies, attack tracking, and automated mitigation rule generation for security operations.

@@ -1,3 +1,7 @@
+---
+title: "Telemetry And Insights"
+---
+
 # 📉 Telemetry And Insights
 
 Collection endpoints, metrics storage, and insight generation for observability workflows.

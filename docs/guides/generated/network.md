@@ -1,3 +1,7 @@
+---
+title: "Network"
+---
+
 # 🔌 Network
 
 Border gateway protocol with ASN management and autonomous system relationships. Site-to-site VPN linking datacenters through encrypted channels.

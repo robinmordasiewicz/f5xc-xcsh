@@ -1,3 +1,7 @@
+---
+title: "Observability"
+---
+
 # 📊 Observability
 
 HTTP availability probes with latency measurement. Certificate expiration alerts and global status dashboards for infrastructure health.

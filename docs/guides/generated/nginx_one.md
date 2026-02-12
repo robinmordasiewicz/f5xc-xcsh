@@ -1,3 +1,7 @@
+---
+title: "Nginx One"
+---
+
 # 🟢 Nginx One
 
 Instance discovery, WAF integration, and service mesh connectivity. Subscription lifecycle and configuration synchronization.

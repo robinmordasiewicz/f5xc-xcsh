@@ -1,3 +1,7 @@
+---
+title: "Virtual"
+---
+
 # ⚖️ Virtual
 
 Traffic distribution across regions with routing rules. Health checks and failover policies.

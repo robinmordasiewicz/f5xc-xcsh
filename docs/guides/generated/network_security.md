@@ -1,3 +1,7 @@
+---
+title: "Network Security"
+---
+
 # 🔒 Network Security
 
 Firewall rules with routing decisions based on source, destination, or protocol. Segmentation isolates workloads while outbound proxies govern access.

@@ -1,3 +1,7 @@
+---
+title: "Ddos"
+---
+
 # 🛑 Ddos
 
 Deny lists, firewall rule groups, and tunnel-based safeguards. Rate limiting and pattern analysis for network perimeter security.

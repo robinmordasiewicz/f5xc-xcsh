@@ -1,3 +1,7 @@
+---
+title: "Tenant And Identity"
+---
+
 # 🪪 Tenant And Identity
 
 Account view configurations and admin alert channels. One-time password resets, provisioning flows, and active connection monitoring.

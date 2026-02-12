@@ -1,3 +1,7 @@
+---
+title: "Bot And Threat Defense"
+---
+
 # 🦠 Bot And Threat Defense
 
 Threat classification with behavioral analysis and signature matching. Automated blocking for malicious traffic patterns.

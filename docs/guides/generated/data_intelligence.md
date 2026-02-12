@@ -1,3 +1,7 @@
+---
+title: "Data Intelligence"
+---
+
 # 🧠 Data Intelligence
 
 Classification rules, resource policies, and insight generation for data analysis workflows.

@@ -1,3 +1,7 @@
+---
+title: "Blindfold"
+---
+
 # 🔏 Blindfold
 
 Encryption key management with policy-based access controls. Audit logging and secure data protection.

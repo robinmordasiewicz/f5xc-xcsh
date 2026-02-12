@@ -1,3 +1,7 @@
+---
+title: "Api"
+---
+
 # 🔐 Api
 
 Resource cataloging with automatic classification and security profiling. Organizational hierarchies segment access by function or protection policy.
