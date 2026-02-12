@@ -132,7 +132,7 @@ jobs:
 
       - name: Restore TypeScript build cache
         id: cache-typescript
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: dist/
           key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
@@ -191,7 +191,7 @@ jobs:
 
       - name: Restore TypeScript build cache
         id: cache-typescript
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: dist/
           key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
@@ -410,7 +410,7 @@ jobs:
 
       - name: Restore TypeScript build cache
         id: cache-typescript
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: dist/
           key: xcsh-dist-${{ runner.os }}-${{ hashFiles('package-lock.json', 'src/**/*.ts', '.specs/**/*.json') }}
