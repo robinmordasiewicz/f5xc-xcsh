@@ -40,7 +40,7 @@ jobs:
           echo "Release: ${{ github.event.client_payload.release_url }}"
           echo "Source: ${{ github.event.client_payload.trigger_source }}"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Get current version from specs
         id: current
@@ -82,7 +82,7 @@ jobs:
       statuses: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.REPO_ADMIN_TOKEN }}
 
