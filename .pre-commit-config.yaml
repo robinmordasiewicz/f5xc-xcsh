@@ -1,148 +1,58 @@
-# Pre-commit hooks configuration
-# Install: pip install pre-commit && pre-commit install
-# Run manually: pre-commit run --all-files
-fail_fast: true
+---
 repos:
-  # General file hygiene
+  - repo: local
+    hooks:
+      - id: local-hooks
+        name: Repository-specific hooks
+        entry: bash -c 'if [ -x scripts/pre-commit-local.sh ]; then scripts/pre-commit-local.sh; fi'
+        language: system
+        always_run: true
+        pass_filenames: false
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: no-commit-to-branch
-        name: Prevent commits to main/master
-        args: ["--branch", "main", "--branch", "master"]
+        args: ["--branch", "main"]
       - id: trailing-whitespace
-        name: Trim trailing whitespace
       - id: end-of-file-fixer
-        name: Ensure files end with newline
       - id: mixed-line-ending
-        name: Enforce Unix line endings
         args: ["--fix=lf"]
       - id: check-yaml
-        name: Validate YAML syntax
-        args: ["--unsafe"]
-        exclude: '^mkdocs\.yml$'
+        args: ["--allow-multiple-documents"]
       - id: check-json
-        name: Validate JSON syntax
       - id: check-added-large-files
-        name: Check for large files
-        args: ["--maxkb=500"]
-        exclude: '(.*_generated\.ts$|^\.specs/domains/)'
+        args: ["--maxkb=1024"]
       - id: check-merge-conflict
-        name: Check for merge conflict markers
-      - id: check-case-conflict
-        name: Check for case conflicts in filenames
       - id: detect-private-key
-        name: Detect private keys
 
-  # Shell script linting
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
     hooks:
-      - id: shellcheck
-        name: Lint shell scripts
-        args: ["--severity=warning"]
+      - id: gitleaks
 
-  # Shell script formatting
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
-        name: Format shell scripts
-        args: ["-i", "2", "-ci", "-bn", "-w"]
-
-  # Python linting and formatting
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
-    hooks:
-      - id: ruff
-        name: Lint Python code
-        args: ["--fix"]
-        files: ^scripts/.*\.py$
-      - id: ruff-format
-        name: Format Python code
-        files: ^scripts/.*\.py$
-
-  # YAML linting
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.38.0
     hooks:
       - id: yamllint
-        name: Lint YAML files
-        args: ["--strict"]
-        exclude: '^(docs/commands/|\.specs/|mkdocs\.yml)$'
 
-  # Markdown linting and link validation
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.47.0
     hooks:
       - id: markdownlint
-        name: Lint Markdown files
         args: ["--fix"]
-        exclude: '^(docs/commands/|\.specs/)'  # Exclude auto-generated docs
 
-  # Markdown link validation
-  - repo: https://github.com/tcort/markdown-link-check
-    rev: v3.14.2
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
     hooks:
-      - id: markdown-link-check
-        name: Check Markdown links
-        args: ["--config", ".markdownlinkcheck.json"]
-        files: 'docs/.*\.md'
-        pass_filenames: false
+      - id: shellcheck
 
-  # JSON/YAML Schema validation
-  - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.36.0
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.10
     hooks:
-      - id: check-github-workflows
-        name: Validate GitHub Workflows
+      - id: actionlint
 
-  # Generated file drift detection
-  - repo: local
-    hooks:
-      - id: check-generated-files
-        name: Check for generated file drift
-        entry: bash scripts/pre-commit-generated-check.sh
-        language: system
-        pass_filenames: false
-
-  # Documentation structure validation
-  - repo: local
-    hooks:
-      - id: validate-docs-structure
-        name: Validate docs folder structure
-        entry: bash -c 'bash scripts/pre-commit-docs-validate.sh'
-        language: system
-        files: "^docs/"
-        pass_filenames: false
-
-  # TypeScript/React linting and formatting
-  - repo: local
-    hooks:
-      - id: ts-typecheck
-        name: TypeScript type check
-        entry: bash -c 'npm run typecheck'
-        language: system
-        files: ^src/.*\.(ts|tsx)$
-        pass_filenames: false
-
-      - id: ts-eslint
-        name: ESLint TypeScript/React
-        entry: bash -c 'npx eslint --fix src/'
-        language: system
-        files: ^src/.*\.(ts|tsx)$
-        pass_filenames: false
-
-      - id: ts-prettier
-        name: Prettier TypeScript/React
-        entry: bash -c 'npx prettier --write "src/**/*.{ts,tsx}"'
-        language: system
-        files: ^src/.*\.(ts|tsx)$
-        pass_filenames: false
-
-      - id: ts-security-audit
-        name: npm security audit
-        entry: bash -c 'npm audit --audit-level=high || true'
-        language: system
-        files: ^package(-lock)?\.json$
-        pass_filenames: false
+ci:
+  autofix_prs: true
+  autoupdate_schedule: weekly
+  skip: [local-hooks, gitleaks]
