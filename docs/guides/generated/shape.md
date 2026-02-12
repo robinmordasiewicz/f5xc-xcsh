@@ -1,3 +1,7 @@
+---
+title: "Shape"
+---
+
 # 🎭 Shape
 
 Threat recognition with behavioral analysis and device fingerprinting. Mobile SDK integration for application shielding.

@@ -1,3 +1,7 @@
+---
+title: "Secops And Incident Response"
+---
+
 # 🚨 Secops And Incident Response
 
 Malicious user mitigation with threat level classification. Automated response actions for suspicious behavior patterns.

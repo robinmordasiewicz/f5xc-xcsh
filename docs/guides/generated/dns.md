@@ -1,3 +1,7 @@
+---
+title: "Dns"
+---
+
 # 🌐 Dns
 
 Name resolution with zone transfers and health checks. Record types and delegation support.

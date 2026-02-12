@@ -1,3 +1,7 @@
+---
+title: "Marketplace"
+---
+
 # 🏪 Marketplace
 
 Third-party GRE and IPSec tunnel provisioning with DPD timers. Shared resource allocation across namespaces with tile placement controls.

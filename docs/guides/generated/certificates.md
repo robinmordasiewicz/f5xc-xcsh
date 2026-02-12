@@ -1,3 +1,7 @@
+---
+title: "Certificates"
+---
+
 # 📜 Certificates
 
 Certificate chains and trusted CA bundles. Revocation list management and manifest configuration for PKI operations.

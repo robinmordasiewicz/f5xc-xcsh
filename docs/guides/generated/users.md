@@ -1,3 +1,7 @@
+---
+title: "Users"
+---
+
 # 👥 Users
 
 Site enrollment credentials with automatic expiration. Taxonomy keys define allowed categorization while auto-derived tags apply dynamically.

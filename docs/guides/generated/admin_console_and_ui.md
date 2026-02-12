@@ -1,3 +1,7 @@
+---
+title: "Admin Console And Ui"
+---
+
 # 🖥️ Admin Console And Ui
 
 Namespace-scoped visual elements with versioning. Custom widget deployment and catalog management for portal surfaces.

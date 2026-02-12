@@ -1,3 +1,7 @@
+---
+title: "Data And Privacy Security"
+---
+
 # 🔐 Data And Privacy Security
 
 Sensitive data policies with custom classification rules. LMA region configuration and geo-based compliance controls.

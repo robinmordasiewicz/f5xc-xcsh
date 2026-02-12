@@ -1,3 +1,7 @@
+---
+title: "Object Storage"
+---
+
 # 🗄️ Object Storage
 
 Versioned library distribution for mobile app integrators. Presigned URLs enable secure downloads with OS-specific builds for iOS and Android.

@@ -1,3 +1,7 @@
+---
+title: "Authentication"
+---
+
 # 🔑 Authentication
 
 Identity management with provider integration, access policies, and credential lifecycle control.

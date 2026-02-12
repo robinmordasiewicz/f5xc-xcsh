@@ -1,3 +1,7 @@
+---
+title: "Support"
+---
+
 # 🎫 Support
 
 Issue lifecycle with comments, severity changes, and resolution tracking. Packet capture for connection analysis.

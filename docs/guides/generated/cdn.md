@@ -1,3 +1,7 @@
+---
+title: "Cdn"
+---
+
 # 🚀 Cdn
 
 Global distribution with cache rules and purge operations. Performance monitoring and analytics.

@@ -1,3 +1,7 @@
+---
+title: "Service Mesh"
+---
+
 # 🕸️ Service Mesh
 
 Application type definitions with discovery and learned schema analysis. Traffic pattern inference for intelligent request handling.

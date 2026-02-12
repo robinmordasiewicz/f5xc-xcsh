@@ -394,7 +394,8 @@ function generateCliWorkflowsSection(xcshDomain: XcshDomainConfig): string {
  * Generate quick reference guide from LOCAL xcsh config
  */
 function generateQuickReferenceDoc(xcshConfig: XcshExamplesConfig): string {
-  let content = "# Quick Reference\n\n";
+  let content = `---\ntitle: "Quick Reference"\n---\n\n`;
+  content += "# Quick Reference\n\n";
   content += "Common xcsh CLI commands and patterns.\n\n";
 
   for (const category of xcshConfig.quick_reference) {
@@ -437,9 +438,11 @@ function generateDomainDoc(
   xcshConfig?: XcshExamplesConfig,
 ): string {
   const icon = spec["x-f5xc-icon"] || "";
-  const title = `${icon} ${titleCase(spec.domain)}`.trim();
+  const displayTitle = `${icon} ${titleCase(spec.domain)}`.trim();
+  // Frontmatter title without emoji for Astro/Starlight compatibility
+  const frontmatterTitle = titleCase(spec.domain);
 
-  let content = `# ${title}\n\n`;
+  let content = `---\ntitle: "${frontmatterTitle}"\n---\n\n# ${displayTitle}\n\n`;
 
   // Description (from UPSTREAM)
   const description = spec["x-f5xc-description-medium"] || spec.description;
@@ -509,7 +512,8 @@ function generateDomainDoc(
  * Generate index page for all domains
  */
 function generateIndexDoc(specs: SpecIndexEntry[], version: string): string {
-  let content = "# Domain Reference\n\n";
+  let content = `---\ntitle: "Domain Reference"\n---\n\n`;
+  content += "# Domain Reference\n\n";
   content += `Generated from enriched API specifications v${version}.\n\n`;
 
   // Group by category

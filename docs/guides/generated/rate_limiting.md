@@ -1,3 +1,7 @@
+---
+title: "Rate Limiting"
+---
+
 # ⏱️ Rate Limiting
 
 Time-based quota enforcement with configurable windows in hours, minutes, or seconds. Protocol-specific controls for traffic shaping.

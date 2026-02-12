@@ -1,3 +1,7 @@
+---
+title: "Container Services"
+---
+
 # 📦 Container Services
 
 Pod orchestration without full cluster complexity. Edge site execution, quota enforcement, and standardized compute profiles for distributed apps.

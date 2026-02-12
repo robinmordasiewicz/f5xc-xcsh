@@ -1,3 +1,7 @@
+---
+title: "Billing And Usage"
+---
+
 # 💳 Billing And Usage
 
 Plan transitions, invoicing, and resource consumption. Namespace-level quota limits and usage tracking.

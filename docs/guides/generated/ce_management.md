@@ -1,3 +1,7 @@
+---
+title: "Ce Management"
+---
+
 # 🔧 Ce Management
 
 Token-based provisioning with image downloads and pre-upgrade validation. Fleet grouping enables bulk operations across distributed locations.

@@ -1,3 +1,7 @@
+---
+title: "Vpm And Node Management"
+---
+
 # 🖥️ Vpm And Node Management
 
 Lifecycle control, fleet configuration, and deployment policies for distributed node management.

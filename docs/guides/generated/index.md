@@ -1,3 +1,7 @@
+---
+title: "Domain Reference"
+---
+
 # Domain Reference
 
 Generated from enriched API specifications v2.1.13.
