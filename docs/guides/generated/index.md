@@ -4,7 +4,7 @@ title: "Domain Reference"
 
 # Domain Reference
 
-Generated from enriched API specifications v2.1.26.
+Generated from enriched API specifications v2.1.27.
 
 ## AI
 
