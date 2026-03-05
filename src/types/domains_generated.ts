@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.1.30
+ * Generated from .specs/index.json v2.1.31
  * WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  * Run: npx tsx scripts/generate-domains.ts
  */
@@ -24,7 +24,7 @@ export type {
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.1.30";
+export const SPEC_VERSION = "2.1.31";
 
 /**
  * Generated domain data from upstream API specifications
