@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/openapi.json v2.1.34
+ * Generated from .specs/openapi.json v2.1.35
  * Contains property conflict mappings from x-f5xc-conflicts-with extension
  *
  * Run: npx tsx scripts/generate-conflicts.ts
@@ -7407,7 +7407,7 @@ export function flagsConflict(flag1: string, flag2: string): boolean {
 /**
  * Spec version used for generation
  */
-export const CONFLICTS_SPEC_VERSION = "2.1.34";
+export const CONFLICTS_SPEC_VERSION = "2.1.35";
 
 /**
  * Total number of properties with conflicts
