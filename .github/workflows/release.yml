@@ -471,7 +471,7 @@ jobs:
         run: npm run generate:completions
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: binaries
           merge-multiple: true
