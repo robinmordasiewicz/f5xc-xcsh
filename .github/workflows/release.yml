@@ -159,7 +159,7 @@ jobs:
         run: ./scripts/build-binaries.sh --platform linux
 
       - name: Upload Linux binaries
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: binaries-linux
           path: binaries/
@@ -377,7 +377,7 @@ jobs:
           done
 
       - name: Upload macOS binaries (SIGNED)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: binaries-macos
           path: binaries/
@@ -440,7 +440,7 @@ jobs:
         run: ./scripts/build-binaries.sh --platform windows
 
       - name: Upload Windows binaries
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: binaries-windows
           path: binaries/
