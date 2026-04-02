@@ -68,7 +68,6 @@ _xcsh() {
             'users:Account tokens, labels, and cloud-init config.'
             'virtual:HTTP, TCP, UDP load balancing with origin pools.'
             'vpm_and_node_management:Node lifecycle, fleet grouping, and orchestration.'
-
             )
             builtins=(
                 'help:Show help information'
