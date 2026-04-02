@@ -197,8 +197,7 @@ _xcsh() {
         (domain)
             local -a domains builtins
             domains=(
-            ${domainDescriptions}
-            ${aliasDescriptions}
+            ${domainDescriptions}${aliasDescriptions ? `\n            ${aliasDescriptions}` : ""}
             )
             builtins=(
                 'help:Show help information'

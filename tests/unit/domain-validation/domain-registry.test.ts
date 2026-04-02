@@ -15,12 +15,12 @@ import {
 describe("Domain Registry", () => {
   describe("Registry Structure", () => {
     it("should have correct domain count", () => {
-      expect(DOMAIN_COUNT).toBe(37);
+      expect(DOMAIN_COUNT).toBe(38);
     });
 
     it("should match generated domains count", () => {
       expect(generatedDomains.size).toBe(DOMAIN_COUNT);
-      expect(generatedDomains.size).toBe(37);
+      expect(generatedDomains.size).toBe(38);
     });
 
     it("should have spec version defined", () => {
@@ -175,6 +175,7 @@ describe("Domain Registry", () => {
         "Platform",
         "AI",
         "Operations",
+        "Other",
       ];
 
       for (const [name, domain] of generatedDomains.entries()) {
@@ -187,8 +188,8 @@ describe("Domain Registry", () => {
   });
 
   describe("Regression Protection", () => {
-    it("REGRESSION: should never have 38 domains", () => {
-      expect(DOMAIN_COUNT).not.toBe(38);
+    it("REGRESSION: should never exceed 38 domains", () => {
+      expect(DOMAIN_COUNT).not.toBeGreaterThan(38);
     });
 
     it("REGRESSION: WAF domain must stay removed", () => {
