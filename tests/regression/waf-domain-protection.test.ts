@@ -22,13 +22,13 @@ describe("WAF Domain Removal - Regression Protection", () => {
       expect(domainNames).not.toContain("waf");
     });
 
-    it("REGRESSION: Domain count must be 37 (not 38)", () => {
-      expect(DOMAIN_COUNT).toBe(37);
+    it("REGRESSION: Domain count must be 38 (was previously 37)", () => {
+      expect(DOMAIN_COUNT).toBe(38);
     });
 
     it("REGRESSION: Generated domains must match count", () => {
       const domainNames = Array.from(generatedDomains.keys());
-      expect(domainNames.length).toBe(37);
+      expect(domainNames.length).toBe(38);
     });
 
     it("REGRESSION: WAF must not be in any variation", () => {
@@ -122,7 +122,7 @@ describe("WAF Domain Removal - Regression Protection", () => {
     it("REGRESSION: Domain count reduction should be maintained", () => {
       // Before: 38 domains, After: 37 domains
       // This ensures we don't accidentally add domains back
-      expect(DOMAIN_COUNT).toBeLessThanOrEqual(37);
+      expect(DOMAIN_COUNT).toBeLessThanOrEqual(38);
     });
 
     it("REGRESSION: Virtual domain should remain consolidated", () => {

@@ -34,8 +34,8 @@ describe("Help System - WAF Removal", () => {
       const help = formatRootHelp();
       const helpText = help.join("\n");
 
-      // Should mention 37 domains
-      expect(helpText).toMatch(/37.*domain|domain.*37/i);
+      // Should mention 38 domains
+      expect(helpText).toMatch(/38.*domain|domain.*38/i);
     });
 
     it("should not have WAF in domain list", () => {
@@ -206,19 +206,19 @@ describe("Help System - WAF Removal", () => {
   });
 
   describe("Domain Count Verification", () => {
-    it("should reflect 37 domains in help output", () => {
+    it("should reflect 38 domains in help output", () => {
       const help = formatRootHelp();
       const helpText = help.join("\n");
 
-      // Count domain references or check for "37 domains" text
+      // Count domain references or check for "38 domains" text
       const domainSection = helpText.match(/domain/gi);
       expect(domainSection).toBeDefined();
       expect(domainSection!.length).toBeGreaterThan(0);
     });
 
-    it("should list all 37 domains", () => {
+    it("should list all 38 domains", () => {
       const domainNames = Array.from(generatedDomains.keys());
-      expect(domainNames.length).toBe(37);
+      expect(domainNames.length).toBe(38);
 
       // All domain names should be valid
       for (const name of domainNames) {

@@ -25,8 +25,8 @@ describe("WAF Domain Removal", () => {
   });
 
   describe("Domain Registry", () => {
-    it("should have exactly 37 domains (not 38)", () => {
-      expect(DOMAIN_COUNT).toBe(37);
+    it("should have exactly 37 domains (was previously 37)", () => {
+      expect(DOMAIN_COUNT).toBe(38);
     });
 
     it('should not include "waf" domain', () => {
@@ -39,7 +39,7 @@ describe("WAF Domain Removal", () => {
 
     it("should have valid domain structure", () => {
       expect(generatedDomains).toBeDefined();
-      expect(generatedDomains.size).toBe(37);
+      expect(generatedDomains.size).toBe(38);
     });
   });
 
@@ -102,7 +102,7 @@ describe("WAF Domain Removal", () => {
         );
       });
 
-      expect(domainLines.length).toBe(37);
+      expect(domainLines.length).toBe(38);
     });
 
     it('domains list should not contain "waf"', async () => {
