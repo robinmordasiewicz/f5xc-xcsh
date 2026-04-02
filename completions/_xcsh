@@ -53,6 +53,7 @@ _xcsh() {
             'nginx_one:NGINX Plus instances and dataplane servers.'
             'object_storage:Mobile SDK assets, versioned binaries, and app shield files.'
             'observability:Synthetic health checks and DNS resolution validation.'
+            'other:Other'
             'rate_limiting:Request throttling, quotas, and policer rules.'
             'secops_and_incident_response:Threat detection, user risk scoring, and automated blocking.'
             'service_mesh:Microservice routing and sidecar configuration.'
@@ -67,7 +68,7 @@ _xcsh() {
             'users:Account tokens, labels, and cloud-init config.'
             'virtual:HTTP, TCP, UDP load balancing with origin pools.'
             'vpm_and_node_management:Node lifecycle, fleet grouping, and orchestration.'
-            
+
             )
             builtins=(
                 'help:Show help information'

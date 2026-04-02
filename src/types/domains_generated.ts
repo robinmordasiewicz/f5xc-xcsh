@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/index.json v2.1.47
+ * Generated from .specs/index.json v2.1.59
  * WITH DYNAMIC RESOURCE DISCOVERY (Phase 1 Enhancement)
  * Run: npx tsx scripts/generate-domains.ts
  */
@@ -24,7 +24,7 @@ export type {
 /**
  * Spec version used for generation
  */
-export const SPEC_VERSION = "2.1.47";
+export const SPEC_VERSION = "2.1.59";
 
 /**
  * Generated domain data from upstream API specifications
@@ -737,7 +737,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
       descriptionMedium:
         "Legacy device orchestration with iRule scripts and data group synchronization. Virtual server bindings and metrics collection.",
       aliases: [],
-      complexity: "moderate" as const,
+      complexity: "advanced" as const,
       isPreview: false,
       requiresTier: "Advanced",
       category: "Platform",
@@ -776,6 +776,24 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
       allResources: [
         {
           name: "apm",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "application_profiless",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "bigip_http_proxy",
           description: "Resource creation operation",
           descriptionShort: "Resource creation operation",
           tier: "Standard" as const,
@@ -839,11 +857,13 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "7 resources discovered but not in primaryResources: apm, bigip_irule, bigip_virtual_server, data_group, get_security_config...",
+        "9 resources discovered but not in primaryResources: apm, application_profiless, bigip_http_proxy, bigip_irule, bigip_virtual_server...",
       ],
       resourceCategories: {
         crud: [
           "apm",
+          "application_profiless",
+          "bigip_http_proxy",
           "bigip_irule",
           "bigip_virtual_server",
           "data_group",
@@ -1054,6 +1074,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "usage_summary",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "analytics" as const,
+          isPrimary: false,
+        },
+        {
           name: "subscribe",
           description: "Resource creation operation",
           descriptionShort: "Resource creation operation",
@@ -1073,7 +1102,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "16 resources discovered but not in primaryResources: current, current_usage, custom_list, hourly_usage_detail, invoice_pdf...",
+        "17 resources discovered but not in primaryResources: current, current_usage, custom_list, hourly_usage_detail, invoice_pdf...",
       ],
       resourceCategories: {
         crud: [
@@ -1093,7 +1122,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "usage",
           "usage_detail",
         ],
-        analytics: [],
+        analytics: ["usage_summary"],
         utilities: [],
         management: ["subscribe", "unsubscribe"],
       },
@@ -1564,6 +1593,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: true,
         },
         {
+          name: "cdn_purge_command",
+          description: "CDN configuration for content delivery",
+          descriptionShort: "CDN configuration for content delivery",
+          tier: "Standard" as const,
+          operations: ["create", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "dos_automitigation_rule",
           description: "Automated DDoS mitigation rule configuration",
           descriptionShort: "Automated DDoS mitigation rule configuration",
@@ -1637,7 +1675,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "12 resources discovered but not in primaryResources: access_log, aggregation, cache-purge, cdn_cache_rule, dos_automitigation_rule...",
+        "13 resources discovered but not in primaryResources: access_log, aggregation, cache-purge, cdn_cache_rule, cdn_purge_command...",
       ],
       resourceCategories: {
         crud: [
@@ -1646,6 +1684,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "cache-purge",
           "cdn_cache_rule",
           "cdn_loadbalancer",
+          "cdn_purge_command",
           "dos_automitigation_rule",
           "get_security_config",
           "suggestion",
@@ -1671,7 +1710,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
       descriptionMedium:
         "Token-based provisioning with image downloads and pre-upgrade validation. Fleet grouping enables bulk operations across distributed locations.",
       aliases: [],
-      complexity: "moderate" as const,
+      complexity: "advanced" as const,
       isPreview: false,
       requiresTier: "Standard",
       category: "Infrastructure",
@@ -1719,11 +1758,38 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
       ],
       allResources: [
         {
+          name: "approve",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "fleet",
           description: "Resource creation operation",
           descriptionShort: "Resource creation operation",
           tier: "Standard" as const,
           operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "get-image-download-url",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "get-registrations-by-token",
+          description: "Authentication credential for access control",
+          descriptionShort: "Authentication credential for access control",
+          tier: "Standard" as const,
+          operations: ["create"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -1746,11 +1812,56 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "registerBootstrap",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "registration",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "registrations_by_site",
+          description: "Edge site for distributed deployment",
+          descriptionShort: "Edge site for distributed deployment",
+          tier: "Standard" as const,
+          operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "requestConfig",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "setting",
           description: "Resource retrieval operation",
           descriptionShort: "Resource retrieval operation",
           tier: "Standard" as const,
           operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "suggest-value",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -1773,6 +1884,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "listregistrationsbystate",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "analytics" as const,
+          isPrimary: false,
+        },
+        {
           name: "upgrade_statu",
           description: "Resource retrieval operation",
           descriptionShort: "Resource retrieval operation",
@@ -1783,18 +1903,26 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "7 resources discovered but not in primaryResources: fleet, network_interface, pre_upgrade_check, setting, upgradable_sw_version...",
+        "16 resources discovered but not in primaryResources: approve, fleet, get-image-download-url, get-registrations-by-token, network_interface...",
       ],
       resourceCategories: {
         crud: [
+          "approve",
           "fleet",
+          "get-image-download-url",
+          "get-registrations-by-token",
           "network_interface",
           "pre_upgrade_check",
+          "registerBootstrap",
+          "registration",
+          "registrations_by_site",
+          "requestConfig",
           "setting",
+          "suggest-value",
           "upgradable_sw_version",
           "usb_policy",
         ],
-        analytics: ["upgrade_statu"],
+        analytics: ["listregistrationsbystate", "upgrade_statu"],
         utilities: [],
         management: [],
       },
@@ -1925,7 +2053,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
       descriptionMedium:
         "Multi-cloud provider connections with gateway peering and network path configuration. Credential vault integration and subnet enumeration.",
       aliases: [],
-      complexity: "moderate" as const,
+      complexity: "advanced" as const,
       isPreview: false,
       requiresTier: "Standard",
       category: "Infrastructure",
@@ -2634,6 +2762,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "countermeasure",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "detail",
           description: "",
           descriptionShort: "detail",
@@ -2869,7 +3006,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "30 resources discovered but not in primaryResources: access, alert, annotation, attachment, detail...",
+        "31 resources discovered but not in primaryResources: access, alert, annotation, attachment, countermeasure...",
       ],
       resourceCategories: {
         crud: [
@@ -2877,6 +3014,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "alert",
           "annotation",
           "attachment",
+          "countermeasure",
           "detail",
           "event",
           "infraprotect_asn",
@@ -4460,6 +4598,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "mobile-sdk-self-serve",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["list", "get"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "stored_object",
           description: "Resource retrieval operation",
           descriptionShort: "Resource retrieval operation",
@@ -4470,10 +4617,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "3 resources discovered but not in primaryResources: mobile-app-shield, mobile-integrator, stored_object",
+        "4 resources discovered but not in primaryResources: mobile-app-shield, mobile-integrator, mobile-sdk-self-serve, stored_object",
       ],
       resourceCategories: {
-        crud: ["mobile-app-shield", "mobile-integrator", "stored_object"],
+        crud: [
+          "mobile-app-shield",
+          "mobile-integrator",
+          "mobile-sdk-self-serve",
+          "stored_object",
+        ],
         analytics: [],
         utilities: [],
         management: [],
@@ -4907,6 +5059,73 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         ],
         utilities: [],
         management: ["subscribe", "unsubscribe"],
+      },
+    },
+  ],
+  [
+    "other",
+    {
+      name: "other",
+      displayName: "Other",
+      description: "F5 Distributed Cloud Other",
+      descriptionShort: "Other",
+      descriptionMedium: "F5 Distributed Cloud Other",
+      aliases: [],
+      complexity: "moderate" as const,
+      isPreview: false,
+      requiresTier: "Standard",
+      category: "Other",
+      useCases: [],
+      relatedDomains: [],
+      icon: "📁",
+      logoSvg:
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748B'%3E%3Cpath d='M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E",
+      allResources: [
+        {
+          name: "authorization_server",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "discovered",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "dns_proxy",
+          description: "DNS configuration for name resolution",
+          descriptionShort: "DNS configuration for name resolution",
+          tier: "Standard" as const,
+          operations: ["create", "replace", "list", "get", "delete"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "update",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+      ],
+      validationWarnings: [
+        "4 resources discovered but not in primaryResources: authorization_server, discovered, dns_proxy, update",
+      ],
+      resourceCategories: {
+        crud: ["authorization_server", "discovered", "dns_proxy", "update"],
+        analytics: [],
+        utilities: [],
+        management: [],
       },
     },
   ],
@@ -5679,7 +5898,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           description: "Resource retrieval operation",
           descriptionShort: "Resource retrieval operation",
           tier: "Standard" as const,
-          operations: ["get"],
+          operations: ["get", "list"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -5752,6 +5971,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           descriptionShort: "Resource retrieval operation",
           tier: "Standard" as const,
           operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "detectedDomain",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -6054,10 +6282,10 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
         {
           name: "mobile_base_config",
-          description: "Resource creation operation",
-          descriptionShort: "Resource creation operation",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
           tier: "Standard" as const,
-          operations: ["create", "replace", "list", "get", "delete"],
+          operations: ["get", "create", "replace", "list", "delete"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -6531,7 +6759,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "126 resources discovered but not in primaryResources: action, affectedUser, age, alert_gen_policy, alert_template...",
+        "127 resources discovered but not in primaryResources: action, affectedUser, age, alert_gen_policy, alert_template...",
       ],
       resourceCategories: {
         crud: [
@@ -6575,6 +6803,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "deployment_history",
           "detail",
           "detected_domain",
+          "detectedDomain",
           "device",
           "domain_detail",
           "download_release_note",
@@ -6926,6 +7155,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           descriptionShort: "Resource creation operation",
           tier: "Standard" as const,
           operations: ["create", "list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "interface",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["list"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -7329,7 +7567,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "54 resources discovered but not in primaryResources: aggregation, aws_tgw_site, aws_vpc_site, azure_vnet_site, configmap...",
+        "55 resources discovered but not in primaryResources: aggregation, aws_tgw_site, aws_vpc_site, azure_vnet_site, configmap...",
       ],
       resourceCategories: {
         crud: [
@@ -7348,6 +7586,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "gcp_vpc_site",
           "global_network",
           "global-kubeconfig",
+          "interface",
           "job",
           "k8s_audit_log",
           "k8s_cluster",
@@ -7970,6 +8209,24 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "allow-f5-ssh",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "attachment",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["get"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "change-password",
           description: "Resource creation operation",
           descriptionShort: "Resource creation operation",
@@ -8322,11 +8579,13 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "40 resources discovered but not in primaryResources: add, change-password, check-debug-info-collection, close, comment...",
+        "42 resources discovered but not in primaryResources: add, allow-f5-ssh, attachment, change-password, check-debug-info-collection...",
       ],
       resourceCategories: {
         crud: [
           "add",
+          "allow-f5-ssh",
+          "attachment",
           "change-password",
           "check-debug-info-collection",
           "close",
@@ -8818,6 +9077,15 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           isPrimary: false,
         },
         {
+          name: "attachment",
+          description: "Resource retrieval operation",
+          descriptionShort: "Resource retrieval operation",
+          tier: "Standard" as const,
+          operations: ["list"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
           name: "authentication",
           description: "Resource creation operation",
           descriptionShort: "Resource creation operation",
@@ -8940,6 +9208,24 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           descriptionShort: "disable",
           tier: "Standard" as const,
           operations: ["replace"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "discover_network",
+          description: "Network configuration for connectivity",
+          descriptionShort: "Network configuration for connectivity",
+          tier: "Standard" as const,
+          operations: ["create"],
+          resourceCategory: "crud" as const,
+          isPrimary: false,
+        },
+        {
+          name: "dynamic-data",
+          description: "Resource creation operation",
+          descriptionShort: "Resource creation operation",
+          tier: "Standard" as const,
+          operations: ["create"],
           resourceCategory: "crud" as const,
           isPrimary: false,
         },
@@ -9570,7 +9856,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
         },
       ],
       validationWarnings: [
-        "94 resources discovered but not in primaryResources: accept_to, access, active_alert_policy, active_network_policy, active_service_policy...",
+        "97 resources discovered but not in primaryResources: accept_to, access, active_alert_policy, active_network_policy, active_service_policy...",
       ],
       resourceCategories: {
         crud: [
@@ -9586,6 +9872,7 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "allowed_tenant",
           "analyze_for_deletion",
           "application_inventory",
+          "attachment",
           "authentication",
           "cascade_delete",
           "child_tenant",
@@ -9600,6 +9887,8 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
           "deactivate",
           "delete",
           "disable",
+          "discover_network",
+          "dynamic-data",
           "enable",
           "escalate",
           "evaluate-api-access",
@@ -10817,4 +11106,4 @@ export const generatedDomains: Map<string, DomainInfo> = new Map([
 /**
  * Total domain count
  */
-export const DOMAIN_COUNT = 37;
+export const DOMAIN_COUNT = 38;

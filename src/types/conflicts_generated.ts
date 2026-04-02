@@ -1,6 +1,6 @@
 /**
  * AUTO-GENERATED FILE - DO NOT EDIT
- * Generated from .specs/openapi.json v2.1.47
+ * Generated from .specs/openapi.json v2.1.59
  * Contains property conflict mappings from x-f5xc-conflicts-with extension
  *
  * Run: npx tsx scripts/generate-conflicts.ts
@@ -177,6 +177,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ],
   ],
   ["address_records", ["integer_records", "string_records"]],
+  ["address_translation_disable", ["address_translation_enable"]],
+  ["address_translation_enable", ["address_translation_disable"]],
   ["admin", ["standard"]],
   ["adns_service", ["dns_service"]],
   [
@@ -334,10 +336,6 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   [
     "aggregate",
     ["allow", "as_path", "community", "deny", "local_preference", "metric"],
-  ],
-  [
-    "ai_risk_based_blocking",
-    ["default_detection_settings", "detection_settings"],
   ],
   ["alertname", ["alertname_regex", "any", "custom", "group", "severity"]],
   ["alertname_regex", ["alertname", "any", "custom", "group", "severity"]],
@@ -742,6 +740,9 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["auto_asn", ["custom_asn"]],
   ["auto_host_rewrite", ["disable_host_rewrite", "host_rewrite"]],
   ["auto_http_config", ["http1_config", "http2_options"]],
+  ["auto_last_hop_default", ["auto_last_hop_disable", "auto_last_hop_enable"]],
+  ["auto_last_hop_disable", ["auto_last_hop_default", "auto_last_hop_enable"]],
+  ["auto_last_hop_enable", ["auto_last_hop_default", "auto_last_hop_disable"]],
   ["auto_setup", ["ssh_key"]],
   ["autogenerate", ["name", "name_tag"]],
   ["automatic_from_end", ["automatic_from_start", "interface_ip_map"]],
@@ -1053,6 +1054,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ],
   ["cache_bypass", ["eligible_for_cache"]],
   ["cache_disabled", ["cache_ttl_default", "cache_ttl_override"]],
+  ["cache_size", ["disable_cache_profile"]],
   ["cache_ttl_default", ["cache_disabled", "cache_ttl_override"]],
   ["cache_ttl_override", ["cache_disabled", "cache_ttl_default"]],
   ["caching_policy", ["disable_caching"]],
@@ -1760,10 +1762,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["default_circuit_breaker", ["circuit_breaker", "disable_circuit_breaker"]],
   ["default_coalescing", ["strict_coalescing"]],
   ["default_config", ["device_list", "interface_list", "slo_config"]],
-  [
-    "default_detection_settings",
-    ["ai_risk_based_blocking", "detection_settings"],
-  ],
+  ["default_detection_settings", ["detection_settings"]],
   ["default_flavor", ["custom_flavor", "flavor"]],
   [
     "default_gateway",
@@ -2042,10 +2041,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ],
   ["destination_prefix_single", ["destination_prefix_all"]],
   ["destroy_state", ["apply_state", "infra_state"]],
-  [
-    "detection_settings",
-    ["ai_risk_based_blocking", "default_detection_settings"],
-  ],
+  ["detection_settings", ["default_detection_settings"]],
   ["device_list", ["default_config", "interface_list"]],
   ["dgw_address", ["first_address", "last_address"]],
   ["dh_group_set", ["disable_pfs"]],
@@ -2072,6 +2068,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "default_response_cache_parameters",
       "dns_delegation",
       "enable",
+      "enable_default_profile",
       "external_connector",
       "from_site",
       "publish",
@@ -2086,6 +2083,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     "disable_advertise_on_slo_ip",
     ["advertise_on_slo_ip", "advertise_on_slo_ip_external"],
   ],
+  ["disable_ai_enhancements", ["enable_ai_enhancements"]],
   [
     "disable_allowed_vip_port",
     ["custom_ports", "use_http_https_port", "use_http_port", "use_https_port"],
@@ -2100,6 +2098,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ["aws_configuration_id_selector", "aws_configuration_tag_selector"],
   ],
   ["disable_bot_defense", ["bot_defense", "bot_defense_advanced"]],
+  ["disable_cache_profile", ["cache_size"]],
   ["disable_caching", ["caching_policy"]],
   [
     "disable_challenge",
@@ -2110,6 +2109,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["disable_compliance_checks", ["enable_compliance_checks"]],
   ["disable_conn_pool_reuse", ["enable_conn_pool_reuse"]],
   ["disable_cors_support", ["enable_cors_support"]],
+  ["disable_ddos_mitigation", ["enable_ddos_mitigation"]],
   ["disable_detection", ["enable_detection"]],
   ["disable_discovery", ["enable_discovery"]],
   ["disable_dns_masquerade", ["enable_dns_masquerade"]],
@@ -2174,6 +2174,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["disable_subsets", ["enable_subsets"]],
   ["disable_suppression", ["enable_suppression"]],
   ["disable_tampering_protection", ["enable_tampering_protection"]],
+  ["disable_tcp_advanced_profile", ["enable_tcp_advanced_profile"]],
   ["disable_threat_campaigns", ["enable_threat_campaigns"]],
   ["disable_threat_mesh", ["enable_threat_mesh"]],
   ["disable_transaction_result", ["transaction_result"]],
@@ -2210,6 +2211,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ],
   ["dns_address", ["same_as_dgw"]],
   ["dns_delegation", ["disable", "publish", "publish_fqdns"]],
+  ["dns_health_check", ["icmp_health_check", "tcp_health_check"]],
   ["dns_info", ["consul_info", "k8s_info"]],
   ["dns_logs", ["audit_logs", "request_logs", "security_events"]],
   [
@@ -2423,6 +2425,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["emails", ["support_ticket_id", "support_ticket_option"]],
   ["empty_dir", ["host_path", "persistent_volume"]],
   ["enable", ["disable"]],
+  ["enable_ai_enhancements", ["disable_ai_enhancements"]],
   ["enable_api_discovery", ["disable_api_discovery"]],
   [
     "enable_captcha_challenge",
@@ -2440,6 +2443,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["enable_compliance_checks", ["disable_compliance_checks"]],
   ["enable_conn_pool_reuse", ["disable_conn_pool_reuse"]],
   ["enable_cors_support", ["disable_cors_support"]],
+  ["enable_ddos_mitigation", ["disable_ddos_mitigation"]],
+  ["enable_default_profile", ["disable"]],
   ["enable_detection", ["disable_detection"]],
   ["enable_discovery", ["disable_discovery"]],
   ["enable_dns_masquerade", ["disable_dns_masquerade"]],
@@ -2471,6 +2476,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["enable_subsets", ["disable_subsets"]],
   ["enable_suppression", ["disable_suppression"]],
   ["enable_tampering_protection", ["disable_tampering_protection"]],
+  ["enable_tcp_advanced_profile", ["disable_tcp_advanced_profile"]],
   ["enable_threat_campaigns", ["disable_threat_campaigns"]],
   ["enable_threat_mesh", ["disable_threat_mesh"]],
   ["enable_trust_client_ip_headers", ["disable_trust_client_ip_headers"]],
@@ -3253,12 +3259,13 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["host_path", ["empty_dir", "persistent_volume"]],
   ["host_rewrite", ["auto_host_rewrite", "disable_host_rewrite"]],
   ["hosted_vifs", ["standard_vifs"]],
-  ["hostname", ["ip", "pattern", "purge_all", "url"]],
+  ["hostname", ["ip", "pattern", "purge_all", "url", "url_path"]],
+  ["hours", ["minutes"]],
   [
     "hpe_storage",
     ["custom_storage", "netapp_trident", "pure_service_orchestrator"],
   ],
-  ["http", ["https", "https_auto_cert"]],
+  ["http", ["https", "https_auto_cert", "tcp", "udp"]],
   [
     "http_header",
     [
@@ -3354,7 +3361,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ],
   ["http1_config", ["auto_http_config", "http2_options"]],
   ["http2_options", ["auto_http_config", "http1_config"]],
-  ["https", ["http", "https_auto_cert"]],
+  ["https", ["http", "https_auto_cert", "tcp", "udp"]],
   ["https_auto_cert", ["http", "https"]],
   [
     "https_health_check",
@@ -3384,6 +3391,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   [
     "icmp_health_check",
     [
+      "dns_health_check",
       "http_health_check",
       "https_health_check",
       "tcp_health_check",
@@ -3409,6 +3417,27 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ["ike_keylifetime_hours", "use_default_keylifetime"],
   ],
   ["image_id", ["marketplace"]],
+  [
+    "immediate_action_on_service_down_drop",
+    [
+      "immediate_action_on_service_down_none",
+      "immediate_action_on_service_down_reset",
+    ],
+  ],
+  [
+    "immediate_action_on_service_down_none",
+    [
+      "immediate_action_on_service_down_drop",
+      "immediate_action_on_service_down_reset",
+    ],
+  ],
+  [
+    "immediate_action_on_service_down_reset",
+    [
+      "immediate_action_on_service_down_drop",
+      "immediate_action_on_service_down_none",
+    ],
+  ],
   ["inbound", ["outbound"]],
   ["include_all", ["report_config_names"]],
   ["include_bot_defense_activity", ["exclude_bot_defense_activity"]],
@@ -3887,6 +3916,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ],
   ],
   ["jumbo", ["no_jumbo"]],
+  ["jumbo_disabled", ["jumbo_enabled"]],
+  ["jumbo_enabled", ["jumbo_disabled"]],
   [
     "jwt_claim_name",
     [
@@ -4405,6 +4436,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["mgmt_dns_name", ["mgmt_ip"]],
   ["mgmt_ip", ["mgmt_dns_name"]],
   ["mgmt_subnet", ["reserved_mgmt_subnet"]],
+  ["minutes", ["hours"]],
   ["mirror_policy", ["disable_mirroring"]],
   [
     "miscellaneous",
@@ -4428,6 +4460,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ],
   ],
   ["mitigate_good_bots", ["allow_good_bots"]],
+  ["mitigate_high_medium_risk_action", ["mitigate_high_risk_action"]],
+  ["mitigate_high_risk_action", ["mitigate_high_medium_risk_action"]],
   [
     "mitigation_block",
     ["mitigation_captcha_challenge", "mitigation_js_challenge"],
@@ -4546,6 +4580,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "txt_record",
     ],
   ],
+  ["nat64_disable", ["nat64_enable"]],
+  ["nat64_enable", ["nat64_disable"]],
   ["negative_feedback", ["positive_feedback"]],
   ["netapp_backend_ontap_nas", ["netapp_backend_ontap_san"]],
   ["netapp_backend_ontap_san", ["netapp_backend_ontap_nas"]],
@@ -4678,6 +4714,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["no_policer", ["policer"]],
   ["no_policies", ["policies"]],
   ["no_port_match", ["port", "port_ranges"]],
+  ["no_preference", ["site_preferences"]],
   ["no_proxy_bypass", ["custom_proxy_bypass"]],
   ["no_qos", ["adaptive_qos_policy", "qos_policy"]],
   ["no_retry_policy", ["default_retry_policy", "retry_policy"]],
@@ -5021,8 +5058,85 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["path_redirect", ["prefix_rewrite"]],
   ["path_regex", ["any_path", "path_prefix"]],
   ["path_regex_value", ["any_path", "path_exact_value", "path_prefix_value"]],
-  ["pattern", ["hostname", "purge_all", "url"]],
+  ["pattern", ["hostname", "purge_all", "url", "url_path"]],
   ["peer_secret_override", ["no_secret", "use_default_secret"]],
+  [
+    "per_destination_address",
+    [
+      "per_source_address",
+      "per_source_destination_address",
+      "per_virtual_server",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_source_address",
+    [
+      "per_destination_address",
+      "per_source_destination_address",
+      "per_virtual_server",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_source_destination_address",
+    [
+      "per_destination_address",
+      "per_source_address",
+      "per_virtual_server",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_virtual_server",
+    [
+      "per_destination_address",
+      "per_source_address",
+      "per_source_destination_address",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_virtual_server_destination_address",
+    [
+      "per_destination_address",
+      "per_source_address",
+      "per_source_destination_address",
+      "per_virtual_server",
+      "per_virtual_server_source_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_virtual_server_source_address",
+    [
+      "per_destination_address",
+      "per_source_address",
+      "per_source_destination_address",
+      "per_virtual_server",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_destination_address",
+    ],
+  ],
+  [
+    "per_virtual_server_source_destination_address",
+    [
+      "per_destination_address",
+      "per_source_address",
+      "per_source_destination_address",
+      "per_virtual_server",
+      "per_virtual_server_destination_address",
+      "per_virtual_server_source_address",
+    ],
+  ],
   ["perf_mode_l3_enhanced", ["perf_mode_l7_enhanced"]],
   ["perf_mode_l7_enhanced", ["perf_mode_l3_enhanced"]],
   ["persistent_volume", ["empty_dir", "host_path"]],
@@ -5058,6 +5172,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ],
   ["port_matcher", ["no_http_connect_port"]],
   ["port_ranges", ["listen_port", "no_port_match", "port", "use_default_port"]],
+  ["port_translation_disable", ["port_translation_enable"]],
+  ["port_translation_enable", ["port_translation_disable"]],
   ["positive_feedback", ["negative_feedback"]],
   ["post", ["delete", "get", "head", "options", "patch", "put"]],
   ["predefined", ["custom"]],
@@ -5377,7 +5493,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     "pure_service_orchestrator",
     ["custom_storage", "hpe_storage", "netapp_trident"],
   ],
-  ["purge_all", ["hostname", "pattern", "url"]],
+  ["purge_all", ["hostname", "pattern", "url", "url_path"]],
   ["put", ["delete", "get", "head", "options", "patch", "post"]],
   ["qos_policy", ["adaptive_qos_policy", "no_qos"]],
   [
@@ -6342,6 +6458,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     "site_mesh_group_on_slo",
     ["dc_cluster_group_slo", "no_s2s_connectivity_slo"],
   ],
+  ["site_preferences", ["no_preference"]],
   [
     "site_registration_over_direct_connect",
     ["site_registration_over_internet"],
@@ -6479,6 +6596,18 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     ],
   ],
   ["source_port_all", ["source_port_range"]],
+  [
+    "source_port_change",
+    ["source_port_preserve", "source_port_preserve_strict"],
+  ],
+  [
+    "source_port_preserve",
+    ["source_port_change", "source_port_preserve_strict"],
+  ],
+  [
+    "source_port_preserve_strict",
+    ["source_port_change", "source_port_preserve"],
+  ],
   ["source_port_range", ["source_port_all"]],
   ["source_prefix_all", ["source_prefix_single"]],
   [
@@ -6596,6 +6725,8 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "MatchRegex",
     ],
   ],
+  ["state_disabled", ["state_enabled"]],
+  ["state_enabled", ["state_disabled"]],
   ["state_off", ["state_on"]],
   ["state_on", ["state_off"]],
   ["stateful", ["network_prefix"]],
@@ -6735,10 +6866,23 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
   ["system_generated", ["user_assigned"]],
   ["system_generated_name", ["user_assigned_name"]],
   ["target_port", ["same_as_port"]],
-  ["tcp", ["any", "dns", "icmp", "tls_tcp", "tls_tcp_auto_cert", "udp"]],
+  [
+    "tcp",
+    [
+      "any",
+      "dns",
+      "http",
+      "https",
+      "icmp",
+      "tls_tcp",
+      "tls_tcp_auto_cert",
+      "udp",
+    ],
+  ],
   [
     "tcp_health_check",
     [
+      "dns_health_check",
       "exec_health_check",
       "http_health_check",
       "https_health_check",
@@ -6946,7 +7090,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "tlsa_record",
     ],
   ],
-  ["udp", ["any", "dns", "icmp", "tcp"]],
+  ["udp", ["any", "dns", "http", "https", "icmp", "tcp"]],
   [
     "udp_health_check",
     [
@@ -7011,6 +7155,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "tls_list",
     ],
   ],
+  ["url_path", ["hostname", "pattern", "purge_all"]],
   ["us", ["eu"]],
   ["usb_policy", ["allow_all_usb", "deny_all_usb"]],
   ["use_auth_object_config", ["cookie_params"]],
@@ -7062,6 +7207,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
       "use_http_port",
     ],
   ],
+  ["use_management_network", ["use_slo_sli"]],
   ["use_mtls", ["no_mtls", "use_mtls_obj"]],
   ["use_mtls_obj", ["no_mtls", "use_mtls"]],
   ["use_origin_server_name", ["host_header"]],
@@ -7070,6 +7216,7 @@ export const PROPERTY_CONFLICTS: Map<string, string[]> = new Map([
     "use_server_verification",
     ["skip_server_verification", "volterra_trusted_ca"],
   ],
+  ["use_slo_sli", ["use_management_network"]],
   ["use_system_defaults", ["custom_hash_algorithms", "disable_ocsp_stapling"]],
   ["use_tls", ["no_tls"]],
   ["user", ["group", "organization", "service_account"]],
@@ -7407,14 +7554,14 @@ export function flagsConflict(flag1: string, flag2: string): boolean {
 /**
  * Spec version used for generation
  */
-export const CONFLICTS_SPEC_VERSION = "2.1.47";
+export const CONFLICTS_SPEC_VERSION = "2.1.59";
 
 /**
  * Total number of properties with conflicts
  */
-export const CONFLICT_PROPERTY_COUNT = 1794;
+export const CONFLICT_PROPERTY_COUNT = 1838;
 
 /**
  * Total number of conflict relationships
  */
-export const CONFLICT_RELATIONSHIP_COUNT = 5896;
+export const CONFLICT_RELATIONSHIP_COUNT = 5998;
