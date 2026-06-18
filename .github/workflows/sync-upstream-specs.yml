@@ -20,6 +20,10 @@ on:
       - "scripts/generate-docs.ts"
       - "docs/config/cli-examples.yaml"
 
+concurrency:
+  group: sync-upstream-specs
+  cancel-in-progress: true
+
 jobs:
   # Step 1: Check if upstream has new version
   check-upstream:
